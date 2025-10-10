@@ -1,0 +1,17 @@
+name: Run monthly invoice generator
+
+on:
+  schedule:
+    - cron: "0 8 1 * *"   # Kör 1:a varje månad kl 08:00
+  workflow_dispatch:       # Gör att du kan köra manuellt också
+
+jobs:
+  run-function:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Supabase Edge Function
+        run: |
+          curl -X POST "https://fhdkkkujnhteetllxypg.supabase.co/functions/v1/generate_invoices" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -d '{}'
