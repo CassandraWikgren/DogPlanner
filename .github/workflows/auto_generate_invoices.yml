@@ -14,12 +14,29 @@ jobs:
         run: echo "MONTH=$(date +'%Y-%m')" >> $GITHUB_ENV
 
       - name: 🚀 Trigger Supabase Edge Function
+        id: generate
         run: |
           echo "🔁 Genererar fakturor för månad: $MONTH"
-          curl -X POST "https://fhdkkkujnhteetllxypg.supabase.co/functions/v1/generate_invoices" \
+          RESPONSE=$(curl -s -w "%{http_code}" -o response.txt \
+            -X POST "https://fhdkkkujnhteetllxypg.supabase.co/functions/v1/generate_invoices" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -d "{\"month\": \"$MONTH\"}"
+            -d "{\"month\": \"$MONTH\"}")
+          echo "Supabase svarade med statuskod: $RESPONSE"
+          echo "RESPONSE_CODE=$RESPONSE" >> $GITHUB_ENV
+
+      - name: 🧾 Log to Supabase invoice_runs
+        if: always() # kör även om det blev fel i förra steget
+        run: |
+          echo "🗂️ Sparar körlogg i Supabase..."
+          STATUS="success"
+          if [ "${{ env.RESPONSE_CODE }}" != "200" ]; then STATUS="failed"; fi
+
+          curl -X POST "https://fhdkkkujnhteetllxypg.supabase.co/rest/v1/invoice_runs" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"month_id\": \"$MONTH\", \"status\": \"$STATUS\", \"run_at\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}"
 
       - name: ✅ Klar!
         run: echo "✅ Fakturagenerering kördes färdigt för $MONTH"
