@@ -2,16 +2,24 @@ name: Run monthly invoice generator
 
 on:
   schedule:
-    - cron: "0 8 1 * *"   # Kör 1:a varje månad kl 08:00
-  workflow_dispatch:       # Gör att du kan köra manuellt också
+    - cron: "0 8 1 * *"  # Kör 1:a varje månad kl 08:00 (UTC)
+  workflow_dispatch:      # Gör att du kan köra manuellt också
 
 jobs:
   run-function:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Supabase Edge Function
+      - name: 📅 Get current month
+        id: date
+        run: echo "MONTH=$(date +'%Y-%m')" >> $GITHUB_ENV
+
+      - name: 🚀 Trigger Supabase Edge Function
         run: |
+          echo "🔁 Genererar fakturor för månad: $MONTH"
           curl -X POST "https://fhdkkkujnhteetllxypg.supabase.co/functions/v1/generate_invoices" \
-          -H "Content-Type: application/json" \
-          -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
-          -d '{}'
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -d "{\"month\": \"$MONTH\"}"
+
+      - name: ✅ Klar!
+        run: echo "✅ Fakturagenerering kördes färdigt för $MONTH"
