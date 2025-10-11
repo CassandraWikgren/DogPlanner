@@ -9,27 +9,27 @@ jobs:
   run-function:
     runs-on: ubuntu-latest
     steps:
-      - name: 🗓️ Get current month
+      - name: Get current month
         id: date
         run: echo "MONTH=$(date +'%Y-%m')" >> $GITHUB_ENV
 
-      - name: 🚀 Trigger Supabase Edge Function
+      - name: Trigger Supabase Edge Function
         id: generate
         run: |
-          echo "▶️ Genererar fakturor för månad: $MONTH"
+          echo "Generating invoices for month: $MONTH"
           RESPONSE=$(curl -s -w "%{http_code}" -o response.txt \
             -X POST "https://fhdkkkujnhteetllxypg.supabase.co/functions/v1/generate_invoices" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -d "{\"month\": \"$MONTH\"}")
 
-          echo "Supabase svarade med statuskod: $RESPONSE"
+          echo "Supabase responded with status: $RESPONSE"
           echo "RESPONSE_CODE=$RESPONSE" >> $GITHUB_ENV
 
-      - name: 🧾 Log to Supabase invoice_runs
+      - name: Log to Supabase invoice_runs
         if: always() # kör även om det blev fel i förra steget
         run: |
-          echo "💾 Sparar körlogg i Supabase..."
+          echo "Saving run log to Supabase..."
           STATUS="success"
           if [ "${{ env.RESPONSE_CODE }}" != "200" ]; then STATUS="failed"; fi
 
@@ -39,5 +39,5 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"month_id\": \"$MONTH\", \"status\": \"$STATUS\", \"run_at\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}"
 
-      - name: ✅ Klar!
-        run: echo "✅ Fakturagenerering kördes färdigt för $MONTH"
+      - name: Done
+        run: echo "Invoice generation completed for $MONTH"
