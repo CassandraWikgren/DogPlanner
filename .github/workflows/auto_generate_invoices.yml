@@ -31,6 +31,7 @@ jobs:
           echo "🗂️ Sparar körlogg i Supabase..."
           STATUS="success"
           if [ "${{ env.RESPONSE_CODE }}" != "200" ]; then STATUS="failed"; fi
+echo "❌ Fakturagenerering misslyckades för $MONTH"
 
           curl -X POST "https://fhdkkkujnhteetllxypg.supabase.co/rest/v1/invoice_runs" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
