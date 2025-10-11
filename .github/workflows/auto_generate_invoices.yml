@@ -2,42 +2,42 @@ name: Run monthly invoice generator
 
 on:
   schedule:
-    - cron: "0 8 1 * *"  # Kör 1:a varje månad kl 08:00 (UTC)
-  workflow_dispatch:      # Gör att du kan köra manuellt också
+    - cron: "0 8 1 * *" # Kör 1:a varje månad kl 08:00 (UTC)
+  workflow_dispatch: # Möjlighet att köra manuellt
 
 jobs:
   run-function:
     runs-on: ubuntu-latest
     steps:
-      - name: 📅 Get current month
+      - name: 🗓️ Get current month
         id: date
         run: echo "MONTH=$(date +'%Y-%m')" >> $GITHUB_ENV
 
       - name: 🚀 Trigger Supabase Edge Function
         id: generate
         run: |
-          echo "🔁 Genererar fakturor för månad: $MONTH"
+          echo "▶️ Genererar fakturor för månad: $MONTH"
           RESPONSE=$(curl -s -w "%{http_code}" -o response.txt \
             -X POST "https://fhdkkkujnhteetllxypg.supabase.co/functions/v1/generate_invoices" \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -d "{\"month\": \"$MONTH\"}")
+
           echo "Supabase svarade med statuskod: $RESPONSE"
           echo "RESPONSE_CODE=$RESPONSE" >> $GITHUB_ENV
 
       - name: 🧾 Log to Supabase invoice_runs
         if: always() # kör även om det blev fel i förra steget
         run: |
-          echo "🗂️ Sparar körlogg i Supabase..."
+          echo "💾 Sparar körlogg i Supabase..."
           STATUS="success"
           if [ "${{ env.RESPONSE_CODE }}" != "200" ]; then STATUS="failed"; fi
-echo "❌ Fakturagenerering misslyckades för $MONTH"
 
-          curl -X POST "https://fhdkkkujnhteetllxypg.supabase.co/rest/v1/invoice_runs" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+          curl -s -X POST "https://fhdkkkujnhteetllxypg.supabase.co/rest/v1/invoice_runs" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Content-Type: application/json" \
-            -d "{\"month_id\": \"$MONTH\", \"status\": \"$STATUS\", \"run_at\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}"
+            -d "{\"month_id\": \"$MONTH\", \"status\": \"$STATUS\", \"run_at\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}"
 
       - name: ✅ Klar!
         run: echo "✅ Fakturagenerering kördes färdigt för $MONTH"
