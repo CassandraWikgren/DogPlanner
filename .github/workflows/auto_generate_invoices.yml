@@ -27,7 +27,7 @@ jobs:
           echo "RESPONSE_CODE=$RESPONSE" >> $GITHUB_ENV
 
       - name: Log to Supabase invoice_runs
-        if: always() # kör även om det blev fel i förra steget
+        if: always()
         run: |
           echo "Saving run log to Supabase..."
           STATUS="success"
@@ -38,6 +38,21 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Content-Type: application/json" \
             -d "{\"month_id\": \"$MONTH\", \"status\": \"$STATUS\", \"run_at\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}"
+
+      - name: Send email notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "DogPlanner – fakturagenerering klar för ${{ env.MONTH }}"
+          to: cassandrawikgren@icloud.com
+          from: DogPlanner <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            Fakturagenereringen för månad ${{ env.MONTH }} är färdig.
+            Status: ${{ env.RESPONSE_CODE == '200' && '✅ Lyckades' || '❌ Misslyckades' }}
 
       - name: Done
         run: echo "Invoice generation completed for $MONTH"
