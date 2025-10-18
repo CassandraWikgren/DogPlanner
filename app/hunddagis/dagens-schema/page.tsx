@@ -160,7 +160,7 @@ export default function HunddagisDagensSchemaPage() {
   }, [currentOrgId, selectedDate]);
 
   const loadData = async () => {
-    if (!currentOrgId) return;
+    if (!currentOrgId || !supabase) return;
 
     setLoading(true);
     setError(null);

@@ -45,7 +45,7 @@ export default function AdminAbonnemangPage() {
   }, [currentOrgId]);
 
   const loadSubscription = async () => {
-    if (!currentOrgId) return;
+    if (!currentOrgId || !supabase) return;
 
     setLoading(true);
     setError(null);

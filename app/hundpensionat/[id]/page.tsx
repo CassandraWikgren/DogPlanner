@@ -18,6 +18,8 @@ export default function HundpensionatPage({
 
   useEffect(() => {
     async function loadBookings() {
+      if (!supabase) return;
+
       setLoading(true);
       const { data, error } = await supabase
         .from("pension_calendar_full_view")

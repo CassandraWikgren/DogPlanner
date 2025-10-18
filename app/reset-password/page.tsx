@@ -19,6 +19,11 @@ export default function ResetPasswordPage() {
     setError(null);
     setMessage(null);
 
+    if (!supabase) {
+      setError("Databaskoppling saknas");
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError("Lösenorden matchar inte.");
       return;

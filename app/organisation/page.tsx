@@ -31,6 +31,8 @@ export default function OrganisationSettingsPage() {
   }, [user]);
 
   async function fetchOrganisation() {
+    if (!supabase) return;
+
     setLoading(true);
 
     try {

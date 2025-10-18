@@ -22,6 +22,11 @@ export default function SubscriptionPage() {
   }, [subscription]);
 
   async function handleUpgrade() {
+    if (!supabase) {
+      setError("Databaskoppling saknas");
+      return;
+    }
+
     try {
       setUpdating(true);
       setMessage(null);

@@ -77,6 +77,10 @@ function normalizeDays(days?: string[] | null): string | null {
 
 /* --------------------------- ÄGARE: upsert via kundnr ---------------------- */
 export async function upsertOwner(d: OwnerDraft) {
+  if (!supabase) {
+    throw new Error("Supabase client is not available");
+  }
+
   // 1) Om id finns – hoppa över lookup
   if (d.id) {
     console.debug("[owner] using provided id", d.id);
@@ -142,6 +146,10 @@ export async function upsertOwner(d: OwnerDraft) {
 
 /* ------------------------------ HUND: insert/upd --------------------------- */
 export async function savedog(d: DogDraft) {
+  if (!supabase) {
+    throw new Error("Supabase client is not available");
+  }
+
   console.groupCollapsed("🐶 saveDog start");
   console.log("Inkommande DogDraft:", JSON.parse(JSON.stringify(d)));
 
@@ -277,6 +285,10 @@ export function monthRangeBack(months: number) {
 
 // Hämtar alla hundar (används i hunddagis/page.tsx)
 export async function getDB() {
+  if (!supabase) {
+    throw new Error("Supabase client is not available");
+  }
+
   const { data, error } = await supabase
     .from("dogs")
     .select(

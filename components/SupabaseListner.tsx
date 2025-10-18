@@ -11,6 +11,8 @@ export default function SupabaseListener({ accessToken }: Props) {
   const router = useRouter();
 
   useEffect(() => {
+    if (!supabase) return;
+
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (session?.access_token !== accessToken) {

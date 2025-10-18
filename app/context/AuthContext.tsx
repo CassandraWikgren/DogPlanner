@@ -60,6 +60,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     init();
+
+    if (!supabase) {
+      console.warn("Supabase inte tillgängligt");
+      setLoading(false);
+      return;
+    }
+
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         const u = session?.user || null;
@@ -149,6 +156,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      // Säkerhetskontroll för supabase-klient
+      if (!supabase) {
+        console.error(
+          "AuthContext: Supabase client är null - kontrollera miljövariabler"
+        );
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.auth.getSession();
       if (error) {
         console.error("AuthContext: Error getting session:", error);
@@ -174,6 +190,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function refreshProfile(userId: string) {
+    if (!supabase) {
+      console.error("AuthContext: Supabase client är null i refreshProfile");
+      return;
+    }
+
     const { data }: { data: UserProfile | null } = await supabase
       .from("profiles")
       .select("id, org_id, role, full_name, email, phone")
@@ -222,7 +243,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // 🚪 Ny logga ut-funktion
+  // 🚪 Logga ut-funktion med null-check
   async function signOut() {
     // Rensa demo-cookies
     document.cookie =
@@ -230,7 +251,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     document.cookie =
       "demoOrg=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
 
-    await supabase.auth.signOut();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+
     setUser(null);
     setProfile(null);
     setCurrentOrgId(null);

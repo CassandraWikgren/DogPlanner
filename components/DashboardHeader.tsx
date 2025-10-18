@@ -39,6 +39,8 @@ export default function DashboardHeader() {
   }, []);
 
   async function fetchDogs() {
+    if (!supabase) return;
+
     setLoading(true);
     const { data, error } = await supabase.from("dogs").select("*");
 

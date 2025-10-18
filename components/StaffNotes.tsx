@@ -14,6 +14,8 @@ export default function StaffNotes() {
 
   // 🔹 Hämta anteckningen från databasen
   async function fetchNote() {
+    if (!supabase) return;
+
     setLoading(true);
     const { data, error } = await supabase
       .from("staff_notes")

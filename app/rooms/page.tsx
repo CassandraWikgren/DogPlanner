@@ -143,6 +143,8 @@ export default function RoomsPage() {
   };
 
   const setupRealtimeListeners = () => {
+    if (!supabase) return () => {};
+
     const roomsChannel = supabase
       .channel("rooms_changes")
       .on(
@@ -158,7 +160,9 @@ export default function RoomsPage() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(roomsChannel);
+      if (supabase) {
+        supabase.removeChannel(roomsChannel);
+      }
     };
   };
 

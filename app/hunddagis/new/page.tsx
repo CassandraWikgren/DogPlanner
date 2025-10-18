@@ -80,6 +80,11 @@ export default function NewDogPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!supabase) {
+      setError("Databaskoppling saknas");
+      return;
+    }
+
     const validationError = validate();
     if (validationError) {
       setError(validationError);

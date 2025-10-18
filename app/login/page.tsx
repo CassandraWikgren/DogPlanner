@@ -36,6 +36,12 @@ export default function LoginPage() {
     setMessage(null);
     setLoading(true);
 
+    if (!supabase) {
+      setError("Databaskoppling saknas");
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -65,6 +71,12 @@ export default function LoginPage() {
     setError(null);
     setMessage(null);
     setLoading(true);
+
+    if (!supabase) {
+      setError("Databaskoppling saknas");
+      setLoading(false);
+      return;
+    }
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {

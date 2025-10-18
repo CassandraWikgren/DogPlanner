@@ -12,6 +12,10 @@ export async function uploadImage(
   folder: string = "dogs",
   fileName?: string
 ): Promise<string> {
+  if (!supabase) {
+    throw new Error("Supabase client is not available");
+  }
+
   try {
     // Validera filtyp
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -62,6 +66,11 @@ export async function uploadImage(
  * @returns Promise<boolean>
  */
 export async function deleteImage(imageUrl: string): Promise<boolean> {
+  if (!supabase) {
+    console.error("Supabase client is not available");
+    return false;
+  }
+
   try {
     // Extrahera path från URL
     const urlParts = imageUrl.split("/");

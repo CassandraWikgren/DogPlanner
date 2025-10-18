@@ -23,6 +23,11 @@ export default function RegisterCompanyPage() {
     e.preventDefault();
     setErr(null);
 
+    if (!supabase) {
+      setErr("Databaskoppling saknas");
+      return;
+    }
+
     if (!orgName.trim()) return setErr("Företagsnamn är obligatoriskt.");
     if (!orgNumber.trim())
       return setErr("Organisationsnummer är obligatoriskt.");

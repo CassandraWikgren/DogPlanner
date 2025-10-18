@@ -25,6 +25,8 @@ export default function StaffResponsibility() {
   }, []);
 
   async function fetchData() {
+    if (!supabase) return;
+
     setLoading(true);
 
     // Hämta personal

@@ -102,8 +102,10 @@ export default function HundpensionatPage() {
 
   // Ladda bokningar från Supabase
   const loadBookings = async () => {
-    if (!user?.user_metadata?.org_id) {
-      console.log("Ingen organisation hittad för användaren");
+    if (!user?.user_metadata?.org_id || !supabase) {
+      console.log(
+        "Ingen organisation hittad för användaren eller ingen databaskoppling"
+      );
       return;
     }
 

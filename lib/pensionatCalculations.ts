@@ -312,6 +312,10 @@ export async function checkRoomCapacity(
   availableArea: number;
   message: string;
 }> {
+  if (!supabase) {
+    throw new Error(`${ERROR_CODES.DATABASE} Supabase client is not available`);
+  }
+
   try {
     // Hämta rumsinformation
     const { data: room, error: roomError } = await supabase

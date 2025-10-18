@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/AuthContext";
 import { Download, Plus, Settings2, RefreshCcw } from "lucide-react";
 import EditDogModal from "@/components/EditDogModal";
+import { DagisStats } from "@/components/DagisStats";
 import Link from "next/link";
 import {
   Accordion,
@@ -130,6 +131,9 @@ export default function HunddagisPage() {
   const [columns, setColumns] = useState<string[]>(DEFAULT_COLUMNS);
   const [showColsMenu, setShowColsMenu] = useState(false);
 
+  // Statistik-hantering
+  const [currentView, setCurrentView] = useState<string>("all");
+
   // Timeout för authLoading om den fastnar
   const [authTimeout, setAuthTimeout] = useState(false);
   useEffect(() => {
@@ -201,6 +205,13 @@ export default function HunddagisPage() {
    * =========================== */
   const loadDogs = useCallback(async () => {
     if (!user) return;
+
+    // Kontrollera om Supabase är tillgängligt
+    if (!supabase) {
+      setErrMsg("❌ Databas-anslutning saknas. Kontrollera miljövariabler.");
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     setErrMsg(null);
@@ -299,7 +310,7 @@ export default function HunddagisPage() {
    * Realtidsuppdatering (optimerad)
    * =========================== */
   useEffect(() => {
-    if (!user || authLoading) return;
+    if (!user || authLoading || !supabase) return;
     loadDogs();
 
     // Bara lyssna på real-time om sidan är aktiv
@@ -328,7 +339,9 @@ export default function HunddagisPage() {
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      supabase.removeChannel(channel);
+      if (supabase) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [user, authLoading, loadDogs]);
 
@@ -456,6 +469,37 @@ export default function HunddagisPage() {
   /* ===========================
    * UI helpers
    * =========================== */
+  function handleStatClick(statKey: string) {
+    console.log("📊 Statistik klickad:", statKey);
+    setCurrentView(statKey);
+
+    // TODO: Implementera filtrering baserat på statKey
+    switch (statKey) {
+      case "today":
+        // Filtrera hundar som kommer idag
+        logDebug("info", "Visar hundar för idag");
+        break;
+      case "tomorrow":
+        // Filtrera hundar som kommer imorgon
+        logDebug("info", "Visar hundar för imorgon");
+        break;
+      case "applications":
+        // Navigera till intresselistan
+        logDebug("info", "Visar intresseanmälningar");
+        break;
+      case "services":
+        // Visa hundar med tjänster denna månaden
+        logDebug("info", "Visar tjänster");
+        break;
+      case "rooms":
+        // Visa rumsöversikt
+        logDebug("info", "Visar rumsöversikt");
+        break;
+      default:
+        setCurrentView("all");
+    }
+  }
+
   function toggleColumn(c: string) {
     setColumns((prev) =>
       prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
@@ -505,6 +549,11 @@ export default function HunddagisPage() {
   // DEBUG: Funktion för att ladda testdata
   async function loadTestData() {
     console.log("🚀 LOADTESTDATA STARTAR!");
+
+    if (!supabase) {
+      alert("Databaskoppling saknas!");
+      return;
+    }
 
     try {
       // Kolla användarstatus först
@@ -646,6 +695,11 @@ export default function HunddagisPage() {
 
   // DEMO: Snabb inloggning för testning
   async function demoLogin() {
+    if (!supabase) {
+      alert("Databaskoppling saknas!");
+      return;
+    }
+
     try {
       logDebug("info", "Försöker demo-inloggning...");
 
@@ -805,6 +859,9 @@ export default function HunddagisPage() {
           </button>
         </div>
       </div>
+
+      {/* Hero-statistik */}
+      <DagisStats dogs={dogs} onStatClick={handleStatClick} />
 
       {/* Filterrad */}
       <div className="flex flex-col md:flex-row gap-3 mb-4">

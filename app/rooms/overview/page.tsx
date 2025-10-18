@@ -18,6 +18,8 @@ export default function RoomsOverviewPage() {
   }, []);
 
   async function fetchData() {
+    if (!supabase) return;
+
     setLoading(true);
     const { data: roomsData } = await supabase.from("rooms").select("*");
     const { data: dogsData } = await supabase

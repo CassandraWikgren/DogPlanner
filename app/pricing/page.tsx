@@ -39,6 +39,8 @@ export default function MinaPriserPage() {
   // === Hämta senaste prislistan & historik ===
   useEffect(() => {
     (async () => {
+      if (!supabase) return;
+
       const { data, error } = await supabase
         .from("price_lists")
         .select("*")
@@ -67,6 +69,11 @@ export default function MinaPriserPage() {
 
   // === Spara nya priser ===
   async function savePrices() {
+    if (!supabase) {
+      setMessage("❌ Databaskoppling saknas");
+      return;
+    }
+
     setSaving(true);
 
     const today = new Date().toISOString().split("T")[0];
@@ -92,6 +99,8 @@ export default function MinaPriserPage() {
 
   // === Hämta historik separat ===
   async function fetchHistory() {
+    if (!supabase) return;
+
     const { data, error } = await supabase
       .from("price_lists")
       .select("*")

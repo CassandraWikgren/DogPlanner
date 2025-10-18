@@ -30,7 +30,7 @@ export default function StaffAdminPage() {
 
   // Hämta adminens org + roll + medlemmar
   useEffect(() => {
-    if (!user) return;
+    if (!user || !supabase) return;
     (async () => {
       setLoading(true);
       // 1) Hämta org och roll för den inloggade (du gör samma mönster här)
@@ -43,7 +43,7 @@ export default function StaffAdminPage() {
       setOrgId(me?.org_id || "");
       setRole(me?.role || "");
 
-      if (me?.org_id) {
+      if (me?.org_id && supabase) {
         const { data: list } = await supabase
           .from("profiles")
           .select("id, full_name, role, created_at, email")
@@ -85,12 +85,14 @@ export default function StaffAdminPage() {
         throw new Error(json?.error || "Kunde inte bjuda in användaren.");
 
       // Uppdatera listan
-      const { data: list } = await supabase
-        .from("profiles")
-        .select("id, full_name, role, created_at, email")
-        .eq("org_id", orgId)
-        .order("created_at", { ascending: true });
-      setMembers((list || []) as Member[]);
+      if (supabase) {
+        const { data: list } = await supabase
+          .from("profiles")
+          .select("id, full_name, role, created_at, email")
+          .eq("org_id", orgId)
+          .order("created_at", { ascending: true });
+        setMembers((list || []) as Member[]);
+      }
 
       setNewEmail("");
       setNewName("");

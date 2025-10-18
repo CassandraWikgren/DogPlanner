@@ -46,6 +46,8 @@ export default function NewBookingPage() {
   }, [user]);
 
   const loadData = async () => {
+    if (!supabase) return;
+
     try {
       const orgId = user?.user_metadata?.org_id || user?.id;
 
@@ -108,6 +110,11 @@ export default function NewBookingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!supabase) {
+      setError("Databaskoppling saknas");
+      return;
+    }
 
     const validationError = validate();
     if (validationError) {
