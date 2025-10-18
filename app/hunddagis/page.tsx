@@ -1,579 +1,964 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/app/context/AuthContext";
+import { Download, Plus, Settings2, RefreshCcw } from "lucide-react";
+import EditDogModal from "@/components/EditDogModal";
+import Link from "next/link";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
-const PRIMARY_GREEN = "#2c7a4c";
+// Felkoder enligt systemet
+const ERROR_CODES = {
+  DATABASE_CONNECTION: "[ERR-1001]",
+  PDF_EXPORT: "[ERR-2001]",
+  REALTIME: "[ERR-3001]",
+  VALIDATION: "[ERR-4001]",
+} as const;
 
-/* ---------- Typer som matchar din DB ---------- */
-type Room = {
-  id: string;
-  name: string | null;
-  notes: string | null;
-  capacity: number | null;
-};
-
+/* ===========================
+ * Typer (Uppdaterade för Supabase-struktur med små bokstäver)
+ * =========================== */
 type Owner = {
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  email?: string;
-  address?: string;
-  zipcode?: string;
-  city?: string;
-  contact2Name?: string;
-  contact2Phone?: string;
+  id: string;
+  full_name: string | null;
+  phone: string | null;
+  email: string | null;
+  customer_number: string | null; // Ändrat från number till string för konsistens
+  address?: string | null;
+  notes?: string | null;
+  org_id: string;
+  created_at: string;
 };
 
-type Addon = { type: string; times?: number };
+type Org = {
+  id: string;
+  name: string;
+  org_number: string | null;
+  email: string | null;
+  phone: string | null;
+  created_at: string;
+};
 
 type Dog = {
   id: string;
-  user_id: string | null;
   name: string;
   breed: string | null;
-  birth: string | null; // date -> string ISO från supabase-js
-  heightcm: number | null;
+  heightcm: number | null; // Behåller faktiska databaskolumnnamnet
+  birth: string | null; // Behåller faktiska databaskolumnnamnet
   subscription: string | null;
-  days: string | null; // t.ex "Mån,Ons,Fred" eller "M,T,O,T,F"
-  addons: Addon[] | null; // jsonb
-  vaccdhp: string | null;
-  vaccpi: string | null;
-  owner: Owner | null; // jsonb
-  roomid: string | null; // FK → rooms.id
-  startdate: string | null; // date
-  enddate: string | null; // date
-  price: number | null;
+  startdate: string | null; // Behåller faktiska databaskolumnnamnet
+  enddate: string | null; // Behåller faktiska databaskolumnnamnet
+  days: string | null;
+  room_id: string | null;
+  owner_id: string | null; // Korrekt relation: dogs.owner_id → owners.id
+  org_id: string | null;
+  vaccdhp: string | null; // Behåller faktiska databaskolumnnamnet
+  vaccpi: string | null; // Behåller faktiska databaskolumnnamnet
+  photo_url: string | null;
   events: any | null;
-  notes: string | null;
+  checked_in?: boolean | null; // Lägg till för incheckning
+  notes?: string | null;
+  weight_kg?: number | null; // Lägg till för vikt
+  created_at?: string | null;
+  owners?: Owner | null;
 };
 
-/* ---------- Hjälpare ---------- */
-// Skapa en lista av månader bakåt i tiden (inkl. nuvarande), med id "YYYY-MM"
-function monthRangeBack(n: number) {
-  const out: { id: string; start: Date; end: Date }[] = [];
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = now.getMonth(); // 0–11
+type SortKey =
+  | "name"
+  | "breed"
+  | "subscription"
+  | "room_id"
+  | "owner"
+  | "startdate"
+  | "enddate";
 
-  for (let i = 0; i < n; i++) {
-    const d = new Date(y, m - i, 1);
-    const id = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}`;
-    const start = new Date(d.getFullYear(), d.getMonth(), 1);
-    const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
-    out.push({ id, start, end });
-  }
-  return out;
-}
+/* ===========================
+ * Konstanter
+ * =========================== */
+const DEFAULT_COLUMNS = [
+  "name",
+  "breed",
+  "owner",
+  "phone",
+  "subscription",
+  "room_id",
+  "days",
+];
 
-const MONTHS = monthRangeBack(24);
+const COLUMN_LABELS: Record<string, string> = {
+  name: "Hund",
+  breed: "Ras",
+  owner: "Ägare",
+  phone: "Telefon",
+  subscription: "Abonnemang",
+  room_id: "Rum",
+  days: "Veckodagar",
+  startdate: "Start",
+  enddate: "Slut",
+};
 
-// Läsbar dag-badge
-function DayPill({ label, active }: { label: string; active: boolean }) {
-  return (
-    <span
-      className={`inline-block text-xs px-2 py-1 rounded border ${
-        active
-          ? "bg-[#2c7a4c] text-white border-[#2c7a4c]"
-          : "bg-gray-100 text-gray-600 border-gray-300"
-      }`}
-    >
-      {label}
-    </span>
-  );
-}
-
-// Abonnemangs-badge
-function SubBadge({ type }: { type?: string | null }) {
-  const map: Record<string, string> = {
-    Heltid: "bg-green-100 text-green-800",
-    "Deltid 2": "bg-blue-100 text-blue-700",
-    "Deltid 3": "bg-yellow-100 text-yellow-800",
-    Dagshund: "bg-amber-100 text-amber-800",
-  };
-  const cls = type
-    ? map[type] ?? "bg-gray-100 text-gray-700"
-    : "bg-gray-100 text-gray-700";
-  return (
-    <span className={`inline-block text-xs px-2 py-1 rounded ${cls}`}>
-      {type ?? "—"}
-    </span>
-  );
-}
-
+/* ===========================
+ * Sida
+ * =========================== */
 export default function HunddagisPage() {
-  /* ---------- UI-state ---------- */
+  const { user, loading: authLoading } = useAuth();
+
+  // State
   const [dogs, setDogs] = useState<Dog[]>([]);
-  const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errMsg, setErrMsg] = useState<string | null>(null);
+  const [debugLogs, setDebugLogs] = useState<any[]>([]);
+  const [showModal, setShowModal] = useState(false);
 
-  const [search, setSearch] = useState("");
-  const [showColumns, setShowColumns] = useState(false);
-
-  const [sortKey, setSortKey] = useState<string>("name");
+  // Filter/sort
+  const [q, setQ] = useState("");
+  const [subFilter, setSubFilter] = useState("");
+  const [month, setMonth] = useState("alla");
+  const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortAsc, setSortAsc] = useState(true);
 
-  const [selectedMonthId, setSelectedMonthId] = useState(MONTHS[0].id);
+  // Hydration-säker state
+  const [mounted, setMounted] = useState(false);
 
-  // Visa/dölj kolumner – standardval
-  const [visibleCols, setVisibleCols] = useState<Record<string, boolean>>({
-    roomid: true,
-    name: true,
-    breed: true,
-    birth: true,
-    heightcm: true,
-    subscription: true,
-    days: true,
-    addons: true,
-    vaccdhp: true,
-    vaccpi: true,
-    ownerName: true,
-    phone: true,
-    email: true,
-    startdate: true,
-    enddate: true,
-    notes: false,
-    price: false,
-  });
+  // Kolumnval (lokalt sparat)
+  const [columns, setColumns] = useState<string[]>(DEFAULT_COLUMNS);
+  const [showColsMenu, setShowColsMenu] = useState(false);
 
-  // Persistens i localStorage (frivilligt men skönt i vardagen)
+  // Timeout för authLoading om den fastnar
+  const [authTimeout, setAuthTimeout] = useState(false);
   useEffect(() => {
-    const raw = localStorage.getItem("dogplanner_daycare_visible_cols");
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw);
-        setVisibleCols((prev) => ({ ...prev, ...parsed }));
-      } catch {}
-    }
-  }, []);
-  useEffect(() => {
-    localStorage.setItem(
-      "dogplanner_daycare_visible_cols",
-      JSON.stringify(visibleCols)
-    );
-  }, [visibleCols]);
-
-  /* ---------- Hämta data från Supabase ---------- */
-  useEffect(() => {
-    const run = async () => {
-      setLoading(true);
-
-      const [
-        { data: dogsData, error: dogsError },
-        { data: roomsData, error: roomsError },
-      ] = await Promise.all([
-        supabase.from("dogs").select("*"),
-        supabase.from("rooms").select("*"),
-      ]);
-
-      if (dogsError) console.error("Dogs fetch error:", dogsError);
-      if (roomsError) console.error("Rooms fetch error:", roomsError);
-
-      setDogs((dogsData ?? []) as Dog[]);
-      setRooms((roomsData ?? []) as Room[]);
-      setLoading(false);
-    };
-
-    run();
-  }, []);
-
-  /* ---------- Härledning: månad, filtrering, sortering ---------- */
-  const selectedMonth = useMemo(
-    () => MONTHS.find((m) => m.id === selectedMonthId) ?? MONTHS[0],
-    [selectedMonthId]
-  );
-
-  // Filtrera på månad + sök
-  const filteredDogs = useMemo(() => {
-    const s = search.trim().toLowerCase();
-    const ms = selectedMonth.start;
-    const me = selectedMonth.end;
-
-    const byMonth = dogs.filter((d) => {
-      const start = d.startdate ? new Date(d.startdate) : new Date(0);
-      const end = d.enddate ? new Date(d.enddate) : new Date(9999, 11, 31);
-      return start <= me && end >= ms;
-    });
-
-    if (!s) return byMonth;
-
-    return byMonth.filter((d) => {
-      const ownerName = `${d.owner?.firstName ?? ""} ${
-        d.owner?.lastName ?? ""
-      }`.toLowerCase();
-      return (
-        d.name?.toLowerCase().includes(s) ||
-        (d.breed ?? "").toLowerCase().includes(s) ||
-        ownerName.includes(s)
-      );
-    });
-  }, [dogs, search, selectedMonth]);
-
-  const getSortValue = (d: Dog, key: string) => {
-    switch (key) {
-      case "roomid": {
-        const r = rooms.find((x) => x.id === d.roomid);
-        return (r?.name ?? "").toLowerCase();
+    const timer = setTimeout(() => {
+      if (authLoading) {
+        console.warn("Auth loading timeout - forcing continue");
+        setAuthTimeout(true);
       }
-      case "ownerName":
-        return `${d.owner?.firstName ?? ""} ${
-          d.owner?.lastName ?? ""
-        }`.toLowerCase();
-      case "phone":
-        return (d.owner?.phone ?? "").toLowerCase();
-      case "email":
-        return (d.owner?.email ?? "").toLowerCase();
-      case "birth":
-      case "startdate":
-      case "enddate":
-        return d[key as keyof Dog]
-          ? new Date(String(d[key as keyof Dog])).getTime()
-          : 0;
-      case "heightcm":
-      case "price":
-        return Number(d[key as keyof Dog] ?? 0);
-      default:
-        return String(d[key as keyof Dog] ?? "").toLowerCase();
+    }, 5000); // 5 sekunder
+    return () => clearTimeout(timer);
+  }, [authLoading]);
+
+  /* ===========================
+   * Felsökningslogg
+   * =========================== */
+  function logDebug(
+    type: "info" | "success" | "error",
+    message: string,
+    details?: any
+  ) {
+    console.log(`[Hunddagis] ${message}`, details || "");
+    const newLog = { time: new Date().toISOString(), type, message, details };
+
+    // Bara spara till localStorage efter mount för att undvika hydration error
+    if (!mounted) {
+      setDebugLogs((prev) => [newLog, ...prev].slice(0, 100));
+      return;
     }
-  };
 
-  const sortedDogs = useMemo(() => {
-    const list = [...filteredDogs];
-    list.sort((a, b) => {
-      const A = getSortValue(a, sortKey);
-      const B = getSortValue(b, sortKey);
-      if (A < B) return sortAsc ? -1 : 1;
-      if (A > B) return sortAsc ? 1 : -1;
-      return 0;
-    });
-    return list;
-  }, [filteredDogs, sortKey, sortAsc]);
+    try {
+      // Säker läsning av localStorage
+      const raw = localStorage.getItem("debugLogs");
+      let existing: any[] = [];
 
-  /* ---------- Export PDF ---------- */
-  function exportPDF() {
-    const doc = new jsPDF();
-    doc.text(`Hunddagis – ${selectedMonthId}`, 14, 18);
+      if (raw) {
+        try {
+          existing = JSON.parse(raw);
+          // Kontrollera att det är en array
+          if (!Array.isArray(existing)) {
+            existing = [];
+          }
+        } catch (parseError) {
+          console.warn(
+            "[ERR-3001] Korrupt debug log data, återställer:",
+            parseError
+          );
+          existing = [];
+        }
+      }
 
-    const rows = sortedDogs.map((d) => {
-      const roomName = rooms.find((r) => r.id === d.roomid)?.name ?? "—";
-      const ownerName =
-        `${d.owner?.firstName ?? ""} ${d.owner?.lastName ?? ""}`.trim() || "—";
-      const addonsText =
-        (d.addons ?? [])
-          .map((a) => `${a.type}${a.times ? ` x${a.times}` : ""}`)
-          .join(", ") || "—";
-
-      return [
-        roomName,
-        d.name ?? "—",
-        d.breed ?? "—",
-        d.birth ?? "—",
-        d.heightcm ? `${d.heightcm} cm` : "—",
-        d.subscription ?? "—",
-        d.days ?? "—",
-        addonsText,
-        d.vaccdhp ?? "—",
-        d.vaccpi ?? "—",
-        ownerName,
-        d.owner?.phone ?? "—",
-        d.owner?.email ?? "—",
-        d.startdate ?? "—",
-        d.enddate ?? "—",
-      ];
-    });
-
-    autoTable(doc, {
-      startY: 24,
-      head: [
-        [
-          "Rum",
-          "Namn",
-          "Ras",
-          "Födelsedatum",
-          "Mankhöjd",
-          "Abonnemang",
-          "Veckodagar",
-          "Tillägg",
-          "Vacc DHP",
-          "Vacc PI",
-          "Ägare",
-          "Telefon",
-          "E-post",
-          "Start",
-          "Slut",
-        ],
-      ],
-      body: rows as any,
-      styles: { fontSize: 9 },
-      headStyles: { fillColor: [44, 122, 76], textColor: 255 },
-    });
-
-    doc.save(`hunddagis-${selectedMonthId}.pdf`);
+      const updated = [newLog, ...existing].slice(0, 100);
+      localStorage.setItem("debugLogs", JSON.stringify(updated));
+      setDebugLogs(updated);
+    } catch (error) {
+      console.error("[ERR-3002] Fel vid sparande av debug logs:", error);
+      // Fallback: spara bara den nya loggen
+      try {
+        localStorage.setItem("debugLogs", JSON.stringify([newLog]));
+        setDebugLogs([newLog]);
+      } catch (fallbackError) {
+        console.error("[ERR-3003] Kritiskt localStorage-fel:", fallbackError);
+        setDebugLogs([newLog]); // Endast i minnet
+      }
+    }
   }
 
-  /* ---------- Kolumn-definition ---------- */
-  const columns: { key: string; label: string }[] = [
-    { key: "roomid", label: "Rum" },
-    { key: "name", label: "Namn" },
-    { key: "breed", label: "Ras" },
-    { key: "birth", label: "Födelsedatum" },
-    { key: "heightcm", label: "Mankhöjd" },
-    { key: "subscription", label: "Abonnemang" },
-    { key: "days", label: "Veckodagar" },
-    { key: "addons", label: "Tillägg" },
-    { key: "vaccdhp", label: "Vacc DHP" },
-    { key: "vaccpi", label: "Vacc PI" },
-    { key: "ownerName", label: "Ägare" },
-    { key: "phone", label: "Telefon" },
-    { key: "email", label: "E-post" },
-    { key: "startdate", label: "Start" },
-    { key: "enddate", label: "Slut" },
-    { key: "notes", label: "Kommentarer" },
-    { key: "price", label: "Pris" },
-  ];
+  /* ===========================
+   * Hämta data (Supabase)
+   * =========================== */
+  const loadDogs = useCallback(async () => {
+    if (!user) return;
 
-  const toggleCol = (key: string) =>
-    setVisibleCols((prev) => ({ ...prev, [key]: !prev[key] }));
+    setLoading(true);
+    setErrMsg(null);
+    try {
+      const orgId = user?.user_metadata?.org_id || user?.id;
+      logDebug("info", "Hämtar hundar…");
+      const { data, error } = await (supabase as any)
+        .from("dogs")
+        .select(
+          `
+          id, name, breed, heightcm, birth, subscription, startdate, enddate,
+          days, room_id, owner_id, org_id, vaccdhp, vaccpi, photo_url, events, created_at,
+          owners(id, full_name, customer_number, phone, email)
+        `
+        )
+        .eq("org_id", orgId)
+        .order("name", { ascending: true });
 
-  /* ---------- Render ---------- */
-  if (loading) {
+      if (error) {
+        console.error(
+          `${ERROR_CODES.DATABASE_CONNECTION} Fel vid hämtning av hundar:`,
+          error
+        );
+        setErrMsg(
+          `${ERROR_CODES.DATABASE_CONNECTION} Kunde inte hämta hundar. ${
+            error.message ?? "Okänt fel."
+          }`
+        );
+        setDogs([]);
+        return;
+      }
+
+      logDebug(
+        "info",
+        `Rå data från Supabase: ${data?.length || 0} poster`,
+        data
+      );
+
+      const normalized = (data || []).map((d: any) => ({
+        ...d,
+        owners: Array.isArray(d.owners) ? d.owners[0] : d.owners ?? null,
+      })) as Dog[];
+
+      logDebug(
+        "success",
+        `Hundar laddade: ${normalized.length} st`,
+        normalized
+      );
+      setDogs(normalized);
+    } catch (e: any) {
+      console.error(
+        `${ERROR_CODES.DATABASE_CONNECTION} Oväntat fel vid hämtning:`,
+        e
+      );
+      setErrMsg(
+        `${ERROR_CODES.DATABASE_CONNECTION} ${e?.message ?? "Okänt fel"}`
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  /* ===========================
+   * Hydration-säker initialisering
+   * =========================== */
+  useEffect(() => {
+    setMounted(true);
+    // Läs localStorage efter mount för att undvika hydration errors
+    try {
+      const raw = localStorage.getItem("dogplanner:hunddagis:columns");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          setColumns(parsed);
+        }
+      }
+    } catch (error) {
+      console.warn("[ERR-3004] Korrupt kolumndata, använder default:", error);
+    }
+
+    // Läs även debugLogs från localStorage
+    try {
+      const debugRaw = localStorage.getItem("debugLogs");
+      if (debugRaw) {
+        const parsed = JSON.parse(debugRaw);
+        if (Array.isArray(parsed)) {
+          setDebugLogs(parsed);
+        }
+      }
+    } catch (error) {
+      console.warn("[ERR-3005] Korrupt debug log data:", error);
+    }
+  }, []);
+
+  /* ===========================
+   * Realtidsuppdatering (optimerad)
+   * =========================== */
+  useEffect(() => {
+    if (!user || authLoading) return;
+    loadDogs();
+
+    // Bara lyssna på real-time om sidan är aktiv
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadDogs(); // Uppdatera när sidan blir aktiv igen
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    const channel = supabase
+      .channel("dog_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "dogs" },
+        () => {
+          if (!document.hidden) {
+            loadDogs(); // Bara uppdatera om sidan är aktiv
+          }
+        }
+      )
+      .subscribe();
+
+    logDebug("info", "Realtidslyssning aktiv för hundar");
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      supabase.removeChannel(channel);
+    };
+  }, [user, authLoading, loadDogs]);
+
+  // Spara kolumnval (bara efter mount)
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem(
+        "dogplanner:hunddagis:columns",
+        JSON.stringify(columns)
+      );
+    }
+  }, [columns, mounted]);
+
+  /* ===========================
+   * Filter/sort helpers (optimerade med useCallback)
+   * =========================== */
+  const passSearch = useCallback(
+    (d: Dog) => {
+      if (!q.trim()) return true;
+      const hay = [
+        d.name,
+        d.breed,
+        d.subscription,
+        d.room_id,
+        d.owners?.full_name,
+        d.owners?.phone,
+        d.owners?.email,
+        d.days,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return hay.includes(q.toLowerCase());
+    },
+    [q]
+  );
+
+  const passSubFilter = useCallback(
+    (d: Dog) => {
+      return !subFilter || d.subscription === subFilter;
+    },
+    [subFilter]
+  );
+
+  const passMonth = useCallback(
+    (d: Dog) => {
+      if (month === "alla") return true;
+      const dateStr = d.startdate || d.created_at || "";
+      if (!dateStr) return true;
+      const mm = dateStr.slice(0, 7);
+      return mm === month;
+    },
+    [month]
+  );
+
+  const sortDogs = useCallback(
+    (a: Dog, b: Dog) => {
+      const dir = sortAsc ? 1 : -1;
+      const va =
+        sortKey === "owner"
+          ? (a.owners?.full_name || "").toLowerCase()
+          : ((a as any)[sortKey] || "").toString().toLowerCase();
+      const vb =
+        sortKey === "owner"
+          ? (b.owners?.full_name || "").toLowerCase()
+          : ((b as any)[sortKey] || "").toString().toLowerCase();
+      return va < vb ? -1 * dir : va > vb ? 1 * dir : 0;
+    },
+    [sortKey, sortAsc]
+  );
+
+  const viewDogs = useMemo(() => {
+    return dogs
+      .filter(passSearch)
+      .filter(passSubFilter)
+      .filter(passMonth)
+      .sort(sortDogs);
+  }, [dogs, q, subFilter, month, sortKey, sortAsc]);
+
+  /* ===========================
+   * Export PDF
+   * =========================== */
+  async function exportPDF() {
+    try {
+      logDebug("info", "Genererar PDF...");
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF();
+      const title = `Hunddagis – ${new Date().toLocaleDateString("sv-SE")}`;
+      doc.text(title, 14, 16);
+
+      const cols = [
+        "Hund",
+        "Ägare",
+        "Telefon",
+        "Abonnemang",
+        "Rum",
+        "Veckodagar",
+      ];
+      const rows = viewDogs.map((d) => [
+        d.name,
+        d.owners?.full_name || "",
+        d.owners?.phone || "",
+        d.subscription || "",
+        d.room_id || "",
+        d.days || "",
+      ]);
+
+      let y = 24;
+      doc.setFontSize(10);
+      doc.text(cols.join("   |   "), 14, y);
+      y += 6;
+      rows.forEach((r) => {
+        doc.text(r.join("   |   "), 14, y);
+        y += 6;
+      });
+
+      doc.save("hunddagis.pdf");
+      logDebug("success", "PDF skapad och sparad.");
+    } catch (e: any) {
+      logDebug("error", "Fel vid PDF-export", e);
+      alert(`[ERR-4001] Kunde inte skapa PDF. ${e?.message ?? "Okänt fel"}`);
+    }
+  }
+
+  /* ===========================
+   * UI helpers
+   * =========================== */
+  function toggleColumn(c: string) {
+    setColumns((prev) =>
+      prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]
+    );
+  }
+
+  function headerCell(key: SortKey, label: string) {
+    const active = sortKey === key;
     return (
-      <p className="p-6 text-center text-gray-600">Laddar hundar och rum…</p>
+      <th
+        className={`py-2 px-3 text-left select-none ${
+          active ? "underline" : ""
+        } cursor-pointer`}
+        onClick={() => {
+          if (active) setSortAsc((s) => !s);
+          else {
+            setSortKey(key);
+            setSortAsc(true);
+          }
+        }}
+      >
+        {label}
+        {active ? (sortAsc ? " ▲" : " ▼") : ""}
+      </th>
+    );
+  }
+
+  function rowColor(d: Dog) {
+    switch (d.subscription) {
+      case "Heltid":
+        return "bg-emerald-50";
+      case "Deltid 3":
+      case "Deltid 2":
+        return "bg-blue-50";
+      case "Dagshund":
+        return "bg-orange-50";
+      default:
+        return "";
+    }
+  }
+
+  async function handleSaved() {
+    await loadDogs();
+    setShowModal(false);
+  }
+
+  // DEBUG: Funktion för att ladda testdata
+  async function loadTestData() {
+    console.log("🚀 LOADTESTDATA STARTAR!");
+
+    try {
+      // Kolla användarstatus först
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      console.log("👤 Användare:", user?.email || "Ingen användare inloggad");
+
+      if (!user) {
+        alert("Du måste vara inloggad för att skapa testdata!");
+        return;
+      }
+
+      alert("Skapar testdata...");
+      logDebug("info", "Laddar komplett testdata...");
+
+      // Först - skapa en organisation
+      const { data: existingOrg } = await (supabase as any)
+        .from("orgs")
+        .select("*")
+        .limit(1);
+
+      let orgId = (existingOrg as any)?.[0]?.id;
+
+      if (!orgId) {
+        logDebug("info", "Skapar organisation...");
+        const { data: newOrg, error: orgError } = await (supabase as any)
+          .from("orgs")
+          .insert({
+            name: "Test Hunddagis AB",
+            org_number: "556123-4567",
+            email: "test@hunddagis.se",
+            phone: "040-123456",
+          })
+          .select()
+          .single();
+
+        if (orgError) {
+          console.log("❌ FEL vid skapande av organisation:", orgError);
+          alert("Fel vid skapande av organisation: " + orgError.message);
+          logDebug("error", "Fel vid skapande av organisation", orgError);
+          return;
+        }
+        orgId = (newOrg as any).id;
+        console.log("✅ Organisation skapad med ID:", orgId);
+      }
+
+      // Sedan - skapa owners
+      console.log("🔄 Skapar owners...");
+      const { data: existingOwners } = await (supabase as any)
+        .from("owners")
+        .select("*");
+      console.log("Befintliga owners:", existingOwners);
+
+      let owners = existingOwners;
+
+      if (!owners || owners.length === 0) {
+        logDebug("info", "Skapar ägare...");
+        const testOwners = [
+          {
+            org_id: orgId,
+            full_name: "Anna Andersson",
+            email: "anna@example.com",
+            phone: "070-1234567",
+            customer_number: 1001,
+          },
+          {
+            org_id: orgId,
+            full_name: "Bert Berglund",
+            email: "bert@example.com",
+            phone: "070-2345678",
+            customer_number: 1002,
+          },
+          {
+            org_id: orgId,
+            full_name: "Cecilia Carlsson",
+            email: "cecilia@example.com",
+            phone: "070-3456789",
+            customer_number: 1003,
+          },
+        ];
+
+        const { data: newOwners, error: ownersError } = await (supabase as any)
+          .from("owners")
+          .insert(testOwners)
+          .select();
+
+        if (ownersError) {
+          logDebug("error", "Fel vid skapande av ägare", ownersError);
+          return;
+        }
+        owners = newOwners;
+        logDebug("success", `${owners?.length || 0} ägare skapade!`);
+      }
+
+      // Skapa testhundar
+      const testDogs = [
+        {
+          name: "Bella",
+          breed: "Golden Retriever",
+          subscription: "Heltid",
+          owner_id: (owners as any)[0].id,
+          startdate: "2025-10-01",
+          heightcm: 55,
+        },
+        {
+          name: "Max",
+          breed: "Border Collie",
+          subscription: "Deltid 3",
+          owner_id: (owners as any)[1]?.id || (owners as any)[0].id,
+          startdate: "2025-10-01",
+          heightcm: 50,
+        },
+        {
+          name: "Charlie",
+          breed: "Labrador",
+          subscription: "Dagshund",
+          owner_id: (owners as any)[2]?.id || (owners as any)[0].id,
+          startdate: "2025-10-01",
+          heightcm: 60,
+        },
+      ];
+
+      const { data, error } = await (supabase as any)
+        .from("dogs")
+        .insert(testDogs)
+        .select();
+
+      if (error) {
+        logDebug("error", "Fel vid skapande av testhundar", error);
+      } else {
+        logDebug("success", `${data?.length || 0} testhundar skapade!`);
+        await loadDogs(); // Ladda om data
+      }
+    } catch (err: any) {
+      logDebug("error", "Oväntat fel vid testdata-laddning", err);
+    }
+  }
+
+  // DEMO: Snabb inloggning för testning
+  async function demoLogin() {
+    try {
+      logDebug("info", "Försöker demo-inloggning...");
+
+      // Skapa en demo-användare om den inte finns
+      const demoEmail = "test@dogplanner.se";
+      const demoPassword = "demo123456";
+
+      // Försök logga in
+      let { data: loginData, error: loginError } =
+        await supabase.auth.signInWithPassword({
+          email: demoEmail,
+          password: demoPassword,
+        });
+
+      if (loginError && loginError.message === "Invalid login credentials") {
+        logDebug("info", "Demo-användare finns inte, skapar ny...");
+
+        // Skapa demo-användare
+        const { data: signupData, error: signupError } =
+          await supabase.auth.signUp({
+            email: demoEmail,
+            password: demoPassword,
+          });
+
+        if (signupError) {
+          logDebug("error", "Kunde inte skapa demo-användare", signupError);
+          return;
+        }
+
+        logDebug("success", "Demo-användare skapad!");
+
+        // Försök logga in igen
+        const { data: retryData, error: retryError } =
+          await supabase.auth.signInWithPassword({
+            email: demoEmail,
+            password: demoPassword,
+          });
+
+        if (retryError) {
+          logDebug(
+            "error",
+            "Kunde inte logga in med demo-användare",
+            retryError
+          );
+          return;
+        }
+
+        loginData = retryData;
+      }
+
+      if (loginError && loginError.message !== "Invalid login credentials") {
+        logDebug("error", "Inloggningsfel", loginError);
+        return;
+      }
+
+      logDebug("success", "Demo-inloggning lyckades!", loginData?.user);
+
+      // Ladda om sidan för att uppdatera auth-status
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (err: any) {
+      logDebug("error", "Oväntat fel vid demo-inloggning", err);
+    }
+  }
+
+  /* ===========================
+   * Render
+   * =========================== */
+
+  // Loading state för auth
+  if (authLoading && !authTimeout) {
+    return (
+      <div className="p-4 md:p-6 max-w-7xl mx-auto">
+        <div className="flex items-center justify-center min-h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mr-4"></div>
+          <p className="text-gray-600">
+            Laddar hunddagis... (authLoading: {String(authLoading)})
+          </p>
+          <button
+            onClick={() => setAuthTimeout(true)}
+            className="ml-4 px-3 py-1 bg-blue-500 text-white rounded text-sm"
+          >
+            Fortsätt ändå
+          </button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Header / actions */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <h1 className="text-3xl font-bold" style={{ color: PRIMARY_GREEN }}>
-            🐾 Mitt hunddagis
+    <div className="p-4 md:p-6 max-w-7xl mx-auto">
+      {/* Topbar */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
+        <div>
+          <h1 className="text-2xl font-bold text-[#2c7a4c]">
+            Hunddagis – Dagens sammanställning
           </h1>
-
-          <div className="flex flex-wrap gap-3 items-center">
-            {/* Månadsväljare */}
-            <select
-              value={selectedMonthId}
-              onChange={(e) => setSelectedMonthId(e.target.value)}
-              className="border rounded px-3 py-2 text-sm bg-white"
-              title="Välj månad (24 månader bakåt)"
-            >
-              {MONTHS.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.id}
-                </option>
-              ))}
-            </select>
-
-            {/* Sök */}
-            <input
-              type="text"
-              placeholder="🔍 Sök hund, ras eller ägare…"
-              className="border rounded px-3 py-2 text-sm w-56 bg-white"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-
-            {/* Visa/Dölj kolumner */}
-            <div className="relative">
-              <button
-                onClick={() => setShowColumns((v) => !v)}
-                className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-sm"
-              >
-                ⚙️ Visa/Dölj kolumner
-              </button>
-              {showColumns && (
-                <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-md p-3 z-10">
-                  {columns.map((c) => (
-                    <label
-                      key={c.key}
-                      className="flex items-center gap-2 text-sm mb-1"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={!!visibleCols[c.key]}
-                        onChange={() => toggleCol(c.key)}
-                      />
-                      {c.label}
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Export + Ny hund + Rum */}
-            <button
-              onClick={exportPDF}
-              className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-sm"
-            >
-              📄 Exportera PDF
-            </button>
-
-            <Link
-              href="/hunddagis/new"
-              className="bg-[#2c7a4c] hover:bg-green-700 text-white px-4 py-2 rounded text-sm"
-            >
-              ➕ Ny hund
-            </Link>
-
-            <Link
-              href="/rooms"
-              className="bg-white border border-[#2c7a4c] text-[#2c7a4c] hover:bg-green-50 px-4 py-2 rounded text-sm"
-              title="Gå till Mina hundrum"
-            >
-              🏠 Mina hundrum
-            </Link>
-          </div>
+          <p className="text-sm text-gray-500">
+            Sök, filtrera, exportera och lägg till nya hundar.
+          </p>
         </div>
-
-        {/* Tabell */}
-        <div className="overflow-x-auto bg-white shadow-md rounded-xl border border-gray-200">
-          <table className="min-w-full text-sm">
-            <thead style={{ backgroundColor: PRIMARY_GREEN, color: "white" }}>
-              <tr>
-                {columns
-                  .filter((c) => visibleCols[c.key])
-                  .map((c) => (
-                    <th
-                      key={c.key}
-                      onClick={() => {
-                        if (sortKey === c.key) setSortAsc((v) => !v);
-                        else {
-                          setSortKey(c.key);
-                          setSortAsc(true);
-                        }
-                      }}
-                      className="px-4 py-3 text-left cursor-pointer select-none"
-                      title="Klicka för att sortera"
-                    >
-                      {c.label} {sortKey === c.key && (sortAsc ? "▲" : "▼")}
-                    </th>
-                  ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {sortedDogs.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={columns.filter((c) => visibleCols[c.key]).length}
-                    className="text-center text-gray-500 py-6"
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/hunddagis/new"
+            className="inline-flex items-center gap-2 bg-[#2c7a4c] text-white px-3 py-2 rounded-md text-sm font-semibold hover:bg-green-700"
+          >
+            <Plus className="h-4 w-4" />
+            Ny hund
+          </Link>
+          <button
+            onClick={exportPDF}
+            className="inline-flex items-center gap-2 border px-3 py-2 rounded-md text-sm hover:bg-gray-50"
+          >
+            <Download className="h-4 w-4" />
+            PDF-export
+          </button>
+          <button
+            onClick={loadTestData}
+            className="inline-flex items-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-md text-sm hover:bg-blue-700"
+          >
+            � Skapa allt (org + ägare + hundar)
+          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowColsMenu((s) => !s)}
+              className="inline-flex items-center gap-2 border px-3 py-2 rounded-md text-sm hover:bg-gray-50"
+            >
+              <Settings2 className="h-4 w-4" />
+              Kolumner
+            </button>
+            {showColsMenu && (
+              <div className="absolute right-0 mt-2 w-56 rounded-md border bg-white shadow z-10 p-2">
+                {Object.keys(COLUMN_LABELS).map((c) => (
+                  <label
+                    key={c}
+                    className="flex items-center gap-2 px-2 py-1 text-sm"
                   >
-                    Inga hundar hittades för vald månad.
-                  </td>
-                </tr>
-              ) : (
-                sortedDogs.map((d) => {
-                  const roomName =
-                    rooms.find((r) => r.id === d.roomid)?.name ?? "—";
-                  const ownerName = `${d.owner?.firstName ?? ""} ${
-                    d.owner?.lastName ?? ""
-                  }`.trim();
-
-                  const daysSet = new Set(
-                    (d.days ?? "")
-                      .split(/[,\s]+/)
-                      .map((s) => s.trim())
-                      .filter(Boolean)
-                  );
-
-                  const addonsText =
-                    (d.addons ?? [])
-                      .map((a) => `${a.type}${a.times ? ` x${a.times}` : ""}`)
-                      .join(", ") || "—";
-
-                  // Cell-render enligt kolumner
-                  const renderCell = (key: string) => {
-                    switch (key) {
-                      case "roomid":
-                        return (
-                          <span className="text-blue-700">{roomName}</span>
-                        );
-                      case "name":
-                        return (
-                          <Link
-                            href={`/hunddagis/${d.id}`}
-                            className="text-[#2c7a4c] font-semibold hover:underline"
-                            title="Öppna hundens profil"
-                          >
-                            {d.name}
-                          </Link>
-                        );
-                      case "heightcm":
-                        return d.heightcm ? `${d.heightcm} cm` : "—";
-                      case "subscription":
-                        return <SubBadge type={d.subscription} />;
-                      case "days":
-                        return (
-                          <div className="flex flex-wrap gap-1">
-                            {["Mån", "Tis", "Ons", "Tor", "Fre"].map(
-                              (label) => {
-                                // acceptera både svenska och initialer
-                                const active =
-                                  daysSet.has(label) ||
-                                  daysSet.has(label.slice(0, 1)) ||
-                                  daysSet.has(label.slice(0, 2));
-                                return (
-                                  <DayPill
-                                    key={label}
-                                    label={label}
-                                    active={!!active}
-                                  />
-                                );
-                              }
-                            )}
-                          </div>
-                        );
-                      case "addons":
-                        return addonsText;
-                      case "ownerName":
-                        return ownerName || "—";
-                      case "phone":
-                        return d.owner?.phone ?? "—";
-                      case "email":
-                        return d.owner?.email ?? "—";
-                      case "birth":
-                      case "startdate":
-                      case "enddate":
-                        return d[key as keyof Dog] ?? "—";
-                      case "notes":
-                        return d.notes ?? "—";
-                      case "price":
-                        return d.price != null ? `${d.price} kr` : "—";
-                      default:
-                        // breed, vaccdhp, vaccpi m.fl.
-                        // @ts-ignore
-                        return d[key] ?? "—";
-                    }
-                  };
-
-                  return (
-                    <tr
-                      key={d.id}
-                      className="border-t hover:bg-gray-50 transition"
-                    >
-                      {columns
-                        .filter((c) => visibleCols[c.key])
-                        .map((c) => (
-                          <td key={c.key} className="px-4 py-3 align-top">
-                            {renderCell(c.key)}
-                          </td>
-                        ))}
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                    <input
+                      type="checkbox"
+                      checked={columns.includes(c)}
+                      onChange={() => toggleColumn(c)}
+                    />
+                    {COLUMN_LABELS[c]}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={loadDogs}
+            title="Ladda om"
+            className="inline-flex items-center gap-2 border px-3 py-2 rounded-md text-sm hover:bg-gray-50"
+          >
+            <RefreshCcw className="h-4 w-4" />
+            Ladda om
+          </button>
         </div>
       </div>
-    </main>
+
+      {/* Filterrad */}
+      <div className="flex flex-col md:flex-row gap-3 mb-4">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Sök… (hund, ägare, telefon, rum…) "
+          className="border rounded-md px-3 py-2 text-sm w-full md:w-1/2"
+        />
+        <select
+          value={subFilter}
+          onChange={(e) => setSubFilter(e.target.value)}
+          className="border rounded-md px-3 py-2 text-sm"
+        >
+          <option value="">Alla abonnemang</option>
+          <option value="Heltid">Heltid</option>
+          <option value="Deltid 3">Deltid 3</option>
+          <option value="Deltid 2">Deltid 2</option>
+          <option value="Dagshund">Dagshund</option>
+        </select>
+        <input
+          type="month"
+          value={month}
+          onChange={(e) => setMonth(e.target.value)}
+          className="border rounded-md px-3 py-2 text-sm"
+          title="Filtrerar på startmånad (eller skapad om start saknas)"
+        />
+      </div>
+
+      {/* Fel / status */}
+      {errMsg && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-red-700 text-sm">
+          {errMsg}
+        </div>
+      )}
+
+      {/* Tabell */}
+      <div className="overflow-x-auto border rounded-xl bg-white">
+        <table className="min-w-full text-sm">
+          <thead className="bg-[#2c7a4c] text-white">
+            <tr>
+              {columns.includes("name") &&
+                headerCell("name", COLUMN_LABELS["name"])}
+              {columns.includes("breed") &&
+                headerCell("breed", COLUMN_LABELS["breed"])}
+              {columns.includes("owner") &&
+                headerCell("owner", COLUMN_LABELS["owner"])}
+              {columns.includes("phone") && (
+                <th className="py-2 px-3 text-left">Telefon</th>
+              )}
+              {columns.includes("subscription") &&
+                headerCell("subscription", COLUMN_LABELS["subscription"])}
+              {columns.includes("room_id") &&
+                headerCell("room_id", COLUMN_LABELS["room_id"])}
+              {columns.includes("days") && (
+                <th className="py-2 px-3 text-left">{COLUMN_LABELS["days"]}</th>
+              )}
+              {columns.includes("startdate") &&
+                headerCell("startdate", COLUMN_LABELS["startdate"])}
+              {columns.includes("enddate") &&
+                headerCell("enddate", COLUMN_LABELS["enddate"])}
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td className="py-4 px-3 text-gray-500" colSpan={9}>
+                  Laddar hundar…
+                </td>
+              </tr>
+            ) : viewDogs.length === 0 ? (
+              <tr>
+                <td className="py-4 px-3 text-gray-500" colSpan={9}>
+                  Inga hundar matchar dina filter.
+                </td>
+              </tr>
+            ) : (
+              viewDogs.map((d) => (
+                <tr
+                  key={d.id}
+                  className={`border-t hover:bg-green-50 ${rowColor(d)}`}
+                >
+                  {columns.includes("name") && (
+                    <td className="py-2 px-3">
+                      <div className="flex items-center gap-2">
+                        {d.photo_url ? (
+                          <img
+                            src={d.photo_url}
+                            alt="hund"
+                            className="h-8 w-8 rounded-full object-cover border"
+                          />
+                        ) : (
+                          <div className="h-8 w-8 rounded-full grid place-content-center bg-gray-100 text-gray-500 text-xs">
+                            🐶
+                          </div>
+                        )}
+                        <div>
+                          <div className="font-semibold">{d.name}</div>
+                          {d.breed && (
+                            <div className="text-xs text-gray-500">
+                              {d.breed}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                  )}
+                  {columns.includes("breed") && (
+                    <td className="py-2 px-3">{d.breed || "-"}</td>
+                  )}
+                  {columns.includes("owner") && (
+                    <td className="py-2 px-3">{d.owners?.full_name || "-"}</td>
+                  )}
+                  {columns.includes("phone") && (
+                    <td className="py-2 px-3">{d.owners?.phone || "-"}</td>
+                  )}
+                  {columns.includes("subscription") && (
+                    <td className="py-2 px-3">{d.subscription || "-"}</td>
+                  )}
+                  {columns.includes("room_id") && (
+                    <td className="py-2 px-3">{d.room_id || "-"}</td>
+                  )}
+                  {columns.includes("days") && (
+                    <td className="py-2 px-3">{d.days || "-"}</td>
+                  )}
+                  {columns.includes("startdate") && (
+                    <td className="py-2 px-3">
+                      {d.startdate
+                        ? new Date(d.startdate).toLocaleDateString("sv-SE")
+                        : "-"}
+                    </td>
+                  )}
+                  {columns.includes("enddate") && (
+                    <td className="py-2 px-3">
+                      {d.enddate
+                        ? new Date(d.enddate).toLocaleDateString("sv-SE")
+                        : "-"}
+                    </td>
+                  )}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <EditDogModal
+          open={showModal}
+          onCloseAction={() => setShowModal(false)}
+          onSavedAction={handleSaved}
+        />
+      )}
+    </div>
   );
 }

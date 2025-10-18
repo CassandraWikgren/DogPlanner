@@ -1,75 +1,78 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getDB, updateDog, type Dog } from "@/lib/store";
-import { branches } from "@/lib/branches";
+import { use } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-export default function EditDogPage({ params }: { params: { id: string } }) {
-  const [dog, setDog] = useState<Dog | null>(null);
-  const [selectedBranch, setSelectedBranch] = useState<string>("");
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [pendingBranch, setPendingBranch] = useState<string>("");
+export default function HundpensionatPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  // 🐾 Next.js 15 – params är en Promise
+  const { id } = use(params);
+
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchDog() {
-      const db = await getDB(); // ✅ vänta på datan
-      const foundDog = db.dogs.find((d) => d.id === params.id);
-      setDog(foundDog || null);
-      if (foundDog?.branchId) setSelectedBranch(foundDog.branchId);
+    async function loadBookings() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("pension_calendar_full_view")
+        .select("*")
+        .eq("org_id", id)
+        .order("start_date", { ascending: true });
+
+      if (error) console.error("Fel vid hämtning:", error);
+      else setBookings(data || []);
+      setLoading(false);
     }
-    fetchDog();
-  }, [params.id]);
 
-  if (!dog) return <div>🐶 Hunden hittades inte.</div>;
+    loadBookings();
+  }, [id]);
 
-  const handleBranchChange = (newBranchId: string) => {
-    if (newBranchId && newBranchId !== selectedBranch) {
-      setPendingBranch(newBranchId);
-      setShowConfirm(true);
-    }
-  };
-
-  const confirmBranchMove = async () => {
-    if (!pendingBranch) return;
-    await updateDog(dog.id, { branchId: pendingBranch });
-    setSelectedBranch(pendingBranch);
-    setShowConfirm(false);
-  };
-
+  // ✅ return måste vara inom funktionsblocket, inte utanför
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">{dog.name}</h1>
-      <p className="mb-4 text-gray-700">Ras: {dog.breed || "Okänd"}</p>
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-semibold text-blue-700">🐕 Hundpensionat</h1>
 
-      <label className="block mb-2">Välj ny avdelning:</label>
-      <select
-        value={selectedBranch}
-        onChange={(e) => handleBranchChange(e.target.value)}
-        className="border rounded p-2"
-      >
-        <option value="">Välj...</option>
-        {branches.map((b) => (
-          <option key={b.id} value={b.id}>
-            {b.name}
-          </option>
-        ))}
-      </select>
-
-      {showConfirm && (
-        <div className="mt-4">
-          <p>Är du säker på att du vill flytta hunden?</p>
-          <button
-            onClick={confirmBranchMove}
-            className="bg-green-600 text-white px-4 py-2 rounded mt-2"
-          >
-            Ja, flytta
-          </button>
-          <button
-            onClick={() => setShowConfirm(false)}
-            className="ml-2 bg-gray-400 text-white px-4 py-2 rounded mt-2"
-          >
-            Avbryt
-          </button>
+      {loading ? (
+        <p>Laddar bokningar...</p>
+      ) : bookings.length === 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Inga bokningar hittades.</CardTitle>
+          </CardHeader>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {bookings.map((b) => (
+            <Card key={b.id} className="p-4 border border-gray-200">
+              <CardHeader>
+                <CardTitle>{b.dog_name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>
+                  <strong>Ägare:</strong> {b.owner_name} ({b.owner_email})
+                </p>
+                <p>
+                  <strong>Rum:</strong> {b.room_name}
+                </p>
+                <p>
+                  <strong>Period:</strong> {b.start_date} – {b.end_date}
+                </p>
+                <p>
+                  <strong>Status:</strong> {b.status}
+                </p>
+                <p>
+                  <strong>Pris:</strong> {b.total_amount ?? b.base_price ?? "—"}{" "}
+                  kr
+                </p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
     </div>

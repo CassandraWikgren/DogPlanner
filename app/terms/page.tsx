@@ -1,7 +1,10 @@
-import Terms from "../components/Terms";
+import Terms from "@/components/Terms";
 import "../marketing.css";
+import type { Metadata } from "next";
 
-export const metadata = { title: "DogPlanner – Villkor" };
+export const metadata: Metadata = {
+  title: "DogPlanner – Villkor",
+};
 
 export default function PublicTermsPage() {
   return (

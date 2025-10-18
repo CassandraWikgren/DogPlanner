@@ -1,95 +1,421 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
 
-export default function DashboardPage() {
-  const { user } = useAuth();
-  const router = useRouter();
+// Felkoder enligt systemet
+const ERROR_CODES = {
+  DATABASE_CONNECTION: "[ERR-1001]",
+  PDF_EXPORT: "[ERR-2001]",
+  REALTIME: "[ERR-3001]",
+  VALIDATION: "[ERR-4001]",
+} as const;
+
+interface DashboardStats {
+  totalDogs: number;
+  totalOwners: number;
+  activeBookings: number;
+  monthlyRevenue: number;
+  checkedInToday: number;
+  pendingInvoices: number;
+}
+
+export default function Dashboard() {
+  const { user, loading: authLoading } = useAuth();
+  const [stats, setStats] = useState<DashboardStats>({
+    totalDogs: 0,
+    totalOwners: 0,
+    activeBookings: 0,
+    monthlyRevenue: 0,
+    checkedInToday: 0,
+    pendingInvoices: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) router.push("/login");
-  }, [user, router]);
+    if (!user || authLoading) return;
+    loadDashboardStats();
+  }, [user, authLoading]);
 
-  // Visa en laddningsskärm medan auth kollas
-  if (!user)
+  const loadDashboardStats = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Parallel queries för bättre prestanda - använder korrekt Supabase-struktur
+      const [
+        dogsResult,
+        ownersResult,
+        bookingsResult,
+        revenueResult,
+        checkedInResult,
+        invoicesResult,
+      ] = await Promise.all([
+        (supabase as any)
+          .from("dogs")
+          .select("id", { count: "exact" })
+          .eq("org_id", user?.org_id),
+        (supabase as any)
+          .from("owners")
+          .select("id", { count: "exact" })
+          .eq("org_id", user?.org_id),
+        (supabase as any)
+          .from("bookings")
+          .select("id", { count: "exact" })
+          .eq("org_id", user?.org_id)
+          .eq("status", "confirmed"),
+        (supabase as any)
+          .from("bookings")
+          .select("price_kr")
+          .eq("org_id", user?.org_id)
+          .eq("status", "completed")
+          .gte(
+            "start_date",
+            new Date(
+              new Date().getFullYear(),
+              new Date().getMonth(),
+              1
+            ).toISOString()
+          ),
+        (supabase as any)
+          .from("bookings")
+          .select("id", { count: "exact" })
+          .eq("org_id", user?.org_id)
+          .eq("start_date", new Date().toISOString().split("T")[0]),
+        (supabase as any)
+          .from("bookings")
+          .select("id", { count: "exact" })
+          .eq("org_id", user?.org_id)
+          .eq("invoice_status", "pending"),
+      ]);
+
+      const monthlyRevenue =
+        revenueResult.data?.reduce(
+          (sum: number, booking: any) => sum + (booking.price_kr || 0),
+          0
+        ) || 0;
+
+      setStats({
+        totalDogs: dogsResult.count || 0,
+        totalOwners: ownersResult.count || 0,
+        activeBookings: bookingsResult.count || 0,
+        monthlyRevenue,
+        checkedInToday: checkedInResult.count || 0,
+        pendingInvoices: invoicesResult.count || 0,
+      });
+    } catch (error) {
+      console.error(
+        `${ERROR_CODES.DATABASE_CONNECTION} Kunde inte ladda dashboard-statistik:`,
+        error
+      );
+      setError("Kunde inte ladda dashboard-data. Försök igen senare.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-700">
-        <p>Laddar...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Laddar dashboard...</p>
+        </div>
       </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center p-6 bg-white border border-red-200">
+          <div className="text-red-600 mb-4">⚠️</div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Dashboard-fel
+          </h3>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={loadDashboardStats}
+            className="bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 transition-colors"
+          >
+            Försök igen
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <main>
-      {/* Hero */}
+    <div
+      className="min-h-screen"
+      style={{
+        background: "#fdfdfd",
+        color: "#333",
+        fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+      }}
+    >
+      {/* Hero Section - Med bakgrundsbild från HTML */}
       <section
-        className="relative text-center text-white py-24 px-6"
+        className="text-center text-white"
         style={{
+          padding: "100px 20px",
           background:
-            "linear-gradient(rgba(44, 122, 76, 0.75), rgba(44, 122, 76, 0.75)), url('https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat",
+            'linear-gradient(rgba(44, 122, 76, 0.85), rgba(44, 122, 76, 0.85)), url("https://images.unsplash.com/photo-1558788353-f76d92427f16?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80") center/cover no-repeat',
         }}
       >
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-          Välkommen till DogPlanner
+        <h1 className="text-4xl font-bold mb-4">
+          Välkommen till ditt Dashboard
         </h1>
-        <p className="text-lg md:text-xl max-w-2xl mx-auto opacity-95">
-          Välj en funktion nedan för att komma igång med ditt hunddagis eller
-          pensionat.
+        <p className="text-xl mb-8 leading-relaxed opacity-95">
+          Här får du snabb tillgång till dina hundar, abonnemang och fakturor.
         </p>
+
+        {/* Statistik-kort som overlay på hero */}
+        <div className="max-w-6xl mx-auto mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Totalt hundar
+              </p>
+              <p className="text-2xl font-bold mt-1">{stats.totalDogs}</p>
+            </div>
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Ägare
+              </p>
+              <p className="text-2xl font-bold mt-1">{stats.totalOwners}</p>
+            </div>
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Aktiva bokningar
+              </p>
+              <p className="text-2xl font-bold mt-1">{stats.activeBookings}</p>
+            </div>
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Incheckade idag
+              </p>
+              <p className="text-2xl font-bold mt-1">{stats.checkedInToday}</p>
+            </div>
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Månadens intäkt
+              </p>
+              <p className="text-lg font-bold mt-1">
+                {stats.monthlyRevenue.toLocaleString()} kr
+              </p>
+            </div>
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Väntande fakturor
+              </p>
+              <p className="text-2xl font-bold mt-1">{stats.pendingInvoices}</p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* Cards */}
-      <section className="max-w-6xl mx-auto my-16 px-6 grid gap-10 md:grid-cols-3">
+      {/* Main Cards Container - HTML-inspirerat utseende */}
+      <main
+        className="max-w-5xl mx-auto px-5 grid gap-8"
+        style={{
+          margin: "60px auto",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+        }}
+      >
         {/* Hunddagis */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center text-center hover:shadow-2xl hover:-translate-y-1 transition">
-          <h2 className="text-2xl font-bold text-green-700 mb-3">
-            🐾 Hunddagis
+        <div
+          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
+          style={{
+            padding: "40px 25px",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+          }}
+        >
+          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
+            🐕 Hunddagis
           </h2>
-          <p className="text-gray-600 flex-grow">
-            Hantera dina dagishundar, se fakturor, priser och hundrum.
+          <p
+            className="mb-6 text-base leading-relaxed"
+            style={{ color: "#333" }}
+          >
+            Hantera dagishundar och daglig verksamhet. {stats.totalDogs} hundar
+            registrerade.
           </p>
           <Link
             href="/hunddagis"
-            className="mt-6 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-md font-semibold shadow"
+            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
+            style={{
+              padding: "12px 24px",
+              background: "#2c7a4c",
+              borderRadius: "8px",
+            }}
           >
-            Mina dagishundar
+            Gå till hunddagis
           </Link>
         </div>
 
         {/* Hundpensionat */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center text-center hover:shadow-2xl hover:-translate-y-1 transition">
-          <h2 className="text-2xl font-bold text-green-700 mb-3">
-            🏠 Hundpensionat
+        <div
+          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
+          style={{
+            padding: "40px 25px",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+          }}
+        >
+          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
+            🏨 Hundpensionat
           </h2>
-          <p className="text-gray-600 flex-grow">
-            Se och hantera pensionathundar, journaler och bokningar.
+          <p
+            className="mb-6 text-base leading-relaxed"
+            style={{ color: "#333" }}
+          >
+            Hantera pensionshundar och bokningar. {stats.activeBookings} aktiva
+            bokningar.
           </p>
           <Link
             href="/hundpensionat"
-            className="mt-6 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-md font-semibold shadow"
+            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
+            style={{
+              padding: "12px 24px",
+              background: "#2c7a4c",
+              borderRadius: "8px",
+            }}
           >
-            Mina pensionathundar
+            Gå till pensionat
           </Link>
         </div>
 
-        {/* Företagsinformation */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center text-center hover:shadow-2xl hover:-translate-y-1 transition">
-          <h2 className="text-2xl font-bold text-green-700 mb-3">
-            📂 Företagsinformation
+        {/* Rehab */}
+        <div
+          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
+          style={{
+            padding: "40px 25px",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+          }}
+        >
+          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
+            🩺 Rehab
           </h2>
-          <p className="text-gray-600 flex-grow">
-            Hantera abonnemang, villkor och fakturor.
+          <p
+            className="mb-6 text-base leading-relaxed"
+            style={{ color: "#333" }}
+          >
+            Hundrehabiltering och fysioterapi. Kommer snart!
           </p>
           <Link
-            href="/foretagsinformation"
-            className="mt-6 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-md font-semibold shadow"
+            href="/rehab"
+            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
+            style={{
+              padding: "12px 24px",
+              background: "#2c7a4c",
+              borderRadius: "8px",
+            }}
           >
-            Företagssida
+            Gå till rehab
           </Link>
         </div>
-      </section>
-    </main>
+
+        {/* Hundfrisör */}
+        <div
+          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
+          style={{
+            padding: "40px 25px",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+          }}
+        >
+          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
+            ✂️ Hundfrisör
+          </h2>
+          <p
+            className="mb-6 text-base leading-relaxed"
+            style={{ color: "#333" }}
+          >
+            Hantera bokningar och behandlingar för hundtrimning.
+          </p>
+          <Link
+            href="/frisor"
+            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
+            style={{
+              padding: "12px 24px",
+              background: "#2c7a4c",
+              borderRadius: "8px",
+            }}
+          >
+            Gå till frisör
+          </Link>
+        </div>
+
+        {/* Administration */}
+        <div
+          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
+          style={{
+            padding: "40px 25px",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+          }}
+        >
+          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
+            ⚙️ Administration
+          </h2>
+          <p
+            className="mb-6 text-base leading-relaxed"
+            style={{ color: "#333" }}
+          >
+            Systemhantering och ekonomi. {stats.pendingInvoices} väntande
+            fakturor.
+          </p>
+          <Link
+            href="/admin"
+            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
+            style={{
+              padding: "12px 24px",
+              background: "#2c7a4c",
+              borderRadius: "8px",
+            }}
+          >
+            Gå till admin
+          </Link>
+        </div>
+
+        {/* Ekonomi */}
+        <div
+          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
+          style={{
+            padding: "40px 25px",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+          }}
+        >
+          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
+            💰 Ekonomi
+          </h2>
+          <p
+            className="mb-6 text-base leading-relaxed"
+            style={{ color: "#333" }}
+          >
+            Fakturor och ekonomihantering.{" "}
+            {stats.monthlyRevenue.toLocaleString()} kr denna månad.
+          </p>
+          <Link
+            href="/ekonomi"
+            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
+            style={{
+              padding: "12px 24px",
+              background: "#2c7a4c",
+              borderRadius: "8px",
+            }}
+          >
+            Visa ekonomi
+          </Link>
+        </div>
+      </main>
+    </div>
   );
 }
