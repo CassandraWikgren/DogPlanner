@@ -71,9 +71,7 @@ Varje huvuddel av verksamheten har en egen modul:
 
 - Enhetligt, responsivt gränssnitt optimerat för surfplatta/mobil
 - Färgkodning för olika moduler:
-  - Grönt = Dagis
-  - Blått = Pensionat
-  - Orange = Frisör
+  - Grönt = Dagis, pensionat och frisör
   - Grått/Rött = Ekonomi
 - Tydliga tabeller och kortkomponenter
 - Fokus på användarvänlighet för personalen i vardagen
