@@ -1,0 +1,58 @@
+name: Run monthly invoice generator
+
+on:
+  schedule:
+    - cron: "0 8 1 * *" # Kör 1:a varje månad kl 08:00 (UTC)
+  workflow_dispatch: # Möjlighet att köra manuellt
+
+jobs:
+  run-function:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get current month
+        id: date
+        run: echo "MONTH=$(date +'%Y-%m')" >> $GITHUB_ENV
+
+      - name: Trigger Supabase Edge Function
+        id: generate
+        run: |
+          echo "Generating invoices for month: $MONTH"
+          RESPONSE=$(curl -s -w "%{http_code}" -o response.txt \
+            -X POST "https://fhdkkkujnhteetllxypg.supabase.co/functions/v1/generate_invoices" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -d "{\"month\": \"$MONTH\"}")
+
+          echo "Supabase responded with status: $RESPONSE"
+          echo "RESPONSE_CODE=$RESPONSE" >> $GITHUB_ENV
+
+      - name: Log to Supabase invoice_runs
+        if: always()
+        run: |
+          echo "Saving run log to Supabase..."
+          STATUS="success"
+          if [ "${{ env.RESPONSE_CODE }}" != "200" ]; then STATUS="failed"; fi
+
+          curl -s -X POST "https://fhdkkkujnhteetllxypg.supabase.co/rest/v1/invoice_runs" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"month_id\": \"$MONTH\", \"status\": \"$STATUS\", \"run_at\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\"}"
+
+      - name: Send email notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "DogPlanner – fakturagenerering klar för ${{ env.MONTH }}"
+          to: cassandrawikgren@icloud.com
+          from: DogPlanner <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            Fakturagenereringen för månad ${{ env.MONTH }} är färdig.
+            Status: ${{ env.RESPONSE_CODE == '200' && '✅ Lyckades' || '❌ Misslyckades' }}
+
+      - name: Done
+        run: echo "Invoice generation completed for $MONTH"
