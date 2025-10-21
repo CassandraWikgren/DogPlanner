@@ -17,16 +17,20 @@ const nextConfig: NextConfig = {
     "qrcode",
   ],
 
-  // 🚀 Edge & build-optimeringar
-  experimental: {
-    turbo: {
-      rules: {
-        "*.ts": {
-          loaders: ["ts-loader"],
-          as: "js",
-        },
+  // 🚀 Edge & build-optimeringar (uppdaterad för Next.js 15)
+  turbopack: {
+    rules: {
+      "*.ts": {
+        loaders: ["ts-loader"],
+        as: "js",
       },
     },
+  },
+
+  // ⚠️ Förhindra att Next.js försöker för-rendera /_not-found under build
+  output: "standalone",
+  generateBuildId: async () => {
+    return "dogplanner-build";
   },
 
   // 🖼️ Bildoptimering för Supabase-lagrade bilder
@@ -45,6 +49,11 @@ const nextConfig: NextConfig = {
       "./node_modules/stream-buffers/**/*",
       "./node_modules/qrcode/**/*",
     ],
+  },
+
+  // 🧩 Experimentella inställningar (uppdaterad för Next.js 15+)
+  experimental: {
+    disableOptimizedLoading: true,
   },
 };
 
