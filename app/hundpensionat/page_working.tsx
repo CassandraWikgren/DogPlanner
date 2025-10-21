@@ -102,10 +102,8 @@ export default function HundpensionatPage() {
 
   // Ladda bokningar från Supabase
   const loadBookings = async () => {
-    if (!user?.user_metadata?.org_id || !supabase) {
-      console.log(
-        "Ingen organisation hittad för användaren eller ingen databaskoppling"
-      );
+    if (!user?.user_metadata?.org_id) {
+      console.log("Ingen organisation hittad för användaren");
       return;
     }
 
@@ -344,14 +342,14 @@ export default function HundpensionatPage() {
         }
 
         .pensionat-hero {
+          background: linear-gradient(
+            135deg,
+            var(--primary-green) 0%,
+            #4caf50 100%
+          );
+          color: white;
           text-align: center;
           padding: 60px 20px;
-          background: linear-gradient(
-              rgba(44, 122, 76, 0.85),
-              rgba(44, 122, 76, 0.85)
-            ),
-            url("/Hero.jpeg") center/cover no-repeat;
-          color: #fff;
           border-radius: 12px;
           margin-bottom: 30px;
           position: relative;
@@ -367,7 +365,7 @@ export default function HundpensionatPage() {
           bottom: 0;
           background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100"><path d="M0,0 C150,100 350,0 500,50 C650,100 850,0 1000,50 L1000,100 L0,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
           background-size: cover;
-          opacity: 0.2;
+          opacity: 0.3;
         }
 
         .pensionat-hero h1 {
@@ -606,45 +604,26 @@ export default function HundpensionatPage() {
 
         @media (max-width: 1200px) {
           .pensionat-stats {
-            grid-template-columns: repeat(6, 1fr);
-            max-width: 1000px;
-            gap: 15px;
-          }
-
-          .pensionat-stat-card {
-            min-height: 85px;
-            max-height: 85px;
-            padding: 12px 8px;
-          }
-
-          .pensionat-stat-value {
-            font-size: 20px;
-          }
-
-          .pensionat-stat-label {
-            font-size: 10px;
+            grid-template-columns: repeat(3, 1fr);
+            max-width: 800px;
           }
         }
 
         @media (max-width: 900px) {
           .pensionat-stats {
-            grid-template-columns: repeat(6, 1fr);
-            gap: 12px;
-            max-width: 700px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 500px;
           }
 
           .pensionat-stat-card {
-            min-height: 75px;
-            max-height: 75px;
-            padding: 10px 6px;
+            min-height: 90px;
+            max-height: 90px;
+            padding: 12px 8px;
           }
 
           .pensionat-stat-value {
-            font-size: 18px;
-          }
-
-          .pensionat-stat-label {
-            font-size: 9px;
+            font-size: 20px;
           }
 
           .pensionat-controls {
@@ -673,52 +652,42 @@ export default function HundpensionatPage() {
 
         @media (max-width: 600px) {
           .pensionat-stats {
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-            max-width: 500px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 350px;
           }
 
           .pensionat-stat-card {
-            min-height: 65px;
-            max-height: 65px;
-            padding: 8px 4px;
+            min-height: 80px;
+            max-height: 80px;
+            padding: 10px 6px;
           }
 
           .pensionat-stat-value {
-            font-size: 16px;
+            font-size: 18px;
           }
 
           .pensionat-stat-label {
-            font-size: 8px;
+            font-size: 9px;
           }
         }
 
         @media (max-width: 420px) {
           .pensionat-stats {
-            grid-template-columns: repeat(6, 1fr);
-            max-width: 350px;
-            gap: 6px;
-          }
-
-          .pensionat-stat-card {
-            min-height: 55px;
-            max-height: 55px;
-            padding: 6px 2px;
-          }
-
-          .pensionat-stat-value {
-            font-size: 14px;
-          }
-
-          .pensionat-stat-label {
-            font-size: 7px;
+            grid-template-columns: 1fr;
+            max-width: 200px;
+            gap: 10px;
           }
         }
       `}</style>
 
       <div className="pensionat-container">
         {/* Header */}
-        <header className="pensionat-header"></header>
+        <header className="pensionat-header">
+          <Link href="/dashboard" className="pensionat-back-btn">
+            ← Tillbaka
+          </Link>
+        </header>
 
         {/* Hero Section */}
         <section className="pensionat-hero">
@@ -732,34 +701,34 @@ export default function HundpensionatPage() {
           <div className="max-w-6xl mx-auto mt-12">
             <div className="pensionat-stats">
               <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Antal hundar</p>
+                <p className="pensionat-stat-label">Hundar idag</p>
                 <p className="pensionat-stat-value">{liveStats.hundarIdag}</p>
               </div>
 
               <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Ankomster</p>
+                <p className="pensionat-stat-label">Incheck idag</p>
                 <p className="pensionat-stat-value">{liveStats.incheckIdag}</p>
               </div>
 
               <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Avresor</p>
+                <p className="pensionat-stat-label">Utcheck idag</p>
                 <p className="pensionat-stat-value">{liveStats.utcheckIdag}</p>
               </div>
 
               <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Tjänster</p>
+                <p className="pensionat-stat-label">Tjänster imorgon</p>
                 <p className="pensionat-stat-value">
                   {liveStats.tjänsterImorgon}
                 </p>
               </div>
 
               <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Kunder</p>
+                <p className="pensionat-stat-label">Totalt ägare</p>
                 <p className="pensionat-stat-value">{liveStats.totalOwners}</p>
               </div>
 
               <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Intäkt</p>
+                <p className="pensionat-stat-label">Månadens intäkt</p>
                 <p className="pensionat-stat-value">
                   {liveStats.monthlyRevenue.toLocaleString()} kr
                 </p>

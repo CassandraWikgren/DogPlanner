@@ -174,48 +174,6 @@ export default function Dashboard() {
         </p>
 
         {/* Statistik-kort som overlay på hero */}
-        <div className="max-w-6xl mx-auto mt-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
-                Totalt hundar
-              </p>
-              <p className="text-2xl font-bold mt-1">{stats.totalDogs}</p>
-            </div>
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
-                Ägare
-              </p>
-              <p className="text-2xl font-bold mt-1">{stats.totalOwners}</p>
-            </div>
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
-                Aktiva bokningar
-              </p>
-              <p className="text-2xl font-bold mt-1">{stats.activeBookings}</p>
-            </div>
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
-                Incheckade idag
-              </p>
-              <p className="text-2xl font-bold mt-1">{stats.checkedInToday}</p>
-            </div>
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
-                Månadens intäkt
-              </p>
-              <p className="text-lg font-bold mt-1">
-                {stats.monthlyRevenue.toLocaleString()} kr
-              </p>
-            </div>
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
-                Väntande fakturor
-              </p>
-              <p className="text-2xl font-bold mt-1">{stats.pendingInvoices}</p>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Main Cards Container - HTML-inspirerat utseende */}
