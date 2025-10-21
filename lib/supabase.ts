@@ -1,21 +1,27 @@
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
 
-// 🔐 Dessa värden hämtas automatiskt från Vercel eller .env.local
+/**
+ * Supabase-klient som hanterar både runtime och build-time utan att krascha.
+ * Under statisk rendering (t.ex. /404) loggas bara en varning.
+ */
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// Skapa klienten med typning - men fallback till null om miljövariablerna saknas
-// Under build-tid loggar vi bara varningen utan att kasta fel
-if (!supabaseUrl || !supabaseAnonKey) {
-  if (typeof window !== "undefined" || process.env.NODE_ENV !== "production") {
+let supabaseClient: ReturnType<typeof createClient<Database>> | null = null;
+
+if (supabaseUrl && supabaseAnonKey) {
+  supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
+} else {
+  // 🛑 Hindra att build kraschar
+  if (process.env.NODE_ENV === "production") {
     console.warn(
-      "⚠️ Supabase miljövariabler saknas! Kontrollera att NEXT_PUBLIC_SUPABASE_URL och NEXT_PUBLIC_SUPABASE_ANON_KEY är konfigurerade."
+      "[WARN] Supabase-nycklar saknas under build-tid (t.ex. vid prerendering av /not-found). Skapar ingen klient."
     );
   }
 }
 
-export const supabase =
-  supabaseUrl && supabaseAnonKey
-    ? createClient<Database>(supabaseUrl, supabaseAnonKey)
-    : null;
+export const supabase = supabaseClient as ReturnType<
+  typeof createClient<Database>
+>;
