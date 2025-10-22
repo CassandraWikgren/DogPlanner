@@ -1,32 +1,32 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   try {
     const publicRoutes = ["/", "/login", "/register", "/rooms"];
+
     const pathname = req.nextUrl.pathname;
 
-    // ✅ Tillåt offentliga sidor
-    if (publicRoutes.some((r) => pathname.startsWith(r))) {
+    if (publicRoutes.some((route) => pathname.startsWith(route))) {
       return NextResponse.next();
     }
 
-    // ✅ Läs cookies säkert (utan att logga hela objekt)
-    const demoUser = req.cookies.get("demoUser")?.value;
-    const demoOrg = req.cookies.get("demoOrg")?.value;
+    // Hämta cookies säkert
+    const demoUser = req.cookies.get("demoUser")?.value || null;
+    const demoOrg = req.cookies.get("demoOrg")?.value || null;
 
-    // ✅ Tillåt om demo-cookies finns
     if (demoUser && demoOrg) {
       return NextResponse.next();
     }
 
-    // ✅ Redirect på ett Edge-säkert sätt
-    const url = req.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
+    // Try-catch på redirect för att logga eventuella fel
+    const redirectUrl = new URL("/login", req.url);
+    return NextResponse.redirect(redirectUrl);
   } catch (err) {
-    // ✅ Om något går fel: släpp igenom så sidan inte kraschar
-    console.error("Middleware error:", (err as Error).message);
-    return NextResponse.next();
+    console.error("[middleware crash]", err);
+    // Returnera en minimal textresponse så vi ser felet
+    return new Response("Middleware error: " + (err as Error).message, {
+      status: 500,
+    });
   }
 }
 
