@@ -1,44 +1,31 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(req: NextRequest) {
+export function middleware(req: NextRequest) {
   try {
     const publicRoutes = ["/", "/login", "/register", "/rooms"];
     const pathname = req.nextUrl.pathname;
 
-    console.log("[middleware] Pathname:", pathname);
-
-    // Tillåt offentliga sidor
-    if (publicRoutes.some((route) => pathname.startsWith(route))) {
+    // ✅ Tillåt offentliga sidor
+    if (publicRoutes.some((r) => pathname.startsWith(r))) {
       return NextResponse.next();
     }
 
-    // Läs cookies (edge-säkert)
-    let cookiesList: string[] = [];
-    try {
-      const cookies = req.cookies.getAll();
-      cookiesList = cookies.map((c) => c.name);
-      console.log("[middleware] Cookies:", cookiesList);
-    } catch (cookieError) {
-      console.warn("[middleware] Kunde inte läsa cookies:", cookieError);
-    }
+    // ✅ Läs cookies säkert (utan att logga hela objekt)
+    const demoUser = req.cookies.get("demoUser")?.value;
+    const demoOrg = req.cookies.get("demoOrg")?.value;
 
-    // Hämta demo-cookies
-    const demoUser = req.cookies.get("demoUser")?.value ?? null;
-    const demoOrg = req.cookies.get("demoOrg")?.value ?? null;
-
+    // ✅ Tillåt om demo-cookies finns
     if (demoUser && demoOrg) {
-      console.log("[middleware] Demo-cookies finns, tillåts.");
       return NextResponse.next();
     }
 
-    // ✅ Edge-safe redirect (använd req.nextUrl i stället för req.url)
-    const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = "/login";
-    console.log("[middleware] Redirectar till /login");
-    return NextResponse.redirect(loginUrl);
+    // ✅ Redirect på ett Edge-säkert sätt
+    const url = req.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
   } catch (err) {
-    console.error("[middleware] FEL:", err);
-    // Släpp igenom för att undvika 500
+    // ✅ Om något går fel: släpp igenom så sidan inte kraschar
+    console.error("Middleware error:", (err as Error).message);
     return NextResponse.next();
   }
 }
