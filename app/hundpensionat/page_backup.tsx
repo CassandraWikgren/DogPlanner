@@ -269,57 +269,89 @@ export default function HundpensionatPage() {
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: '#fdfdfd', color: '#333', fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
-      
+    <div
+      className="min-h-screen"
+      style={{
+        background: "#fdfdfd",
+        color: "#333",
+        fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+      }}
+    >
       {/* Hero Section - Med bakgrundsbild från HTML */}
-      <section 
+      <section
         className="text-center text-white relative"
         style={{
-          padding: '100px 20px',
-          background: 'linear-gradient(rgba(44, 122, 76, 0.85), rgba(44, 122, 76, 0.85)), url("https://images.unsplash.com/photo-1558788353-f76d92427f16?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80") center/cover no-repeat'
+          padding: "100px 20px",
+          background:
+            'linear-gradient(rgba(44, 122, 76, 0.85), rgba(44, 122, 76, 0.85)), url("https://images.unsplash.com/photo-1558788353-f76d92427f16?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80") center/cover no-repeat',
         }}
       >
         <h1 className="text-4xl font-bold mb-4">🏨 Hundpensionat</h1>
         <p className="text-xl mb-8 leading-relaxed opacity-95">
           Hantera pensionshundar och bokningar med full översikt
         </p>
-        
+
         {/* Live-statistik på hero som overlay */}
         <div className="max-w-6xl mx-auto mt-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4">
             {/* Hundar idag */}
             <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">Hundar idag</p>
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Hundar idag
+              </p>
               <p className="text-2xl font-bold mt-1">{liveStats.hundarIdag}</p>
             </div>
             {/* Incheck idag */}
             <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">Incheck idag</p>
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Incheck idag
+              </p>
               <p className="text-2xl font-bold mt-1">{liveStats.incheckIdag}</p>
             </div>
             {/* Utcheck idag */}
             <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">Utcheck idag</p>
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Utcheck idag
+              </p>
               <p className="text-2xl font-bold mt-1">{liveStats.utcheckIdag}</p>
             </div>
             {/* Tjänster imorgon */}
             <div className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-4 rounded-lg border border-white border-opacity-30">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">Tjänster imorgon</p>
-              <p className="text-2xl font-bold mt-1">{liveStats.tjänsterImorgon}</p>
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Tjänster imorgon
+              </p>
+              <p className="text-2xl font-bold mt-1">
+                {liveStats.tjänsterImorgon}
+              </p>
             </div>
             {/* Skapa bokning - knapp */}
-            <Link href="/hundpensionat/nybokning" className="bg-blue-600 bg-opacity-80 hover:bg-opacity-100 text-white p-4 rounded-lg border border-white border-opacity-30 transition-all">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">Skapa bokning</p>
+            <Link
+              href="/hundpensionat/nybokning"
+              className="bg-blue-600 bg-opacity-80 hover:bg-opacity-100 text-white p-4 rounded-lg border border-white border-opacity-30 transition-all"
+            >
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Skapa bokning
+              </p>
               <p className="text-lg font-bold mt-1">➕ Ny bokning</p>
             </Link>
             {/* Kalender - knapp */}
-            <Link href="/hundpensionat/kalender" className="bg-gray-600 bg-opacity-80 hover:bg-opacity-100 text-white p-4 rounded-lg border border-white border-opacity-30 transition-all">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">Kalender</p>
+            <Link
+              href="/hundpensionat/kalender"
+              className="bg-gray-600 bg-opacity-80 hover:bg-opacity-100 text-white p-4 rounded-lg border border-white border-opacity-30 transition-all"
+            >
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Kalender
+              </p>
               <p className="text-lg font-bold mt-1">📅 Visa kalender</p>
             </Link>
             {/* Hundrum - knapp */}
-            <Link href="/rooms" className="bg-green-600 bg-opacity-80 hover:bg-opacity-100 text-white p-4 rounded-lg border border-white border-opacity-30 transition-all">
-              <p className="text-sm font-medium uppercase tracking-wide opacity-90">Hundrum</p>
+            <Link
+              href="/rooms"
+              className="bg-green-600 bg-opacity-80 hover:bg-opacity-100 text-white p-4 rounded-lg border border-white border-opacity-30 transition-all"
+            >
+              <p className="text-sm font-medium uppercase tracking-wide opacity-90">
+                Hundrum
+              </p>
               <p className="text-lg font-bold mt-1">🏠 Hantera rum</p>
             </Link>
           </div>
@@ -327,39 +359,44 @@ export default function HundpensionatPage() {
       </section>
 
       {/* Main Container - HTML-inspirerat utseende */}
-      <main 
-        className="max-w-5xl mx-auto px-5"
-        style={{ margin: '60px auto' }}
-      >
+      <main className="max-w-5xl mx-auto px-5" style={{ margin: "60px auto" }}>
         {/* Funktioner som vackra kort */}
-        <div className="grid gap-8 mb-12" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-          
+        <div
+          className="grid gap-8 mb-12"
+          style={{
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          }}
+        >
           {/* Sök och Filter */}
-          <div 
+          <div
             className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
             style={{
-              padding: '40px 25px',
-              borderRadius: '12px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.06)'
+              padding: "40px 25px",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
             }}
           >
-            <h2 className="mt-0 mb-4" style={{ color: '#2c7a4c' }}>🔍 Sök & Filtrera</h2>
+            <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
+              🔍 Sök & Filtrera
+            </h2>
             <div className="space-y-4">
               <select
                 value={selectedMonthId}
                 onChange={(e) => setSelectedMonthId(e.target.value)}
                 className="w-full border rounded px-3 py-2 text-sm"
-                style={{ borderColor: '#2c7a4c' }}
+                style={{ borderColor: "#2c7a4c" }}
               >
                 {months.map((m) => (
-                  <option key={m.id} value={m.id}>{m.id}</option>
+                  <option key={m.id} value={m.id}>
+                    {m.id}
+                  </option>
                 ))}
               </select>
               <input
                 type="text"
                 placeholder="🔍 Sök hund, ras, ägare…"
                 className="w-full border rounded px-3 py-2 text-sm"
-                style={{ borderColor: '#2c7a4c' }}
+                style={{ borderColor: "#2c7a4c" }}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -367,26 +404,31 @@ export default function HundpensionatPage() {
           </div>
 
           {/* PDF Export */}
-          <div 
+          <div
             className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
             style={{
-              padding: '40px 25px',
-              borderRadius: '12px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.06)'
+              padding: "40px 25px",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
             }}
           >
-            <h2 className="mt-0 mb-4" style={{ color: '#2c7a4c' }}>📄 Export</h2>
-            <p className="mb-6 text-base leading-relaxed" style={{ color: '#333' }}>
+            <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
+              📄 Export
+            </h2>
+            <p
+              className="mb-6 text-base leading-relaxed"
+              style={{ color: "#333" }}
+            >
               Exportera bokningar som PDF-rapport
             </p>
             <button
               onClick={exportPDF}
               className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
               style={{
-                padding: '12px 24px',
-                background: '#2c7a4c',
-                borderRadius: '8px',
-                border: 'none'
+                padding: "12px 24px",
+                background: "#2c7a4c",
+                borderRadius: "8px",
+                border: "none",
               }}
             >
               📄 Exportera PDF
@@ -394,56 +436,62 @@ export default function HundpensionatPage() {
           </div>
 
           {/* Sortering */}
-          <div 
+          <div
             className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
             style={{
-              padding: '40px 25px',
-              borderRadius: '12px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.06)'
+              padding: "40px 25px",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
             }}
           >
-            <h2 className="mt-0 mb-4" style={{ color: '#2c7a4c' }}>↕️ Sortering</h2>
+            <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
+              ↕️ Sortering
+            </h2>
             <div className="space-y-4">
               <select
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value)}
                 className="w-full border rounded px-3 py-2 text-sm"
-                style={{ borderColor: '#2c7a4c' }}
+                style={{ borderColor: "#2c7a4c" }}
               >
                 {columns.map((c) => (
-                  <option key={c.key} value={c.key}>{c.label}</option>
+                  <option key={c.key} value={c.key}>
+                    {c.label}
+                  </option>
                 ))}
               </select>
               <button
                 onClick={() => setSortAsc(!sortAsc)}
                 className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
                 style={{
-                  padding: '8px 16px',
-                  background: '#2c7a4c',
-                  borderRadius: '6px',
-                  border: 'none'
+                  padding: "8px 16px",
+                  background: "#2c7a4c",
+                  borderRadius: "6px",
+                  border: "none",
                 }}
               >
-                {sortAsc ? '↑ Stigande' : '↓ Fallande'}
+                {sortAsc ? "↑ Stigande" : "↓ Fallande"}
               </button>
             </div>
           </div>
         </div>
 
         {/* Bokningar Tabell */}
-        <div 
+        <div
           className="bg-white transition-transform duration-300 hover:-translate-y-1"
           style={{
-            padding: '40px 25px',
-            borderRadius: '12px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.06)'
+            padding: "40px 25px",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
           }}
         >
-          <h2 className="mt-0 mb-6 text-center" style={{ color: '#2c7a4c' }}>📋 Alla Bokningar ({sorted.length})</h2>
-          
+          <h2 className="mt-0 mb-6 text-center" style={{ color: "#2c7a4c" }}>
+            📋 Alla Bokningar ({sorted.length})
+          </h2>
+
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead style={{ backgroundColor: '#2c7a4c', color: 'white' }}>
+              <thead style={{ backgroundColor: "#2c7a4c", color: "white" }}>
                 <tr>
                   {columns.map((c) => (
                     <th
@@ -469,26 +517,36 @@ export default function HundpensionatPage() {
               <tbody className="divide-y divide-gray-200">
                 {sorted.map((booking) => (
                   <tr key={booking.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">{booking.rooms?.name || "Okänt rum"}</td>
-                    <td className="px-4 py-3">{booking.dogs?.name || "Okänd hund"}</td>
-                    <td className="px-4 py-3">{booking.dogs?.owners?.full_name || "Okänd ägare"}</td>
+                    <td className="px-4 py-3">
+                      {booking.rooms?.name || "Okänt rum"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {booking.dogs?.name || "Okänd hund"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {booking.dogs?.owners?.full_name || "Okänd ägare"}
+                    </td>
                     <td className="px-4 py-3">{booking.start_date}</td>
                     <td className="px-4 py-3">{booking.end_date}</td>
                     <td className="px-4 py-3">
-                      <span 
+                      <span
                         className={`px-2 py-1 rounded text-xs font-medium ${
-                          booking.status === 'confirmed' 
-                            ? 'bg-green-100 text-green-800' 
-                            : booking.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-gray-100 text-gray-800'
+                          booking.status === "confirmed"
+                            ? "bg-green-100 text-green-800"
+                            : booking.status === "pending"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-gray-100 text-gray-800"
                         }`}
                       >
                         {booking.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">{booking.total_price?.toLocaleString()} kr</td>
-                    <td className="px-4 py-3">{booking.discount_amount?.toLocaleString()} kr</td>
+                    <td className="px-4 py-3">
+                      {booking.total_price?.toLocaleString()} kr
+                    </td>
+                    <td className="px-4 py-3">
+                      {booking.discount_amount?.toLocaleString()} kr
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -497,181 +555,5 @@ export default function HundpensionatPage() {
         </div>
       </main>
     </div>
-
-        {/* Live-statistik rutor */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8">
-          {/* Hundar idag */}
-          <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-gray-200 p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-                  Hundar idag
-                </p>
-                <p className="text-2xl font-bold text-blue-700 mt-2">
-                  {liveStats.hundarIdag}
-                </p>
-              </div>
-              <div className="text-blue-600">🐕</div>
-            </div>
-          </div>
-
-          {/* Incheck idag */}
-          <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-gray-200 p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-                  Incheck idag
-                </p>
-                <p className="text-2xl font-bold text-green-700 mt-2">
-                  {liveStats.incheckIdag}
-                </p>
-              </div>
-              <div className="text-green-600">📥</div>
-            </div>
-          </div>
-
-          {/* Utcheck idag */}
-          <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-gray-200 p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-                  Utcheck idag
-                </p>
-                <p className="text-2xl font-bold text-orange-700 mt-2">
-                  {liveStats.utcheckIdag}
-                </p>
-              </div>
-              <div className="text-orange-600">📤</div>
-            </div>
-          </div>
-
-          {/* Tjänster imorgon */}
-          <div className="bg-white bg-opacity-20 backdrop-blur-sm border border-gray-200 p-6 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-                  Tjänster imorgon
-                </p>
-                <p className="text-2xl font-bold text-purple-700 mt-2">
-                  {liveStats.tjänsterImorgon}
-                </p>
-              </div>
-              <div className="text-purple-600">✂️</div>
-            </div>
-          </div>
-
-          {/* Skapa bokning - Knapp-ruta */}
-          <Link
-            href="/hundpensionat/nybokning"
-            className="bg-blue-600 hover:bg-blue-700 border border-blue-700 p-6 rounded-lg shadow-sm transition-colors group"
-          >
-            <div className="flex items-center justify-between text-white">
-              <div>
-                <p className="text-sm font-medium uppercase tracking-wide opacity-90">
-                  Skapa bokning
-                </p>
-                <p className="text-lg font-bold mt-2 group-hover:scale-105 transition-transform">
-                  Ny bokning
-                </p>
-              </div>
-              <div className="text-2xl">➕</div>
-            </div>
-          </Link>
-
-          {/* Kalender - Knapp-ruta */}
-          <Link
-            href="/hundpensionat/kalender"
-            className="bg-gray-600 hover:bg-gray-700 border border-gray-700 p-6 rounded-lg shadow-sm transition-colors group"
-          >
-            <div className="flex items-center justify-between text-white">
-              <div>
-                <p className="text-sm font-medium uppercase tracking-wide opacity-90">
-                  Kalender
-                </p>
-                <p className="text-lg font-bold mt-2 group-hover:scale-105 transition-transform">
-                  Visa kalender
-                </p>
-              </div>
-              <div className="text-2xl">📅</div>
-            </div>
-          </Link>
-
-          {/* Hundrum - Knapp-ruta */}
-          <Link
-            href="/rooms"
-            className="bg-green-600 hover:bg-green-700 border border-green-700 p-6 rounded-lg shadow-sm transition-colors group"
-          >
-            <div className="flex items-center justify-between text-white">
-              <div>
-                <p className="text-sm font-medium uppercase tracking-wide opacity-90">
-                  Hundrum
-                </p>
-                <p className="text-lg font-bold mt-2 group-hover:scale-105 transition-transform">
-                  Hantera rum
-                </p>
-              </div>
-              <div className="text-2xl">🏠</div>
-            </div>
-          </Link>
-        </div>
-
-        {/* Tabell */}
-        <div className="overflow-x-auto bg-white shadow-md rounded-xl border border-gray-200">
-          <table className="min-w-full text-sm">
-            <thead style={{ backgroundColor: PRIMARY_BLUE, color: "white" }}>
-              <tr>
-                {columns.map((c) => (
-                  <th
-                    key={c.key}
-                    onClick={() => {
-                      if (sortKey === c.key) setSortAsc(!sortAsc);
-                      else {
-                        setSortKey(c.key);
-                        setSortAsc(true);
-                      }
-                    }}
-                    className="px-4 py-3 text-left cursor-pointer select-none"
-                  >
-                    {c.label} {sortKey === c.key && (sortAsc ? "▲" : "▼")}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {sorted.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="text-center text-gray-500 py-6"
-                  >
-                    Inga bokningar hittades.
-                  </td>
-                </tr>
-              ) : (
-                sorted.map((b) => (
-                  <tr
-                    key={b.id}
-                    className="border-t hover:bg-gray-50 transition"
-                  >
-                    <td className="px-4 py-3">{b.rooms?.name ?? "—"}</td>
-                    <td className="px-4 py-3">{b.dogs?.name ?? "—"}</td>
-                    <td className="px-4 py-3">
-                      {b.dogs?.owners?.full_name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3">{b.start_date}</td>
-                    <td className="px-4 py-3">{b.end_date}</td>
-                    <td className="px-4 py-3">{b.status}</td>
-                    <td className="px-4 py-3">{b.total_price ?? "—"}</td>
-                    <td className="px-4 py-3">
-                      {b.discount_amount ? `${b.discount_amount} kr` : "—"}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </main>
   );
 }
