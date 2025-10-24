@@ -4,6 +4,34 @@
 export interface Database {
   public: {
     Tables: {
+      // === ABONNEMANG ===
+      subscriptions: {
+        Row: {
+          id: string;
+          org_id: string;
+          plan: string;
+          status: string;
+          trial_starts_at?: string | null;
+          trial_ends_at?: string | null;
+          created_at: string;
+        };
+        Insert: {
+          org_id: string;
+          plan: string;
+          status: string;
+          trial_starts_at?: string | null;
+          trial_ends_at?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<{
+          org_id: string;
+          plan: string;
+          status: string;
+          trial_starts_at?: string | null;
+          trial_ends_at?: string | null;
+          created_at?: string;
+        }>;
+      };
       // === ORGANISATIONER ===
       orgs: {
         Row: {

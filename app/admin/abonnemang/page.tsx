@@ -13,6 +13,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { Inserts } from "@/types/database";
 import { useAuth } from "@/app/context/AuthContext";
 
 interface SubscriptionData {
@@ -37,6 +38,40 @@ export default function AdminAbonnemangPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [creating, setCreating] = useState(false);
+  // Skapa ny prenumeration
+  const createSubscription = async () => {
+    if (!currentOrgId) return;
+    setCreating(true);
+    setError(null);
+    try {
+      const { data, error } = await (supabase as any)
+        .from("subscriptions")
+        .insert([
+          {
+            org_id: currentOrgId,
+            plan: "standard", // eller välj plan dynamiskt
+            status: "active",
+            created_at: new Date().toISOString(),
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(`[ERR-4001] Skapa prenumeration: ${error.message}`);
+      }
+      await loadSubscription();
+      alert("Prenumerationen har skapats!");
+    } catch (err: any) {
+      console.error("Error creating subscription:", err);
+      setError(
+        err.message || "[ERR-5001] Okänt fel vid skapande av prenumeration"
+      );
+    } finally {
+      setCreating(false);
+    }
+  };
 
   useEffect(() => {
     if (currentOrgId) {
@@ -302,8 +337,12 @@ export default function AdminAbonnemangPage() {
                 <p className="text-gray-600">
                   Ingen aktiv prenumeration hittades
                 </p>
-                <Button className="mt-4 bg-purple-600 hover:bg-purple-700 text-white">
-                  Skapa ny prenumeration
+                <Button
+                  className="mt-4 bg-purple-600 hover:bg-purple-700 text-white"
+                  onClick={createSubscription}
+                  disabled={creating}
+                >
+                  {creating ? "Skapar..." : "Skapa ny prenumeration"}
                 </Button>
               </div>
             )}
