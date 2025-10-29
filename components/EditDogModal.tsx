@@ -6,8 +6,8 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 /** Props */
 type Props = {
   open: boolean;
-  onClose: () => void;
-  onSaved: () => Promise<void> | void;
+  onCloseAction: () => void;
+  onSavedAction: () => Promise<void> | void;
 };
 
 /** Typer */
@@ -58,7 +58,11 @@ function TabButton({
   );
 }
 
-export default function EditDogModal({ open, onClose, onSaved }: Props) {
+export default function EditDogModal({
+  open,
+  onCloseAction,
+  onSavedAction,
+}: Props) {
   const supabase = createClientComponentClient(); // Korrekt klient för client components
 
   // UI
@@ -401,8 +405,8 @@ export default function EditDogModal({ open, onClose, onSaved }: Props) {
       }
 
       setOk("Hunden är sparad ✅");
-      await Promise.resolve(onSaved?.()); // Hundlistan laddar om i din sida:contentReference[oaicite:4]{index=4}
-      onClose();
+      await Promise.resolve(onSavedAction?.()); // Hundlistan laddar om i din sida
+      onCloseAction();
     } catch (e: any) {
       console.error("❌ Save error:", {
         message: e?.message,
@@ -439,7 +443,7 @@ export default function EditDogModal({ open, onClose, onSaved }: Props) {
             </div>
           </div>
           <button
-            onClick={onClose}
+            onClick={onCloseAction}
             className="rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-50"
           >
             Stäng
@@ -1016,7 +1020,7 @@ export default function EditDogModal({ open, onClose, onSaved }: Props) {
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 px-5 py-4 border-t">
           <button
-            onClick={onClose}
+            onClick={onCloseAction}
             className="rounded-lg border px-4 py-2 text-sm hover:bg-gray-50"
           >
             Avbryt

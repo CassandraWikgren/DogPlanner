@@ -1626,8 +1626,8 @@ export default function HunddagisPage() {
           {showModal && (
             <EditDogModal
               open={showModal}
-              onClose={() => setShowModal(false)}
-              onSaved={handleSaved}
+              onCloseAction={() => setShowModal(false)}
+              onSavedAction={handleSaved}
             />
           )}
         </div>
