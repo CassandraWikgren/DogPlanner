@@ -3,21 +3,25 @@ import Image from "next/image";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#fdfdfd] flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white text-gray-800">
       {/* Header */}
-      <header className="flex justify-between items-center px-10 py-4 bg-[#2c7a4c] text-white">
-        <Image
-          src="/logo.png"
-          alt="DogPlanner logotyp"
-          width={42}
-          height={42}
-          className="h-[42px] w-auto"
-        />
+      <header className="flex justify-between items-center px-10 py-4 shadow-sm bg-white">
+        <div className="flex items-center gap-2">
+          <Image
+            src="/logo.png"
+            alt="DogPlanner logotyp"
+            width={42}
+            height={42}
+            className="h-[42px] w-auto"
+          />
+          <span className="font-semibold text-xl text-[#2c7a4c]">
+            DogPlanner
+          </span>
+        </div>
         <nav>
           <Link
             href="/login"
-            className="login-btn font-bold px-4 py-2 rounded-md hover:bg-white/30 transition-colors"
-            style={{ color: "white", background: "rgba(255,255,255,0.2)" }}
+            className="px-4 py-2 font-medium text-[#2c7a4c] border border-[#2c7a4c] rounded-lg hover:bg-[#2c7a4c] hover:text-white transition"
           >
             Logga in
           </Link>
@@ -25,73 +29,76 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <section
-        className="hero flex flex-col items-center justify-center text-center py-24 px-4 bg-cover bg-center relative"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(44,122,76,0.85),rgba(44,122,76,0.85)),url(https://images.unsplash.com/photo-1558788353-f76d92427f16?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80)",
-        }}
-      >
+      <section className="relative flex flex-col items-center justify-center text-center px-6 py-28 md:py-40 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-white/60 to-white/90 z-10"></div>
         <Image
-          src="/logo.png"
-          alt="DogPlanner logotyp"
-          width={220}
-          height={80}
-          className="hero-logo mb-6 drop-shadow-lg"
+          src="https://images.unsplash.com/photo-1560807707-8cc77767d783?auto=format&fit=crop&w=1600&q=80"
+          alt="Hund som springer i gräs"
+          fill
+          priority
+          className="object-cover object-center opacity-90"
         />
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          Få full koll på din hundverksamhet
-        </h1>
-        <p className="text-lg md:text-xl mb-8 leading-relaxed">
-          DogPlanner gör det enkelt att driva hunddagis och pensionat.
-          <br className="hidden md:block" />
-          Mer tid för hundarna, mindre för papper.
-        </p>
-        <Link
-          href="/register"
-          className="btn primary inline-block px-7 py-3 bg-white text-[#2c7a4c] font-bold rounded-lg text-lg shadow hover:bg-[#e6f4ea] transition"
-        >
-          Prova gratis i 2 månader
-        </Link>
+        <div className="relative z-20 max-w-2xl">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#2c7a4c] mb-6 leading-tight">
+            Det smarta sättet att driva hunddagis och pensionat
+          </h1>
+          <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
+            Med DogPlanner får du full koll på bokningar, fakturor och scheman –
+            så att du kan lägga mer tid på hundarna 🐾
+          </p>
+          <Link
+            href="/register"
+            className="inline-block bg-[#2c7a4c] text-white font-semibold px-8 py-3 rounded-lg shadow hover:bg-[#256d43] transition"
+          >
+            Starta gratis i 3 månader
+          </Link>
+        </div>
       </section>
 
       {/* Features */}
-      <section className="features max-w-5xl mx-auto my-16 px-4 text-center">
-        <h2 className="text-2xl font-bold text-[#2c7a4c] mb-10">
-          Varför välja DogPlanner?
+      <section className="max-w-6xl mx-auto px-6 py-20">
+        <h2 className="text-3xl font-bold text-center text-[#2c7a4c] mb-14">
+          Varför DogPlanner?
         </h2>
-        <div className="feature-list grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="feature bg-white p-8 rounded-xl shadow hover:-translate-y-1 transition-transform">
-            <div className="feature-icon text-4xl mb-3">📅</div>
-            <h3 className="text-lg font-semibold text-[#2c7a4c] mb-2">
-              Spara tid
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="bg-white border border-gray-100 shadow-md rounded-2xl p-8 text-center hover:shadow-lg transition">
+            <div className="text-5xl mb-4">📅</div>
+            <h3 className="font-semibold text-lg text-[#2c7a4c] mb-2">
+              Enkel planering
             </h3>
-            <p>
-              All planering samlad på ett ställe – schema, bokningar och notiser
-              hanteras enkelt.
+            <p className="text-gray-600">
+              Hantera scheman, bokningar och notiser på ett ställe – snabbt och
+              smidigt.
             </p>
           </div>
-          <div className="feature bg-white p-8 rounded-xl shadow hover:-translate-y-1 transition-transform">
-            <div className="feature-icon text-4xl mb-3">📊</div>
-            <h3 className="text-lg font-semibold text-[#2c7a4c] mb-2">
-              Ha full kontroll
+
+          <div className="bg-white border border-gray-100 shadow-md rounded-2xl p-8 text-center hover:shadow-lg transition">
+            <div className="text-5xl mb-4">💳</div>
+            <h3 className="font-semibold text-lg text-[#2c7a4c] mb-2">
+              Automatiserad fakturering
             </h3>
-            <p>
-              Få en tydlig överblick över hundar, kunder och personal i realtid.
+            <p className="text-gray-600">
+              Skicka fakturor och följ betalningar automatiskt – spara tid och
+              undvik fel.
             </p>
           </div>
-          <div className="feature bg-white p-8 rounded-xl shadow hover:-translate-y-1 transition-transform">
-            <div className="feature-icon text-4xl mb-3">💳</div>
-            <h3 className="text-lg font-semibold text-[#2c7a4c] mb-2">
-              Smidig fakturering
+
+          <div className="bg-white border border-gray-100 shadow-md rounded-2xl p-8 text-center hover:shadow-lg transition">
+            <div className="text-5xl mb-4">📈</div>
+            <h3 className="font-semibold text-lg text-[#2c7a4c] mb-2">
+              Full överblick
             </h3>
-            <p>
-              Automatisera abonnemang och fakturor så du slipper manuell
-              hantering.
+            <p className="text-gray-600">
+              Se beläggning, kundhistorik och statistik direkt i din dashboard.
             </p>
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-50 py-8 border-t text-center text-gray-500 text-sm">
+        © {new Date().getFullYear()} DogPlanner. Alla rättigheter förbehållna.
+      </footer>
     </div>
   );
 }
