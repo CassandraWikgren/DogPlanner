@@ -6,5 +6,5 @@ export function middleware(request: Request) {
 }
 
 export const config = {
-  matcher: ["/(?!_next|static|favicon.ico|robots.txt|api/health).*"],
+  matcher: ["/((?!_next/|favicon.ico|robots.txt).*)"],
 };
