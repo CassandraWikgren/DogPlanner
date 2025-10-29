@@ -14,18 +14,19 @@ export default function Navbar() {
 
   return (
     <nav className="bg-[#2c7a4c] text-white shadow fixed top-0 left-0 w-full z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logotyp - Klickbar till Dashboard */}
-        {/* Visa endast logotypen, större, om utloggad. Logotyp + text om inloggad */}
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-center md:justify-between">
+        {/* Logotyp - endast logga när utloggad, logga + meny när inloggad */}
         <Link
           href={user ? "/dashboard" : "/"}
-          className="flex items-center hover:opacity-90 transition-opacity"
+          className={`flex items-center hover:opacity-90 transition-opacity ${
+            user ? "" : "mx-auto"
+          }`}
         >
           <Image
             src="/logo.png"
             alt="DogPlanner logotyp"
-            width={64}
-            height={64}
+            width={user ? 48 : 72}
+            height={user ? 48 : 72}
             priority
             className="rounded-lg"
           />
