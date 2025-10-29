@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import { NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 import PDFDocument from "pdfkit";
 import streamBuffers from "stream-buffers";
 
@@ -46,11 +47,7 @@ type InvoiceResult = {
 // Supabase-konfiguration
 // ==========================
 
-const supabase = createServerClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { cookies: { get: () => "" } }
-);
+const supabase = createRouteHandlerClient({ cookies });
 
 // ==========================
 // POST – generera faktura-PDF

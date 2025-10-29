@@ -1,12 +1,9 @@
 // app/api/subscription/upgrade/route.ts
 import { NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
-const supabase = createServerClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { cookies: { get: () => "" } }
-);
+const supabase = createRouteHandlerClient({ cookies });
 
 export async function POST(req: Request) {
   try {

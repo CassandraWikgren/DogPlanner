@@ -3,7 +3,8 @@ console.log("SUPABASE_URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 console.log("SUPABASE_ANON_KEY:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { createServerClient } from "@supabase/ssr";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
 // --- Kontrollera att alla miljövariabler finns ---
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -46,11 +47,7 @@ export async function POST(req: Request) {
     }
 
     // Skapa Supabase-klient utan cookies-objekt (endast URL och ANON_KEY)
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { cookies: { get: () => "" } }
-    );
+    const supabase = createRouteHandlerClient({ cookies });
 
     const { data: userData, error: userErr } = await supabase.auth.getUser(
       token

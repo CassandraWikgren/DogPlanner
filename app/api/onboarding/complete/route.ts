@@ -1,6 +1,7 @@
 // app/api/onboarding/complete/route.ts
 import { NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   try {
@@ -14,11 +15,7 @@ export async function POST(req: Request) {
     }
 
     // Skapa Supabase-klient (service role key för admin-operationer)
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { cookies: { get: () => "" } }
-    );
+    const supabase = createRouteHandlerClient({ cookies });
     // 1) Verifiera vem som anropar
     const { data: userData, error: userErr } = await supabase.auth.getUser(
       token
