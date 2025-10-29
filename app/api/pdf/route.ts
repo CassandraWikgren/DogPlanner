@@ -1,6 +1,6 @@
 import QRCode from "qrcode";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 import PDFDocument from "pdfkit";
 import streamBuffers from "stream-buffers";
 
@@ -46,9 +46,10 @@ type InvoiceResult = {
 // Supabase-konfiguration
 // ==========================
 
-const supabase = createClient(
+const supabase = createServerClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { cookies: { get: () => "" } }
 );
 
 // ==========================

@@ -2,8 +2,7 @@
 
 import "./globals.css";
 import React, { useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import { createBrowserClient } from "@supabase/ssr";
 import { AuthProvider, useAuth } from "@/app/context/AuthContext"; // ✅ korrekt import
 import { NotificationProvider } from "@/app/context/NotificationContext";
 import Navbar from "@/components/Navbar";
@@ -31,18 +30,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   // ✅ Skapa Supabase-klient endast en gång
-  const [supabase] = useState(() => createClientComponentClient());
+  const [supabase] = useState(() =>
+    createBrowserClient<import("@/types/database").Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+  );
 
   return (
     <html lang="sv" suppressHydrationWarning>
       <body className="min-h-screen font-sans antialiased selection:bg-[#2c7a4c]/20 selection:text-[#2c7a4c]">
-        <SessionContextProvider supabaseClient={supabase}>
-          <AuthProvider>
-            <NotificationProvider>
-              <LayoutContent>{children}</LayoutContent>
-            </NotificationProvider>
-          </AuthProvider>
-        </SessionContextProvider>
+        <AuthProvider>
+          <NotificationProvider>
+            <LayoutContent>{children}</LayoutContent>
+          </NotificationProvider>
+        </AuthProvider>
       </body>
     </html>
   );

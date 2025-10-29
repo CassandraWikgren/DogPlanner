@@ -28,7 +28,7 @@ type AuthCtx = {
   signOut: () => Promise<void>;
 };
 
-const AuthContext = createContext<AuthCtx>({
+export const AuthContext = createContext<AuthCtx>({
   user: null,
   profile: null,
   currentOrgId: null,

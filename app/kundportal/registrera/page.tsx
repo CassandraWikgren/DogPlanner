@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
+import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, PawPrint, User, Users } from "lucide-react";
@@ -16,6 +17,7 @@ const ERROR_CODES = {
 } as const;
 
 export default function CustomerRegisterPage() {
+  const { user } = useAuth();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -107,7 +109,10 @@ export default function CustomerRegisterPage() {
     setSuccess(null);
 
     try {
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
 
       // Validera sista steget
       const stepError = validateStep3();

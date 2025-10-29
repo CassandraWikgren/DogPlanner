@@ -16,62 +16,59 @@ export default function Navbar() {
     <nav className="bg-[#2c7a4c] text-white shadow fixed top-0 left-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logotyp - Klickbar till Dashboard */}
+        {/* Visa endast logotypen, större, om utloggad. Logotyp + text om inloggad */}
         <Link
-          href="/dashboard"
-          className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+          href={user ? "/dashboard" : "/"}
+          className="flex items-center hover:opacity-90 transition-opacity"
         >
           <Image
             src="/logo.png"
             alt="DogPlanner logotyp"
-            width={48}
-            height={48}
+            width={64}
+            height={64}
             priority
             className="rounded-lg"
           />
-          <span className="font-bold text-xl tracking-tight">DogPlanner</span>
         </Link>
 
-        {/* Desktop-navigering */}
-        <div className="hidden md:flex gap-8 text-sm font-medium">
-          <Link
-            href="/dashboard"
-            className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
-          >
-            Dashboard
-          </Link>
-          <Link
-            href="/hunddagis"
-            className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
-          >
-            Hunddagis
-          </Link>
-          <Link
-            href="/hundpensionat"
-            className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
-          >
-            Pensionat
-          </Link>
-          <Link
-            href="/owners"
-            className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
-          >
-            Kunder
-          </Link>
-          <Link
-            href="/rooms"
-            className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
-          >
-            Rum
-          </Link>
-        </div>
-
-        {/* Höger: notifikationer + användare + login/logout */}
-        <div className="hidden md:flex items-center gap-4">
-          {user && (
-            <>
+        {/* Desktop-navigering och användarmeny visas endast om inloggad */}
+        {user && (
+          <>
+            <div className="hidden md:flex gap-8 text-sm font-medium">
+              <Link
+                href="/dashboard"
+                className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/hunddagis"
+                className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
+              >
+                Hunddagis
+              </Link>
+              <Link
+                href="/hundpensionat"
+                className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
+              >
+                Pensionat
+              </Link>
+              <Link
+                href="/owners"
+                className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
+              >
+                Kunder
+              </Link>
+              <Link
+                href="/rooms"
+                className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
+              >
+                Rum
+              </Link>
+            </div>
+            <div className="hidden md:flex items-center gap-4">
               {/* Notifikations-dropdown */}
               <NotificationDropdown />
-
               <div className="flex flex-col text-right text-sm leading-tight">
                 <span className="font-semibold">
                   {user.email?.split("@")[0] || "Användare"}
@@ -88,25 +85,15 @@ export default function Navbar() {
                   </span>
                 )}
               </div>
-            </>
-          )}
-
-          {user ? (
-            <button
-              onClick={logout}
-              className="bg-white text-[#2c7a4c] px-4 py-1 rounded-md font-semibold hover:bg-[#e6f4ea] transition"
-            >
-              Logga ut
-            </button>
-          ) : (
-            <Link
-              href={"/login" as const}
-              className="bg-white text-[#2c7a4c] px-4 py-1 rounded-md font-semibold hover:bg-[#e6f4ea] transition"
-            >
-              Logga in
-            </Link>
-          )}
-        </div>
+              <button
+                onClick={logout}
+                className="bg-white text-[#2c7a4c] px-4 py-1 rounded-md font-semibold hover:bg-[#e6f4ea] transition"
+              >
+                Logga ut
+              </button>
+            </div>
+          </>
+        )}
 
         {/* Mobil: hamburgermeny */}
         <button

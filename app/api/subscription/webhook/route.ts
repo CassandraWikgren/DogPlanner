@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-09-30.clover" as any,
 });
 
-const supabaseAdmin = createClient(
+const supabase = createServerClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { cookies: { get: () => "" } }
 );
 
 export async function POST(req: Request) {
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
 
       if (org_id) {
         // Uppdatera abonnemanget i Supabase
-        await supabaseAdmin
+        await supabase
           .from("subscriptions")
           .update({
             status: "active",

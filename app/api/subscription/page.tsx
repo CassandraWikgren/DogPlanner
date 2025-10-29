@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "@supabase/auth-helpers-react";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function SubscriptionPage() {
-  const session = useSession();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
   // 🧠 Klick-funktion för att starta betalning
   async function startCheckout(plan: "basic" | "dual" | "full") {
-    if (!session) {
+    if (!user) {
       alert("Du måste vara inloggad för att kunna köpa ett abonnemang.");
       return;
     }
@@ -20,7 +20,7 @@ export default function SubscriptionPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${user.access_token}`,
         },
         body: JSON.stringify({ plan }),
       });

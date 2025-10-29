@@ -1,7 +1,6 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import React, { useState, useEffect } from "react";
+import { createBrowserClient } from "@supabase/ssr";
 import {
   Dialog,
   DialogContent,
@@ -22,8 +21,23 @@ interface OwnerForm {
   contact_phone_2?: string | null;
 }
 
-export default function EditOwnerModal({ owner, open, onClose, refresh }: any) {
-  const supabase = useSupabaseClient();
+interface EditOwnerModalProps {
+  open: boolean;
+  onClose: () => void;
+  owner: any;
+  refresh?: () => void;
+}
+
+export function EditOwnerModal({
+  open,
+  onClose,
+  owner,
+  refresh,
+}: EditOwnerModalProps) {
+  const supabase = createBrowserClient<any>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const [form, setForm] = useState<OwnerForm>(owner || {});
 
   useEffect(() => {
@@ -34,38 +48,47 @@ export default function EditOwnerModal({ owner, open, onClose, refresh }: any) {
     try {
       if (!owner?.customer_number && !owner?.id) {
         // Ny ägare (customer_number sätts av trigger)
-        const { error } = await supabase.from("owners").insert({
-          full_name: form.full_name ?? null,
+        const insertData = {
+          full_name: form.full_name ?? "",
           phone: form.phone ?? null,
           email: form.email ?? null,
           contact_person_2: form.contact_person_2 ?? null,
           contact_phone_2: form.contact_phone_2 ?? null,
-        });
+          address: null,
+          org_id: "", // TODO: set correct org_id if needed
+          notes: null,
+          customer_number: null,
+        };
+        const { error } = await supabase
+          .from("owners")
+          .insert(insertData as any);
         if (error) throw error;
       } else if (owner?.id) {
         // Uppdatera via id om vi har den
+        const updateData = {
+          full_name: form.full_name ?? undefined,
+          phone: form.phone ?? undefined,
+          email: form.email ?? undefined,
+          contact_person_2: form.contact_person_2 ?? undefined,
+          contact_phone_2: form.contact_phone_2 ?? undefined,
+        };
         const { error } = await supabase
           .from("owners")
-          .update({
-            full_name: form.full_name ?? null,
-            phone: form.phone ?? null,
-            email: form.email ?? null,
-            contact_person_2: form.contact_person_2 ?? null,
-            contact_phone_2: form.contact_phone_2 ?? null,
-          })
+          .update(updateData as any)
           .eq("id", owner.id);
         if (error) throw error;
       } else {
         // Uppdatera via customer_number
+        const updateData = {
+          full_name: form.full_name ?? undefined,
+          phone: form.phone ?? undefined,
+          email: form.email ?? undefined,
+          contact_person_2: form.contact_person_2 ?? undefined,
+          contact_phone_2: form.contact_phone_2 ?? undefined,
+        };
         const { error } = await supabase
           .from("owners")
-          .update({
-            full_name: form.full_name ?? null,
-            phone: form.phone ?? null,
-            email: form.email ?? null,
-            contact_person_2: form.contact_person_2 ?? null,
-            contact_phone_2: form.contact_phone_2 ?? null,
-          })
+          .update(updateData as any)
           .eq("customer_number", owner.customer_number);
         if (error) throw error;
       }

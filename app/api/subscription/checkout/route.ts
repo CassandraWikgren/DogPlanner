@@ -1,17 +1,29 @@
+// Tillfällig loggning för felsökning av miljövariabler på Vercel
+console.log("SUPABASE_URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log("SUPABASE_ANON_KEY:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+
+// --- Kontrollera att alla miljövariabler finns ---
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+if (!url || !anonKey || url.trim() === "" || anonKey.trim() === "") {
+  console.error(
+    `[ERR-1001] Saknar Supabase-nycklar: NEXT_PUBLIC_SUPABASE_URL='${url}', NEXT_PUBLIC_SUPABASE_ANON_KEY='${anonKey}'`
+  );
+  throw new Error(
+    `[ERR-1001] Saknar Supabase-nycklar.\nNEXT_PUBLIC_SUPABASE_URL='${url}'\nNEXT_PUBLIC_SUPABASE_ANON_KEY='${anonKey}'\nKolla att båda är korrekt satta i Vercel Environment Variables!`
+  );
+}
 
 // --- Stripe-klient ---
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20" as any,
 });
 
-// --- Supabase Admin-klient ---
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// --- Stripe-priser (fyll i dina faktiska pris-ID:n från Stripe Dashboard) ---
+// Supabase-klient måste skapas inuti POST-funktionen för att få tillgång till cookies
 
 // --- Stripe-priser (fyll i dina faktiska pris-ID:n från Stripe Dashboard) ---
 const PRICE_IDS: Record<string, string> = {
@@ -33,7 +45,14 @@ export async function POST(req: Request) {
       );
     }
 
-    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(
+    // Skapa Supabase-klient utan cookies-objekt (endast URL och ANON_KEY)
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { cookies: { get: () => "" } }
+    );
+
+    const { data: userData, error: userErr } = await supabase.auth.getUser(
       token
     );
     if (userErr || !userData?.user) {
@@ -46,7 +65,7 @@ export async function POST(req: Request) {
     const user = userData.user;
 
     // --- 2. Hämta profil och org kopplad till användaren ---
-    const { data: profile, error: profileErr } = await supabaseAdmin
+    const { data: profile, error: profileErr } = await supabase
       .from("profiles")
       .select("org_id, full_name")
       .eq("id", user.id)
@@ -60,7 +79,7 @@ export async function POST(req: Request) {
     }
 
     // --- 3. Hämta organisationsnamn ---
-    const { data: org } = await supabaseAdmin
+    const { data: org } = await supabase
       .from("orgs")
       .select("name")
       .eq("id", profile.org_id)

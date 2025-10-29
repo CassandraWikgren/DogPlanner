@@ -3,7 +3,8 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
+import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, PawPrint, Mail, Lock } from "lucide-react";
@@ -15,6 +16,7 @@ const ERROR_CODES = {
 } as const;
 
 function LoginPageContent() {
+  const { user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -48,7 +50,10 @@ function LoginPageContent() {
         throw new Error(`${ERROR_CODES.AUTH} E-post och lösenord krävs`);
       }
 
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
 
       // Logga in med Supabase Auth
       const { data, error: authError } = await supabase.auth.signInWithPassword(

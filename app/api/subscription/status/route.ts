@@ -1,10 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { createServerClient } from "@supabase/ssr";
 
 export async function GET(req: Request) {
   try {
@@ -18,8 +13,14 @@ export async function GET(req: Request) {
       );
     }
 
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { cookies: { get: () => "" } }
+    );
+
     // 🧩 Hämta användaren från token
-    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(
+    const { data: userData, error: userErr } = await supabase.auth.getUser(
       token
     );
     if (userErr || !userData?.user) {
@@ -32,7 +33,7 @@ export async function GET(req: Request) {
     const user = userData.user;
 
     // 🧩 Hämta organisation (org_id) från profilen
-    const { data: profile, error: profErr } = await supabaseAdmin
+    const { data: profile, error: profErr } = await supabase
       .from("profiles")
       .select("org_id")
       .eq("id", user.id)
@@ -46,7 +47,7 @@ export async function GET(req: Request) {
     }
 
     // 🧩 Hämta abonnemang kopplat till organisationen
-    const { data: sub, error: subErr } = await supabaseAdmin
+    const { data: sub, error: subErr } = await supabase
       .from("subscriptions")
       .select("status, trial_ends_at")
       .eq("org_id", profile.org_id)
@@ -58,7 +59,6 @@ export async function GET(req: Request) {
       // Om inget abonnemang hittas, ge standardvärden
       return NextResponse.json({
         status: "trialing",
-        expired: false,
         trial_ends_at: null,
       });
     }

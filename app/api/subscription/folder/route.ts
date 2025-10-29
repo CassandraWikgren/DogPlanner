@@ -1,10 +1,11 @@
 // app/api/subscription/status/route.ts
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 
-const supabaseAdmin = createClient(
+const supabase = createServerClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { cookies: { get: () => "" } }
 );
 
 export async function GET(req: Request) {
@@ -19,7 +20,7 @@ export async function GET(req: Request) {
     }
 
     // Hämta användaren från token
-    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(
+    const { data: userData, error: userErr } = await supabase.auth.getUser(
       token
     );
     if (userErr || !userData?.user) {
@@ -30,7 +31,7 @@ export async function GET(req: Request) {
     }
 
     // Hämta org_id via profil
-    const { data: profile, error: profErr } = await supabaseAdmin
+    const { data: profile, error: profErr } = await supabase
       .from("profiles")
       .select("org_id")
       .eq("id", userData.user.id)
@@ -44,7 +45,7 @@ export async function GET(req: Request) {
     }
 
     // Senaste abonnemang för org
-    const { data: sub, error: subErr } = await supabaseAdmin
+    const { data: sub, error: subErr } = await supabase
       .from("subscriptions")
       .select("status, trial_ends_at")
       .eq("org_id", profile.org_id)

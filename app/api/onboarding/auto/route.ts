@@ -1,10 +1,11 @@
 // app/api/onboarding/auto/route.ts
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 
-const supabaseAdmin = createClient(
+const supabase = createServerClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { cookies: { get: () => "" } }
 );
 
 export async function POST(req: Request) {
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
       );
 
     // Hämta användaren
-    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(
+    const { data: userData, error: userErr } = await supabase.auth.getUser(
       token
     );
     if (userErr || !userData?.user)
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
     const userId = user.id;
 
     // Kolla om användaren redan är kopplad till en org (då är den klar)
-    const { data: existingProfile } = await supabaseAdmin
+    const { data: existingProfile } = await supabase
       .from("profiles")
       .select("org_id")
       .eq("id", userId)
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
     const orgNumber = user.user_metadata?.org_number || null;
 
     // Skapa organisationen
-    const { data: org, error: orgErr } = await supabaseAdmin
+    const { data: org, error: orgErr } = await supabase
       .from("orgs")
       .insert([{ name: orgName, org_number: orgNumber }])
       .select("id")
@@ -59,7 +60,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: orgErr.message }, { status: 400 });
 
     // Uppdatera profil
-    const { error: profErr } = await supabaseAdmin
+    const { error: profErr } = await supabase
       .from("profiles")
       .update({ org_id: org.id, role: "admin", full_name: fullName })
       .eq("id", userId);
@@ -69,7 +70,7 @@ export async function POST(req: Request) {
     // Skapa 3 månader gratis prenumeration
     const trialEnds = new Date();
     trialEnds.setMonth(trialEnds.getMonth() + 3);
-    await supabaseAdmin.from("subscriptions").insert([
+    await supabase.from("subscriptions").insert([
       {
         org_id: org.id,
         plan: "basic",

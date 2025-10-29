@@ -1,11 +1,6 @@
 // app/api/onboarding/complete/route.ts
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // server-only
-);
+import { createServerClient } from "@supabase/ssr";
 
 export async function POST(req: Request) {
   try {
@@ -18,8 +13,14 @@ export async function POST(req: Request) {
       );
     }
 
+    // Skapa Supabase-klient (service role key för admin-operationer)
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { cookies: { get: () => "" } }
+    );
     // 1) Verifiera vem som anropar
-    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(
+    const { data: userData, error: userErr } = await supabase.auth.getUser(
       token
     );
     if (userErr || !userData?.user) {
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
     }
 
     // 3) Skapa organisation
-    const { data: org, error: orgErr } = await supabaseAdmin
+    const { data: org, error: orgErr } = await supabase
       .from("orgs")
       .insert([{ name: orgName }])
       .select("id, name, created_at")
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
     const patch: Record<string, any> = { org_id: org.id, role: "admin" };
     if (fullName && typeof fullName === "string") patch.full_name = fullName;
 
-    const { error: profErr } = await supabaseAdmin
+    const { error: profErr } = await supabase
       .from("profiles")
       .update(patch)
       .eq("id", userId);
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
     const trialEndsAt = new Date();
     trialEndsAt.setMonth(trialEndsAt.getMonth() + 3);
 
-    const { error: subErr } = await supabaseAdmin.from("subscriptions").insert([
+    const { error: subErr } = await supabase.from("subscriptions").insert([
       {
         org_id: org.id,
         status: "trialing", // 'trialing' | 'active' | 'past_due' | 'canceled'

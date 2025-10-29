@@ -109,6 +109,43 @@ Row Level Security (RLS) är aktiverat så att varje användare bara ser sin ege
 
 ---
 
+## 🗂️ Mappstruktur (App Router)
+
+```
+dogplanner/
+├── app/                # Next.js App Router, alla routes & sidor
+│   ├── layout.tsx      # Global layout, navbar, providers
+│   ├── page.tsx        # Marknads-/startsida (utloggad), redirect till dashboard (inloggad)
+│   ├── globals.css     # Global CSS (Tailwind + egna)
+│   ├── ...             # Alla routes: dashboard, hunddagis, pensionat, kundportal, mm
+│   └── context/        # AuthContext, NotificationContext mm
+├── components/         # Återanvändbara UI-komponenter (Navbar, Modal, ui/ mm)
+├── lib/                # Affärslogik, helpers, Supabase-klient
+├── types/              # TypeScript-typer (Supabase, domänmodeller)
+├── supabase/           # SQL-schema, triggers, policies, testdata
+├── public/             # Bilder, logotyper, statiska filer
+├── .github/            # GitHub Actions, Copilot-instruktioner
+├── ...                 # Övriga konfigfiler, migreringar, dokumentation
+```
+
+## 🛡️ Autentisering & layout
+
+- **AuthContext** (`app/context/AuthContext.tsx`) hanterar auth-state globalt (user, profile, subscription).
+- **useAuth** hook används i alla klientkomponenter för att läsa auth-state.
+- **layout.tsx** visar navbar och dashboard-layout endast när användaren är inloggad.
+- **page.tsx** (root) visar marknads-/startsida för utloggade, och redirectar inloggade till dashboard.
+- **Supabase** används endast direkt i server actions eller för dataläsning, aldrig för auth-state i klientkomponenter.
+
+### Viktiga auth-mönster
+
+- Använd `const { user } = useAuth();` i klientkomponenter för att läsa inloggad användare.
+- Visa navbar, dashboard och skyddade sidor endast om `user` finns.
+- Marknads-/startsida och login/register är publika och har ingen navbar.
+
+Se även `components/Navbar.tsx` och `app/layout.tsx` för exempel.
+
+---
+
 ## 🧰 Installation & utveckling
 
 ### Klona projektet

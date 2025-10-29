@@ -493,25 +493,27 @@ export default function HundpensionatPage() {
             <table className="min-w-full text-sm">
               <thead style={{ backgroundColor: "#2c7a4c", color: "white" }}>
                 <tr>
-                  {columns.map((c) => (
-                    <th
-                      key={c.key}
-                      className="px-4 py-3 text-left font-medium cursor-pointer hover:bg-opacity-80"
-                      onClick={() => {
-                        if (sortKey === c.key) {
-                          setSortAsc(!sortAsc);
-                        } else {
-                          setSortKey(c.key);
-                          setSortAsc(true);
-                        }
-                      }}
-                    >
-                      {c.label}
-                      {sortKey === c.key && (
-                        <span className="ml-1">{sortAsc ? "↑" : "↓"}</span>
-                      )}
-                    </th>
-                  ))}
+                  {columns.map((c) => {
+                    return (
+                      <th
+                        key={c.key}
+                        className="px-4 py-3 text-left font-medium cursor-pointer hover:bg-opacity-80"
+                        onClick={() => {
+                          if (sortKey === c.key) {
+                            setSortAsc(!sortAsc);
+                          } else {
+                            setSortKey(c.key);
+                            setSortAsc(true);
+                          }
+                        }}
+                      >
+                        {c.label}
+                        {sortKey === c.key ? (
+                          <span className="ml-1">{sortAsc ? "↑" : "↓"}</span>
+                        ) : null}
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">

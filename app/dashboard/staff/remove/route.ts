@@ -1,10 +1,11 @@
 // app/api/staff/remove/route.ts
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 
-const supabaseAdmin = createClient(
+const supabase = createServerClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // server-only
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { cookies: { get: () => "" } }
 );
 
 export async function DELETE(req: Request) {
@@ -15,7 +16,7 @@ export async function DELETE(req: Request) {
     }
 
     // 1) Radera profil först (ifall RLS/policyer kräver det separat)
-    const { error: delProfileErr } = await supabaseAdmin
+    const { error: delProfileErr } = await supabase
       .from("profiles")
       .delete()
       .eq("id", user_id);
@@ -29,9 +30,7 @@ export async function DELETE(req: Request) {
     }
 
     // 2) Radera auth-användaren
-    const { error: delAuthErr } = await supabaseAdmin.auth.admin.deleteUser(
-      user_id
-    );
+    const { error: delAuthErr } = await supabase.auth.admin.deleteUser(user_id);
     if (delAuthErr) {
       return NextResponse.json({ error: delAuthErr.message }, { status: 400 });
     }

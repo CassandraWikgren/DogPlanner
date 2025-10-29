@@ -2,39 +2,68 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import EditOwnerModal from "@/components/EditOwnerModal";
-import { Button } from "@/components/ui/button";
+import { createBrowserClient } from "@supabase/ssr";
+import { useAuth } from "@/app/context/AuthContext";
+import { EditOwnerModal } from "@/components/EditOwnerModal";
+import { Button } from "@components/ui/button";
 
-export default function OwnerDetailPage() {
-  const supabase = useSupabaseClient();
-  const { id } = useParams(); // customerNumber
+export default function OwnerPage() {
+  const { user } = useAuth();
+  const supabase = createBrowserClient<import("@/types/database").Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+  const params = useParams();
+  // id från [id] är alltid en sträng i Next.js App Router
+  const id =
+    typeof params.id === "string"
+      ? params.id
+      : Array.isArray(params.id)
+      ? params.id[0]
+      : undefined;
   const [owner, setOwner] = useState<any>(null);
   const [dogs, setDogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const { data: ownerData } = await supabase
-        .from("owners")
-        .select("*")
-        .eq("customerNumber", id)
-        .maybeSingle();
-      setOwner(ownerData);
+      setError(null);
+      try {
+        if (typeof id !== "string" || !id) {
+          setError("[ERR-1001] Ogiltigt ägar-ID.");
+          setLoading(false);
+          return;
+        }
+        // Hämta ägare baserat på owners.id (Supabase: små bokstäver)
+        const { data: ownerData, error: ownerErr } = await supabase
+          .from("owners")
+          .select("*")
+          .eq("id", id)
+          .maybeSingle();
+        if (ownerErr) throw new Error(`[ERR-1001] ${ownerErr.message}`);
+        setOwner(ownerData);
 
-      const { data: dogData } = await supabase
-        .from("dogs")
-        .select("*")
-        .eq("customerNumber", id);
-      setDogs(dogData || []);
-      setLoading(false);
+        // Hämta hundar kopplade till ägaren via dogs.owner_id → owners.id
+        const { data: dogData, error: dogErr } = await supabase
+          .from("dogs")
+          .select("*")
+          .eq("owner_id", id);
+        if (dogErr) throw new Error(`[ERR-1001] ${dogErr.message}`);
+        setDogs(dogData || []);
+      } catch (e: any) {
+        setError(e.message || "[ERR-1001] Okänt fel vid databaskoppling.");
+      } finally {
+        setLoading(false);
+      }
     };
-    if (id) fetchData();
-  }, [id, supabase]);
+    fetchData();
+  }, [id]);
 
   if (loading) return <p className="p-6 text-gray-500">Laddar...</p>;
+  if (error) return <p className="p-6 text-red-600">{error}</p>;
   if (!owner) return <p className="p-6 text-red-600">Ingen ägare hittades.</p>;
 
   return (
@@ -43,7 +72,7 @@ export default function OwnerDetailPage() {
         <h1 className="text-2xl font-bold text-green-700 mb-2">
           👤 {owner.name}
         </h1>
-        <p>Kundnummer: {owner.customerNumber}</p>
+        <p>Kundnummer: {owner.customernumber}</p>
         <p>Telefon: {owner.phone}</p>
         <p>E-post: {owner.email}</p>
 

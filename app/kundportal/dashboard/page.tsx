@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
+import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -73,6 +74,7 @@ interface Booking {
 }
 
 export default function CustomerDashboard() {
+  const { user } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<
     "overview" | "dogs" | "bookings" | "profile"
@@ -90,7 +92,10 @@ export default function CustomerDashboard() {
 
   const fetchCustomerData = async () => {
     try {
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
 
       // Kontrollera auth status
       const {
@@ -167,7 +172,10 @@ export default function CustomerDashboard() {
   };
 
   const handleLogout = async () => {
-    const supabase = createClientComponentClient();
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
     await supabase.auth.signOut();
     router.push("/kundportal");
   };

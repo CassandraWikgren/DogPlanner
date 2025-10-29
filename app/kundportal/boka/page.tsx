@@ -3,7 +3,8 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
+import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -63,6 +64,7 @@ interface PriceCalculation {
 }
 
 function BookingPageContent() {
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [selectedDog, setSelectedDog] = useState<string>("");
@@ -83,7 +85,10 @@ function BookingPageContent() {
 
   const fetchDogs = async () => {
     try {
-      const supabase = createClientComponentClient();
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
 
       // Kontrollera auth
       const {

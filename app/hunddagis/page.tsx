@@ -34,7 +34,6 @@ const ERROR_CODES = {
   REALTIME: "[ERR-3001]",
   VALIDATION: "[ERR-4001]",
 } as const;
-
 /* ===========================
  * Typer (Supabase-små bokstäver)
  * =========================== */
@@ -881,8 +880,6 @@ export default function HunddagisPage() {
       logDebug("error", "Oväntat fel vid demo-inloggning", err);
     }
   }
-
-  // === Fortsättning i DEL 2/3: styles, hero + livekort, kontroller, vyer & tabell ===
   return (
     <>
       {/* ======= STYLES (matchar pensionat-look) ======= */}
@@ -1112,6 +1109,16 @@ export default function HunddagisPage() {
         </div>
       ) : (
         <div className="dagis-container">
+          {/* Header */}
+          <header className="dagis-header">
+            <Link className="back-btn" href="/dashboard">
+              ← Tillbaka
+            </Link>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span>Hunddagis</span>
+            </div>
+          </header>
+
           {/* Hero + livekort */}
           <section className="dagis-hero">
             <h1>Hunddagis</h1>

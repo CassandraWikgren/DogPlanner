@@ -1,10 +1,11 @@
 // app/api/staff/add/route.ts
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 
-const supabaseAdmin = createClient(
+const supabase = createServerClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // server-only
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { cookies: { get: () => "" } }
 );
 
 export async function POST(req: Request) {
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
 
     // 1) Skicka invite (om användaren redan finns, skapas ingen ny — vi hanterar det med upsert nedan)
     const { data: invite, error: inviteErr } =
-      await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+      await supabase.auth.admin.inviteUserByEmail(email, {
         // valfritt: redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/login`,
       });
 
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
 
     // 2) Upsert profil (koppla till org och roll)
     //    Om trigger redan skapar profil: on conflict på id säkerställer att vi uppdaterar rätt.
-    const { error: upsertErr } = await supabaseAdmin.from("profiles").upsert(
+    const { error: upsertErr } = await supabase.from("profiles").upsert(
       {
         id: userId ?? undefined, // om invite inte returnerar id ännu, går det ändå att binda när användaren aktiverar kontot (men bäst om vi har id)
         email,

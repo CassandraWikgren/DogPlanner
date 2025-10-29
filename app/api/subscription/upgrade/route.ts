@@ -1,10 +1,11 @@
 // app/api/subscription/upgrade/route.ts
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 
-const supabaseAdmin = createClient(
+const supabase = createServerClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { cookies: { get: () => "" } }
 );
 
 export async function POST(req: Request) {
@@ -18,13 +19,13 @@ export async function POST(req: Request) {
       );
 
     // 🧩 Verifiera användaren
-    const { data: userData } = await supabaseAdmin.auth.getUser(token);
+    const { data: userData } = await supabase.auth.getUser(token);
     const user = userData?.user;
     if (!user)
       return NextResponse.json({ error: "Ingen användare." }, { status: 401 });
 
     // 🧩 Hämta org_id
-    const { data: profile } = await supabaseAdmin
+    const { data: profile } = await supabase
       .from("profiles")
       .select("org_id")
       .eq("id", user.id)
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
       );
 
     // 💳 Uppdatera status till active
-    const { error } = await supabaseAdmin
+    const { error } = await supabase
       .from("subscriptions")
       .update({
         status: "active",

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
+import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,23 +20,30 @@ import {
 
 interface Application {
   id: string;
+  org_id: string;
+  parent_name: string;
+  parent_email: string;
+  parent_phone: string;
   dog_name: string;
-  dog_breed?: string;
-  dog_age?: number;
-  owner_name: string;
-  owner_phone?: string;
-  owner_email?: string;
-  subscription_type: string;
-  preferred_start_date?: string;
-  special_needs?: string;
-  status: "pending" | "approved" | "rejected";
-  notes?: string;
+  dog_breed?: string | null;
+  dog_age?: number | null;
+  dog_size?: "small" | "medium" | "large";
+  preferred_start_date?: string | null;
+  preferred_days?: string[] | null;
+  special_needs?: string | null;
+  previous_daycare_experience?: boolean | null;
+  status: "pending" | "contacted" | "accepted" | "declined";
+  notes?: string | null;
   created_at: string;
-  priority?: number;
+  updated_at: string;
 }
 
 export default function ApplicationsPage() {
-  const supabase = createClientComponentClient();
+  const { user } = useAuth();
+  const supabase = createBrowserClient<import("@/types/database").Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("pending");
@@ -48,8 +56,9 @@ export default function ApplicationsPage() {
 
   const fetchApplications = async () => {
     try {
+      // Optionally, use user info for filtering if needed
       const { data, error } = await supabase
-        .from("applications")
+        .from("interest_applications")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -68,13 +77,13 @@ export default function ApplicationsPage() {
     notes?: string
   ) => {
     try {
-      const { error } = await supabase
-        .from("applications")
-        .update({
-          status,
-          notes: notes || null,
-          processed_at: new Date().toISOString(),
-        })
+      const updateData = {
+        status,
+        notes: notes || null,
+      };
+      const { error } = await (supabase as any)
+        .from("interest_applications")
+        .update(updateData)
         .eq("id", id);
 
       if (error) throw error;
@@ -91,10 +100,12 @@ export default function ApplicationsPage() {
     switch (status) {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
-      case "approved":
+      case "accepted":
         return "bg-green-100 text-green-800";
-      case "rejected":
+      case "declined":
         return "bg-red-100 text-red-800";
+      case "contacted":
+        return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -104,10 +115,12 @@ export default function ApplicationsPage() {
     switch (status) {
       case "pending":
         return <Clock className="h-4 w-4" />;
-      case "approved":
+      case "accepted":
         return <CheckCircle className="h-4 w-4" />;
-      case "rejected":
+      case "declined":
         return <XCircle className="h-4 w-4" />;
+      case "contacted":
+        return <User className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
     }
@@ -117,10 +130,12 @@ export default function ApplicationsPage() {
     switch (status) {
       case "pending":
         return "Väntande";
-      case "approved":
+      case "accepted":
         return "Godkänd";
-      case "rejected":
+      case "declined":
         return "Avslagen";
+      case "contacted":
+        return "Kontaktad";
       default:
         return "Okänd";
     }
@@ -184,7 +199,7 @@ export default function ApplicationsPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Godkända</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {applications.filter((a) => a.status === "approved").length}
+                    {applications.filter((a) => a.status === "accepted").length}
                   </p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -198,7 +213,7 @@ export default function ApplicationsPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Avslagna</p>
                   <p className="text-2xl font-bold text-red-600">
-                    {applications.filter((a) => a.status === "rejected").length}
+                    {applications.filter((a) => a.status === "declined").length}
                   </p>
                 </div>
                 <XCircle className="h-8 w-8 text-red-600" />
@@ -234,8 +249,9 @@ export default function ApplicationsPage() {
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="pending">Väntande</option>
-                <option value="approved">Godkända</option>
-                <option value="rejected">Avslagna</option>
+                <option value="accepted">Godkända</option>
+                <option value="declined">Avslagna</option>
+                <option value="contacted">Kontaktade</option>
                 <option value="all">Alla</option>
               </select>
             </div>
@@ -274,26 +290,26 @@ export default function ApplicationsPage() {
                       Ägare
                     </h4>
                     <div className="space-y-1 text-sm text-gray-600">
-                      <div>{app.owner_name}</div>
-                      {app.owner_phone && (
+                      <div>{app.parent_name}</div>
+                      {app.parent_phone && (
                         <div className="flex items-center gap-1">
                           <Phone className="h-4 w-4" />
                           <a
-                            href={`tel:${app.owner_phone}`}
+                            href={`tel:${app.parent_phone}`}
                             className="text-blue-600 hover:underline"
                           >
-                            {app.owner_phone}
+                            {app.parent_phone}
                           </a>
                         </div>
                       )}
-                      {app.owner_email && (
+                      {app.parent_email && (
                         <div className="flex items-center gap-1">
                           <Mail className="h-4 w-4" />
                           <a
-                            href={`mailto:${app.owner_email}`}
+                            href={`mailto:${app.parent_email}`}
                             className="text-blue-600 hover:underline"
                           >
-                            {app.owner_email}
+                            {app.parent_email}
                           </a>
                         </div>
                       )}
@@ -303,7 +319,7 @@ export default function ApplicationsPage() {
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">Ansökan</h4>
                     <div className="space-y-1 text-sm text-gray-600">
-                      <div>Abonnemang: {app.subscription_type}</div>
+                      {/* Ingen abonnemangstyp i interest_applications */}
                       {app.preferred_start_date && (
                         <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
@@ -396,7 +412,7 @@ export default function ApplicationsPage() {
                 <div className="flex gap-3">
                   <Button
                     onClick={() =>
-                      updateApplicationStatus(selectedApp.id, "approved", notes)
+                      updateApplicationStatus(selectedApp.id, "accepted", notes)
                     }
                     className="flex-1 bg-green-600 hover:bg-green-700"
                   >
@@ -405,7 +421,7 @@ export default function ApplicationsPage() {
                   </Button>
                   <Button
                     onClick={() =>
-                      updateApplicationStatus(selectedApp.id, "rejected", notes)
+                      updateApplicationStatus(selectedApp.id, "declined", notes)
                     }
                     variant="destructive"
                     className="flex-1"

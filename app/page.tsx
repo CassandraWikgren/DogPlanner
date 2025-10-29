@@ -21,6 +21,7 @@ import {
   Star,
 } from "lucide-react";
 import Image from "next/image";
+import Navbar from "@/components/Navbar";
 
 /**
  * Start-/hem-sida för DogPlanner.
@@ -30,13 +31,7 @@ export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // Redirect if already logged in
-  useEffect(() => {
-    if (!loading && user) {
-      console.log("HomePage: User already logged in, redirecting to dashboard");
-      router.push("/dashboard");
-    }
-  }, [user, loading, router]);
+  // Ingen redirect – startsidan visas alltid, även för inloggade
 
   // Om användaren är inloggad, visa dashboard-version
   if (user) {
@@ -70,48 +65,8 @@ export default function HomePage() {
   // Professionell marketingsida för icke-inloggade användare
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation Bar */}
-      <nav className="absolute top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Image
-                src="/logo.png"
-                alt="DogPlanner"
-                width={40}
-                height={40}
-                className="h-10 w-10"
-              />
-              <span className="text-2xl font-bold text-[#2c7a4c]">
-                DogPlanner
-              </span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/login">
-                <Button
-                  variant="outline"
-                  className="border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white"
-                >
-                  Logga in
-                </Button>
-              </Link>
-              <Link href="/api/demo-login">
-                <Button
-                  variant="outline"
-                  className="border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
-                >
-                  Demo
-                </Button>
-              </Link>
-              <Link href="/register">
-                <Button className="bg-[#2c7a4c] hover:bg-[#1e5a35]">
-                  Prova gratis
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Global Navbar */}
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -134,6 +89,22 @@ export default function HomePage() {
             Fokusera på hundarna - vi sköter administrationen.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            <Link href="/login">
+              <Button
+                size="lg"
+                className="bg-white text-[#2c7a4c] hover:bg-green-50 text-lg px-8 py-4 font-semibold"
+              >
+                Logga in
+              </Button>
+            </Link>
+            <Link href="/api/demo-login">
+              <Button
+                size="lg"
+                className="bg-green-100 text-green-700 hover:bg-green-200 text-lg px-8 py-4 font-semibold"
+              >
+                Demo
+              </Button>
+            </Link>
             <Link href="/register">
               <Button
                 size="lg"
@@ -143,7 +114,7 @@ export default function HomePage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-gray-300 mt-2">
               ✓ Ingen bindningstid ✓ Ingen kortuppgift behövs
             </p>
           </div>
