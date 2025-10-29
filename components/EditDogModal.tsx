@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSupabaseClient } from "@supabase/ssr";
 
 /** Props */
 type Props = {
