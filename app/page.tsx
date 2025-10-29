@@ -68,56 +68,55 @@ export default function HomePage() {
       {/* Global Navbar */}
       <Navbar />
 
-      {/* Hero Section */}
+      {/* Hero Section - Säljande och inspirerande */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Bakgrundsbild */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/Hero.jpeg')" }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-black/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30"></div>
         </div>
-
         {/* Innehåll */}
-        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center text-white">
-          <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-            Modern <br />
-            <span className="text-green-400">hunddagis-hantering</span>
+        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center text-white flex flex-col items-center">
+          <h1 className="text-5xl lg:text-7xl font-extrabold mb-6 leading-tight drop-shadow-xl">
+            DogPlanner
           </h1>
-          <p className="text-xl lg:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto">
-            Hantera hundar, pensionat och fakturaunderlag på ett enkelt sätt.
-            Fokusera på hundarna - vi sköter administrationen.
+          <p className="text-2xl lg:text-3xl mb-8 text-green-100 font-semibold max-w-2xl mx-auto drop-shadow">
+            Sveriges smartaste system för hunddagis, pensionat och hundfrisörer.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+          <p className="text-lg lg:text-xl mb-8 text-gray-200 max-w-2xl mx-auto">
+            Spara tid, få full kontroll och ge dina kunder en bättre upplevelse
+            – allt på ett ställe. Skapa konto och testa gratis i 30 dagar!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4">
+            <Link href="/register">
+              <Button
+                size="lg"
+                className="bg-green-500 hover:bg-green-600 text-white text-lg px-8 py-4 font-bold shadow-lg"
+              >
+                Skapa konto
+              </Button>
+            </Link>
             <Link href="/login">
               <Button
                 size="lg"
-                className="bg-white text-[#2c7a4c] hover:bg-green-50 text-lg px-8 py-4 font-semibold"
+                variant="outline"
+                className="border-white text-white hover:bg-white/10 text-lg px-8 py-4 font-bold"
               >
                 Logga in
               </Button>
             </Link>
-            <Link href="/api/demo-login">
-              <Button
-                size="lg"
-                className="bg-green-100 text-green-700 hover:bg-green-200 text-lg px-8 py-4 font-semibold"
-              >
-                Demo
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button
-                size="lg"
-                className="bg-green-500 hover:bg-green-600 text-white text-lg px-8 py-4 font-semibold"
-              >
-                Starta gratis 30-dagars test
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <p className="text-sm text-gray-300 mt-2">
-              ✓ Ingen bindningstid ✓ Ingen kortuppgift behövs
-            </p>
           </div>
+          <Link
+            href="/terms"
+            className="underline text-green-200 hover:text-green-400 text-sm mt-2"
+          >
+            Läs våra villkor
+          </Link>
+          <p className="text-sm text-gray-300 mt-2">
+            ✓ Ingen bindningstid ✓ Ingen kortuppgift behövs
+          </p>
         </div>
       </section>
 
