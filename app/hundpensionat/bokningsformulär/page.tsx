@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -31,10 +31,7 @@ interface SimpleExtraService {
 
 // Formulär för bokning/incheckning hundpensionat
 export default function BokningsForm() {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createClientComponentClient();
   const [hundar, setHundar] = useState<SimpleDog[]>([]);
   const [rum, setRum] = useState<SimpleRoom[]>([]);
   const [tillval, setTillval] = useState<SimpleExtraService[]>([]);

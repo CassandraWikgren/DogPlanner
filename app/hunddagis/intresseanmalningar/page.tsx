@@ -28,7 +28,7 @@ import {
   UserPlus,
   ArrowRight,
 } from "lucide-react";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
 
 interface InterestApplication {
@@ -56,10 +56,7 @@ interface InterestApplication {
  */
 export default function HunddagisIntresseanmalningarPage() {
   const { currentOrgId } = useAuth();
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createClientComponentClient();
   const [applications, setApplications] = useState<InterestApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

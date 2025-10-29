@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, AlertTriangle, Play, Upload } from "lucide-react";
@@ -17,10 +17,7 @@ export default function LoadTestDataPage() {
   const [steps, setSteps] = useState<LoadStep[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createClientComponentClient();
 
   const updateStep = (index: number, updates: Partial<LoadStep>) => {
     setSteps((prev) =>
