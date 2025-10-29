@@ -6,9 +6,9 @@
 
 /* Grundläggande färger och typsnitt */
 :root {
-  --color-primary: #2c7a4c;
+  --color-primary: ##2c7a4c;
   --color-secondary: #f4f4f4;
-  --color-accent: #3e9b5b;
+  --color-accent: #2c7a4c;
   --color-text: #222;
   --color-muted: #666;
   --radius-md: 8px;

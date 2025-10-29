@@ -19,12 +19,18 @@ export default function HomePage() {
               DogPlanner
             </span>
           </div>
-          <nav>
+          <nav className="flex gap-2">
             <Link
               href="/login"
               className="px-4 py-2 font-medium text-[#2C7A4C] border border-[#2C7A4C] rounded-lg hover:bg-[#2C7A4C] hover:text-white transition"
             >
               Logga in
+            </Link>
+            <Link
+              href="/register"
+              className="px-4 py-2 font-semibold bg-[#2C7A4C] text-white rounded-lg shadow hover:bg-[#256d43] transition"
+            >
+              Prova gratis
             </Link>
           </nav>
         </div>
@@ -40,15 +46,16 @@ export default function HomePage() {
           priority
         />
         <div className="relative z-10 max-w-3xl text-center bg-white/80 backdrop-blur-sm rounded-2xl p-10 shadow-lg mx-4">
-          <h1 className="text-4xl md:text-5xl font-bold text-[#2C7A4C] mb-5">
-            Det smarta sättet att driva hunddagis och pensionat
+          <h1 className="text-4xl md:text-5xl font-extrabold text-[#2C7A4C] mb-5 leading-tight">
+            Få full kontroll på din hundverksamhet
           </h1>
           <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
-            Med DogPlanner får du full koll på bokningar, fakturor och scheman –
+            DogPlanner samlar allt du behöver – bokningar, fakturor, scheman och
+            kundregister – på ett ställe.
             <br className="hidden md:block" />
-            så att du kan lägga mer tid på hundarna 🐶
+            Mindre admin, mer tid för hundarna.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-2">
             <Link
               href="/register"
               className="px-8 py-3 bg-[#2C7A4C] text-white font-semibold rounded-lg shadow hover:bg-[#256d43] transition text-lg"
@@ -59,9 +66,12 @@ export default function HomePage() {
               href="#features"
               className="px-8 py-3 border border-[#2C7A4C] text-[#2C7A4C] font-medium rounded-lg hover:bg-[#E9F6EF] transition text-lg"
             >
-              Läs mer
+              Se funktioner
             </Link>
           </div>
+          <p className="text-sm text-[#2C7A4C] font-medium mt-2">
+            Ingen bindningstid, ingen kortuppgift krävs
+          </p>
         </div>
       </section>
 
@@ -74,39 +84,73 @@ export default function HomePage() {
           Varför DogPlanner?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {[
-            {
-              icon: "📅",
-              title: "Smidig planering",
-              desc: "Hantera scheman, bokningar och notiser på ett ställe – snabbt och smidigt.",
-            },
-            {
-              icon: "💳",
-              title: "Automatisk fakturering",
-              desc: "Skicka fakturor och följ betalningar automatiskt – spara tid och undvik fel.",
-            },
-            {
-              icon: "📈",
-              title: "Full kontroll",
-              desc: "Se beläggning, kundhistorik och statistik direkt i din dashboard.",
-            },
-          ].map((f, i) => (
-            <div
-              key={i}
-              className="bg-white border border-gray-100 shadow-sm rounded-2xl p-8 hover:shadow-lg transition"
-            >
-              <div className="text-5xl mb-4">{f.icon}</div>
-              <h3 className="text-lg font-semibold text-[#2C7A4C] mb-2">
-                {f.title}
-              </h3>
-              <p className="text-gray-600">{f.desc}</p>
-            </div>
-          ))}
+          <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-8 hover:shadow-lg transition">
+            <div className="text-5xl mb-4">📅</div>
+            <h3 className="text-lg font-semibold text-[#2C7A4C] mb-2">
+              Smidig planering
+            </h3>
+            <p className="text-gray-600">
+              Scheman, bokningar och närvaro på ett ställe – snabbt och smidigt.
+            </p>
+          </div>
+          <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-8 hover:shadow-lg transition">
+            <div className="text-5xl mb-4">💳</div>
+            <h3 className="text-lg font-semibold text-[#2C7A4C] mb-2">
+              Automatisk fakturering
+            </h3>
+            <p className="text-gray-600">
+              Fakturor och betalningar sköts automatiskt – spara tid och undvik
+              fel.
+            </p>
+          </div>
+          <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-8 hover:shadow-lg transition">
+            <div className="text-5xl mb-4">📈</div>
+            <h3 className="text-lg font-semibold text-[#2C7A4C] mb-2">
+              Full kontroll
+            </h3>
+            <p className="text-gray-600">
+              Statistik, rapporter och överblick i realtid – direkt i din
+              dashboard.
+            </p>
+          </div>
+        </div>
+        <div className="mt-16 flex flex-col md:flex-row items-center justify-center gap-8">
+          <div className="flex-1 max-w-md">
+            <Image
+              src="/dashboard-demo.png"
+              alt="DogPlanner dashboard"
+              width={500}
+              height={320}
+              className="rounded-xl shadow border"
+            />
+          </div>
+          <div className="flex-1 max-w-md text-left md:text-lg text-gray-700">
+            <p className="mb-4 font-semibold text-[#2C7A4C]">
+              Allt samlat i en modern dashboard
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>GDPR-säkerhet & svensk support</li>
+              <li>Personallogik & rumshantering</li>
+              <li>PDF-export & rapporter</li>
+              <li>Demo/testinloggning för snabb test</li>
+            </ul>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="bg-gray-50 py-8 border-t text-center text-gray-500 text-sm">
+        <div className="mb-2">
+          <Link href="/kontakt" className="text-[#2C7A4C] hover:underline mx-2">
+            Kontakt
+          </Link>
+          <Link href="/priser" className="text-[#2C7A4C] hover:underline mx-2">
+            Priser
+          </Link>
+          <Link href="/terms" className="text-[#2C7A4C] hover:underline mx-2">
+            Villkor
+          </Link>
+        </div>
         © {new Date().getFullYear()} DogPlanner — Alla rättigheter förbehållna.
       </footer>
     </div>

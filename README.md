@@ -396,6 +396,7 @@ AI får läsa README för att förstå DogPlanners uppbyggnad och syfte och kunn
     “PDF-export” grå (#4B5563), vit text.
     “Ladda om” vit med grön kant (#2C7A4C).
     Höjd 44 px, rundning 6 px, padding 0–20 px.
+
     Datasektion:
     Vit bakgrund, centrerat innehåll.
     Filterfält överst (400 px brett, höjd 40 px).
@@ -424,6 +425,7 @@ AI får läsa README för att förstå DogPlanners uppbyggnad och syfte och kunn
     Boxar 160×100 px, rundade hörn 12 px, bakgrund rgba(255,255,255,0.15).
     Text centrerad 20 px vit.
     Hover ljusare bakgrund.
+
     🐶 Formulär
     Vit bakgrund, centrerad layout.
     Fältrubrik 15 px, grön (#2C7A4C), bold.
