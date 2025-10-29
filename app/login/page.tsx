@@ -114,10 +114,10 @@ export default function LoginPage() {
       : null;
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow p-8">
+    <main className="min-h-screen bg-[#f6f8f7] flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-10 border border-green-100">
         {demoUser && (
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
             <p className="text-sm text-blue-700 mb-2">
               Du är inloggad som demo-användare: <strong>{demoUser}</strong>
             </p>
@@ -127,13 +127,13 @@ export default function LoginPage() {
             <div className="flex gap-2">
               <button
                 onClick={clearDemoLogin}
-                className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
               >
                 Logga ut från demo
               </button>
               <button
                 onClick={() => router.push("/dashboard")}
-                className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                className="text-sm bg-[#2c7a4c] text-white px-3 py-1.5 rounded-lg hover:bg-green-800 transition"
               >
                 Gå till dashboard
               </button>
@@ -141,16 +141,16 @@ export default function LoginPage() {
           </div>
         )}
 
-        <h1 className="text-2xl md:text-3xl font-bold text-[#2c7a4c] text-center mb-6">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-[#2c7a4c] text-center mb-8 tracking-tight">
           {resetMode ? "Återställ lösenord" : "Logga in till DogPlanner"}
         </h1>
 
         <form
           onSubmit={resetMode ? handleResetPassword : handleLogin}
-          className="space-y-4"
+          className="space-y-6"
         >
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm font-semibold mb-2 text-[#2c7a4c]">
               E-postadress
             </label>
             <input
@@ -159,31 +159,33 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="exempel@hunddagis.se"
-              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+              className="w-full border border-green-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] bg-[#f9fafb] text-base"
             />
           </div>
 
           {!resetMode && (
             <div>
-              <label className="block text-sm font-medium mb-1">Lösenord</label>
+              <label className="block text-sm font-semibold mb-2 text-[#2c7a4c]">
+                Lösenord
+              </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                className="w-full border border-green-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] bg-[#f9fafb] text-base"
               />
             </div>
           )}
 
           {error && (
-            <div className="rounded border border-red-200 bg-red-50 px-4 py-2 text-red-700 text-sm">
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700 text-sm font-medium">
               {error}
             </div>
           )}
           {message && (
-            <div className="rounded border border-green-200 bg-green-50 px-4 py-2 text-green-700 text-sm">
+            <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-700 text-sm font-medium">
               {message}
             </div>
           )}
@@ -191,7 +193,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#2c7a4c] hover:bg-green-800 text-white font-semibold py-2 rounded-lg transition disabled:opacity-60"
+            className="w-full bg-[#2c7a4c] hover:bg-green-800 text-white font-bold py-3 rounded-xl text-lg shadow transition disabled:opacity-60"
           >
             {loading
               ? "Bearbetar..."
@@ -201,7 +203,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="text-center mt-4 text-sm text-gray-600">
+        <div className="text-center mt-6 text-sm text-gray-600">
           {resetMode ? (
             <button
               onClick={() => {
@@ -209,7 +211,7 @@ export default function LoginPage() {
                 setError(null);
                 setMessage(null);
               }}
-              className="text-white bg-[#2c7a4c] hover:bg-green-800 font-medium px-4 py-2 rounded-lg mt-3 transition"
+              className="text-white bg-[#2c7a4c] hover:bg-green-800 font-semibold px-5 py-2 rounded-xl mt-3 transition"
             >
               Tillbaka till inloggning
             </button>
@@ -220,7 +222,7 @@ export default function LoginPage() {
                 setError(null);
                 setMessage(null);
               }}
-              className="text-[#2c7a4c] font-medium hover:underline hover:text-green-800"
+              className="text-[#2c7a4c] font-semibold hover:underline hover:text-green-800"
             >
               Har du glömt ditt lösenord?
             </button>
@@ -228,11 +230,11 @@ export default function LoginPage() {
         </div>
 
         {!resetMode && (
-          <p className="text-center text-sm text-gray-600 mt-3">
+          <p className="text-center text-sm text-gray-600 mt-5">
             Har du inget konto?{" "}
             <a
               href="/register"
-              className="text-[#2c7a4c] font-medium hover:underline hover:text-green-800"
+              className="text-[#2c7a4c] font-semibold hover:underline hover:text-green-800"
             >
               Skapa konto
             </a>
