@@ -1,697 +1,194 @@
 "use client";
-
-import React, { useEffect } from "react";
-import { useAuth } from "@/app/context/AuthContext";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Calendar,
-  FileText,
-  Users,
-  Smartphone,
-  Shield,
-  Clock,
-  CheckCircle,
-} from "lucide-react";
-
-// Om du har AuthContext och dashboard, inkludera det här
-// import { useAuth } from "@/app/context/AuthContext";
-// import { useRouter } from "next/navigation";
 
 export default function HomePage() {
-  // const { user } = useAuth();
-  // if (user) { ...dashboard... }
-
   return (
-    <div className="min-h-screen bg-[#fdfdfd] flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <header className="w-full absolute top-0 left-0 z-20 flex justify-between items-center px-8 py-6 bg-transparent">
+      <header className="flex items-center justify-between px-8 py-6 bg-green-700 text-white shadow">
         <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="DogPlanner logotyp" width={38} height={38} />
-          <span className="font-bold text-2xl tracking-tight text-white drop-shadow">DogPlanner</span>
+          <Image
+            src="/logo.png"
+            alt="DogPlanner"
+            width={40}
+            height={40}
+            className="h-10 w-10"
+          />
+          <span className="text-2xl font-bold tracking-tight">DogPlanner</span>
         </div>
-        <div className="flex gap-3">
-          <Link href="/login">
-            <Button variant="ghost" className="text-white font-semibold hover:bg-white/10">Logga in</Button>
+        <nav className="flex gap-4">
+          <Link href="/login" className="hover:underline">
+            Logga in
           </Link>
-          <Link href="/api/demo-login">
-            <Button variant="outline" className="bg-white/20 text-white border-white/40 hover:bg-white/30 font-semibold">Demo</Button>
+          <Link
+            href="/register"
+            className="bg-white text-green-700 px-5 py-2 rounded font-bold hover:bg-green-100 transition"
+          >
+            Prova gratis
           </Link>
-          <Link href="/register">
-            <Button className="bg-green-600 hover:bg-green-700 text-white font-bold shadow px-6">Prova gratis</Button>
-          </Link>
-        </div>
+        </nav>
       </header>
 
-      {/* Hero */}
-      <section className="relative flex-1 flex items-center justify-center min-h-[80vh] w-full overflow-hidden">
-        {/* Bakgrundsbild */}
-        <div className="absolute inset-0 -z-10">
-          <Image src="/Hero.jpeg" alt="Bakgrund" fill className="object-cover w-full h-full" />
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
-        {/* Innehåll */}
-        <div className="relative z-10 flex flex-col items-center justify-center w-full px-4">
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 drop-shadow-xl leading-tight text-center">
-            Få full kontroll på din <span className="text-green-300">hundverksamhet</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto font-medium text-center drop-shadow">
-            Hantera hundar, pensionat och fakturor på ett modernt, enkelt och tryggt sätt.<br />
-            Mindre administration. Mer tid för hundarna.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-            <Link href="/register">
-              <Button size="xl" className="bg-green-500 hover:bg-green-600 text-white text-xl px-10 py-5 font-bold shadow-lg rounded-lg">
-                Skapa konto gratis
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button size="xl" variant="outline" className="border-white text-white hover:bg-white/10 text-xl px-10 py-5 font-bold rounded-lg">
-                Logga in
-              </Button>
-            </Link>
-          </div>
-          <p className="text-base text-white/80 mt-2 mb-2">✓ Ingen bindningstid ✓ Ingen kortuppgift krävs</p>
-          <Link href="/terms" className="underline text-green-200 hover:text-green-400 text-sm">Läs våra villkor</Link>
-        </div>
-      </section>
-
-      {/* Funktioner Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-              Funktioner som förenklar din vardag
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Ett system som täcker grunderna för hunddagis och pensionat.
-              Enkelt att använda, designat av hundälskare.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Hundhantering */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-200 transition-colors">
-                  <Calendar className="h-8 w-8 text-blue-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Hundhantering & schema
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Hantera alla dina hundar med profiler, abonnemang och veckodagar. Få en klar översikt över vilka hundar som kommer när.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Hundprofiler med detaljer</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Veckodagshantering</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Sök och filtrera</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            {/* Ekonomi & Fakturering */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-200 transition-colors">
-                  <FileText className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Fakturaunderlag
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Generera fakturaunderlag baserat på hundarnas abonnemang. Export till PDF för enkel hantering.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Månadsvis fakturaunderlag</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">PDF-export</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Prissättning per abonnemang</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            {/* Kundhantering */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-purple-200 transition-colors">
-                  <Users className="h-8 w-8 text-purple-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Kundhantering
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Allt om dina kunder och deras hundar på ett ställe. Mediciner, allergier, beteenden och kontaktinfo.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Hundprofiler med bilder</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Medicinsk information</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Kommunikationshistorik</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            {/* Hundpensionat */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-orange-200 transition-colors">
-                  <Smartphone className="h-8 w-8 text-orange-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Hundpensionat
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Hantera pensionsbokningar med in- och utcheckningsdatum. Rum-hantering och översikt över alla vistelser.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Bokningshantering</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Rum och kapacitet</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Prissättning</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            {/* Säkerhet */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-red-200 transition-colors">
-                  <Shield className="h-8 w-8 text-red-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Säkerhet & backup
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Din data är säker med oss. Automatiska backups, GDPR-kompatibel och serverdata inom EU.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">GDPR-kompatibel</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">SSL-kryptering</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Dagliga backups</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            {/* Rapporter & Export */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-yellow-200 transition-colors">
-                  <Clock className="h-8 w-8 text-yellow-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Rapporter & Export
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Exportera listor och rapporter till PDF. Håll koll på din verksamhet med enkla överskådliga rapporter.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">PDF-export</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Månadsrapporter</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Sök och filtrera</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Call to Action Section */}
-      <section className="py-20 bg-gradient-to-r from-[#2c7a4c] to-[#1e5a35]">
-        <div className="max-w-4xl mx-auto text-center px-6">
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            Redo att förändra ditt hunddagis?
-          </h2>
-          <p className="text-xl text-green-100 mb-8">
-            Vi bygger framtidens system för hunddagis och pensionat. Var med och forma utvecklingen från start.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/register">
-              <Button size="lg" className="bg-white text-[#2c7a4c] hover:bg-gray-100 text-lg px-8 py-4 font-semibold">
-                Testa DogPlanner gratis
-              </Button>
-            </Link>
-          </div>
-          <p className="text-green-200 mt-4">
-            30 dagar gratis • Ingen bindningstid • Fullständig support
-          </p>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Image src="/logo.png" alt="DogPlanner" width={32} height={32} className="h-8 w-8" />
-                <span className="text-xl font-bold">DogPlanner</span>
-              </div>
-              <p className="text-gray-400">
-                Sveriges smartaste system för hunddagis och hundpensionat.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Produkt</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/funktioner" className="hover:text-white">
-                    Funktioner
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/priser" className="hover:text-white">
-                    Priser
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/demo" className="hover:text-white">
-                    Demo
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/help" className="hover:text-white">
-                    Hjälpcenter
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/kontakt" className="hover:text-white">
-                    Kontakt
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/status" className="hover:text-white">
-                    Status
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Företag</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/om-oss" className="hover:text-white">
-                    Om oss
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/karriar" className="hover:text-white">
-                    Karriär
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/integritet" className="hover:text-white">
-                    Integritet
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; {new Date().getFullYear()} DogPlanner. Alla rättigheter förbehållna.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-}
-          </Button>
+      {/* Hero Section */}
+      <main className="flex-1 flex flex-col items-center justify-center text-center px-4 bg-gradient-to-b from-green-50 to-white">
+        <h1 className="text-4xl md:text-6xl font-extrabold text-green-800 mb-6 drop-shadow">
+          Få full kontroll på din hundverksamhet
+        </h1>
+        <p className="text-lg md:text-2xl text-green-900 mb-8 max-w-2xl mx-auto">
+          DogPlanner gör det enkelt att driva hunddagis och pensionat. Mer tid
+          för hundarna, mindre för papper och stress.
+        </p>
+        <Link
+          href="/register"
+          className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-4 rounded-lg shadow-lg text-lg mb-4"
+        >
+          Skapa konto gratis
         </Link>
-        <p className="text-sm text-green-200 mt-4">
+        <p className="text-sm text-green-700">
           Ingen bindningstid, ingen kortuppgift krävs
         </p>
-      </section>
+      </main>
 
-      {/* Funktioner Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-              Funktioner som förenklar din vardag
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Ett system som täcker grunderna för hunddagis och pensionat.
-              Enkelt att använda, designat av hundälskare.
+      {/* Features Section */}
+      <section className="py-16 bg-white border-t border-b border-green-100">
+        <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+          <div className="flex flex-col items-center">
+            <Image
+              src="/feature1.png"
+              alt="Automatisera"
+              width={64}
+              height={64}
+              className="mb-4"
+            />
+            <h3 className="text-xl font-semibold mb-2 text-green-800">
+              Automatisera vardagen
+            </h3>
+            <p className="text-gray-700">
+              Bokningar, fakturor, närvaro och rapporter – allt på ett ställe.
             </p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Hundhantering */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-200 transition-colors">
-                  <Calendar className="h-8 w-8 text-blue-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Hundhantering & schema
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Hantera alla dina hundar med profiler, abonnemang och
-                  veckodagar. Få en klar översikt över vilka hundar som kommer
-                  när.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Hundprofiler med detaljer</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Veckodagshantering</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Sök och filtrera</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Ekonomi & Fakturering */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-200 transition-colors">
-                  <FileText className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Fakturaunderlag
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Generera fakturaunderlag baserat på hundarnas abonnemang.
-                  Export till PDF för enkel hantering.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Månadsvis fakturaunderlag</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">PDF-export</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Prissättning per abonnemang</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Kundhantering */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-purple-200 transition-colors">
-                  <Users className="h-8 w-8 text-purple-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Kundhantering
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Allt om dina kunder och deras hundar på ett ställe. Mediciner,
-                  allergier, beteenden och kontaktinfo.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Hundprofiler med bilder</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Medicinsk information</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Kommunikationshistorik</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Hundpensionat */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-orange-200 transition-colors">
-                  <Smartphone className="h-8 w-8 text-orange-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Hundpensionat
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Hantera pensionsbokningar med in- och utcheckningsdatum.
-                  Rum-hantering och översikt över alla vistelser.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Bokningshantering</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Rum och kapacitet</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Prissättning</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Säkerhet */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-red-200 transition-colors">
-                  <Shield className="h-8 w-8 text-red-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Säkerhet & backup
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Din data är säker med oss. Automatiska backups,
-                  GDPR-kompatibel och serverdata inom EU.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">GDPR-kompatibel</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">SSL-kryptering</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Dagliga backups</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Rapporter & Export */}
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-yellow-200 transition-colors">
-                  <Clock className="h-8 w-8 text-yellow-600" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Rapporter & Export
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  Exportera listor och rapporter till PDF. Håll koll på din
-                  verksamhet med enkla överskådliga rapporter.
-                </p>
-                <div className="text-left space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">PDF-export</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Månadsrapporter</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span className="text-sm">Sök och filtrera</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="flex flex-col items-center">
+            <Image
+              src="/feature2.png"
+              alt="Trygghet"
+              width={64}
+              height={64}
+              className="mb-4"
+            />
+            <h3 className="text-xl font-semibold mb-2 text-green-800">
+              Tryggt & GDPR-säkert
+            </h3>
+            <p className="text-gray-700">
+              All data lagras säkert i Sverige. Du äger alltid din information.
+            </p>
           </div>
-        </div>
-      </section>
-
-      {/* Call to Action Section */}
-      <section className="py-20 bg-gradient-to-r from-[#2c7a4c] to-[#1e5a35]">
-        <div className="max-w-4xl mx-auto text-center px-6">
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            Redo att förändra ditt hunddagis?
-          </h2>
-          <p className="text-xl text-green-100 mb-8">
-            Vi bygger framtidens system för hunddagis och pensionat. Var med och
-            forma utvecklingen från start.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/register">
-              <Button
-                size="lg"
-                className="bg-white text-[#2c7a4c] hover:bg-gray-100 text-lg px-8 py-4 font-semibold"
-              >
-                Testa DogPlanner gratis
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+          <div className="flex flex-col items-center">
+            <Image
+              src="/feature3.png"
+              alt="Support"
+              width={64}
+              height={64}
+              className="mb-4"
+            />
+            <h3 className="text-xl font-semibold mb-2 text-green-800">
+              Personlig support
+            </h3>
+            <p className="text-gray-700">
+              Vi hjälper dig igång och finns alltid nära till hands om du
+              behöver oss.
+            </p>
           </div>
-          <p className="text-green-200 mt-4">
-            30 dagar gratis • Ingen bindningstid • Fullständig support
-          </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Image
-                  src="/logo.png"
-                  alt="DogPlanner"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8"
-                />
-                <span className="text-xl font-bold">DogPlanner</span>
-              </div>
-              <p className="text-gray-400">
-                Sveriges smartaste system för hunddagis och hundpensionat.
-              </p>
+      <footer className="bg-gray-900 text-white py-10 mt-8">
+        <div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Image
+                src="/logo.png"
+                alt="DogPlanner"
+                width={32}
+                height={32}
+                className="h-8 w-8"
+              />
+              <span className="text-xl font-bold">DogPlanner</span>
             </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Produkt</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/funktioner" className="hover:text-white">
-                    Funktioner
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/priser" className="hover:text-white">
-                    Priser
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/demo" className="hover:text-white">
-                    Demo
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/help" className="hover:text-white">
-                    Hjälpcenter
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/kontakt" className="hover:text-white">
-                    Kontakt
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/status" className="hover:text-white">
-                    Status
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Företag</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/om-oss" className="hover:text-white">
-                    Om oss
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/karriar" className="hover:text-white">
-                    Karriär
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/integritet" className="hover:text-white">
-                    Integritet
-                  </Link>
-                </li>
-              </ul>
-            </div>
+            <p className="text-gray-400">
+              Sveriges smartaste system för hunddagis och hundpensionat.
+            </p>
           </div>
-
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 DogPlanner. Alla rättigheter förbehållna.</p>
+          <div>
+            <h4 className="font-semibold mb-2">Produkt</h4>
+            <ul className="space-y-1 text-gray-400">
+              <li>
+                <Link href="/funktioner" className="hover:text-white">
+                  Funktioner
+                </Link>
+              </li>
+              <li>
+                <Link href="/priser" className="hover:text-white">
+                  Priser
+                </Link>
+              </li>
+              <li>
+                <Link href="/demo" className="hover:text-white">
+                  Demo
+                </Link>
+              </li>
+            </ul>
           </div>
+          <div>
+            <h4 className="font-semibold mb-2">Support</h4>
+            <ul className="space-y-1 text-gray-400">
+              <li>
+                <Link href="/help" className="hover:text-white">
+                  Hjälpcenter
+                </Link>
+              </li>
+              <li>
+                <Link href="/kontakt" className="hover:text-white">
+                  Kontakt
+                </Link>
+              </li>
+              <li>
+                <Link href="/status" className="hover:text-white">
+                  Status
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Företag</h4>
+            <ul className="space-y-1 text-gray-400">
+              <li>
+                <Link href="/om-oss" className="hover:text-white">
+                  Om oss
+                </Link>
+              </li>
+              <li>
+                <Link href="/karriar" className="hover:text-white">
+                  Karriär
+                </Link>
+              </li>
+              <li>
+                <Link href="/integritet" className="hover:text-white">
+                  Integritet
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="border-t border-gray-800 mt-8 pt-6 text-center text-gray-400">
+          <p>
+            &copy; {new Date().getFullYear()} DogPlanner. Alla rättigheter
+            förbehållna.{" "}
+            <Link href="/terms" className="underline hover:text-white ml-2">
+              Villkor
+            </Link>
+          </p>
         </div>
       </footer>
     </div>
