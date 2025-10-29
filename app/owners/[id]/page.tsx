@@ -2,17 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
 import { EditOwnerModal } from "@/components/EditOwnerModal";
 import { Button } from "@components/ui/button";
 
 export default function OwnerPage() {
   const { user } = useAuth();
-  const supabase = createBrowserClient<import("@/types/database").Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createClientComponentClient();
   const params = useParams();
   // id från [id] är alltid en sträng i Next.js App Router
   const id =

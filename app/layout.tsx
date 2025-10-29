@@ -2,7 +2,7 @@
 
 import "./globals.css";
 import React, { useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { AuthProvider, useAuth } from "@/app/context/AuthContext"; // ✅ korrekt import
 import { NotificationProvider } from "@/app/context/NotificationContext";
 import Navbar from "@/components/Navbar";
@@ -30,12 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   // ✅ Skapa Supabase-klient endast en gång
-  const [supabase] = useState(() =>
-    createBrowserClient<import("@/types/database").Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
-  );
+  const supabase = createClientComponentClient();
 
   return (
     <html lang="sv" suppressHydrationWarning>

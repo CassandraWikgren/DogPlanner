@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {
   Dialog,
   DialogContent,
@@ -34,10 +34,7 @@ export function EditOwnerModal({
   owner,
   refresh,
 }: EditOwnerModalProps) {
-  const supabase = createBrowserClient<any>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createClientComponentClient();
   const [form, setForm] = useState<OwnerForm>(owner || {});
 
   useEffect(() => {
