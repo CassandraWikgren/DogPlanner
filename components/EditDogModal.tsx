@@ -1,21 +1,28 @@
 "use client";
 
 import * as React from "react";
-import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/app/context/AuthContext";
-import type { Database } from "@/types/database";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 /** Props */
 type Props = {
   open: boolean;
-  onCloseAction: () => void;
-  onSavedAction: () => Promise<void> | void;
+  onClose: () => void;
+  onSaved: () => Promise<void> | void;
 };
 
 /** Typer */
-type Room = Database["public"]["Tables"]["rooms"]["Row"];
-type OwnerRow = Database["public"]["Tables"]["owners"]["Row"];
-type DogRow = Database["public"]["Tables"]["dogs"]["Row"];
+type Room = { id: string; name: string | null };
+type OwnerRow = {
+  id?: string;
+  full_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  postal_code?: string | null;
+  city?: string | null;
+  contact_person_2?: string | null;
+  contact_phone_2?: string | null;
+  customer_number?: number | null;
+};
 
 /** Liten sektionstitel */
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -51,21 +58,8 @@ function TabButton({
   );
 }
 
-export default function EditDogModal({
-  open,
-  onCloseAction,
-  onSavedAction,
-}: Props) {
-  const { user, loading: authLoading } = useAuth(); // ✅ autentiserad klient (RLS/trigger funkar)
-  const supabaseClient = supabase; // ✅ använd samma klient som andra delar
-
-  // Validera autentisering
-  React.useEffect(() => {
-    if (!authLoading && !user) {
-      console.log("[ERR-4001] User inte inloggad för EditDogModal");
-      setError("Du är inte inloggad – kunde inte spara");
-    }
-  }, [user, authLoading]);
+export default function EditDogModal({ open, onClose, onSaved }: Props) {
+  const supabase = useSupabaseClient(); // ✅ autentiserad klient (RLS/trigger funkar):contentReference[oaicite:3]{index=3}
 
   // UI
   const [activeTab, setActiveTab] = React.useState<
@@ -83,7 +77,7 @@ export default function EditDogModal({
     (async () => {
       try {
         // Hämta rum
-        const { data: roomsData, error: roomsErr } = await (supabase as any)
+        const { data: roomsData, error: roomsErr } = await supabase
           .from("rooms")
           .select("id, name")
           .order("name");
@@ -91,10 +85,10 @@ export default function EditDogModal({
         setRooms(roomsData ?? []);
 
         // Hämta roll (admin-låsningar)
-        const { data: me } = await (supabase as any).auth.getUser();
+        const { data: me } = await supabase.auth.getUser();
         const userId = me.user?.id;
         if (userId) {
-          const { data: prof } = await (supabase as any)
+          const { data: prof } = await supabase
             .from("profiles")
             .select("role")
             .eq("id", userId)
@@ -216,30 +210,16 @@ export default function EditDogModal({
       setUploading(true);
       const ext = file.name.split(".").pop();
       const filePath = `new-${Date.now()}.${ext}`;
-
-      // Försök ladda upp till dog_photos bucket
-      const { error: upErr } = await (supabase as any).storage
+      const { error: upErr } = await supabase.storage
         .from("dog_photos")
         .upload(filePath, file, { upsert: true });
-
-      if (upErr) {
-        // Om bucket inte finns, logga och sätt ingen bild-URL
-        if (upErr.message?.includes("Bucket not found")) {
-          console.warn(
-            "[ERR-2001] dog_photos bucket finns inte - bilduppladdning inaktiverad"
-          );
-          setError("Bilduppladdning är inte konfigurerad ännu.");
-          return;
-        }
-        throw upErr;
-      }
-
-      const { data } = (supabase as any).storage
+      if (upErr) throw upErr;
+      const { data } = supabase.storage
         .from("dog_photos")
         .getPublicUrl(filePath);
       setPhotoUrl(data.publicUrl);
     } catch (err: any) {
-      console.error("❌ [ERR-2001] Bilduppladdning fel:", err);
+      console.error("❌ Bilduppladdning fel:", err);
       setError(err?.message ?? "Kunde inte ladda upp bild.");
     } finally {
       setUploading(false);
@@ -254,7 +234,7 @@ export default function EditDogModal({
     setOk(null);
 
     // Säkerställ aktiv session (för RLS triggers)
-    const { data: sess } = await (supabase as any).auth.getSession();
+    const { data: sess } = await supabase.auth.getSession();
     if (!sess.session?.user?.id) {
       setError("Du är inte inloggad – kunde inte spara.");
       return;
@@ -278,7 +258,7 @@ export default function EditDogModal({
       let ownerId: string | null = null;
 
       if (ownerEmail) {
-        const { data: hit } = await (supabase as any)
+        const { data: hit } = await supabase
           .from("owners")
           .select("id")
           .ilike("email", ownerEmail)
@@ -286,7 +266,7 @@ export default function EditDogModal({
         if (hit?.id) ownerId = hit.id;
       }
       if (!ownerId && full_name && ownerPhone) {
-        const { data: hit2 } = await (supabase as any)
+        const { data: hit2 } = await supabase
           .from("owners")
           .select("id")
           .ilike("full_name", full_name)
@@ -295,19 +275,15 @@ export default function EditDogModal({
         if (hit2?.id) ownerId = hit2.id;
       }
 
-      const baseOwner: Database["public"]["Tables"]["owners"]["Insert"] = {
-        org_id: user?.user_metadata?.org_id || "default_org",
-        full_name: full_name || "Namnlös ägare",
+      const baseOwner: OwnerRow = {
+        full_name,
         email: ownerEmail || null,
         phone: ownerPhone || null,
-        address:
-          [ownerAddress, ownerZip, ownerCity].filter(Boolean).join(", ") ||
-          null,
-        customer_number: null,
+        postal_code: ownerZip || null,
+        city: ownerCity || null,
         contact_person_2:
           [kp2First.trim(), kp2Last.trim()].filter(Boolean).join(" ") || null,
         contact_phone_2: kp2Phone || null,
-        notes: null,
       };
 
       if (isAdmin) {
@@ -317,7 +293,7 @@ export default function EditDogModal({
       }
 
       if (!ownerId) {
-        const { data: created } = await (supabase as any)
+        const { data: created } = await supabase
           .from("owners")
           .insert([baseOwner])
           .select("id")
@@ -325,7 +301,7 @@ export default function EditDogModal({
           .throwOnError();
         ownerId = created.id;
       } else {
-        await (supabase as any)
+        await supabase
           .from("owners")
           .update(baseOwner)
           .eq("id", ownerId)
@@ -371,7 +347,7 @@ export default function EditDogModal({
         events, // JSONB
       };
 
-      const { data: dogRow } = await (supabase as any)
+      const { data: dogRow } = await supabase
         .from("dogs")
         .insert([dogPayload])
         .select("id")
@@ -382,7 +358,7 @@ export default function EditDogModal({
 
       // 4) Journal (dog_journal)
       if (journalText.trim()) {
-        await (supabase as any)
+        await supabase
           .from("dog_journal")
           .insert([{ dog_id: dogId, text: journalText.trim() }])
           .throwOnError();
@@ -392,7 +368,7 @@ export default function EditDogModal({
       if (addonName.trim()) {
         const qty =
           addonQty.trim() === "" ? null : Number(addonQty.replace(/^0+/, "")); // ta bort ledande nollor
-        await (supabase as any)
+        await supabase
           .from("extra_service")
           .insert([
             {
@@ -409,7 +385,7 @@ export default function EditDogModal({
 
       // 6) Ekonomi-anteckning → extra_service (typ = finance_note)
       if (financeNote.trim()) {
-        await (supabase as any)
+        await supabase
           .from("extra_service")
           .insert([
             {
@@ -425,8 +401,8 @@ export default function EditDogModal({
       }
 
       setOk("Hunden är sparad ✅");
-      await Promise.resolve(onSavedAction?.()); // Hundlistan laddar om i din sida
-      onCloseAction();
+      await Promise.resolve(onSaved?.()); // Hundlistan laddar om i din sida:contentReference[oaicite:4]{index=4}
+      onClose();
     } catch (e: any) {
       console.error("❌ Save error:", {
         message: e?.message,
@@ -463,7 +439,7 @@ export default function EditDogModal({
             </div>
           </div>
           <button
-            onClick={onCloseAction}
+            onClick={onClose}
             className="rounded-lg border px-3 py-1.5 text-sm hover:bg-gray-50"
           >
             Stäng
@@ -746,63 +722,55 @@ export default function EditDogModal({
               </div>
 
               <SectionTitle>Övrigt hund</SectionTitle>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div className="flex items-start gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                <label className="inline-flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={flagCast}
                     onChange={(e) => setFlagCast(e.target.checked)}
-                    className="mt-0.5"
                   />
-                  <label className="text-gray-700">
-                    Kastrerad / Steriliserad
-                  </label>
-                </div>
-                <div className="flex items-start gap-2">
+                  Kastrerad / Steriliserad
+                </label>
+                <label className="inline-flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={flagBiter}
                     onChange={(e) => setFlagBiter(e.target.checked)}
-                    className="mt-0.5"
                   />
-                  <label className="text-gray-700">Hund biter på saker</label>
-                </div>
-                <div className="flex items-start gap-2">
+                  Hund biter på saker
+                </label>
+                <label className="inline-flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={flagKiss}
                     onChange={(e) => setFlagKiss(e.target.checked)}
-                    className="mt-0.5"
                   />
-                  <label className="text-gray-700">Kissar inne</label>
-                </div>
-                <div className="flex items-start gap-2">
+                  Kissar inne
+                </label>
+                <label className="inline-flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={flagSkallig}
                     onChange={(e) => setFlagSkallig(e.target.checked)}
-                    className="mt-0.5"
                   />
-                  <label className="text-gray-700">Hund skällig</label>
-                </div>
-                <div className="flex items-start gap-2">
+                  Hund skällig
+                </label>
+                <label className="inline-flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={flagPersonal}
                     onChange={(e) => setFlagPersonal(e.target.checked)}
-                    className="mt-0.5"
                   />
-                  <label className="text-gray-700">Personalhund</label>
-                </div>
-                <div className="flex items-start gap-2">
+                  Personalhund
+                </label>
+                <label className="inline-flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={flagPensionat}
                     onChange={(e) => setFlagPensionat(e.target.checked)}
-                    className="mt-0.5"
                   />
-                  <label className="text-gray-700">Pensionatshund</label>
-                </div>
+                  Pensionatshund
+                </label>
               </div>
             </div>
           )}
@@ -1048,7 +1016,7 @@ export default function EditDogModal({
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 px-5 py-4 border-t">
           <button
-            onClick={onCloseAction}
+            onClick={onClose}
             className="rounded-lg border px-4 py-2 text-sm hover:bg-gray-50"
           >
             Avbryt
