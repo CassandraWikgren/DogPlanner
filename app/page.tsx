@@ -64,60 +64,54 @@ export default function HomePage() {
 
   // Professionell marketingsida för icke-inloggade användare
   return (
-    <div className="min-h-screen bg-white">
-      {/* Global Navbar */}
-      <Navbar />
-
-      {/* Hero Section - Säljande och inspirerande */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Bakgrundsbild */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/Hero.jpeg')" }}
+    <div className="min-h-screen bg-[#fdfdfd] flex flex-col">
+      {/* Header */}
+      <header className="flex justify-between items-center px-8 py-4 bg-green-700 text-white shadow">
+        <div className="flex items-center gap-2">
+          <Image
+            src="/logo.png"
+            alt="DogPlanner logotyp"
+            width={42}
+            height={42}
+          />
+          <span className="font-bold text-xl tracking-tight">DogPlanner</span>
+        </div>
+        <Link
+          href="/login"
+          className="font-bold px-4 py-2 rounded bg-white/20 hover:bg-white/35 transition"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30"></div>
-        </div>
-        {/* Innehåll */}
-        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center text-white flex flex-col items-center">
-          <h1 className="text-5xl lg:text-7xl font-extrabold mb-6 leading-tight drop-shadow-xl">
-            DogPlanner
-          </h1>
-          <p className="text-2xl lg:text-3xl mb-8 text-green-100 font-semibold max-w-2xl mx-auto drop-shadow">
-            Sveriges smartaste system för hunddagis, pensionat och hundfrisörer.
-          </p>
-          <p className="text-lg lg:text-xl mb-8 text-gray-200 max-w-2xl mx-auto">
-            Spara tid, få full kontroll och ge dina kunder en bättre upplevelse
-            – allt på ett ställe. Skapa konto och testa gratis i 30 dagar!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4">
-            <Link href="/register">
-              <Button
-                size="lg"
-                className="bg-green-500 hover:bg-green-600 text-white text-lg px-8 py-4 font-bold shadow-lg"
-              >
-                Skapa konto
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white/10 text-lg px-8 py-4 font-bold"
-              >
-                Logga in
-              </Button>
-            </Link>
-          </div>
-          <Link
-            href="/terms"
-            className="underline text-green-200 hover:text-green-400 text-sm mt-2"
+          Logga in
+        </Link>
+      </header>
+
+      {/* Hero */}
+      <section className="flex-1 flex flex-col items-center justify-center text-center relative bg-gradient-to-b from-green-700/90 to-green-600/80">
+        <Image
+          src="/logo.png"
+          alt="DogPlanner logotyp"
+          width={180}
+          height={180}
+          className="mx-auto mb-6 drop-shadow-lg"
+        />
+        <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 drop-shadow">
+          Få full koll på din hundverksamhet
+        </h1>
+        <p className="text-lg md:text-2xl text-green-100 mb-8 max-w-2xl mx-auto">
+          DogPlanner gör det enkelt att driva hunddagis och pensionat.
+          <br />
+          Mer tid för hundarna, mindre för papper.
+        </p>
+        <Link href="/register">
+          <Button
+            size="lg"
+            className="bg-white text-green-700 font-bold px-8 py-4 rounded-lg shadow hover:bg-green-50 text-lg"
           >
-            Läs våra villkor
-          </Link>
-          <p className="text-sm text-gray-300 mt-2">
-            ✓ Ingen bindningstid ✓ Ingen kortuppgift behövs
-          </p>
-        </div>
+            Prova gratis i 2 månader
+          </Button>
+        </Link>
+        <p className="text-sm text-green-200 mt-4">
+          Ingen bindningstid, ingen kortuppgift krävs
+        </p>
       </section>
 
       {/* Funktioner Section */}
