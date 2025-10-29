@@ -208,7 +208,10 @@ function LoginPageContent() {
               <strong>För testning:</strong> Använd demo-inloggning
             </p>
             <Button
-              onClick={() => router.push("/kundportal/dashboard")}
+              onClick={async () => {
+                await fetch("/api/demo-login");
+                router.push("/kundportal/dashboard");
+              }}
               variant="outline"
               className="w-full border-blue-300 text-blue-700 hover:bg-blue-100"
             >
