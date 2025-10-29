@@ -1,3 +1,6 @@
+export const config = {
+  matcher: ["/(?!_next|static|favicon.ico|robots.txt|api/health).*"],
+};
 import { NextResponse } from "next/server";
 
 export function middleware(request: Request) {
