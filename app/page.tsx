@@ -64,32 +64,32 @@ export default function HomePage() {
           <div className="bg-white border border-gray-100 shadow-md rounded-2xl p-8 text-center hover:shadow-lg transition">
             <div className="text-5xl mb-4">📅</div>
             <h3 className="font-semibold text-lg text-[#2c7a4c] mb-2">
-              Enkel planering
+              Spara tid
             </h3>
             <p className="text-gray-600">
-              Hantera scheman, bokningar och notiser på ett ställe – snabbt och
-              smidigt.
+              All planering samlad på ett ställe – schema, bokningar och notiser
+              hanteras enkelt.
             </p>
           </div>
 
           <div className="bg-white border border-gray-100 shadow-md rounded-2xl p-8 text-center hover:shadow-lg transition">
-            <div className="text-5xl mb-4">💳</div>
+            <div className="text-5xl mb-4">�</div>
             <h3 className="font-semibold text-lg text-[#2c7a4c] mb-2">
-              Automatiserad fakturering
+              Trygghet & GDPR-säkert
             </h3>
             <p className="text-gray-600">
-              Skicka fakturor och följ betalningar automatiskt – spara tid och
-              undvik fel.
+              All data lagras säkert i Sverige. Du äger alltid din information.
             </p>
           </div>
 
           <div className="bg-white border border-gray-100 shadow-md rounded-2xl p-8 text-center hover:shadow-lg transition">
-            <div className="text-5xl mb-4">📈</div>
+            <div className="text-5xl mb-4">�</div>
             <h3 className="font-semibold text-lg text-[#2c7a4c] mb-2">
-              Full överblick
+              Smidig fakturering
             </h3>
             <p className="text-gray-600">
-              Se beläggning, kundhistorik och statistik direkt i din dashboard.
+              Automatisera abonnemang och fakturor så du slipper manuell
+              hantering.
             </p>
           </div>
         </div>
