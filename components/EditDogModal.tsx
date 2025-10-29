@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useSupabaseClient } from "@supabase/ssr";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 /** Props */
 type Props = {
@@ -59,7 +59,7 @@ function TabButton({
 }
 
 export default function EditDogModal({ open, onClose, onSaved }: Props) {
-  const supabase = useSupabaseClient(); // ✅ autentiserad klient (RLS/trigger funkar):contentReference[oaicite:3]{index=3}
+  const supabase = createClientComponentClient(); // Korrekt klient för client components
 
   // UI
   const [activeTab, setActiveTab] = React.useState<
