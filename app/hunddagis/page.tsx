@@ -1310,9 +1310,11 @@ export default function HunddagisPage() {
 
               {/* 3. Intresseanmälningar */}
               <div
-                className="live-card"
-                onClick={() => setCurrentView("applications")}
-                title="Nya intresseanmälningar denna månaden"
+                className="live-card cursor-pointer"
+                onClick={() =>
+                  (window.location.href = "/hunddagis/intresseanmalningar")
+                }
+                title="Nya intresseanmälningar denna månaden - Klicka för att se lista"
               >
                 <div className="live-value">{live.intresseSenasteMån}</div>
                 <div className="live-label">Intresseanmälningar</div>
@@ -1320,9 +1322,9 @@ export default function HunddagisPage() {
 
               {/* 4. Tjänster (kloklipp/tassklipp/bad) */}
               <div
-                className="live-card"
+                className="live-card cursor-pointer"
                 onClick={() => setCurrentView("services")}
-                title="Tjänster denna månaden"
+                title="Tjänster denna månaden - Klicka för att se checklista"
               >
                 <div className="live-value">{live.tjänsterDennaMån}</div>
                 <div className="live-label">Tjänster</div>
@@ -1330,9 +1332,9 @@ export default function HunddagisPage() {
 
               {/* 5. Hundrum */}
               <div
-                className="live-card"
+                className="live-card cursor-pointer"
                 onClick={() => setCurrentView("rooms")}
-                title="Antal rum & beläggning"
+                title="Antal rum & beläggning - Klicka för att se detaljer"
               >
                 <div className="live-value">{live.hundrum}</div>
                 <div className="live-label">Hundrum</div>
@@ -1340,11 +1342,11 @@ export default function HunddagisPage() {
 
               {/* 6. Mina priser */}
               <div
-                className="live-card"
-                onClick={() => (window.location.href = "/pricing")}
+                className="live-card cursor-pointer"
+                onClick={() => (window.location.href = "/hunddagis/priser")}
                 title="Gå till prisinställningar"
               >
-                <div className="live-value">›</div>
+                <div className="live-value">€</div>
                 <div className="live-label">Mina priser</div>
               </div>
             </div>
