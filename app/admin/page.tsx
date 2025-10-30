@@ -141,6 +141,24 @@ export default function AdminPage() {
             </div>
           </Link>
 
+          {/* Rum-hantering */}
+          <Link
+            href="/rooms"
+            className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all border border-gray-200 hover:border-green-300"
+          >
+            <div className="flex items-start gap-4">
+              <div className="text-4xl">🚪</div>
+              <div className="flex-1">
+                <h2 className="text-lg font-bold text-gray-900 mb-2">
+                  Rum & Platser
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Hantera rum för dagis och pensionat.
+                </p>
+              </div>
+            </div>
+          </Link>
+
           {/* Användarhantering */}
           <Link
             href="/admin/users"
