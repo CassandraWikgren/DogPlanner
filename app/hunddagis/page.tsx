@@ -882,28 +882,19 @@ export default function HunddagisPage() {
   }
   return (
     <>
-      {/* ======= STYLES (matchar pensionat-look) ======= */}
+      {/* ======= STYLES (moderniserad design) ======= */}
       <style jsx>{`
         :root {
           --primary-green: #2c7a4c;
           --light-green: rgba(44, 122, 76, 0.1);
           --success-green: #28a745;
         }
-        .dagis-container {
-          min-height: 100vh;
-          background: linear-gradient(
-            135deg,
-            rgba(44, 122, 76, 0.08) 0%,
-            rgba(76, 175, 80, 0.05) 100%
-          );
-          padding: 20px;
-        }
         .dagis-header {
           background: rgba(255, 255, 255, 0.95);
           border: 1px solid rgba(44, 122, 76, 0.2);
           border-radius: 8px;
           padding: 12px 16px;
-          margin-bottom: 16px;
+          margin: 20px 0 16px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -911,9 +902,11 @@ export default function HunddagisPage() {
         .back-btn {
           color: var(--primary-green);
           text-decoration: none;
-          padding: 6px 10px;
+          padding: 8px 12px;
           border-radius: 6px;
           border: 1px solid transparent;
+          font-weight: 500;
+          transition: all 0.2s;
         }
         .back-btn:hover {
           background: var(--light-green);
@@ -922,131 +915,169 @@ export default function HunddagisPage() {
 
         .dagis-hero {
           text-align: center;
-          padding: 56px 20px 32px 20px;
+          padding: 80px 20px 110px 20px;
           background: linear-gradient(
-              rgba(44, 122, 76, 0.85),
-              rgba(44, 122, 76, 0.85)
+              rgba(44, 122, 76, 0.88),
+              rgba(44, 122, 76, 0.88)
             ),
             url("/Hero.jpeg") center/cover no-repeat;
           color: #fff;
-          border-radius: 12px;
-          margin-bottom: 24px;
+          margin-bottom: 0;
+          position: relative;
+          overflow: visible;
         }
         .dagis-hero h1 {
-          font-size: 2.4rem;
+          font-size: 3rem;
           font-weight: 800;
-          margin-bottom: 8px;
+          margin-bottom: 12px;
+          letter-spacing: -0.02em;
         }
         .dagis-hero p {
           opacity: 0.95;
-          max-width: 680px;
-          margin: 0 auto 18px;
+          font-size: 1.125rem;
+          max-width: 700px;
+          margin: 0 auto 32px;
+          line-height: 1.6;
         }
 
         .live-grid {
           display: grid;
-          grid-template-columns: repeat(6, 1fr);
-          gap: 12px;
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+          gap: 16px;
           max-width: 1200px;
           margin: 0 auto;
+          position: relative;
+          z-index: 10;
         }
         .live-card {
-          background: rgba(255, 255, 255, 0.15);
-          border: 1px solid rgba(255, 255, 255, 0.25);
-          border-radius: 10px;
-          padding: 12px 10px;
-          min-height: 90px;
+          background: rgba(255, 255, 255, 0.97);
+          border: 1px solid rgba(44, 122, 76, 0.1);
+          border-radius: 12px;
+          padding: 20px 16px;
+          min-height: 110px;
           display: flex;
           flex-direction: column;
+          align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           user-select: none;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         .live-card:hover {
-          background: rgba(255, 255, 255, 0.25);
-          transform: translateY(-1px);
+          background: white;
+          border-color: #2c7a4c;
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(44, 122, 76, 0.15);
+        }
+        .live-card:active {
+          transform: translateY(-2px);
         }
         .live-value {
-          font-size: 22px;
+          font-size: 2.5rem;
           font-weight: 800;
-          color: white;
+          color: #2c7a4c;
           line-height: 1;
-          margin-bottom: 6px;
+          margin-bottom: 8px;
         }
         .live-label {
-          font-size: 11px;
-          color: white;
-          opacity: 0.95;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #333;
+          text-align: center;
+          line-height: 1.3;
         }
 
         .controls {
-          background: rgba(255, 255, 255, 0.95);
-          border: 1px solid rgba(44, 122, 76, 0.2);
-          border-radius: 8px;
-          padding: 16px;
-          margin-bottom: 16px;
+          background: white;
+          border: 1px solid rgba(44, 122, 76, 0.15);
+          border-radius: 12px;
+          padding: 20px;
+          margin-bottom: 20px;
           display: flex;
-          gap: 12px;
+          gap: 16px;
           justify-content: space-between;
           align-items: center;
           flex-wrap: wrap;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
         .controls .left,
         .controls .right {
           display: flex;
-          gap: 10px;
+          gap: 12px;
           align-items: center;
           flex-wrap: wrap;
         }
         .input,
         .select {
-          padding: 8px 10px;
-          border: 1px solid rgba(44, 122, 76, 0.3);
-          border-radius: 6px;
+          padding: 10px 14px;
+          border: 2px solid rgba(44, 122, 76, 0.2);
+          border-radius: 8px;
           background: #fff;
-          min-width: 200px;
+          min-width: 220px;
+          font-size: 0.9375rem;
+          transition: all 0.2s;
+        }
+        .input:focus,
+        .select:focus {
+          outline: none;
+          border-color: #2c7a4c;
+          box-shadow: 0 0 0 3px rgba(44, 122, 76, 0.1);
         }
         .btn {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          padding: 8px 12px;
-          border-radius: 6px;
+          padding: 10px 16px;
+          border-radius: 8px;
           font-weight: 600;
           cursor: pointer;
           border: none;
           text-decoration: none;
+          transition: all 0.2s;
         }
         .btn-primary {
           background: var(--primary-green);
           color: white;
         }
+        .btn-primary:hover {
+          background: #236139;
+        }
         .btn-secondary {
-          background: #6c757d;
-          color: white;
+          background: white;
+          color: var(--primary-green);
+          border: 2px solid var(--primary-green);
+        }
+        .btn-secondary:hover {
+          background: rgba(44, 122, 76, 0.05);
         }
         .btn-ghost {
-          background: #f2f4f5;
-          color: #111;
+          background: #f3f4f6;
+          color: #374151;
+        }
+        .btn-ghost:hover {
+          background: #e5e7eb;
         }
         .btn:hover {
           transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .panel {
-          background: rgba(255, 255, 255, 0.95);
-          border: 1px solid rgba(44, 122, 76, 0.2);
-          border-radius: 8px;
-          padding: 12px;
-          margin-bottom: 16px;
+          background: white;
+          border: 1px solid rgba(44, 122, 76, 0.15);
+          border-radius: 12px;
+          padding: 16px;
+          margin-bottom: 20px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .table-wrap {
-          background: rgba(255, 255, 255, 0.96);
-          border: 1px solid rgba(44, 122, 76, 0.2);
-          border-radius: 8px;
+          background: white;
+          border: 1px solid rgba(44, 122, 76, 0.15);
+          border-radius: 12px;
           overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
         .tbl {
           width: 100%;
@@ -1055,15 +1086,22 @@ export default function HunddagisPage() {
         .tbl thead th {
           background: var(--primary-green);
           color: white;
-          padding: 12px 14px;
+          padding: 14px 16px;
           text-align: left;
+          font-weight: 600;
+          font-size: 0.9375rem;
         }
         .tbl tbody td {
-          padding: 10px 14px;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+          padding: 12px 16px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+          font-size: 0.9375rem;
         }
         .tbl tbody tr:nth-child(even) {
-          background: var(--light-green);
+          background: rgba(44, 122, 76, 0.02);
+        }
+        .tbl tbody tr:hover {
+          background: rgba(44, 122, 76, 0.05);
+          transition: background 0.2s;
         }
 
         .error {
@@ -1077,12 +1115,30 @@ export default function HunddagisPage() {
 
         @media (max-width: 1100px) {
           .live-grid {
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
           }
         }
         @media (max-width: 700px) {
+          .dagis-hero {
+            padding: 60px 20px 100px 20px;
+          }
+          .dagis-hero h1 {
+            font-size: 2rem;
+          }
           .live-grid {
             grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+          }
+          .live-card {
+            min-height: 100px;
+            padding: 16px 12px;
+          }
+          .live-value {
+            font-size: 2rem;
+          }
+          .live-label {
+            font-size: 0.75rem;
+          }
           }
           .dagis-hero h1 {
             font-size: 1.6rem;
@@ -1108,9 +1164,9 @@ export default function HunddagisPage() {
           </div>
         </div>
       ) : (
-        <div className="dagis-container">
+        <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
           {/* Header */}
-          <header className="dagis-header">
+          <header className="dagis-header max-w-7xl mx-auto">
             <Link className="back-btn" href="/dashboard">
               ← Tillbaka
             </Link>
@@ -1123,7 +1179,11 @@ export default function HunddagisPage() {
           <section className="dagis-hero">
             <h1>Hunddagis</h1>
             <p>Sammanställning, statistik och hantering av dagishundar.</p>
+          </section>
 
+          {/* Main content with floating live cards */}
+          <div className="max-w-7xl mx-auto px-6 -mt-16 relative z-20">
+            {/* Live boxes - floating over hero */}
             <div className="live-grid">
               {/* 1. Dagishundar */}
               <div
@@ -1178,7 +1238,7 @@ export default function HunddagisPage() {
               {/* 6. Mina priser */}
               <div
                 className="live-card"
-                onClick={() => (window.location.href = "/mina-priser")}
+                onClick={() => (window.location.href = "/pricing")}
                 title="Gå till prisinställningar"
               >
                 <div className="live-value">›</div>
@@ -1187,442 +1247,464 @@ export default function HunddagisPage() {
             </div>
 
             {/* Primära knappar under liveboxarna */}
-            <div className="flex flex-wrap gap-8 justify-center mt-5">
-              <Link href="/hunddagis/new" className="btn btn-primary">
+            <div className="flex flex-wrap gap-4 justify-center mt-6 mb-8">
+              <Link
+                href="/hunddagis/new"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white font-semibold rounded-lg hover:bg-[#236139] transition-all shadow-md hover:shadow-lg"
+              >
                 <Plus className="h-4 w-4" /> Ny hund
               </Link>
-              <button onClick={exportPDF} className="btn btn-secondary">
+              <button
+                onClick={exportPDF}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#2c7a4c] font-semibold rounded-lg border-2 border-[#2c7a4c] hover:bg-green-50 transition-all shadow-md hover:shadow-lg"
+              >
                 <Download className="h-4 w-4" /> PDF-export
               </button>
-              <button onClick={loadDogs} className="btn btn-ghost">
+              <button
+                onClick={loadDogs}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-all shadow-md"
+              >
                 <RefreshCcw className="h-4 w-4" /> Ladda om
               </button>
             </div>
-          </section>
 
-          {/* Kontroller */}
-          <div className="controls">
-            <div className="left">
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="🔍 Sök… (hund, ägare, telefon, rum…)"
-                className="input"
-              />
-              <select
-                value={subFilter}
-                onChange={(e) => setSubFilter(e.target.value)}
-                className="select"
-              >
-                <option value="">Alla abonnemang</option>
-                <option value="Heltid">Heltid</option>
-                <option value="Deltid 3">Deltid 3</option>
-                <option value="Deltid 2">Deltid 2</option>
-                <option value="Dagshund">Dagshund</option>
-              </select>
-              <input
-                type="month"
-                value={month}
-                onChange={(e) => setMonth(e.target.value)}
-                className="select"
-                title="Filtrerar på startmånad (eller skapad om start saknas)"
-              />
-            </div>
-
-            <div className="right">
-              <div className="relative">
-                <button
-                  onClick={() => setShowColsMenu((s) => !s)}
-                  className="btn btn-ghost"
-                  title="Kolumnval"
+            {/* Kontroller */}
+            <div className="controls">
+              <div className="left">
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="🔍 Sök… (hund, ägare, telefon, rum…)"
+                  className="input"
+                />
+                <select
+                  value={subFilter}
+                  onChange={(e) => setSubFilter(e.target.value)}
+                  className="select"
                 >
-                  <Settings2 className="h-4 w-4" /> Kolumner
-                </button>
-                {showColsMenu && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-md border bg-white shadow z-10 p-2">
-                    {Object.keys(COLUMN_LABELS).map((c) => (
-                      <label
-                        key={c}
-                        className="flex items-center gap-2 px-2 py-1 text-sm"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={columns.includes(c)}
-                          onChange={() =>
-                            setColumns((prev) =>
-                              prev.includes(c)
-                                ? prev.filter((x) => x !== c)
-                                : [...prev, c]
-                            )
-                          }
-                        />
-                        {COLUMN_LABELS[c]}
-                      </label>
-                    ))}
-                  </div>
-                )}
+                  <option value="">Alla abonnemang</option>
+                  <option value="Heltid">Heltid</option>
+                  <option value="Deltid 3">Deltid 3</option>
+                  <option value="Deltid 2">Deltid 2</option>
+                  <option value="Dagshund">Dagshund</option>
+                </select>
+                <input
+                  type="month"
+                  value={month}
+                  onChange={(e) => setMonth(e.target.value)}
+                  className="select"
+                  title="Filtrerar på startmånad (eller skapad om start saknas)"
+                />
+              </div>
+
+              <div className="right">
+                <div className="relative">
+                  <button
+                    onClick={() => setShowColsMenu((s) => !s)}
+                    className="btn btn-ghost"
+                    title="Kolumnval"
+                  >
+                    <Settings2 className="h-4 w-4" /> Kolumner
+                  </button>
+                  {showColsMenu && (
+                    <div className="absolute right-0 mt-2 w-56 rounded-md border bg-white shadow z-10 p-2">
+                      {Object.keys(COLUMN_LABELS).map((c) => (
+                        <label
+                          key={c}
+                          className="flex items-center gap-2 px-2 py-1 text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={columns.includes(c)}
+                            onChange={() =>
+                              setColumns((prev) =>
+                                prev.includes(c)
+                                  ? prev.filter((x) => x !== c)
+                                  : [...prev, c]
+                              )
+                            }
+                          />
+                          {COLUMN_LABELS[c]}
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Felvisning */}
-          {errMsg && <div className="error">{errMsg}</div>}
-          {/* === VYER === */}
+            {/* Felvisning */}
+            {errMsg && <div className="error">{errMsg}</div>}
+            {/* === VYER === */}
 
-          {/* Tjänster (checklista) */}
-          {currentView === "services" && (
-            <div className="panel">
-              <div className="flex items-center gap-2 mb-2">
-                <CheckSquare size={18} />
-                <h3 className="font-semibold">
-                  Tjänster denna månad (checka när utfört)
-                </h3>
+            {/* Tjänster (checklista) */}
+            {currentView === "services" && (
+              <div className="panel">
+                <div className="flex items-center gap-2 mb-2">
+                  <CheckSquare size={18} />
+                  <h3 className="font-semibold">
+                    Tjänster denna månad (checka när utfört)
+                  </h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="tbl">
+                    <thead>
+                      <tr>
+                        <th>Hund</th>
+                        <th>Ägare</th>
+                        <th>Planerade tjänster</th>
+                        <th>Klarmarkera</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dogs
+                        .filter((d) => {
+                          const KEYWORDS = ["kloklipp", "tassklipp", "bad"];
+                          const ym = new Date().toISOString().slice(0, 7);
+                          try {
+                            const arr = Array.isArray(d.events)
+                              ? d.events
+                              : d.events
+                              ? JSON.parse(d.events)
+                              : [];
+                            return (arr || []).some((e: any) => {
+                              const when: string = e?.date || e?.datum || "";
+                              const txt = `${e?.type || ""} ${
+                                e?.title || ""
+                              }`.toLowerCase();
+                              return (
+                                when.startsWith(ym) &&
+                                KEYWORDS.some((k) => txt.includes(k))
+                              );
+                            });
+                          } catch {
+                            return false;
+                          }
+                        })
+                        .map((d) => {
+                          const ym = new Date().toISOString().slice(0, 7);
+                          const key = `${ym}:${d.id}`;
+                          let items: string[] = [];
+                          try {
+                            const arr = Array.isArray(d.events)
+                              ? d.events
+                              : d.events
+                              ? JSON.parse(d.events)
+                              : [];
+                            items = (arr || [])
+                              .filter((e: any) =>
+                                (e?.date || "").startsWith(ym)
+                              )
+                              .map((e: any) => e?.title || e?.type || "Tjänst");
+                          } catch {}
+                          return (
+                            <tr key={d.id}>
+                              <td className="py-2 px-3">{d.name}</td>
+                              <td className="py-2 px-3">
+                                {d.owners?.full_name || "-"}
+                              </td>
+                              <td className="py-2 px-3">
+                                {items.length ? items.join(", ") : "-"}
+                              </td>
+                              <td className="py-2 px-3">
+                                <label className="inline-flex items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={!!serviceChecked[key]}
+                                    onChange={async () => {
+                                      const next = !serviceChecked[key];
+                                      // uppdatera local state + localStorage (hanteras i useEffect)
+                                      setServiceChecked((prev) => ({
+                                        ...prev,
+                                        [key]: next,
+                                      }));
+                                      // försök persistera i Supabase (om service_logs finns)
+                                      try {
+                                        const { error } = await (
+                                          supabase as any
+                                        )
+                                          .from("service_logs")
+                                          .upsert(
+                                            {
+                                              dog_id: d.id,
+                                              ym,
+                                              done: next,
+                                              user_id: user?.id || null,
+                                              org_id:
+                                                user?.user_metadata?.org_id ||
+                                                null,
+                                              updated_at:
+                                                new Date().toISOString(),
+                                            },
+                                            { onConflict: "dog_id,ym" }
+                                          );
+                                        if (error) {
+                                          console.warn(
+                                            `${ERROR_CODES.DATABASE_CONNECTION} service_logs`,
+                                            error
+                                          );
+                                        }
+                                      } catch (e) {
+                                        console.warn(
+                                          `${ERROR_CODES.DATABASE_CONNECTION} service_logs saknas`,
+                                          e
+                                        );
+                                      }
+                                    }}
+                                  />
+                                  {serviceChecked[key] ? "Utfört" : "Ej klart"}
+                                </label>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      {dogs.length === 0 && (
+                        <tr>
+                          <td colSpan={4} className="py-3 px-3 text-gray-600">
+                            Inga hundar att visa.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div className="overflow-x-auto">
+            )}
+
+            {/* Rumsvy */}
+            {currentView === "rooms" && (
+              <div className="panel">
+                <h3 className="font-semibold mb-2">Rumsöversikt</h3>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {rooms.map((r) => {
+                    const dogsInRoom = dogs.filter((d) => d.room_id === r.id);
+                    const cap = r.capacity || null;
+                    return (
+                      <div key={r.id} className="border rounded-md p-3">
+                        <div className="font-semibold">
+                          {r.name}{" "}
+                          {cap ? (
+                            <span className="text-sm text-gray-500">
+                              ({dogsInRoom.length}/{cap})
+                            </span>
+                          ) : null}
+                        </div>
+                        <ul className="mt-2 text-sm">
+                          {dogsInRoom.length ? (
+                            dogsInRoom.map((d) => (
+                              <li key={d.id}>• {d.name}</li>
+                            ))
+                          ) : (
+                            <li className="text-gray-500">Inga hundar</li>
+                          )}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                  {!rooms.length && (
+                    <div className="text-sm text-gray-600">
+                      Inga rum hittades.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Intresselista – placeholder (robust mot saknad tabell) */}
+            {currentView === "applications" && (
+              <div className="panel">
+                <h3 className="font-semibold mb-2">
+                  Intresselista (senaste månaden)
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Denna sektion försöker läsa från <code>applications</code>{" "}
+                  eller <code>interests</code>. Om den databasen inte finns än
+                  visas endast totalen i livekorten. {live.intresseSenasteMån}{" "}
+                  st den här månaden.
+                </p>
+              </div>
+            )}
+
+            {/* Kalender – länk ut */}
+            {currentView === "calendar" && (
+              <div className="panel">
+                <h3 className="font-semibold mb-2">Kalender</h3>
+                <p className="text-sm text-gray-600">
+                  Gå till kalendern för hunddagis{" "}
+                  <Link
+                    className="text-green-700 underline"
+                    href="/hunddagis/kalender"
+                  >
+                    här
+                  </Link>
+                  .
+                </p>
+              </div>
+            )}
+
+            {/* Standardtabell (visas när vy inte ersätter tabellen) */}
+            {currentView !== "services" && currentView !== "rooms" && (
+              <div className="table-wrap">
                 <table className="tbl">
                   <thead>
                     <tr>
-                      <th>Hund</th>
-                      <th>Ägare</th>
-                      <th>Planerade tjänster</th>
-                      <th>Klarmarkera</th>
+                      {columns.includes("name") &&
+                        headerCell("name", COLUMN_LABELS["name"])}
+                      {columns.includes("breed") &&
+                        headerCell("breed", COLUMN_LABELS["breed"])}
+                      {columns.includes("owner") &&
+                        headerCell("owner", COLUMN_LABELS["owner"])}
+                      {columns.includes("phone") &&
+                        headerCell("phone", "Telefon")}
+                      {columns.includes("subscription") &&
+                        headerCell(
+                          "subscription",
+                          COLUMN_LABELS["subscription"]
+                        )}
+                      {columns.includes("room_id") &&
+                        headerCell("room_id", COLUMN_LABELS["room_id"])}
+                      {columns.includes("days") &&
+                        headerCell("days", COLUMN_LABELS["days"])}
+                      {columns.includes("startdate") &&
+                        headerCell("startdate", COLUMN_LABELS["startdate"])}
+                      {columns.includes("enddate") &&
+                        headerCell("enddate", COLUMN_LABELS["enddate"])}
                     </tr>
                   </thead>
                   <tbody>
-                    {dogs
-                      .filter((d) => {
-                        const KEYWORDS = ["kloklipp", "tassklipp", "bad"];
-                        const ym = new Date().toISOString().slice(0, 7);
-                        try {
-                          const arr = Array.isArray(d.events)
-                            ? d.events
-                            : d.events
-                            ? JSON.parse(d.events)
-                            : [];
-                          return (arr || []).some((e: any) => {
-                            const when: string = e?.date || e?.datum || "";
-                            const txt = `${e?.type || ""} ${
-                              e?.title || ""
-                            }`.toLowerCase();
-                            return (
-                              when.startsWith(ym) &&
-                              KEYWORDS.some((k) => txt.includes(k))
-                            );
-                          });
-                        } catch {
-                          return false;
-                        }
-                      })
-                      .map((d) => {
-                        const ym = new Date().toISOString().slice(0, 7);
-                        const key = `${ym}:${d.id}`;
-                        let items: string[] = [];
-                        try {
-                          const arr = Array.isArray(d.events)
-                            ? d.events
-                            : d.events
-                            ? JSON.parse(d.events)
-                            : [];
-                          items = (arr || [])
-                            .filter((e: any) => (e?.date || "").startsWith(ym))
-                            .map((e: any) => e?.title || e?.type || "Tjänst");
-                        } catch {}
-                        return (
-                          <tr key={d.id}>
-                            <td className="py-2 px-3">{d.name}</td>
+                    {loading ? (
+                      <tr>
+                        <td
+                          className="py-4 px-3 text-gray-500"
+                          colSpan={columns.length}
+                        >
+                          Laddar hundar…
+                        </td>
+                      </tr>
+                    ) : viewDogs.length === 0 ? (
+                      <tr>
+                        <td
+                          className="py-4 px-3 text-gray-500"
+                          colSpan={columns.length}
+                        >
+                          Inga hundar matchar dina filter.
+                        </td>
+                      </tr>
+                    ) : (
+                      viewDogs.map((d) => (
+                        <tr
+                          key={d.id}
+                          className={`border-t hover:bg-green-50 ${rowColor(
+                            d
+                          )}`}
+                        >
+                          {columns.includes("name") && (
+                            <td className="py-2 px-3">
+                              <div className="flex items-center gap-2">
+                                {d.photo_url ? (
+                                  <img
+                                    src={d.photo_url}
+                                    alt="hund"
+                                    className="h-8 w-8 rounded-full object-cover border"
+                                  />
+                                ) : (
+                                  <div className="h-8 w-8 rounded-full grid place-content-center bg-gray-100 text-gray-500 text-xs">
+                                    🐶
+                                  </div>
+                                )}
+                                <div>
+                                  <div className="font-semibold">{d.name}</div>
+                                  {d.breed && (
+                                    <div className="text-xs text-gray-500">
+                                      {d.breed}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                          )}
+                          {columns.includes("breed") && (
+                            <td className="py-2 px-3">{d.breed || "-"}</td>
+                          )}
+                          {columns.includes("owner") && (
                             <td className="py-2 px-3">
                               {d.owners?.full_name || "-"}
                             </td>
+                          )}
+                          {columns.includes("phone") && (
                             <td className="py-2 px-3">
-                              {items.length ? items.join(", ") : "-"}
+                              {d.owners?.phone || "-"}
                             </td>
+                          )}
+                          {columns.includes("subscription") && (
                             <td className="py-2 px-3">
-                              <label className="inline-flex items-center gap-2">
-                                <input
-                                  type="checkbox"
-                                  checked={!!serviceChecked[key]}
-                                  onChange={async () => {
-                                    const next = !serviceChecked[key];
-                                    // uppdatera local state + localStorage (hanteras i useEffect)
-                                    setServiceChecked((prev) => ({
-                                      ...prev,
-                                      [key]: next,
-                                    }));
-                                    // försök persistera i Supabase (om service_logs finns)
-                                    try {
-                                      const { error } = await (supabase as any)
-                                        .from("service_logs")
-                                        .upsert(
-                                          {
-                                            dog_id: d.id,
-                                            ym,
-                                            done: next,
-                                            user_id: user?.id || null,
-                                            org_id:
-                                              user?.user_metadata?.org_id ||
-                                              null,
-                                            updated_at:
-                                              new Date().toISOString(),
-                                          },
-                                          { onConflict: "dog_id,ym" }
-                                        );
-                                      if (error) {
-                                        console.warn(
-                                          `${ERROR_CODES.DATABASE_CONNECTION} service_logs`,
-                                          error
-                                        );
-                                      }
-                                    } catch (e) {
-                                      console.warn(
-                                        `${ERROR_CODES.DATABASE_CONNECTION} service_logs saknas`,
-                                        e
-                                      );
-                                    }
-                                  }}
-                                />
-                                {serviceChecked[key] ? "Utfört" : "Ej klart"}
-                              </label>
+                              <span
+                                className={`px-2 py-1 rounded font-semibold ${
+                                  d.subscription === "Heltid"
+                                    ? "bg-green-100 text-green-800"
+                                    : d.subscription?.startsWith("Deltid")
+                                    ? "bg-blue-100 text-blue-800"
+                                    : d.subscription === "Dagshund"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-gray-100 text-gray-800"
+                                }`}
+                              >
+                                {d.subscription || "-"}
+                              </span>
                             </td>
-                          </tr>
-                        );
-                      })}
-                    {dogs.length === 0 && (
-                      <tr>
-                        <td colSpan={4} className="py-3 px-3 text-gray-600">
-                          Inga hundar att visa.
-                        </td>
-                      </tr>
+                          )}
+                          {columns.includes("room_id") && (
+                            <td className="py-2 px-3">{d.room_id || "-"}</td>
+                          )}
+                          {columns.includes("days") && (
+                            <td className="py-2 px-3">
+                              {d.days
+                                ? d.days.split(",").map((day, i) => (
+                                    <span
+                                      key={i}
+                                      className="inline-block px-1 py-0.5 rounded bg-gray-100 text-gray-700 mr-1"
+                                    >
+                                      {day.slice(0, 3)}
+                                    </span>
+                                  ))
+                                : "-"}
+                            </td>
+                          )}
+                          {columns.includes("startdate") && (
+                            <td className="py-2 px-3">
+                              {d.startdate
+                                ? new Date(d.startdate).toLocaleDateString(
+                                    "sv-SE"
+                                  )
+                                : "-"}
+                            </td>
+                          )}
+                          {columns.includes("enddate") && (
+                            <td className="py-2 px-3">
+                              {d.enddate
+                                ? new Date(d.enddate).toLocaleDateString(
+                                    "sv-SE"
+                                  )
+                                : "-"}
+                            </td>
+                          )}
+                        </tr>
+                      ))
                     )}
                   </tbody>
                 </table>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Rumsvy */}
-          {currentView === "rooms" && (
-            <div className="panel">
-              <h3 className="font-semibold mb-2">Rumsöversikt</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {rooms.map((r) => {
-                  const dogsInRoom = dogs.filter((d) => d.room_id === r.id);
-                  const cap = r.capacity || null;
-                  return (
-                    <div key={r.id} className="border rounded-md p-3">
-                      <div className="font-semibold">
-                        {r.name}{" "}
-                        {cap ? (
-                          <span className="text-sm text-gray-500">
-                            ({dogsInRoom.length}/{cap})
-                          </span>
-                        ) : null}
-                      </div>
-                      <ul className="mt-2 text-sm">
-                        {dogsInRoom.length ? (
-                          dogsInRoom.map((d) => <li key={d.id}>• {d.name}</li>)
-                        ) : (
-                          <li className="text-gray-500">Inga hundar</li>
-                        )}
-                      </ul>
-                    </div>
-                  );
-                })}
-                {!rooms.length && (
-                  <div className="text-sm text-gray-600">
-                    Inga rum hittades.
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Intresselista – placeholder (robust mot saknad tabell) */}
-          {currentView === "applications" && (
-            <div className="panel">
-              <h3 className="font-semibold mb-2">
-                Intresselista (senaste månaden)
-              </h3>
-              <p className="text-sm text-gray-600">
-                Denna sektion försöker läsa från <code>applications</code> eller{" "}
-                <code>interests</code>. Om den databasen inte finns än visas
-                endast totalen i livekorten. {live.intresseSenasteMån} st den
-                här månaden.
-              </p>
-            </div>
-          )}
-
-          {/* Kalender – länk ut */}
-          {currentView === "calendar" && (
-            <div className="panel">
-              <h3 className="font-semibold mb-2">Kalender</h3>
-              <p className="text-sm text-gray-600">
-                Gå till kalendern för hunddagis{" "}
-                <Link
-                  className="text-green-700 underline"
-                  href="/hunddagis/kalender"
-                >
-                  här
-                </Link>
-                .
-              </p>
-            </div>
-          )}
-
-          {/* Standardtabell (visas när vy inte ersätter tabellen) */}
-          {currentView !== "services" && currentView !== "rooms" && (
-            <div className="table-wrap">
-              <table className="tbl">
-                <thead>
-                  <tr>
-                    {columns.includes("name") &&
-                      headerCell("name", COLUMN_LABELS["name"])}
-                    {columns.includes("breed") &&
-                      headerCell("breed", COLUMN_LABELS["breed"])}
-                    {columns.includes("owner") &&
-                      headerCell("owner", COLUMN_LABELS["owner"])}
-                    {columns.includes("phone") &&
-                      headerCell("phone", "Telefon")}
-                    {columns.includes("subscription") &&
-                      headerCell("subscription", COLUMN_LABELS["subscription"])}
-                    {columns.includes("room_id") &&
-                      headerCell("room_id", COLUMN_LABELS["room_id"])}
-                    {columns.includes("days") &&
-                      headerCell("days", COLUMN_LABELS["days"])}
-                    {columns.includes("startdate") &&
-                      headerCell("startdate", COLUMN_LABELS["startdate"])}
-                    {columns.includes("enddate") &&
-                      headerCell("enddate", COLUMN_LABELS["enddate"])}
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr>
-                      <td
-                        className="py-4 px-3 text-gray-500"
-                        colSpan={columns.length}
-                      >
-                        Laddar hundar…
-                      </td>
-                    </tr>
-                  ) : viewDogs.length === 0 ? (
-                    <tr>
-                      <td
-                        className="py-4 px-3 text-gray-500"
-                        colSpan={columns.length}
-                      >
-                        Inga hundar matchar dina filter.
-                      </td>
-                    </tr>
-                  ) : (
-                    viewDogs.map((d) => (
-                      <tr
-                        key={d.id}
-                        className={`border-t hover:bg-green-50 ${rowColor(d)}`}
-                      >
-                        {columns.includes("name") && (
-                          <td className="py-2 px-3">
-                            <div className="flex items-center gap-2">
-                              {d.photo_url ? (
-                                <img
-                                  src={d.photo_url}
-                                  alt="hund"
-                                  className="h-8 w-8 rounded-full object-cover border"
-                                />
-                              ) : (
-                                <div className="h-8 w-8 rounded-full grid place-content-center bg-gray-100 text-gray-500 text-xs">
-                                  🐶
-                                </div>
-                              )}
-                              <div>
-                                <div className="font-semibold">{d.name}</div>
-                                {d.breed && (
-                                  <div className="text-xs text-gray-500">
-                                    {d.breed}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </td>
-                        )}
-                        {columns.includes("breed") && (
-                          <td className="py-2 px-3">{d.breed || "-"}</td>
-                        )}
-                        {columns.includes("owner") && (
-                          <td className="py-2 px-3">
-                            {d.owners?.full_name || "-"}
-                          </td>
-                        )}
-                        {columns.includes("phone") && (
-                          <td className="py-2 px-3">
-                            {d.owners?.phone || "-"}
-                          </td>
-                        )}
-                        {columns.includes("subscription") && (
-                          <td className="py-2 px-3">
-                            <span
-                              className={`px-2 py-1 rounded font-semibold ${
-                                d.subscription === "Heltid"
-                                  ? "bg-green-100 text-green-800"
-                                  : d.subscription?.startsWith("Deltid")
-                                  ? "bg-blue-100 text-blue-800"
-                                  : d.subscription === "Dagshund"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-gray-100 text-gray-800"
-                              }`}
-                            >
-                              {d.subscription || "-"}
-                            </span>
-                          </td>
-                        )}
-                        {columns.includes("room_id") && (
-                          <td className="py-2 px-3">{d.room_id || "-"}</td>
-                        )}
-                        {columns.includes("days") && (
-                          <td className="py-2 px-3">
-                            {d.days
-                              ? d.days.split(",").map((day, i) => (
-                                  <span
-                                    key={i}
-                                    className="inline-block px-1 py-0.5 rounded bg-gray-100 text-gray-700 mr-1"
-                                  >
-                                    {day.slice(0, 3)}
-                                  </span>
-                                ))
-                              : "-"}
-                          </td>
-                        )}
-                        {columns.includes("startdate") && (
-                          <td className="py-2 px-3">
-                            {d.startdate
-                              ? new Date(d.startdate).toLocaleDateString(
-                                  "sv-SE"
-                                )
-                              : "-"}
-                          </td>
-                        )}
-                        {columns.includes("enddate") && (
-                          <td className="py-2 px-3">
-                            {d.enddate
-                              ? new Date(d.enddate).toLocaleDateString("sv-SE")
-                              : "-"}
-                          </td>
-                        )}
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* Modal (bevarad) */}
-          {showModal && (
-            <EditDogModal
-              open={showModal}
-              onCloseAction={() => setShowModal(false)}
-              onSavedAction={handleSaved}
-            />
-          )}
+            {/* Modal (bevarad) */}
+            {showModal && (
+              <EditDogModal
+                open={showModal}
+                onCloseAction={() => setShowModal(false)}
+                onSavedAction={handleSaved}
+              />
+            )}
+          </div>
         </div>
       )}
     </>
