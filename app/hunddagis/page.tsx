@@ -146,7 +146,6 @@ export default function HunddagisPage() {
   const [errMsg, setErrMsg] = useState<string | null>(null);
 
   const [showModal, setShowModal] = useState(false);
-  const [editingDog, setEditingDog] = useState<Dog | null>(null);
 
   // Filter/sort (bevarat)
   const [q, setQ] = useState("");
@@ -154,6 +153,7 @@ export default function HunddagisPage() {
   const [month, setMonth] = useState("alla");
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortAsc, setSortAsc] = useState(true);
+  const [editingDog, setEditingDog] = useState<Dog | null>(null);
 
   // Kolumnval (bevarat)
   const [columns, setColumns] = useState<string[]>(DEFAULT_COLUMNS);
@@ -1384,12 +1384,15 @@ export default function HunddagisPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Link
-                  href="/hunddagis/new"
+                <button
+                  onClick={() => {
+                    setEditingDog(null);
+                    setShowModal(true);
+                  }}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#2c7a4c] font-semibold rounded-lg hover:bg-green-50 transition-colors shadow-sm"
                 >
                   <Plus className="h-4 w-4" /> Ny hund
-                </Link>
+                </button>
                 <button
                   onClick={exportPDF}
                   className="inline-flex items-center gap-2 px-3 py-2 bg-white/20 backdrop-blur text-white rounded-lg hover:bg-white/30 transition-colors"
@@ -2212,11 +2215,10 @@ export default function HunddagisPage() {
                 </div>
               )}
             </div>
-
-            {/* Modal (bevarad) */}
-            {showModal && editingDog && (
+            {/* Modal för att lägga till ny eller redigera befintlig hund */}
+            {showModal && (
               <EditDogModal
-                dog={editingDog}
+                initialDog={editingDog}
                 open={showModal}
                 onCloseAction={() => {
                   setShowModal(false);

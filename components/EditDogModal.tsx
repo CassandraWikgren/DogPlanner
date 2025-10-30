@@ -5,6 +5,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 /** Props */
 type Props = {
+  initialDog?: any; // Flexibel type för att hantera olika hundstrukturer från olika sidor
   open: boolean;
   onCloseAction: () => void;
   onSavedAction: () => Promise<void> | void;
@@ -60,6 +61,7 @@ function TabButton({
 }
 
 export default function EditDogModal({
+  initialDog = null,
   open,
   onCloseAction,
   onSavedAction,
@@ -204,6 +206,59 @@ export default function EditDogModal({
   }
 
   /* ===========================
+   *   POPULATE FORM FROM initialDog
+   * =========================== */
+  React.useEffect(() => {
+    if (!open || !initialDog) return;
+
+    // Ägare
+    const ownerName = initialDog.owners?.full_name || "";
+    const [first = "", last = ""] = ownerName.split(" ");
+    setOwnerFirst(first);
+    setOwnerLast(last);
+    setOwnerEmail(initialDog.owners?.email || "");
+    setOwnerPhone(initialDog.owners?.phone || "");
+    setOwnerZip(initialDog.owners?.postal_code || "");
+    setOwnerCity(initialDog.owners?.city || "");
+    setOwnerPersonnummer(initialDog.owners?.personnummer || "");
+    setOwnerCustomerNo(initialDog.owners?.customer_number?.toString() || "");
+
+    // Kontaktperson 2
+    const kp2Name = initialDog.owners?.contact_person_2 || "";
+    const [kp2f = "", kp2l = ""] = kp2Name.split(" ");
+    setKp2First(kp2f);
+    setKp2Last(kp2l);
+    setKp2Phone(initialDog.owners?.contact_phone_2 || "");
+
+    // Hund
+    setName(initialDog.name || "");
+    setBreed(initialDog.breed || "");
+    setHeightcm(initialDog.heightcm?.toString() || "");
+    setBirth(initialDog.birthdate || "");
+    setGender((initialDog.gender as "Tik" | "Hane" | "") || "");
+    setInsuranceNo(initialDog.insurance_number || "");
+    setPhotoUrl(initialDog.photo_url || null);
+
+    // Hälsa
+    setInsuranceCompany(initialDog.insurance_company || "");
+    setVaccDhp(initialDog.vaccination_dhppi || "");
+    setVaccPi(initialDog.vaccination_pi || "");
+    setCareNotes(initialDog.care_notes || "");
+
+    // Abonnemang
+    setSubscription(initialDog.subscription || "");
+    setSubStart(initialDog.startdate || "");
+    setSubEnd(initialDog.enddate || "");
+    setRoomId(initialDog.room_id || "");
+    if (initialDog.days) {
+      setDays(initialDog.days.split(",").map((d: string) => d.trim()));
+    }
+
+    // Ändra till första fliken när man redigerar
+    setActiveTab("ägare");
+  }, [open, initialDog]);
+
+  /* ===========================
    *   BILDUPPLADDNING
    * =========================== */
   async function handleUploadImage(e: React.ChangeEvent<HTMLInputElement>) {
@@ -331,19 +386,19 @@ export default function EditDogModal({
         },
       };
 
-      // 3) Insert hund (dogs) — små bokstäver + rätt relationer
+      // 3) Insert eller Update hund (dogs) — små bokstäver + rätt relationer
       const dogPayload = {
         name: name.trim(),
         breed: breed.trim() || null,
         heightcm: heightcm ? Number(heightcm) : null,
-        birth: birth || null,
+        birthdate: birth || null,
         subscription: subscription || null,
         startdate: subStart || null,
         enddate: subEnd || null,
         room_id: roomId || null,
         days: days.join(",") || null,
-        vaccdhp: vaccDhp || null,
-        vaccpi: vaccPi || null,
+        vaccination_dhppi: vaccDhp || null,
+        vaccination_pi: vaccPi || null,
         insurance_company: insuranceCompany || null,
         insurance_number: insuranceNo || null,
         photo_url: photoUrl || null,
@@ -352,14 +407,26 @@ export default function EditDogModal({
         events, // JSONB
       };
 
-      const { data: dogRow } = await supabase
-        .from("dogs")
-        .insert([dogPayload])
-        .select("id")
-        .single()
-        .throwOnError();
+      let dogId: string;
 
-      const dogId = dogRow.id as string;
+      if (initialDog?.id) {
+        // UPDATE befintlig hund
+        await supabase
+          .from("dogs")
+          .update(dogPayload)
+          .eq("id", initialDog.id)
+          .throwOnError();
+        dogId = initialDog.id;
+      } else {
+        // INSERT ny hund
+        const { data: dogRow } = await supabase
+          .from("dogs")
+          .insert([dogPayload])
+          .select("id")
+          .single()
+          .throwOnError();
+        dogId = dogRow.id as string;
+      }
 
       // 4) Journal (dog_journal)
       if (journalText.trim()) {
@@ -421,10 +488,65 @@ export default function EditDogModal({
     }
   }
 
+  /* ===========================
+   *   RENSA FORMULÄR NÄR STÄNGS
+   * =========================== */
+  React.useEffect(() => {
+    if (!open) {
+      // Rensa alla fält när modalen stängs
+      setOwnerFirst("");
+      setOwnerLast("");
+      setOwnerPersonnummer("");
+      setOwnerCustomerNo("");
+      setOwnerEmail("");
+      setOwnerPhone("");
+      setOwnerAddress("");
+      setOwnerZip("");
+      setOwnerCity("");
+      setKp2First("");
+      setKp2Last("");
+      setKp2Phone("");
+      setName("");
+      setBreed("");
+      setHeightcm("");
+      setBirth("");
+      setGender("");
+      setInsuranceNo("");
+      setPhotoUrl(null);
+      setInsuranceCompany("");
+      setVaccDhp("");
+      setVaccPi("");
+      setCareNotes("");
+      setFlagCast(false);
+      setFlagBiter(false);
+      setFlagKiss(false);
+      setFlagSkallig(false);
+      setFlagPersonal(false);
+      setFlagPensionat(false);
+      setJournalText("");
+      setOwnerComment("");
+      setFoodInfo("");
+      setSubscription("");
+      setSubStart("");
+      setSubEnd("");
+      setRoomId("");
+      setDays([]);
+      setAddonName("");
+      setAddonQty("1");
+      setAddonStart("");
+      setAddonEnd("");
+      setFinanceNote("");
+      setError(null);
+      setOk(null);
+      setActiveTab("ägare");
+    }
+  }, [open]);
+
   if (!open) return null;
 
   /* ===========================
    *   UI (med flikar)
+```
    * =========================== */
   return (
     <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center bg-black/40 p-2 md:p-6">
@@ -436,7 +558,9 @@ export default function EditDogModal({
               🐶
             </div>
             <div>
-              <div className="text-lg font-semibold">Lägg till hund</div>
+              <div className="text-lg font-semibold">
+                {initialDog ? "Redigera hund" : "Lägg till hund"}
+              </div>
               <div className="text-xs text-gray-500">
                 Fyll i hundens uppgifter, ägarinformation och eventuella
                 tillägg. Vaccination: DHP gäller 3 år, PI gäller 1 år.
