@@ -15,7 +15,7 @@ export default function Navbar() {
   return (
     <nav className="bg-[#2c7a4c] text-white shadow-md fixed top-0 left-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        {/* Logo - alltid till vänster, större och länka till dashboard */}
+        {/* Logo - större och länka till dashboard */}
         <Link
           href={user ? "/dashboard" : "/"}
           className="flex items-center hover:opacity-90 transition-opacity"
@@ -23,48 +23,16 @@ export default function Navbar() {
           <Image
             src="/logo.png"
             alt="DogPlanner"
-            width={60}
-            height={60}
+            width={70}
+            height={70}
             priority
             className="rounded-lg"
           />
         </Link>
 
-        {/* Desktop-navigering och användarmeny visas endast om inloggad */}
+        {/* Användarmeny (inga nav-länkar) */}
         {user && (
           <>
-            <div className="hidden md:flex gap-6 text-sm font-medium">
-              <Link
-                href="/dashboard"
-                className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/hunddagis"
-                className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
-              >
-                Hunddagis
-              </Link>
-              <Link
-                href="/hundpensionat"
-                className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
-              >
-                Pensionat
-              </Link>
-              <Link
-                href="/owners"
-                className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
-              >
-                Kunder
-              </Link>
-              <Link
-                href="/rooms"
-                className="hover:text-green-200 transition-colors py-2 px-3 rounded-md hover:bg-green-700"
-              >
-                Rum
-              </Link>
-            </div>
             <div className="hidden md:flex items-center gap-4">
               {/* Notifikations-dropdown */}
               <NotificationDropdown />
@@ -140,43 +108,8 @@ export default function Navbar() {
                   <X size={24} />
                 </button>
 
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMenuOpen(false)}
-                  className="py-3 px-3 hover:bg-green-700 rounded transition"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  href="/hunddagis"
-                  onClick={() => setMenuOpen(false)}
-                  className="py-3 px-3 hover:bg-green-700 rounded transition"
-                >
-                  Hunddagis
-                </Link>
-                <Link
-                  href="/hundpensionat"
-                  onClick={() => setMenuOpen(false)}
-                  className="py-3 px-3 hover:bg-green-700 rounded transition"
-                >
-                  Pensionat
-                </Link>
-                <Link
-                  href="/owners"
-                  onClick={() => setMenuOpen(false)}
-                  className="py-3 px-3 hover:bg-green-700 rounded transition"
-                >
-                  Kunder
-                </Link>
-                <Link
-                  href="/rooms"
-                  onClick={() => setMenuOpen(false)}
-                  className="py-3 px-3 hover:bg-green-700 rounded transition"
-                >
-                  Rum
-                </Link>
-
-                <div className="border-t border-green-700 pt-4 mt-4">
+                {/* Användarmeny - inga nav-länkar */}
+                <div className="pt-4">
                   {user && (
                     <div className="mb-3 text-sm">
                       <p className="font-semibold">
