@@ -22,6 +22,7 @@ type OwnerRow = {
   contact_person_2?: string | null;
   contact_phone_2?: string | null;
   customer_number?: number | null;
+  personnummer?: string | null;
 };
 
 /** Liten sektionstitel */
@@ -112,7 +113,7 @@ export default function EditDogModal({
   // --- ÄGARE ---
   const [ownerFirst, setOwnerFirst] = React.useState("");
   const [ownerLast, setOwnerLast] = React.useState("");
-  const [ownerPersonnummer, setOwnerSsn] = React.useState(""); // lagras i dogs.events.owner_personnummer (admin-låst)
+  const [ownerPersonnummer, setOwnerPersonnummer] = React.useState(""); // admin-only → owners.personnummer
   const [ownerCustomerNo, setOwnerCustomerNo] = React.useState<string>(""); // admin-only input → går till owners.customer_number
   const [ownerEmail, setOwnerEmail] = React.useState("");
   const [ownerPhone, setOwnerPhone] = React.useState("");
@@ -294,6 +295,7 @@ export default function EditDogModal({
         baseOwner.customer_number = ownerCustomerNo
           ? Number(ownerCustomerNo)
           : null;
+        baseOwner.personnummer = ownerPersonnummer || null;
       }
 
       if (!ownerId) {
@@ -314,11 +316,8 @@ export default function EditDogModal({
 
       // 2) events-json (fält utan egna kolumner i dogs)
       const events: any = {
-        owner_personnummer: isAdmin ? ownerPersonnummer || null : null,
         owner_address: ownerAddress || null,
         gender: gender || null,
-        insurance_company: insuranceCompany || null,
-        insurance_number: insuranceNo || null,
         care_notes: careNotes || null,
         owner_comment: ownerComment || null,
         food: foodInfo || null,
@@ -345,6 +344,8 @@ export default function EditDogModal({
         days: days.join(",") || null,
         vaccdhp: vaccDhp || null,
         vaccpi: vaccPi || null,
+        insurance_company: insuranceCompany || null,
+        insurance_number: insuranceNo || null,
         photo_url: photoUrl || null,
         notes: null,
         owner_id: ownerId, // ✅ dogs.owner_id → owners.id
@@ -538,7 +539,7 @@ export default function EditDogModal({
                       !isAdmin ? "bg-gray-100 cursor-not-allowed" : ""
                     }`}
                     value={ownerPersonnummer}
-                    onChange={(e) => setOwnerSsn(e.target.value)}
+                    onChange={(e) => setOwnerPersonnummer(e.target.value)}
                   />
                 </div>
                 <div>

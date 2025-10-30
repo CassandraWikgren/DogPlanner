@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS owners (
   customer_number serial,
   contact_person_2 text,
   contact_phone_2 text,
+  personnummer text, -- Personnummer (admin-låst)
   notes text,
   gdpr_consent boolean DEFAULT false,
   marketing_consent boolean DEFAULT false,
@@ -90,6 +91,8 @@ CREATE TABLE IF NOT EXISTS dogs (
   enddate date,
   vaccdhp date,
   vaccpi date,
+  insurance_company text, -- Försäkringsbolag
+  insurance_number text, -- Försäkringsnummer
   allergies text,
   medications text,
   special_needs text,
@@ -195,6 +198,70 @@ CREATE TABLE IF NOT EXISTS grooming_logs (
   before_photo_url text,
   after_photo_url text,
   performed_at timestamptz DEFAULT now(),
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- === HUNDDAGIS: ABONNEMANGSTYPER & PRISSÄTTNING ===
+CREATE TABLE IF NOT EXISTS subscription_types (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  subscription_type text NOT NULL CHECK (subscription_type IN ('Heltid', 'Deltid 2', 'Deltid 3', 'Dagshund')),
+  height_min integer NOT NULL,
+  height_max integer NOT NULL,
+  price numeric NOT NULL,
+  description text,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE(org_id, subscription_type, height_min, height_max)
+);
+
+-- === HUNDDAGIS: TJÄNSTEUTFÖRANDEN ===
+CREATE TABLE IF NOT EXISTS daycare_service_completions (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  dog_id uuid REFERENCES dogs(id) ON DELETE CASCADE,
+  service_type text NOT NULL CHECK (service_type IN ('kloklipp', 'tassklipp', 'bad', 'annat')),
+  scheduled_month text NOT NULL,
+  completed_at timestamptz,
+  completed_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  completed_by_name text,
+  is_completed boolean DEFAULT false,
+  notes text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- === HUNDDAGIS: INTRESSEANMÄLNINGAR ===
+CREATE TABLE IF NOT EXISTS interest_applications (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  parent_name text NOT NULL,
+  parent_email text NOT NULL,
+  parent_phone text NOT NULL,
+  owner_city text,
+  owner_address text,
+  dog_name text NOT NULL,
+  dog_breed text,
+  dog_birth date,
+  dog_age integer,
+  dog_gender text CHECK (dog_gender IN ('hane', 'tik')),
+  dog_size text CHECK (dog_size IN ('small', 'medium', 'large')),
+  dog_height_cm integer,
+  subscription_type text,
+  preferred_start_date date,
+  preferred_days text[],
+  special_needs text,
+  special_care_needs text,
+  is_neutered boolean DEFAULT false,
+  is_escape_artist boolean DEFAULT false,
+  destroys_things boolean DEFAULT false,
+  not_house_trained boolean DEFAULT false,
+  previous_daycare_experience boolean,
+  gdpr_consent boolean DEFAULT false,
+  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'contacted', 'accepted', 'declined')),
+  notes text,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
