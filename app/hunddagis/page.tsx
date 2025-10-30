@@ -1269,115 +1269,108 @@ export default function HunddagisPage() {
         </div>
       ) : (
         <div className="min-h-screen bg-gray-50">
-          {/* Hero Section with Stats Overlay */}
+          {/* Kompakt Hero Section med Stats */}
           <section
-            className="relative text-center text-white overflow-hidden pb-32"
+            className="relative text-white overflow-hidden"
             style={{
-              paddingTop: "140px",
+              paddingTop: "100px",
+              paddingBottom: "100px",
               background:
-                'linear-gradient(rgba(44, 122, 76, 0.7), rgba(44, 122, 76, 0.7)), url("/Hero.jpeg") center/cover no-repeat',
+                'linear-gradient(rgba(44, 122, 76, 0.85), rgba(44, 122, 76, 0.85)), url("/Hero.jpeg") center/cover no-repeat',
             }}
           >
-            <div className="relative z-10 max-w-4xl mx-auto px-6 mb-12">
-              <h1 className="text-5xl font-bold mb-4 drop-shadow-lg">
-                🐕 Hunddagis
-              </h1>
-              <p className="text-xl leading-relaxed opacity-100 max-w-2xl mx-auto drop-shadow-md">
-                Sammanställning, statistik och hantering av dagishundar
-              </p>
-            </div>
+            <div className="max-w-7xl mx-auto px-6">
+              {/* Kompakt titel */}
+              <div className="text-center mb-6">
+                <h1 className="text-3xl font-bold drop-shadow-lg">
+                  🐕 Hunddagis
+                </h1>
+              </div>
 
-            {/* Stats Cards - Overlay on Hero */}
-            <div className="relative z-20 max-w-7xl mx-auto px-6">
+              {/* Kompakta Stats Cards */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 {/* 1. Dagishundar */}
                 <div
-                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  className="bg-white/95 backdrop-blur rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer"
                   onClick={() => setCurrentView("all")}
                   title="Alla registrerade dagishundar"
                 >
-                  <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                  <div className="text-xl font-bold text-gray-900">
                     {live.dagishundar}
                   </div>
-                  <div className="text-xs text-gray-600">Dagishundar</div>
+                  <div className="text-xs text-gray-600 mt-1">Dagishundar</div>
                 </div>
 
                 {/* 2. Promenader */}
                 <div
-                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  className="bg-white/95 backdrop-blur rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer"
                   onClick={() => setCurrentView("all")}
                   title="Promenader inne idag"
                 >
-                  <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                  <div className="text-xl font-bold text-gray-900">
                     {live.promenaderIdag}
                   </div>
-                  <div className="text-xs text-gray-600">
-                    Promenader (inne idag)
-                  </div>
+                  <div className="text-xs text-gray-600 mt-1">Promenader</div>
                 </div>
 
                 {/* 3. Intresseanmälningar */}
                 <div
-                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  className="bg-white/95 backdrop-blur rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer"
                   onClick={() =>
                     (window.location.href = "/hunddagis/intresseanmalningar")
                   }
                   title="Nya intresseanmälningar"
                 >
-                  <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                  <div className="text-xl font-bold text-gray-900">
                     {live.intresseSenasteMån}
                   </div>
-                  <div className="text-xs text-gray-600">
-                    Intresseanmälningar
-                  </div>
+                  <div className="text-xs text-gray-600 mt-1">Intresse</div>
                 </div>
 
                 {/* 4. Tjänster */}
                 <div
-                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  className="bg-white/95 backdrop-blur rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer"
                   onClick={() => setCurrentView("services")}
                   title="Tjänster (kloklipp/tasklipp/bad)"
                 >
-                  <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                  <div className="text-xl font-bold text-gray-900">
                     {live.tjänsterDennaMån}
                   </div>
-                  <div className="text-xs text-gray-600">
-                    Tjänster (kloklipp/tasklipp/bad)
-                  </div>
+                  <div className="text-xs text-gray-600 mt-1">Tjänster</div>
                 </div>
 
                 {/* 5. Hundrum */}
                 <div
-                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  className="bg-white/95 backdrop-blur rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer"
                   onClick={() => setCurrentView("rooms")}
                   title="Antal rum & beläggning"
                 >
-                  <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                  <div className="text-xl font-bold text-gray-900">
                     {live.hundrum}
                   </div>
-                  <div className="text-xs text-gray-600">Hundrum</div>
+                  <div className="text-xs text-gray-600 mt-1">Rum</div>
                 </div>
 
                 {/* 6. Mina priser */}
                 <div
-                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  className="bg-white/95 backdrop-blur rounded-lg p-3 shadow-sm hover:shadow-md transition-all cursor-pointer"
                   onClick={() => (window.location.href = "/hunddagis/priser")}
                   title="Gå till prisinställningar"
                 >
-                  <div className="text-2xl font-bold text-emerald-600 mb-0.5">
-                    €
-                  </div>
-                  <div className="text-xs text-gray-600">Mina priser</div>
+                  <div className="text-xl font-bold text-emerald-600">€</div>
+                  <div className="text-xs text-gray-600 mt-1">Priser</div>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Main Content - Kompakt tabell-layout */}
-          <div className="max-w-7xl mx-auto px-6 -mt-16 pb-12">
+          {/* Main Content - Börjar direkt efter hero */}
+          <div className="max-w-7xl mx-auto px-6 py-6">
             {/* Compact Header Bar med action buttons */}
-            <div className="bg-[#2c7a4c] text-white rounded-t-lg px-6 py-4 shadow-md flex items-center justify-between">
+            <div className="bg-[#2c7a4c] text-white rounded-t-lg px-5 py-3 shadow-md flex items-center justify-between">
               <div>
+                <h2 className="text-xl font-bold">🐾 Mitt hunddagis</h2>
+              </div>
                 <h2 className="text-2xl font-bold mb-1">🐾 Mitt hunddagis</h2>
                 <p className="text-sm text-green-100">
                   Sök, filtrera och hantera dina hundar
@@ -1389,44 +1382,44 @@ export default function HunddagisPage() {
                     setEditingDog(null);
                     setShowModal(true);
                   }}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#2c7a4c] font-semibold rounded-lg hover:bg-green-50 transition-colors shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-[#2c7a4c] font-semibold rounded-md hover:bg-green-50 transition-colors shadow-sm text-sm"
                 >
-                  <Plus className="h-4 w-4" /> Ny hund
+                  <Plus className="h-3.5 w-3.5" /> Ny hund
                 </button>
                 <button
                   onClick={exportPDF}
-                  className="inline-flex items-center gap-2 px-3 py-2 bg-white/20 backdrop-blur text-white rounded-lg hover:bg-white/30 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white/20 backdrop-blur text-white rounded-md hover:bg-white/30 transition-colors text-sm"
                   title="Exportera till PDF"
                 >
-                  <Download className="h-4 w-4" /> PDF-export
+                  <Download className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => setShowColsMenu((s) => !s)}
-                  className="inline-flex items-center gap-2 px-3 py-2 bg-white/20 backdrop-blur text-white rounded-lg hover:bg-white/30 transition-colors relative"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white/20 backdrop-blur text-white rounded-md hover:bg-white/30 transition-colors relative text-sm"
                   title="Välj kolumner"
                 >
-                  <Settings2 className="h-4 w-4" /> Kolumner
+                  <Settings2 className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={loadDogs}
-                  className="inline-flex items-center gap-2 px-3 py-2 bg-white/20 backdrop-blur text-white rounded-lg hover:bg-white/30 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white/20 backdrop-blur text-white rounded-md hover:bg-white/30 transition-colors text-sm"
                   title="Ladda om data"
                 >
-                  <RefreshCcw className="h-4 w-4" /> Ladda om
+                  <RefreshCcw className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
 
-            {/* Search & Filter - Direkt under header */}
-            <div className="bg-white border-x border-gray-200 px-6 py-4">
-              <div className="flex flex-wrap items-center gap-3">
+            {/* Search & Filter - Kompakt */}
+            <div className="bg-white border-x border-gray-200 px-5 py-3">
+              <div className="flex flex-wrap items-center gap-2">
                 {/* Search */}
-                <div className="flex-1 min-w-[250px]">
+                <div className="flex-1 min-w-[200px]">
                   <input
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
                     placeholder="Sök... (hund, ägare, telefon, rum...)"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   />
                 </div>
 
@@ -1434,7 +1427,7 @@ export default function HunddagisPage() {
                 <select
                   value={subFilter}
                   onChange={(e) => setSubFilter(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                  className="px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 >
                   <option value="">Alla abonnemang</option>
                   <option value="Heltid">Heltid</option>
@@ -1448,7 +1441,7 @@ export default function HunddagisPage() {
                   type="month"
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                  className="px-3 py-1.5 text-sm border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   title="Filtrerar på startmånad"
                 />
               </div>
@@ -2036,47 +2029,47 @@ export default function HunddagisPage() {
                     <thead>
                       <tr className="bg-[#2c7a4c] text-white text-left">
                         {columns.includes("name") && (
-                          <th className="py-3 px-4 font-semibold text-sm">
+                          <th className="py-2 px-3 font-semibold text-sm">
                             {COLUMN_LABELS["name"]} ▲
                           </th>
                         )}
                         {columns.includes("breed") && (
-                          <th className="py-3 px-4 font-semibold text-sm">
+                          <th className="py-2 px-3 font-semibold text-sm">
                             {COLUMN_LABELS["breed"]}
                           </th>
                         )}
                         {columns.includes("owner") && (
-                          <th className="py-3 px-4 font-semibold text-sm">
+                          <th className="py-2 px-3 font-semibold text-sm">
                             {COLUMN_LABELS["owner"]}
                           </th>
                         )}
                         {columns.includes("phone") && (
-                          <th className="py-3 px-4 font-semibold text-sm">
+                          <th className="py-2 px-3 font-semibold text-sm">
                             Telefon
                           </th>
                         )}
                         {columns.includes("subscription") && (
-                          <th className="py-3 px-4 font-semibold text-sm">
+                          <th className="py-2 px-3 font-semibold text-sm">
                             {COLUMN_LABELS["subscription"]}
                           </th>
                         )}
                         {columns.includes("room_id") && (
-                          <th className="py-3 px-4 font-semibold text-sm">
+                          <th className="py-2 px-3 font-semibold text-sm">
                             {COLUMN_LABELS["room_id"]}
                           </th>
                         )}
                         {columns.includes("days") && (
-                          <th className="py-3 px-4 font-semibold text-sm">
+                          <th className="py-2 px-3 font-semibold text-sm">
                             {COLUMN_LABELS["days"]}
                           </th>
                         )}
                         {columns.includes("startdate") && (
-                          <th className="py-3 px-4 font-semibold text-sm">
+                          <th className="py-2 px-3 font-semibold text-sm">
                             {COLUMN_LABELS["startdate"]}
                           </th>
                         )}
                         {columns.includes("enddate") && (
-                          <th className="py-3 px-4 font-semibold text-sm">
+                          <th className="py-2 px-3 font-semibold text-sm">
                             {COLUMN_LABELS["enddate"]}
                           </th>
                         )}
@@ -2112,7 +2105,7 @@ export default function HunddagisPage() {
                             }}
                           >
                             {columns.includes("name") && (
-                              <td className="py-3 px-4">
+                              <td className="py-2 px-3">
                                 <div className="flex items-center gap-3">
                                   {d.photo_url ? (
                                     <img
@@ -2139,22 +2132,22 @@ export default function HunddagisPage() {
                               </td>
                             )}
                             {columns.includes("breed") && (
-                              <td className="py-3 px-4 text-gray-700">
+                              <td className="py-2 px-3 text-gray-700">
                                 {d.breed || "-"}
                               </td>
                             )}
                             {columns.includes("owner") && (
-                              <td className="py-3 px-4 text-gray-700">
+                              <td className="py-2 px-3 text-gray-700">
                                 {d.owners?.full_name || "-"}
                               </td>
                             )}
                             {columns.includes("phone") && (
-                              <td className="py-3 px-4 text-gray-700">
+                              <td className="py-2 px-3 text-gray-700">
                                 {d.owners?.phone || "-"}
                               </td>
                             )}
                             {columns.includes("subscription") && (
-                              <td className="py-3 px-4">
+                              <td className="py-2 px-3">
                                 <span
                                   className={`px-2 py-1 rounded text-sm font-medium ${
                                     d.subscription === "Heltid"
@@ -2171,12 +2164,12 @@ export default function HunddagisPage() {
                               </td>
                             )}
                             {columns.includes("room_id") && (
-                              <td className="py-3 px-4 text-gray-700">
+                              <td className="py-2 px-3 text-gray-700">
                                 {d.room_id || "-"}
                               </td>
                             )}
                             {columns.includes("days") && (
-                              <td className="py-3 px-4">
+                              <td className="py-2 px-3">
                                 {d.days
                                   ? d.days.split(",").map((day, i) => (
                                       <span
@@ -2190,7 +2183,7 @@ export default function HunddagisPage() {
                               </td>
                             )}
                             {columns.includes("startdate") && (
-                              <td className="py-3 px-4 text-gray-700">
+                              <td className="py-2 px-3 text-gray-700">
                                 {d.startdate
                                   ? new Date(d.startdate).toLocaleDateString(
                                       "sv-SE"
@@ -2199,7 +2192,7 @@ export default function HunddagisPage() {
                               </td>
                             )}
                             {columns.includes("enddate") && (
-                              <td className="py-3 px-4 text-gray-700">
+                              <td className="py-2 px-3 text-gray-700">
                                 {d.enddate
                                   ? new Date(d.enddate).toLocaleDateString(
                                       "sv-SE"
