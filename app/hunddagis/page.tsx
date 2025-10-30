@@ -1386,8 +1386,6 @@ export default function HunddagisPage() {
               </div>
             </div>
 
-            </div>
-
             {/* Search & Filter Controls - Modern */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
               <div className="flex flex-col md:flex-row gap-4">
@@ -1452,7 +1450,9 @@ export default function HunddagisPage() {
                               }
                               className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                             />
-                            <span className="text-gray-700">{COLUMN_LABELS[c]}</span>
+                            <span className="text-gray-700">
+                              {COLUMN_LABELS[c]}
+                            </span>
                           </label>
                         ))}
                       </div>
