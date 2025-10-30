@@ -197,9 +197,9 @@ export default function SubscriptionPage() {
       setMessage(null);
 
       // Uppdatera plan i databasen (profiles tabellen)
-      // @ts-ignore - subscription_plan kanske inte finns i type definition ännu
       const { error: updateError } = await supabase
         .from("profiles")
+        // @ts-expect-error - subscription_plan kolumnen finns men saknas i Supabase type definition
         .update({ subscription_plan: selectedPlan })
         .eq("id", user.id);
 
