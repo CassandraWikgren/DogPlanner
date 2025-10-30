@@ -146,6 +146,7 @@ export default function HunddagisPage() {
   const [errMsg, setErrMsg] = useState<string | null>(null);
 
   const [showModal, setShowModal] = useState(false);
+  const [editingDog, setEditingDog] = useState<Dog | null>(null);
 
   // Filter/sort (bevarat)
   const [q, setQ] = useState("");
@@ -2213,10 +2214,14 @@ export default function HunddagisPage() {
             </div>
 
             {/* Modal (bevarad) */}
-            {showModal && (
+            {showModal && editingDog && (
               <EditDogModal
+                dog={editingDog}
                 open={showModal}
-                onCloseAction={() => setShowModal(false)}
+                onCloseAction={() => {
+                  setShowModal(false);
+                  setEditingDog(null);
+                }}
                 onSavedAction={handleSaved}
               />
             )}
