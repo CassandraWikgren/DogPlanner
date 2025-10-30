@@ -15,20 +15,19 @@ export default function Navbar() {
   return (
     <nav className="bg-[#2c7a4c] text-white shadow-md fixed top-0 left-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        {/* Logo - alltid till vänster */}
+        {/* Logo - alltid till vänster, större och länka till dashboard */}
         <Link
           href={user ? "/dashboard" : "/"}
-          className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+          className="flex items-center hover:opacity-90 transition-opacity"
         >
           <Image
             src="/logo.png"
             alt="DogPlanner"
-            width={44}
-            height={44}
+            width={60}
+            height={60}
             priority
             className="rounded-lg"
           />
-          <span className="font-bold text-lg hidden sm:block">DogPlanner</span>
         </Link>
 
         {/* Desktop-navigering och användarmeny visas endast om inloggad */}
