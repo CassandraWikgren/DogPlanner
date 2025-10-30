@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,9 @@ import {
   Search,
   Download,
   Eye,
+  ArrowLeft,
+  TrendingUp,
+  Receipt,
 } from "lucide-react";
 
 interface Invoice {
@@ -192,13 +196,13 @@ export default function FakturaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
+        <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-64 mb-6"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+                <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
               ))}
             </div>
           </div>
@@ -208,95 +212,102 @@ export default function FakturaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-              <FileText className="h-8 w-8 text-purple-600" />
-              Fakturor
-            </h1>
-            <Button className="bg-purple-600 hover:bg-purple-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Ny faktura
-            </Button>
-          </div>
-          <p className="text-gray-600">
-            Hantera alla fakturor och betalningar för din verksamhet.
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
+      {/* Hero Section */}
+      <section
+        className="relative text-center text-white overflow-hidden"
+        style={{
+          padding: "80px 20px 110px",
+          background:
+            'linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url("/Hero.jpeg") center/cover no-repeat',
+        }}
+      >
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <h1 className="text-5xl font-bold mb-4">Ekonomi & Fakturor</h1>
+          <p className="text-xl mb-8 leading-relaxed opacity-95 max-w-2xl mx-auto">
+            Översikt över fakturor, betalningar och ekonomisk status.
           </p>
         </div>
+      </section>
 
-        {/* Statistik */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Totala intäkter
-                  </p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {stats.paidAmount.toLocaleString()} kr
-                  </p>
-                </div>
-                <DollarSign className="h-8 w-8 text-green-600" />
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 -mt-12 pb-16 relative z-20">
+        {/* Floating Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-green-100">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-3xl font-bold text-green-600">
+                {stats.paidAmount.toLocaleString()} kr
               </div>
-            </CardContent>
-          </Card>
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+            <div className="text-sm text-gray-600">Betalda fakturor</div>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Utestående
-                  </p>
-                  <p className="text-2xl font-bold text-orange-600">
-                    {stats.unpaidAmount.toLocaleString()} kr
-                  </p>
-                </div>
-                <Clock className="h-8 w-8 text-orange-600" />
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-orange-100">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-3xl font-bold text-orange-600">
+                {stats.unpaidAmount.toLocaleString()} kr
               </div>
-            </CardContent>
-          </Card>
+              <Clock className="h-8 w-8 text-orange-600" />
+            </div>
+            <div className="text-sm text-gray-600">Utestående</div>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Förfallna</p>
-                  <p className="text-2xl font-bold text-red-600">
-                    {stats.overdueCount}
-                  </p>
-                </div>
-                <AlertCircle className="h-8 w-8 text-red-600" />
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-red-100">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-3xl font-bold text-red-600">
+                {stats.overdueCount}
               </div>
-            </CardContent>
-          </Card>
+              <AlertCircle className="h-8 w-8 text-red-600" />
+            </div>
+            <div className="text-sm text-gray-600">Förfallna fakturor</div>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Antal fakturor
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stats.totalInvoices}
-                  </p>
-                </div>
-                <FileText className="h-8 w-8 text-gray-600" />
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-3xl font-bold text-[#2c7a4c]">
+                {stats.totalInvoices}
               </div>
-            </CardContent>
-          </Card>
+              <Receipt className="h-8 w-8 text-[#2c7a4c]" />
+            </div>
+            <div className="text-sm text-gray-600">Totalt antal fakturor</div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex flex-wrap gap-4 justify-between items-center mb-8">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#2c7a4c] transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Tillbaka till Dashboard
+          </Link>
+          <div className="flex gap-3">
+            <Link href="/faktura/new">
+              <Button className="bg-[#2c7a4c] hover:bg-[#236139] text-white">
+                <Plus className="h-4 w-4 mr-2" />
+                Ny faktura
+              </Button>
+            </Link>
+            <Link href="/faktura">
+              <Button
+                variant="outline"
+                className="border-[#2c7a4c] text-[#2c7a4c] hover:bg-green-50"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Alla fakturor
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Filter */}
-        <Card className="mb-6">
+        <Card className="mb-8 border border-gray-200">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Search className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Search className="h-5 w-5 text-[#2c7a4c]" />
               Sök och filtrera
             </CardTitle>
           </CardHeader>
@@ -308,13 +319,13 @@ export default function FakturaPage() {
                   placeholder="Sök på fakturanummer, kund eller kundnummer..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 border-gray-300 focus:border-[#2c7a4c] focus:ring-[#2c7a4c]"
                 />
               </div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
               >
                 <option value="all">Alla status</option>
                 <option value="draft">Utkast</option>
@@ -328,6 +339,7 @@ export default function FakturaPage() {
                   setStatusFilter("all");
                 }}
                 variant="outline"
+                className="border-gray-300 hover:bg-gray-50"
               >
                 Rensa filter
               </Button>
@@ -340,16 +352,16 @@ export default function FakturaPage() {
           {filteredInvoices.map((invoice) => (
             <Card
               key={invoice.id}
-              className="hover:shadow-lg transition-shadow"
+              className="hover:shadow-xl transition-all duration-300 border border-gray-200"
             >
-              <CardHeader>
+              <CardHeader className="pb-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-purple-600" />
+                    <CardTitle className="text-lg flex items-center gap-2 mb-2">
+                      <FileText className="h-5 w-5 text-[#2c7a4c]" />
                       Faktura #{invoice.invoice_number}
                     </CardTitle>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 text-sm">
                       {invoice.owner?.full_name}
                       {invoice.owner?.customer_number &&
                         ` (Kund #${invoice.owner.customer_number})`}
@@ -364,9 +376,9 @@ export default function FakturaPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-1">
+                    <h4 className="font-semibold text-gray-900 mb-1 text-sm">
                       Fakturadatum
                     </h4>
                     <p className="text-sm text-gray-600">
@@ -376,7 +388,7 @@ export default function FakturaPage() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-1">
+                    <h4 className="font-semibold text-gray-900 mb-1 text-sm">
                       Förfallodag
                     </h4>
                     <p className="text-sm text-gray-600">
@@ -384,13 +396,17 @@ export default function FakturaPage() {
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-1">Belopp</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-semibold text-gray-900 mb-1 text-sm">
+                      Belopp
+                    </h4>
+                    <p className="text-sm font-bold text-[#2c7a4c]">
                       {invoice.total_amount.toLocaleString()} kr
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-1">Betald</h4>
+                    <h4 className="font-semibold text-gray-900 mb-1 text-sm">
+                      Betald
+                    </h4>
                     <p className="text-sm text-gray-600">
                       {invoice.paid_amount
                         ? `${invoice.paid_amount.toLocaleString()} kr`
@@ -459,19 +475,27 @@ export default function FakturaPage() {
                 )}
 
                 {/* Åtgärder */}
-                <div className="flex gap-3 pt-2">
-                  <Button variant="outline" size="sm">
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-300 hover:bg-gray-50"
+                  >
                     <Eye className="h-4 w-4 mr-2" />
                     Visa
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-300 hover:bg-gray-50"
+                  >
                     <Download className="h-4 w-4 mr-2" />
-                    Ladda ner
+                    Ladda ner PDF
                   </Button>
                   {invoice.status === "sent" && (
                     <Button
                       onClick={() => updateInvoiceStatus(invoice.id, "paid")}
-                      className="bg-green-600 hover:bg-green-700"
+                      className="bg-green-600 hover:bg-green-700 text-white"
                       size="sm"
                     >
                       <CheckCircle className="h-4 w-4 mr-2" />
@@ -481,7 +505,7 @@ export default function FakturaPage() {
                   {invoice.status === "draft" && (
                     <Button
                       onClick={() => updateInvoiceStatus(invoice.id, "sent")}
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                       size="sm"
                     >
                       Skicka faktura
@@ -495,24 +519,27 @@ export default function FakturaPage() {
 
         {/* Tom lista */}
         {filteredInvoices.length === 0 && (
-          <Card className="text-center py-12">
+          <Card className="text-center py-16 border-2 border-dashed border-gray-300">
             <CardContent>
-              <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <FileText className="h-20 w-20 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 Inga fakturor hittades
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
                 {searchTerm || statusFilter !== "all"
-                  ? "Prova att ändra dina sökkriterier."
-                  : "Skapa din första faktura för att komma igång."}
+                  ? "Prova att ändra dina sökkriterier för att hitta fakturor."
+                  : "Skapa din första faktura för att komma igång med faktureringen."}
               </p>
-              <Button className="bg-purple-600 hover:bg-purple-700">
-                Skapa första fakturan
-              </Button>
+              <Link href="/faktura/new">
+                <Button className="bg-[#2c7a4c] hover:bg-[#236139] text-white">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Skapa första fakturan
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         )}
-      </div>
+      </main>
     </div>
   );
 }
