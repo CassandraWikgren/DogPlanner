@@ -55,8 +55,7 @@ type InvoiceResult = {
 
 export async function POST(req: Request) {
   try {
-    const cookieStore = await cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const supabase = createRouteHandlerClient({ cookies });
 
     const { invoiceId } = await req.json();
     if (!invoiceId) {
