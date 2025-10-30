@@ -945,7 +945,7 @@ export default function HunddagisPage() {
 
         .live-grid {
           display: grid;
-          grid-template-columns: repeat(7, 1fr);
+          grid-template-columns: repeat(6, 1fr);
           gap: 12px;
           max-width: 1200px;
           margin: 0 auto;
@@ -1125,71 +1125,64 @@ export default function HunddagisPage() {
             <p>Sammanställning, statistik och hantering av dagishundar.</p>
 
             <div className="live-grid">
+              {/* 1. Dagishundar */}
               <div
                 className="live-card"
                 onClick={() => setCurrentView("all")}
-                title="Alla dagishundar"
+                title="Alla registrerade dagishundar"
               >
                 <div className="live-value">{live.dagishundar}</div>
                 <div className="live-label">Dagishundar</div>
               </div>
 
+              {/* 2. Promenader (inne idag) */}
               <div
                 className="live-card"
                 onClick={() => setCurrentView("all")}
-                title="Hundar inne idag"
+                title="Hundar incheckade idag"
               >
                 <div className="live-value">{live.promenaderIdag}</div>
-                <div className="live-label">Promenader (inne idag)</div>
+                <div className="live-label">Promenader</div>
               </div>
 
+              {/* 3. Intresseanmälningar */}
               <div
                 className="live-card"
                 onClick={() => setCurrentView("applications")}
-                title="Intresseanmälningar (senaste månaden)"
+                title="Nya intresseanmälningar denna månaden"
               >
                 <div className="live-value">{live.intresseSenasteMån}</div>
                 <div className="live-label">Intresseanmälningar</div>
               </div>
 
+              {/* 4. Tjänster (kloklipp/tassklipp/bad) */}
               <div
                 className="live-card"
                 onClick={() => setCurrentView("services")}
-                title="Tilläggstjänster denna månaden"
+                title="Tjänster denna månaden"
               >
                 <div className="live-value">{live.tjänsterDennaMån}</div>
-                <div className="live-label">
-                  Tjänster (kloklipp/tassklipp/bad)
-                </div>
+                <div className="live-label">Tjänster</div>
               </div>
 
+              {/* 5. Hundrum */}
               <div
                 className="live-card"
                 onClick={() => setCurrentView("rooms")}
-                title="Rum & beläggning"
+                title="Antal rum & beläggning"
               >
                 <div className="live-value">{live.hundrum}</div>
                 <div className="live-label">Hundrum</div>
               </div>
 
+              {/* 6. Mina priser */}
               <div
                 className="live-card"
                 onClick={() => (window.location.href = "/mina-priser")}
-                title="Mina priser"
+                title="Gå till prisinställningar"
               >
                 <div className="live-value">›</div>
                 <div className="live-label">Mina priser</div>
-              </div>
-
-              <div
-                className="live-card"
-                onClick={() => setCurrentView("calendar")}
-                title="Kalender"
-              >
-                <div className="live-value">
-                  <CalIcon size={18} />
-                </div>
-                <div className="live-label">Kalender</div>
               </div>
             </div>
 
