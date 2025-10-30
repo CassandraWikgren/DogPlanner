@@ -13,6 +13,8 @@ type SubData = {
   plan?: "basic" | "kombi" | "full";
   stripe_customer_id?: string;
   customer_number?: string;
+  org_name?: string;
+  period_end?: string | null;
 };
 
 type Invoice = {
@@ -33,20 +35,27 @@ export default function SubscriptionPage() {
   const [subInfo, setSubInfo] = useState<SubData | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showChangePlanModal, setShowChangePlanModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"basic" | "kombi" | "full">(
+    "basic"
+  );
   const [editing, setEditing] = useState(false);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [orgName, setOrgName] = useState("");
 
   useEffect(() => {
-    if (subscription) setSubInfo(subscription);
+    if (subscription) {
+      setSubInfo(subscription);
+    }
     if (user?.email) setEmail(user.email);
-  }, [subscription, user]);
+    if (user?.user_metadata?.phone) setPhone(user.user_metadata.phone);
 
-  // Ladda fakturor
-  useEffect(() => {
-    if (!user) return;
-    loadInvoices();
-  }, [user]);
+    // Hämta org_name från user metadata eller organisation
+    if (user?.user_metadata?.org_name) {
+      setOrgName(user.user_metadata.org_name);
+    }
+  }, [subscription, user]);
 
   // Ladda fakturor
   useEffect(() => {
@@ -179,6 +188,50 @@ export default function SubscriptionPage() {
     }
   }
 
+  async function handleChangePlan() {
+    if (!supabase || !user) return;
+
+    try {
+      setUpdating(true);
+      setError(null);
+      setMessage(null);
+
+      // Uppdatera plan i databasen (profiles tabellen)
+      // @ts-ignore - subscription_plan kanske inte finns i type definition ännu
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ subscription_plan: selectedPlan })
+        .eq("id", user.id);
+
+      if (updateError) throw updateError;
+
+      setMessage(
+        `✅ Ditt abonnemang har ändrats till ${
+          selectedPlan === "basic"
+            ? "Basic"
+            : selectedPlan === "kombi"
+            ? "Kombi"
+            : "Full"
+        }!`
+      );
+      if (subInfo) {
+        setSubInfo({
+          ...subInfo,
+          plan: selectedPlan,
+          expired: subInfo.expired || false,
+        });
+      }
+      setShowChangePlanModal(false);
+
+      // Reload efter 2 sekunder
+      setTimeout(() => window.location.reload(), 2000);
+    } catch (e: any) {
+      setError(e.message || "Kunde inte ändra abonnemang");
+    } finally {
+      setUpdating(false);
+    }
+  }
+
   async function handleUpgrade() {
     if (!supabase) {
       setError("Databaskoppling saknas");
@@ -254,64 +307,59 @@ export default function SubscriptionPage() {
 
   return (
     <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <Link
             href="/dashboard"
-            className="text-[#2c7a4c] hover:underline mb-4 inline-block"
+            className="text-[#2c7a4c] hover:underline text-sm"
           >
-            ← Tillbaka till Dashboard
+            ← Tillbaka
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900">Ditt Abonnemang</h1>
-          <p className="text-gray-600 mt-2">
-            Hantera ditt konto och betalningar
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 mt-3">
+            Mitt Abonnemang
+          </h1>
         </div>
 
         {/* Messages */}
         {message && (
-          <div className="mb-6 rounded-lg border border-green-200 bg-green-50 px-6 py-4 text-green-800">
+          <div className="mb-4 rounded-md border border-green-300 bg-green-50 px-4 py-3 text-green-800 text-sm">
             {message}
           </div>
         )}
         {error && (
-          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-6 py-4 text-red-700">
+          <div className="mb-4 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-red-700 text-sm">
             {error}
           </div>
         )}
 
         {/* Locked Warning */}
         {locked && (
-          <div className="mb-6 rounded-lg border-2 border-orange-300 bg-orange-50 px-6 py-4">
+          <div className="mb-6 rounded-md border-2 border-orange-400 bg-orange-50 px-5 py-4">
             <div className="flex items-start gap-3">
-              <svg
-                className="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <span className="text-2xl">⚠️</span>
               <div>
-                <h3 className="font-bold text-orange-900 mb-1">
-                  {canceled ? "⚠️ Abonnemang avslutat" : "⚠️ Konto låst"}
+                <h3 className="font-semibold text-orange-900 mb-1">
+                  {canceled ? "Abonnemang avslutat" : "Kontot är låst"}
                 </h3>
-                <p className="text-orange-800 text-sm">
+                <p className="text-orange-800 text-sm mb-3">
                   {canceled
-                    ? "Ditt abonnemang har avslutats. Du kan inte göra några ändringar förrän du återaktiverar ditt konto."
-                    : "Din betalning är förfallen. Kontot är låst tills fakturan betalas."}
+                    ? `Ditt abonnemang har avslutats. Du kan fortfarande se dina uppgifter men inte göra ändringar. ${
+                        subInfo?.period_end
+                          ? `Abonnemanget löper ut ${new Date(
+                              subInfo.period_end
+                            ).toLocaleDateString("sv-SE")}.`
+                          : ""
+                      }`
+                    : "Din betalning är förfallen. Kontot låses tills fakturan betalas."}
                 </p>
                 {canceled && (
                   <button
                     onClick={handleReactivate}
                     disabled={updating}
-                    className="mt-4 px-6 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] font-semibold transition disabled:opacity-50"
+                    className="px-5 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-medium transition disabled:opacity-50 text-sm"
                   >
-                    {updating ? "Bearbetar..." : "Återaktivera Abonnemang"}
+                    {updating ? "Aktiverar..." : "Starta abonnemang igen"}
                   </button>
                 )}
               </div>
@@ -319,101 +367,110 @@ export default function SubscriptionPage() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Left Column - Plan Info */}
-          <div className="md:col-span-2 space-y-6">
-            {/* Current Plan Card */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Nuvarande Plan
+        {/* Main Grid */}
+        <div className="grid md:grid-cols-2 gap-5">
+          {/* Left Side - Overview */}
+          <div className="space-y-5">
+            {/* Company & Subscription Info */}
+            <div className="bg-white rounded-md shadow-sm border border-gray-200 p-5">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Företagsuppgifter
               </h2>
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <div className="text-3xl font-bold text-[#2c7a4c]">
-                    {planNames[currentPlan]}
-                  </div>
-                  <div className="text-gray-600 text-sm mt-1">
-                    {planPrices[currentPlan]} kr/månad
-                  </div>
-                </div>
-                <div
-                  className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                    active
-                      ? "bg-green-100 text-green-800"
-                      : canceled
-                      ? "bg-gray-100 text-gray-800"
-                      : "bg-orange-100 text-orange-800"
-                  }`}
-                >
-                  {active ? "✓ Aktiv" : canceled ? "Avslutad" : "Låst"}
-                </div>
-              </div>
 
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Kundnummer:</span>
-                  <span className="font-mono font-semibold">
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Företag</span>
+                  <span className="font-medium text-gray-900">
+                    {orgName || "Inget namn angivet"}
+                  </span>
+                </div>
+
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Kundnummer</span>
+                  <span className="font-mono font-medium text-gray-900">
                     {customerNumber}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Betalas:</span>
-                  <span className="font-semibold">1 månad i förväg</span>
+
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Nuvarande plan</span>
+                  <span className="font-semibold text-[#2c7a4c]">
+                    {planNames[currentPlan]} ({planPrices[currentPlan]} kr/mån)
+                  </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Betalmetod:</span>
-                  <span className="font-semibold">Stripe</span>
+
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Status</span>
+                  <span
+                    className={`font-medium ${
+                      active
+                        ? "text-green-600"
+                        : canceled
+                        ? "text-gray-600"
+                        : "text-orange-600"
+                    }`}
+                  >
+                    {active ? "✓ Aktiv" : canceled ? "Avslutad" : "Låst"}
+                  </span>
+                </div>
+
+                <div className="flex justify-between py-2">
+                  <span className="text-gray-600">Betalning</span>
+                  <span className="font-medium text-gray-900">
+                    1 månad i förväg
+                  </span>
                 </div>
               </div>
 
               {active && !canceled && (
                 <button
-                  onClick={() => setShowCancelModal(true)}
-                  className="mt-4 w-full py-2 text-red-600 hover:bg-red-50 rounded-lg border border-red-200 font-medium transition"
+                  onClick={() => setShowChangePlanModal(true)}
+                  disabled={locked}
+                  className="mt-4 w-full py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-medium transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
-                  Avsluta Abonnemang
+                  Byt abonnemang
                 </button>
               )}
             </div>
 
-            {/* Account Details Card */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            {/* Contact Info */}
+            <div className="bg-white rounded-md shadow-sm border border-gray-200 p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Kontouppgifter
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Kontaktuppgifter
                 </h2>
                 {!editing && !locked && (
                   <button
                     onClick={() => setEditing(true)}
-                    className="text-[#2c7a4c] hover:underline font-medium"
+                    className="text-[#2c7a4c] hover:underline font-medium text-sm"
                   >
-                    Redigera
+                    Ändra
                   </button>
                 )}
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    E-postadress
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    E-post
                   </label>
                   {editing ? (
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     />
                   ) : (
-                    <div className="text-gray-900">
+                    <div className="text-sm text-gray-900">
                       {email || user?.email || "Ingen"}
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Telefonnummer
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Telefon
                   </label>
                   {editing ? (
                     <input
@@ -421,25 +478,27 @@ export default function SubscriptionPage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="070-123 45 67"
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     />
                   ) : (
-                    <div className="text-gray-900">{phone || "Ej angivet"}</div>
+                    <div className="text-sm text-gray-900">
+                      {phone || "Ej angivet"}
+                    </div>
                   )}
                 </div>
 
                 {editing && (
-                  <div className="flex gap-3 pt-2">
+                  <div className="flex gap-2 pt-2">
                     <button
                       onClick={handleUpdateProfile}
                       disabled={updating}
-                      className="flex-1 bg-[#2c7a4c] text-white py-2 rounded-lg hover:bg-[#236139] font-semibold transition disabled:opacity-50"
+                      className="flex-1 bg-[#2c7a4c] text-white py-2 rounded-md hover:bg-[#236139] font-medium transition disabled:opacity-50 text-sm"
                     >
                       {updating ? "Sparar..." : "Spara"}
                     </button>
                     <button
                       onClick={() => setEditing(false)}
-                      className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 font-semibold transition"
+                      className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-md hover:bg-gray-200 font-medium transition text-sm"
                     >
                       Avbryt
                     </button>
@@ -448,38 +507,50 @@ export default function SubscriptionPage() {
               </div>
             </div>
 
-            {/* Invoices Card */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            {/* Cancel Button */}
+            {active && !canceled && (
+              <button
+                onClick={() => setShowCancelModal(true)}
+                className="w-full py-2 text-red-600 hover:bg-red-50 rounded-md border border-red-300 font-medium transition text-sm"
+              >
+                Avsluta abonnemang
+              </button>
+            )}
+          </div>
+
+          {/* Right Side - Invoices */}
+          <div className="space-y-5">
+            <div className="bg-white rounded-md shadow-sm border border-gray-200 p-5">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Fakturor
               </h2>
 
               {invoices.length === 0 ? (
-                <p className="text-gray-600 text-center py-8">
+                <p className="text-gray-500 text-center py-6 text-sm">
                   Inga fakturor ännu
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {invoices.map((inv) => (
                     <div
                       key={inv.id}
-                      className="flex items-center justify-between border border-gray-200 rounded-lg p-4"
+                      className="flex items-center justify-between border border-gray-200 rounded-md p-3"
                     >
                       <div>
-                        <div className="font-semibold text-gray-900">
+                        <div className="font-medium text-gray-900 text-sm">
                           {inv.invoice_number}
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-xs text-gray-500">
                           Förfaller:{" "}
                           {new Date(inv.due_date).toLocaleDateString("sv-SE")}
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-gray-900">
+                        <div className="font-semibold text-gray-900 text-sm">
                           {inv.amount} kr
                         </div>
                         <div
-                          className={`text-sm font-semibold ${
+                          className={`text-xs font-medium ${
                             inv.status === "paid"
                               ? "text-green-600"
                               : inv.status === "overdue"
@@ -499,84 +570,18 @@ export default function SubscriptionPage() {
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Right Column - Plan Options */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Planer</h3>
-
-              <div className="space-y-3">
-                <div
-                  className={`border-2 rounded-lg p-4 ${
-                    currentPlan === "basic"
-                      ? "border-[#2c7a4c] bg-green-50"
-                      : "border-gray-200"
-                  }`}
-                >
-                  <div className="font-bold text-gray-900">Basic</div>
-                  <div className="text-2xl font-bold text-[#2c7a4c] my-2">
-                    99 kr<span className="text-sm text-gray-600">/mån</span>
-                  </div>
-                  <div className="text-sm text-gray-600">En tjänst</div>
-                  <div className="text-xs text-gray-500 mt-2">
-                    Hunddagis eller Pensionat eller Frisör
-                  </div>
-                </div>
-
-                <div
-                  className={`border-2 rounded-lg p-4 ${
-                    currentPlan === "kombi"
-                      ? "border-[#2c7a4c] bg-green-50"
-                      : "border-gray-200"
-                  }`}
-                >
-                  <div className="font-bold text-gray-900">Kombi</div>
-                  <div className="text-2xl font-bold text-[#2c7a4c] my-2">
-                    199 kr<span className="text-sm text-gray-600">/mån</span>
-                  </div>
-                  <div className="text-sm text-gray-600">Två tjänster</div>
-                  <div className="text-xs text-gray-500 mt-2">
-                    Hunddagis + Pensionat eller andra kombinationer
-                  </div>
-                </div>
-
-                <div
-                  className={`border-2 rounded-lg p-4 ${
-                    currentPlan === "full"
-                      ? "border-[#2c7a4c] bg-green-50"
-                      : "border-gray-200"
-                  }`}
-                >
-                  <div className="font-bold text-gray-900">Full</div>
-                  <div className="text-2xl font-bold text-[#2c7a4c] my-2">
-                    299 kr<span className="text-sm text-gray-600">/mån</span>
-                  </div>
-                  <div className="text-sm text-gray-600">Alla tjänster</div>
-                  <div className="text-xs text-gray-500 mt-2">
-                    Hunddagis + Pensionat + Frisör
-                  </div>
-                </div>
-              </div>
-
-              {active && !canceled && (
-                <div className="mt-4 text-center text-sm text-gray-600">
-                  <Link
-                    href="/pricing"
-                    className="text-[#2c7a4c] hover:underline font-medium"
-                  >
-                    Byt plan →
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 className="font-bold text-blue-900 mb-2">💡 Tips</h3>
-              <p className="text-sm text-blue-800">
-                Alla abonnemang betalas 1 månad i förväg. Om betalning uteblir
-                låses kontot automatiskt.
-              </p>
+            {/* Info Box */}
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+              <h3 className="font-semibold text-blue-900 mb-2 text-sm flex items-center gap-2">
+                <span>💡</span> Viktigt att veta
+              </h3>
+              <ul className="text-xs text-blue-800 space-y-1.5">
+                <li>• Betalas alltid 1 månad i förväg</li>
+                <li>• Utebliven betalning låser kontot automatiskt</li>
+                <li>• Vid avslut fortsätter tjänsten till periodens slut</li>
+                <li>• Ingen återbetalning vid avslut mitt i perioden</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -584,28 +589,120 @@ export default function SubscriptionPage() {
         {/* Cancel Modal */}
         {showCancelModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Avsluta Abonnemang?
+            <div className="bg-white rounded-md shadow-xl max-w-md w-full p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                Vill du avsluta ditt abonnemang?
               </h3>
-              <p className="text-gray-600 mb-6">
-                Är du säker på att du vill avsluta ditt abonnemang? Ditt konto
-                kommer att låsas och du kommer inte kunna göra några ändringar
-                förrän du återaktiverar det.
+              <p className="text-gray-600 text-sm mb-2">
+                Om du avslutar nu får du fortsätta använda tjänsten till{" "}
+                {subInfo?.period_end
+                  ? new Date(subInfo.period_end).toLocaleDateString("sv-SE")
+                  : "periodens slut"}
+                .
+              </p>
+              <p className="text-gray-600 text-sm mb-5">
+                Efter det låses ditt konto och du kan bara se dina uppgifter,
+                inte göra ändringar. Du kan alltid starta abonnemanget igen.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={handleCancelSubscription}
                   disabled={updating}
-                  className="flex-1 bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 font-semibold transition disabled:opacity-50"
+                  className="flex-1 bg-red-600 text-white py-2.5 rounded-md hover:bg-red-700 font-medium transition disabled:opacity-50 text-sm"
                 >
                   {updating ? "Avslutar..." : "Ja, avsluta"}
                 </button>
                 <button
                   onClick={() => setShowCancelModal(false)}
-                  className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 font-semibold transition"
+                  className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-md hover:bg-gray-200 font-medium transition text-sm"
                 >
                   Nej, behåll
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Change Plan Modal */}
+        {showChangePlanModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-md shadow-xl max-w-lg w-full p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Välj nytt abonnemang
+              </h3>
+
+              <div className="space-y-3 mb-5">
+                <label className="flex items-start gap-3 p-4 border-2 rounded-md cursor-pointer hover:border-[#2c7a4c] transition">
+                  <input
+                    type="radio"
+                    name="plan"
+                    value="basic"
+                    checked={selectedPlan === "basic"}
+                    onChange={(e) => setSelectedPlan(e.target.value as "basic")}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900">
+                      Basic - 99 kr/mån
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      En tjänst (Hunddagis eller Pensionat eller Frisör)
+                    </div>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-3 p-4 border-2 rounded-md cursor-pointer hover:border-[#2c7a4c] transition">
+                  <input
+                    type="radio"
+                    name="plan"
+                    value="kombi"
+                    checked={selectedPlan === "kombi"}
+                    onChange={(e) => setSelectedPlan(e.target.value as "kombi")}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900">
+                      Kombi - 199 kr/mån
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Två tjänster (t.ex. Hunddagis + Pensionat)
+                    </div>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-3 p-4 border-2 rounded-md cursor-pointer hover:border-[#2c7a4c] transition">
+                  <input
+                    type="radio"
+                    name="plan"
+                    value="full"
+                    checked={selectedPlan === "full"}
+                    onChange={(e) => setSelectedPlan(e.target.value as "full")}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900">
+                      Full - 299 kr/mån
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Alla tjänster (Hunddagis + Pensionat + Frisör)
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleChangePlan}
+                  disabled={updating}
+                  className="flex-1 bg-[#2c7a4c] text-white py-2.5 rounded-md hover:bg-[#236139] font-medium transition disabled:opacity-50 text-sm"
+                >
+                  {updating ? "Uppdaterar..." : "Byt abonnemang"}
+                </button>
+                <button
+                  onClick={() => setShowChangePlanModal(false)}
+                  className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-md hover:bg-gray-200 font-medium transition text-sm"
+                >
+                  Avbryt
                 </button>
               </div>
             </div>
