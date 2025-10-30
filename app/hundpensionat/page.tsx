@@ -14,6 +14,7 @@ import {
   Filter,
   Search,
   DollarSign,
+  Settings,
 } from "lucide-react";
 import type { Database } from "@/types/database";
 
@@ -403,6 +404,13 @@ export default function HundpensionatPage() {
               >
                 <DollarSign size={16} />
                 <span className="hidden sm:inline">Priser</span>
+              </Link>
+              <Link
+                href="/hundpensionat/tillval"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+              >
+                <Settings size={16} />
+                <span className="hidden sm:inline">Tillval</span>
               </Link>
               <Link
                 href="/hundpensionat/kalender"
