@@ -1,6 +1,36 @@
+"use client";
+
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // Redirect inloggade användare till dashboard
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/dashboard");
+    }
+  }, [user, loading, router]);
+
+  // Visa ingenting medan vi kollar auth-status
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-600">Laddar...</div>
+      </div>
+    );
+  }
+
+  // Om användaren är inloggad, visa ingenting (redirect pågår)
+  if (user) {
+    return null;
+  }
+
+  // Publika förstasidan (endast för utloggade)
   return (
     <div className="min-h-screen bg-white">
       {/* Simple Header */}
@@ -65,7 +95,8 @@ export default function HomePage() {
               Bokningar
             </h3>
             <p className="text-gray-600">
-              Håll koll på vilka hundar som kommer när. Se lediga platser direkt.
+              Håll koll på vilka hundar som kommer när. Se lediga platser
+              direkt.
             </p>
           </div>
           <div>
@@ -118,7 +149,10 @@ export default function HomePage() {
               <Link href="/terms" className="hover:text-gray-900">
                 Villkor
               </Link>
-              <a href="mailto:gdpr@dogplanner.se" className="hover:text-gray-900">
+              <a
+                href="mailto:gdpr@dogplanner.se"
+                className="hover:text-gray-900"
+              >
                 Integritet
               </a>
               <a
