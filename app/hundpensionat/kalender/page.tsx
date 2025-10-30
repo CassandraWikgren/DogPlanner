@@ -54,6 +54,10 @@ export default function KalenderPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [roomFilter, setRoomFilter] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"month" | "week" | "day">("month");
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   // Kalendermånad navigation
   const [currentMonth, setCurrentMonth] = useState(() => {
@@ -129,6 +133,77 @@ export default function KalenderPage() {
       setError(`${ERROR_CODES.DATABASE_CONNECTION} ${err.message}`);
     } finally {
       setLoading(false);
+    }
+  }
+
+  // === CHECK IN/OUT FUNKTIONER ===
+  async function handleCheckIn(bookingId: string) {
+    try {
+      console.log(`[CheckIn] Checking in booking: ${bookingId}`);
+
+      const { error } = await (supabase as any)
+        .from("bookings")
+        .update({ status: "checked_in" })
+        .eq("id", bookingId);
+
+      if (error) throw error;
+
+      // Uppdatera lokal state
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.id === bookingId ? { ...b, status: "checked_in" as any } : b
+        )
+      );
+
+      setNotification({
+        message: "✅ Incheckning genomförd!",
+        type: "success",
+      });
+      setTimeout(() => setNotification(null), 3000);
+
+      console.log(`[CheckIn] Framgång för booking ${bookingId}`);
+    } catch (err: any) {
+      console.error(`${ERROR_CODES.DATABASE_CONNECTION} Check-in fel:`, err);
+      setNotification({
+        message: `❌ Kunde inte checka in: ${err.message}`,
+        type: "error",
+      });
+      setTimeout(() => setNotification(null), 5000);
+    }
+  }
+
+  async function handleCheckOut(bookingId: string) {
+    try {
+      console.log(`[CheckOut] Checking out booking: ${bookingId}`);
+
+      const { error } = await (supabase as any)
+        .from("bookings")
+        .update({ status: "checked_out" })
+        .eq("id", bookingId);
+
+      if (error) throw error;
+
+      // Uppdatera lokal state
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.id === bookingId ? { ...b, status: "checked_out" as any } : b
+        )
+      );
+
+      setNotification({
+        message: "✅ Utcheckning genomförd!",
+        type: "success",
+      });
+      setTimeout(() => setNotification(null), 3000);
+
+      console.log(`[CheckOut] Framgång för booking ${bookingId}`);
+    } catch (err: any) {
+      console.error(`${ERROR_CODES.DATABASE_CONNECTION} Check-out fel:`, err);
+      setNotification({
+        message: `❌ Kunde inte checka ut: ${err.message}`,
+        type: "error",
+      });
+      setTimeout(() => setNotification(null), 5000);
     }
   }
 
@@ -297,6 +372,21 @@ export default function KalenderPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Notification Toast */}
+      {notification && (
+        <div className="fixed top-20 right-4 z-50 animate-slide-in-right">
+          <div
+            className={`px-6 py-4 rounded-lg shadow-lg border-2 ${
+              notification.type === "success"
+                ? "bg-green-50 border-green-400 text-green-800"
+                : "bg-red-50 border-red-400 text-red-800"
+            }`}
+          >
+            <p className="font-medium">{notification.message}</p>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section - Samma som Dashboard, Hunddagis, Ekonomi, Hundpensionat */}
       <div
         className="relative bg-cover bg-center pt-20 pb-28"
@@ -649,16 +739,28 @@ export default function KalenderPage() {
                               <div className="flex justify-between items-start">
                                 <div>
                                   <div className="font-semibold text-gray-800">
-                                    Hund ID: {booking.dog_id}
+                                    🐕{" "}
+                                    {booking.dogs?.name ||
+                                      `Hund ID: ${booking.dog_id}`}
                                   </div>
                                   <div className="text-sm text-gray-600">
-                                    Ägare ID: {booking.owner_id}
+                                    👤{" "}
+                                    {booking.dogs?.owners?.full_name ||
+                                      `Ägare ID: ${booking.owner_id}`}
                                   </div>
+                                  {booking.dogs?.breed && (
+                                    <div className="text-xs text-gray-500">
+                                      Ras: {booking.dogs.breed}
+                                    </div>
+                                  )}
                                   <div className="text-xs text-gray-500 mt-1">
-                                    {booking.start_date} → {booking.end_date}
+                                    📅 {booking.start_date} → {booking.end_date}
                                   </div>
                                 </div>
-                                <button className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm font-medium">
+                                <button
+                                  onClick={() => handleCheckIn(booking.id)}
+                                  className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm font-medium"
+                                >
                                   Checka in
                                 </button>
                               </div>
@@ -683,16 +785,28 @@ export default function KalenderPage() {
                               <div className="flex justify-between items-start">
                                 <div>
                                   <div className="font-semibold text-gray-800">
-                                    Hund ID: {booking.dog_id}
+                                    🐕{" "}
+                                    {booking.dogs?.name ||
+                                      `Hund ID: ${booking.dog_id}`}
                                   </div>
                                   <div className="text-sm text-gray-600">
-                                    Ägare ID: {booking.owner_id}
+                                    👤{" "}
+                                    {booking.dogs?.owners?.full_name ||
+                                      `Ägare ID: ${booking.owner_id}`}
                                   </div>
+                                  {booking.dogs?.breed && (
+                                    <div className="text-xs text-gray-500">
+                                      Ras: {booking.dogs.breed}
+                                    </div>
+                                  )}
                                   <div className="text-xs text-gray-500 mt-1">
-                                    {booking.start_date} → {booking.end_date}
+                                    📅 {booking.start_date} → {booking.end_date}
                                   </div>
                                 </div>
-                                <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm font-medium">
+                                <button
+                                  onClick={() => handleCheckOut(booking.id)}
+                                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm font-medium"
+                                >
                                   Checka ut
                                 </button>
                               </div>
@@ -715,13 +829,22 @@ export default function KalenderPage() {
                               className="p-4 bg-green-50 border border-green-300 rounded-lg"
                             >
                               <div className="font-semibold text-gray-800">
-                                Hund ID: {booking.dog_id}
+                                🐕{" "}
+                                {booking.dogs?.name ||
+                                  `Hund ID: ${booking.dog_id}`}
                               </div>
                               <div className="text-sm text-gray-600">
-                                Ägare ID: {booking.owner_id}
+                                👤{" "}
+                                {booking.dogs?.owners?.full_name ||
+                                  `Ägare ID: ${booking.owner_id}`}
                               </div>
+                              {booking.dogs?.breed && (
+                                <div className="text-xs text-gray-500">
+                                  Ras: {booking.dogs.breed}
+                                </div>
+                              )}
                               <div className="text-xs text-gray-500 mt-1">
-                                {booking.start_date} → {booking.end_date}
+                                📅 {booking.start_date} → {booking.end_date}
                               </div>
                             </div>
                           ))}
