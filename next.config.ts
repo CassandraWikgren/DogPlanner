@@ -29,8 +29,11 @@ const nextConfig: NextConfig = {
 
   // ⚠️ Förhindra att Next.js försöker för-rendera /_not-found under build
   output: "standalone",
+  // 🔄 Använd unikt build ID baserat på git commit eller timestamp
   generateBuildId: async () => {
-    return "dogplanner-build";
+    // På Vercel: använd VERCEL_GIT_COMMIT_SHA
+    // Lokalt: använd timestamp
+    return process.env.VERCEL_GIT_COMMIT_SHA || `build-${Date.now()}`;
   },
 
   // 🖼️ Bildoptimering för Supabase-lagrade bilder
