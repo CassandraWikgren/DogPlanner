@@ -373,6 +373,29 @@ export interface Database {
           Database["public"]["Tables"]["interest_applications"]["Insert"]
         >;
       };
+
+      // === DAGISTJÄNSTER (Kloklipp, tassklipp, bad) ===
+      daycare_service_completions: {
+        Row: {
+          id: string;
+          org_id: string | null;
+          dog_id: string | null;
+          service_type: "kloklipp" | "tassklipp" | "bad";
+          scheduled_date: string;
+          completed_at: string | null;
+          completed_by: string | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["daycare_service_completions"]["Row"],
+          "id" | "created_at" | "updated_at"
+        >;
+        Update: Partial<
+          Database["public"]["Tables"]["daycare_service_completions"]["Insert"]
+        >;
+      };
     };
     Views: {
       [_ in never]: never;

@@ -1572,15 +1572,14 @@ export default function HunddagisPage() {
                                                 user?.user_metadata?.org_id ||
                                                 null,
                                               dog_id: d.id,
-                                              service_type: "kloklipp", // Default, kan förbättras
-                                              scheduled_month: ym,
+                                              service_type: "kloklipp" as const, // Default, kan förbättras
+                                              scheduled_date: `${ym}-01`, // Convert YYYY-MM to YYYY-MM-DD
                                               completed_at:
                                                 new Date().toISOString(),
-                                              completed_by: user?.id || null,
-                                              completed_by_name:
+                                              completed_by:
                                                 user?.user_metadata
-                                                  ?.full_name || "Personal",
-                                              is_completed: true,
+                                                  ?.full_name || user?.email || "Personal",
+                                              notes: null,
                                             });
                                         } else {
                                           // Ta bort markering
@@ -1588,7 +1587,8 @@ export default function HunddagisPage() {
                                             .from("daycare_service_completions")
                                             .delete()
                                             .eq("dog_id", d.id)
-                                            .eq("scheduled_month", ym);
+                                            .gte("scheduled_date", `${ym}-01`)
+                                            .lt("scheduled_date", `${ym.split('-')[0]}-${String(parseInt(ym.split('-')[1]) + 1).padStart(2, '0')}-01`);
                                         }
                                       } catch (e) {
                                         console.warn(
