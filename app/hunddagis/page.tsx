@@ -1565,22 +1565,28 @@ export default function HunddagisPage() {
                                       try {
                                         if (next) {
                                           // Markera som utförd
+                                          const serviceData = {
+                                            org_id:
+                                              user?.user_metadata?.org_id ||
+                                              null,
+                                            dog_id: d.id,
+                                            service_type: "kloklipp" as
+                                              | "kloklipp"
+                                              | "tassklipp"
+                                              | "bad",
+                                            scheduled_date: `${ym}-01`,
+                                            completed_at:
+                                              new Date().toISOString(),
+                                            completed_by:
+                                              user?.user_metadata?.full_name ||
+                                              user?.email ||
+                                              "Personal",
+                                            notes: null,
+                                          };
+
                                           await supabase
                                             .from("daycare_service_completions")
-                                            .upsert({
-                                              org_id:
-                                                user?.user_metadata?.org_id ||
-                                                null,
-                                              dog_id: d.id,
-                                              service_type: "kloklipp" as const, // Default, kan förbättras
-                                              scheduled_date: `${ym}-01`, // Convert YYYY-MM to YYYY-MM-DD
-                                              completed_at:
-                                                new Date().toISOString(),
-                                              completed_by:
-                                                user?.user_metadata
-                                                  ?.full_name || user?.email || "Personal",
-                                              notes: null,
-                                            });
+                                            .upsert(serviceData as any);
                                         } else {
                                           // Ta bort markering
                                           await supabase
@@ -1588,7 +1594,12 @@ export default function HunddagisPage() {
                                             .delete()
                                             .eq("dog_id", d.id)
                                             .gte("scheduled_date", `${ym}-01`)
-                                            .lt("scheduled_date", `${ym.split('-')[0]}-${String(parseInt(ym.split('-')[1]) + 1).padStart(2, '0')}-01`);
+                                            .lt(
+                                              "scheduled_date",
+                                              `${ym.split("-")[0]}-${String(
+                                                parseInt(ym.split("-")[1]) + 1
+                                              ).padStart(2, "0")}-01`
+                                            );
                                         }
                                       } catch (e) {
                                         console.warn(
