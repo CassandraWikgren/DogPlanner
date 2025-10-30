@@ -65,11 +65,26 @@ type OwnerDiscount = {
   discount_percent: number;
 };
 
+type ExtraService = {
+  id: string;
+  org_id: string;
+  label: string;
+  price: number;
+  unit: string; // "per gång", "per dag", "fast pris"
+  service_type: "boarding" | "daycare" | "both";
+};
+
+export interface SelectedExtraService {
+  service_id: string;
+  quantity?: number; // För "per dag" eller "per gång"
+}
+
 // ====================================
 // 🧮 Beräknar pris för en bokning
 // Tar hänsyn till:
 // - Grundpris per storlek (boarding_prices)
 // - Helg / högtid / säsongstillägg (boarding_seasons)
+// - Tillvalstjänster (extra_services)
 // - Rabatter (owner_discounts)
 // - Moms (orgs.vat_included)
 // ====================================
@@ -78,11 +93,13 @@ export async function calculatePrice({
   dog,
   booking,
   org,
+  extraServices,
 }: {
   supabase: ReturnType<typeof createClient>;
   dog: Dog;
   booking: Booking;
   org: Org;
+  extraServices?: SelectedExtraService[];
 }): Promise<PriceResult> {
   const breakdown: PriceBreakdown[] = [];
   let total = 0;
@@ -184,7 +201,50 @@ export async function calculatePrice({
 
   total += weekendFee + holidayFee + highSeasonFee;
 
-  // 4️⃣ Rabatter (owner_discounts)
+  // 4️⃣ Tillvalstjänster (extra_services)
+  if (extraServices && extraServices.length > 0) {
+    const { data: services, error: servicesError } = await supabase
+      .from("extra_services")
+      .select("*")
+      .eq("org_id", org.id)
+      .in(
+        "id",
+        extraServices.map((es) => es.service_id)
+      )
+      .returns<ExtraService[]>();
+
+    if (servicesError) {
+      console.warn("⚠️ Kunde inte hämta tillvalstjänster:", servicesError);
+    }
+
+    services?.forEach((service) => {
+      const selected = extraServices.find((es) => es.service_id === service.id);
+      if (!selected) return;
+
+      let serviceTotal = 0;
+      let label = service.label;
+
+      if (service.unit === "per dag") {
+        serviceTotal = service.price * nights;
+        label += ` (${nights} dagar)`;
+      } else if (service.unit === "per gång") {
+        const quantity = selected.quantity || 1;
+        serviceTotal = service.price * quantity;
+        if (quantity > 1) label += ` (${quantity}x)`;
+      } else {
+        // fast pris
+        serviceTotal = service.price;
+      }
+
+      breakdown.push({
+        label: `Tillval: ${label}`,
+        amount: serviceTotal,
+      });
+      total += serviceTotal;
+    });
+  }
+
+  // 5️⃣ Rabatter (owner_discounts)
   const { data: discounts, error: discountError } = await supabase
     .from("owner_discounts")
     .select("*")
@@ -205,7 +265,7 @@ export async function calculatePrice({
     total -= amount;
   });
 
-  // 5️⃣ Moms
+  // 6️⃣ Moms
   const vatRate = org.vat_rate ?? 25;
   const vatAmount = org.vat_included
     ? (total * vatRate) / (100 + vatRate)
