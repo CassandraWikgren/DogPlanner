@@ -15,6 +15,7 @@ export async function POST(req: Request) {
     }
 
     // Skapa Supabase-klient (service role key för admin-operationer)
+    await cookies(); // Await cookies to satisfy Next.js 15
     const supabase = createRouteHandlerClient({ cookies });
     // 1) Verifiera vem som anropar
     const { data: userData, error: userErr } = await supabase.auth.getUser(

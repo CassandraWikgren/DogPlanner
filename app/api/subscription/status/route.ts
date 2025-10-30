@@ -14,6 +14,7 @@ export async function GET(req: Request) {
       );
     }
 
+    await cookies(); // Await cookies to satisfy Next.js 15
     const supabase = createRouteHandlerClient({ cookies });
 
     // 🧩 Hämta användaren från token

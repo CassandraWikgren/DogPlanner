@@ -8,6 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(req: Request) {
+  await cookies(); // Await cookies to satisfy Next.js 15
   const supabase = createRouteHandlerClient({ cookies });
 
   const sig = req.headers.get("stripe-signature");
