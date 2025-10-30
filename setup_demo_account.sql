@@ -7,7 +7,7 @@
 -- E-post: test@dogplanner.se
 -- Lösenord: (ditt befintliga lösenord)
 --
--- OBS: Kör detta i Supabase SQL Editor
+-- OBS: Kör FÖRST add_missing_columns.sql, sedan detta script
 -- =====================================================
 
 -- STEG 0: Hitta test-användarens ID
@@ -30,25 +30,26 @@ INSERT INTO owners (
   created_at
 )
 VALUES (
-  '00000000-0000-0000-0000-000000000001', -- Temporärt ID, ersätt med rätt auth.users.id
+  '0416569d-d226-4c9d-ad57-431293680f0d', -- test@dogplanner.se user ID
   (SELECT id FROM orgs LIMIT 1), -- Använder första org i databasen
-  'Demo Kund',
-  'demo@kundportal.se',
+  'Test Användare',
+  'test@dogplanner.se',
   '070-123 45 67',
-  'Demogatan 1',
+  'Testgatan 1',
   '123 45',
   'Stockholm',
   true,
   false,
   true,
-  'Demo-konto för testning av kundportal',
+  'Test-konto för kundportal',
   NOW()
 )
 ON CONFLICT (id) DO UPDATE SET
   full_name = EXCLUDED.full_name,
   email = EXCLUDED.email,
   phone = EXCLUDED.phone,
-  gdpr_consent = EXCLUDED.gdpr_consent;
+  gdpr_consent = EXCLUDED.gdpr_consent,
+  org_id = EXCLUDED.org_id;
 
 -- 2. Skapa demo-hund för detta konto
 INSERT INTO dogs (
@@ -87,6 +88,7 @@ INSERT INTO bookings (
   start_date,
   end_date,
   status,
+  base_price,
   total_price,
   discount_amount,
   notes,
@@ -100,8 +102,9 @@ SELECT
   CURRENT_DATE + INTERVAL '10 days',
   'pending',
   1500.00,
+  1500.00,
   0,
-  'Demo-bokning för testning',
+  'Demo-bokning för testning - väntar på godkännande',
   NOW()
 FROM dogs d
 WHERE d.owner_id = '0416569d-d226-4c9d-ad57-431293680f0d'
@@ -116,6 +119,7 @@ INSERT INTO bookings (
   start_date,
   end_date,
   status,
+  base_price,
   total_price,
   discount_amount,
   notes,
@@ -128,9 +132,10 @@ SELECT
   CURRENT_DATE - INTERVAL '30 days',
   CURRENT_DATE - INTERVAL '27 days',
   'confirmed',
+  1000.00,
   900.00,
   100.00,
-  'Tidigare demo-bokning',
+  'Tidigare demo-bokning (bekräftad med rabatt)',
   NOW() - INTERVAL '35 days'
 FROM dogs d
 WHERE d.owner_id = '0416569d-d226-4c9d-ad57-431293680f0d'
@@ -140,9 +145,15 @@ ON CONFLICT DO NOTHING;
 -- =====================================================
 -- ANVÄNDNING
 -- =====================================================
--- Kör hela detta script i Supabase SQL Editor
+-- 1. Kör FÖRST add_missing_columns.sql i Supabase SQL Editor
+-- 2. Kör sedan detta script (setup_demo_account.sql)
 -- 
 -- Sedan kan du logga in på kundportalen med:
 -- E-post: test@dogplanner.se
 -- Lösenord: (ditt befintliga lösenord)
+--
+-- Du kommer då att se:
+-- - Hunden Bella i "Mina hundar"
+-- - 1 pending bokning (för att testa godkännande)
+-- - 1 bekräftad bokning i historiken
 -- =====================================================

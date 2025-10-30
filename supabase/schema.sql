@@ -129,6 +129,7 @@ CREATE TABLE IF NOT EXISTS bookings (
   discount_amount numeric DEFAULT 0,
   deposit_amount numeric DEFAULT 0,
   deposit_paid boolean DEFAULT false,
+  extra_service_ids jsonb,
   notes text,
   special_requests text,
   created_at timestamptz DEFAULT now(),
