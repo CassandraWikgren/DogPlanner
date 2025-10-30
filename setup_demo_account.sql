@@ -1,23 +1,22 @@
 -- =====================================================
 -- DEMO-KONTO FÖR KUNDPORTAL
 -- =====================================================
--- Detta script skapar ett demo-konto som kan användas
--- för att testa kundportalen på deployed versionen.
+-- Detta script skapar demo-data för befintlig test-användare
 --
 -- INLOGGNING:
--- E-post: demo@kundportal.se
--- Lösenord: demo123
+-- E-post: test@dogplanner.se
+-- Lösenord: (ditt befintliga lösenord)
 --
 -- OBS: Kör detta i Supabase SQL Editor
 -- =====================================================
 
--- 1. Skapa demo-ägare i owners-tabellen
--- OBS: Du måste först skapa auth-användaren manuellt i Supabase Dashboard > Authentication
--- Eller använd detta API-anrop (kräver service_role_key):
+-- STEG 0: Hitta test-användarens ID
+-- SELECT id FROM auth.users WHERE email = 'test@dogplanner.se';
 
--- Efter att auth-användaren är skapad, lägg till i owners:
+-- 1. Uppdatera/skapa ägare för test-användaren:
 INSERT INTO owners (
   id,
+  org_id,
   full_name,
   email,
   phone,
@@ -32,6 +31,7 @@ INSERT INTO owners (
 )
 VALUES (
   '00000000-0000-0000-0000-000000000001', -- Temporärt ID, ersätt med rätt auth.users.id
+  (SELECT id FROM orgs LIMIT 1), -- Använder första org i databasen
   'Demo Kund',
   'demo@kundportal.se',
   '070-123 45 67',
@@ -52,26 +52,26 @@ ON CONFLICT (id) DO UPDATE SET
 
 -- 2. Skapa demo-hund för detta konto
 INSERT INTO dogs (
+  org_id,
   name,
   breed,
   birth,
   heightcm,
   gender,
   owner_id,
-  is_castrated,
   vaccdhp,
   vaccpi,
   notes,
   created_at
 )
 VALUES (
+  (SELECT id FROM orgs LIMIT 1), -- Använder första org i databasen
   'Bella',
   'Golden Retriever',
   '2020-05-15',
   55,
-  'female',
-  '00000000-0000-0000-0000-000000000001', -- Samma som owner_id ovan
-  true,
+  'tik',
+  '0416569d-d226-4c9d-ad57-431293680f0d', -- test@dogplanner.se owner_id
   '2024-03-20',
   '2024-03-20',
   'Snäll och lekfull hund, älskar barn',
@@ -81,6 +81,7 @@ ON CONFLICT DO NOTHING;
 
 -- 3. Skapa en demo-bokning (pending för att testa godkännande-flödet)
 INSERT INTO bookings (
+  org_id,
   dog_id,
   owner_id,
   start_date,
@@ -92,8 +93,9 @@ INSERT INTO bookings (
   created_at
 )
 SELECT
+  (SELECT id FROM orgs LIMIT 1),
   d.id,
-  '00000000-0000-0000-0000-000000000001',
+  '0416569d-d226-4c9d-ad57-431293680f0d',
   CURRENT_DATE + INTERVAL '7 days',
   CURRENT_DATE + INTERVAL '10 days',
   'pending',
@@ -102,12 +104,13 @@ SELECT
   'Demo-bokning för testning',
   NOW()
 FROM dogs d
-WHERE d.owner_id = '00000000-0000-0000-0000-000000000001'
+WHERE d.owner_id = '0416569d-d226-4c9d-ad57-431293680f0d'
 LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- 4. Skapa en bekräftad bokning (för att visa i historik)
 INSERT INTO bookings (
+  org_id,
   dog_id,
   owner_id,
   start_date,
@@ -119,8 +122,9 @@ INSERT INTO bookings (
   created_at
 )
 SELECT
+  (SELECT id FROM orgs LIMIT 1),
   d.id,
-  '00000000-0000-0000-0000-000000000001',
+  '0416569d-d226-4c9d-ad57-431293680f0d',
   CURRENT_DATE - INTERVAL '30 days',
   CURRENT_DATE - INTERVAL '27 days',
   'confirmed',
@@ -129,25 +133,16 @@ SELECT
   'Tidigare demo-bokning',
   NOW() - INTERVAL '35 days'
 FROM dogs d
-WHERE d.owner_id = '00000000-0000-0000-0000-000000000001'
+WHERE d.owner_id = '0416569d-d226-4c9d-ad57-431293680f0d'
 LIMIT 1
 ON CONFLICT DO NOTHING;
 
 -- =====================================================
--- MANUELL SETUP I SUPABASE DASHBOARD
+-- ANVÄNDNING
 -- =====================================================
--- Gå till: Supabase Dashboard > Authentication > Users > Add User
+-- Kör hela detta script i Supabase SQL Editor
 -- 
--- Fyll i:
--- - Email: demo@kundportal.se
--- - Password: demo123
--- - Auto Confirm User: JA (markera denna!)
--- 
--- Efter att användaren är skapad:
--- 1. Kopiera user ID från Authentication-tabellen
--- 2. Ersätt '00000000-0000-0000-0000-000000000001' i ovanstående SQL med rätt ID
--- 3. Kör SQL-scriptet i SQL Editor
+-- Sedan kan du logga in på kundportalen med:
+-- E-post: test@dogplanner.se
+-- Lösenord: (ditt befintliga lösenord)
 -- =====================================================
-
--- Alternativ: Använd detta för att hitta rätt ID efter att auth-användaren är skapad:
--- SELECT id FROM auth.users WHERE email = 'demo@kundportal.se';
