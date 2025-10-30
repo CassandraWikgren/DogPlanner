@@ -149,228 +149,165 @@ export default function Dashboard() {
   }
 
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        background: "#fdfdfd",
-        color: "#333",
-        fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
-      }}
-    >
-      {/* Hero Section - Med bakgrundsbild från HTML */}
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
+      {/* Hero Section - Professionell och inbjudande */}
       <section
-        className="text-center text-white"
+        className="relative text-center text-white overflow-hidden"
         style={{
-          padding: "100px 20px",
+          padding: "80px 20px 100px",
           background:
-            'linear-gradient(rgba(44, 122, 76, 0.85), rgba(44, 122, 76, 0.85)), url("https://images.unsplash.com/photo-1558788353-f76d92427f16?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80") center/cover no-repeat',
+            'linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url("/Hero.jpeg") center/cover no-repeat',
         }}
       >
-        <h1 className="text-4xl font-bold mb-4">
-          Välkommen till ditt Dashboard
-        </h1>
-        <p className="text-xl mb-8 leading-relaxed opacity-95">
-          Här får du snabb tillgång till dina hundar, abonnemang och fakturor.
-        </p>
-
-        {/* Statistik-kort som overlay på hero */}
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <h1 className="text-5xl font-bold mb-4">
+            Välkommen till ditt Dashboard
+          </h1>
+          <p className="text-xl mb-8 leading-relaxed opacity-95 max-w-2xl mx-auto">
+            Här får du snabb tillgång till dina hundar, abonnemang och fakturor.
+          </p>
+        </div>
       </section>
 
-      {/* Main Cards Container - HTML-inspirerat utseende */}
-      <main
-        className="max-w-5xl mx-auto px-5 grid gap-8"
-        style={{
-          margin: "60px auto",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-        }}
-      >
-        {/* Hunddagis */}
-        <div
-          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
-          style={{
-            padding: "40px 25px",
-            borderRadius: "12px",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
-          }}
-        >
-          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
-            🐕 Hunddagis
-          </h2>
-          <p
-            className="mb-6 text-base leading-relaxed"
-            style={{ color: "#333" }}
-          >
-            Hantera dagishundar och daglig verksamhet. {stats.totalDogs} hundar
-            registrerade.
-          </p>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 -mt-12 pb-16">
+        {/* Live Stats - Floating over hero */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center border border-green-100">
+            <div className="text-3xl font-bold text-[#2c7a4c] mb-1">
+              {stats.totalDogs}
+            </div>
+            <div className="text-sm text-gray-600">Hundar registrerade</div>
+          </div>
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center border border-green-100">
+            <div className="text-3xl font-bold text-[#2c7a4c] mb-1">
+              {stats.checkedInToday}
+            </div>
+            <div className="text-sm text-gray-600">Incheckade idag</div>
+          </div>
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center border border-green-100">
+            <div className="text-3xl font-bold text-[#2c7a4c] mb-1">
+              {stats.activeBookings}
+            </div>
+            <div className="text-sm text-gray-600">Aktiva bokningar</div>
+          </div>
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center border border-green-100">
+            <div className="text-3xl font-bold text-[#2c7a4c] mb-1">
+              {stats.monthlyRevenue.toLocaleString()}
+            </div>
+            <div className="text-sm text-gray-600">kr denna månad</div>
+          </div>
+        </div>
+
+        {/* Feature Cards Grid - 4 primära funktioner */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {/* Hunddagis */}
           <Link
             href="/hunddagis"
-            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
-            style={{
-              padding: "12px 24px",
-              background: "#2c7a4c",
-              borderRadius: "8px",
-            }}
+            className="group bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200 hover:-translate-y-1"
           >
-            Gå till hunddagis
+            <div className="text-5xl mb-4">🐕</div>
+            <h2 className="text-xl font-bold text-[#2c7a4c] mb-3">Hunddagis</h2>
+            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+              Hantera dagishundar, schema och daglig verksamhet.
+            </p>
+            <div className="text-sm text-gray-500">
+              {stats.totalDogs} hundar registrerade
+            </div>
           </Link>
-        </div>
 
-        {/* Hundpensionat */}
-        <div
-          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
-          style={{
-            padding: "40px 25px",
-            borderRadius: "12px",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
-          }}
-        >
-          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
-            🏨 Hundpensionat
-          </h2>
-          <p
-            className="mb-6 text-base leading-relaxed"
-            style={{ color: "#333" }}
-          >
-            Hantera pensionshundar och bokningar. {stats.activeBookings} aktiva
-            bokningar.
-          </p>
+          {/* Hundpensionat */}
           <Link
             href="/hundpensionat"
-            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
-            style={{
-              padding: "12px 24px",
-              background: "#2c7a4c",
-              borderRadius: "8px",
-            }}
+            className="group bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200 hover:-translate-y-1"
           >
-            Gå till pensionat
+            <div className="text-5xl mb-4">🏨</div>
+            <h2 className="text-xl font-bold text-[#2c7a4c] mb-3">
+              Hundpensionat
+            </h2>
+            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+              Hantera pensionshundar, bokningar och in-/utcheckning.
+            </p>
+            <div className="text-sm text-gray-500">
+              {stats.activeBookings} aktiva bokningar
+            </div>
           </Link>
-        </div>
 
-        {/* Rehab */}
-        <div
-          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
-          style={{
-            padding: "40px 25px",
-            borderRadius: "12px",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
-          }}
-        >
-          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
-            🩺 Rehab
-          </h2>
-          <p
-            className="mb-6 text-base leading-relaxed"
-            style={{ color: "#333" }}
-          >
-            Hundrehabiltering och fysioterapi. Kommer snart!
-          </p>
-          <Link
-            href="/rehab"
-            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
-            style={{
-              padding: "12px 24px",
-              background: "#2c7a4c",
-              borderRadius: "8px",
-            }}
-          >
-            Gå till rehab
-          </Link>
-        </div>
-
-        {/* Hundfrisör */}
-        <div
-          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
-          style={{
-            padding: "40px 25px",
-            borderRadius: "12px",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
-          }}
-        >
-          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
-            ✂️ Hundfrisör
-          </h2>
-          <p
-            className="mb-6 text-base leading-relaxed"
-            style={{ color: "#333" }}
-          >
-            Hantera bokningar och behandlingar för hundtrimning.
-          </p>
+          {/* Hundfrisör */}
           <Link
             href="/frisor"
-            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
-            style={{
-              padding: "12px 24px",
-              background: "#2c7a4c",
-              borderRadius: "8px",
-            }}
+            className="group bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200 hover:-translate-y-1"
           >
-            Gå till frisör
+            <div className="text-5xl mb-4">✂️</div>
+            <h2 className="text-xl font-bold text-[#2c7a4c] mb-3">
+              Hundfrisör
+            </h2>
+            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+              Hantera bokningar och behandlingar för hundtrimning.
+            </p>
+            <div className="text-sm text-gray-500">Klippningar & bad</div>
           </Link>
-        </div>
 
-        {/* Administration */}
-        <div
-          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
-          style={{
-            padding: "40px 25px",
-            borderRadius: "12px",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
-          }}
-        >
-          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
-            ⚙️ Administration
-          </h2>
-          <p
-            className="mb-6 text-base leading-relaxed"
-            style={{ color: "#333" }}
-          >
-            Systemhantering och ekonomi. {stats.pendingInvoices} väntande
-            fakturor.
-          </p>
+          {/* Företagsinformation / Administration */}
           <Link
-            href="/admin"
-            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
-            style={{
-              padding: "12px 24px",
-              background: "#2c7a4c",
-              borderRadius: "8px",
-            }}
+            href="/foretagsinformation"
+            className="group bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-green-200 hover:-translate-y-1"
           >
-            Gå till admin
+            <div className="text-5xl mb-4">🏢</div>
+            <h2 className="text-xl font-bold text-[#2c7a4c] mb-3">
+              Företagsinformation
+            </h2>
+            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+              Hantera företagsuppgifter, personal och inställningar.
+            </p>
+            <div className="text-sm text-gray-500">Konfiguration</div>
           </Link>
         </div>
 
-        {/* Ekonomi */}
-        <div
-          className="bg-white text-center transition-transform duration-300 hover:-translate-y-1"
-          style={{
-            padding: "40px 25px",
-            borderRadius: "12px",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
-          }}
-        >
-          <h2 className="mt-0 mb-4" style={{ color: "#2c7a4c" }}>
-            💰 Ekonomi
-          </h2>
-          <p
-            className="mb-6 text-base leading-relaxed"
-            style={{ color: "#333" }}
-          >
-            Fakturor och ekonomihantering.{" "}
-            {stats.monthlyRevenue.toLocaleString()} kr denna månad.
-          </p>
+        {/* Secondary Cards - Ekonomi & Kunder */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Ekonomi */}
           <Link
             href="/ekonomi"
-            className="inline-block text-white font-bold no-underline transition-colors duration-300 hover:bg-opacity-80"
-            style={{
-              padding: "12px 24px",
-              background: "#2c7a4c",
-              borderRadius: "8px",
-            }}
+            className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-green-200"
           >
-            Visa ekonomi
+            <div className="flex items-start gap-4">
+              <div className="text-3xl">💰</div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-[#2c7a4c] mb-2">
+                  Ekonomi & Fakturor
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Hantera fakturor och ekonomirapporter.
+                </p>
+                <div className="flex gap-4 text-xs text-gray-500">
+                  <span>{stats.pendingInvoices} väntande fakturor</span>
+                  <span>•</span>
+                  <span>{stats.monthlyRevenue.toLocaleString()} kr/mån</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Kunder */}
+          <Link
+            href="/owners"
+            className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-green-200"
+          >
+            <div className="flex items-start gap-4">
+              <div className="text-3xl">👥</div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-[#2c7a4c] mb-2">
+                  Kunder & Hundägare
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Hantera kundregister och kontaktuppgifter.
+                </p>
+                <div className="text-xs text-gray-500">
+                  {stats.totalOwners} registrerade ägare
+                </div>
+              </div>
+            </div>
           </Link>
         </div>
       </main>
