@@ -330,24 +330,27 @@ export default function CustomerDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Link href="/kundportal/boka">
+                  <Link href="/kundportal/ny-bokning">
                     <Button className="w-full h-20 bg-[#2c7a4c] hover:bg-[#245a3e] flex flex-col">
                       <Plus className="h-6 w-6 mb-2" />
                       Ny bokning
                     </Button>
                   </Link>
 
-                  <Button
-                    variant="outline"
-                    className="w-full h-20 flex flex-col"
-                  >
-                    <PawPrint className="h-6 w-6 mb-2" />
-                    Lägg till hund
-                  </Button>
+                  <Link href="/kundportal/mina-hundar">
+                    <Button
+                      variant="outline"
+                      className="w-full h-20 flex flex-col"
+                    >
+                      <PawPrint className="h-6 w-6 mb-2" />
+                      Hantera hundar
+                    </Button>
+                  </Link>
 
                   <Button
                     variant="outline"
                     className="w-full h-20 flex flex-col"
+                    onClick={() => setActiveTab("profile")}
                   >
                     <Edit className="h-6 w-6 mb-2" />
                     Uppdatera profil
@@ -360,28 +363,56 @@ export default function CustomerDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Senaste bokningar</CardTitle>
+                  <div className="flex justify-between items-center">
+                    <CardTitle>Senaste bokningar</CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setActiveTab("bookings")}
+                    >
+                      Visa alla →
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {bookings.slice(0, 3).map((booking) => (
                       <div
                         key={booking.id}
-                        className="flex justify-between items-center p-3 bg-gray-50 rounded"
+                        className="flex justify-between items-start p-3 bg-gray-50 rounded"
                       >
-                        <div>
+                        <div className="flex-1">
                           <p className="font-medium">{booking.dogs.name}</p>
                           <p className="text-sm text-gray-600">
-                            {formatDate(booking.start_date)}
+                            {formatDate(booking.start_date)} →{" "}
+                            {formatDate(booking.end_date)}
                           </p>
+                          {booking.total_price && (
+                            <p className="text-sm font-semibold text-[#2c7a4c] mt-1">
+                              {booking.total_price} kr
+                            </p>
+                          )}
                         </div>
-                        {getStatusBadge(booking.status)}
+                        <div className="ml-3">
+                          {getStatusBadge(booking.status)}
+                        </div>
                       </div>
                     ))}
                     {bookings.length === 0 && (
-                      <p className="text-gray-500 text-center py-4">
-                        Inga bokningar än
-                      </p>
+                      <div className="text-center py-8">
+                        <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                        <p className="text-gray-500 mb-4">Inga bokningar än</p>
+                        <Link href="/kundportal/ny-bokning">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white"
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Skapa din första bokning
+                          </Button>
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </CardContent>
@@ -389,11 +420,18 @@ export default function CustomerDashboard() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Mina hundar</CardTitle>
+                  <div className="flex justify-between items-center">
+                    <CardTitle>Mina hundar</CardTitle>
+                    <Link href="/kundportal/mina-hundar">
+                      <Button variant="ghost" size="sm">
+                        Visa alla →
+                      </Button>
+                    </Link>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {dogs.map((dog) => (
+                    {dogs.slice(0, 3).map((dog) => (
                       <div
                         key={dog.id}
                         className="flex justify-between items-center p-3 bg-gray-50 rounded"
@@ -401,18 +439,35 @@ export default function CustomerDashboard() {
                         <div>
                           <p className="font-medium">{dog.name}</p>
                           <p className="text-sm text-gray-600">
-                            {dog.breed} • {getDogSizeCategory(dog.heightcm)}
+                            {dog.breed} • {dog.heightcm} cm
                           </p>
                         </div>
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
+                        <Badge variant="outline">
+                          {dog.heightcm <= 34
+                            ? "Liten"
+                            : dog.heightcm <= 49
+                            ? "Mellan"
+                            : "Stor"}
+                        </Badge>
                       </div>
                     ))}
                     {dogs.length === 0 && (
-                      <p className="text-gray-500 text-center py-4">
-                        Inga hundar registrerade
-                      </p>
+                      <div className="text-center py-8">
+                        <PawPrint className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                        <p className="text-gray-500 mb-4">
+                          Inga hundar registrerade än
+                        </p>
+                        <Link href="/kundportal/mina-hundar">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white"
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Lägg till din första hund
+                          </Button>
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </CardContent>
