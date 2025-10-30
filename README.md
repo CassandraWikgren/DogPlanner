@@ -32,26 +32,19 @@ Detta är den centrala källan till sanning för DogPlanner. Innehåller:
 
 ---
 
-### Specialiserade Guider
+**📝 [`RECENT_CHANGES.md`](./RECENT_CHANGES.md)** - ⭐ **SENASTE ÄNDRINGAR!**
 
-**📧 [`EMAIL_SYSTEM_README.md`](./EMAIL_SYSTEM_README.md)**
+Läs denna för att se de allra senaste uppdateringarna:
 
-- Teknisk djupdykning i email-systemet
-- Hur man integrerar Resend/SendGrid/SES
-- Kod-exempel för att skicka email
-- SPF/DKIM/DMARC konfiguration
+- ✅ **EditDogModal** - Nu både skapar OCH redigerar hundar
+- ✅ **Dashboard** - Hero-design med 4 huvudkort
+- ✅ **Hunddagis** - Hero med stats + grön tabell
+- ✅ **Navbar** - Minimalistisk design utan nav-länkar
+- ✅ **Commits** - Alla ändringar med tekniska detaljer
 
-**⚡ [`SNABBSTART.md`](./SNABBSTART.md)**
-
-- Snabbguide för databas-setup
-- Kör `complete_testdata.sql` i 5 minuter
-- Verifiering och troubleshooting
-
-**📧 [`EMAIL_SYSTEM_SUMMARY.md`](./EMAIL_SYSTEM_SUMMARY.md)**
-
-- Användarvänlig översikt av email-systemet
-- För icke-tekniska användare
-- Visuella exempel
+**Uppdaterad:** 30 oktober 2025  
+**Tidsåtgång:** 10-15 minuter  
+**Målgrupp:** Utvecklare som ska fortsätta arbeta på projektet
 
 ---
 
@@ -84,6 +77,12 @@ Gör ALLT i en fil:
 | **Sätta upp databasen**       | SNABBSTART.md ELLER complete_testdata.sql          |
 | **Konfigurera email**         | EMAIL_SYSTEM_README.md                             |
 | **Förstå email-systemet**     | SYSTEMDOKUMENTATION.md (Email-System)              |
+| Jag vill...                   | Läs detta dokument                                 |
+| ----------------------------- | -------------------------------------------------- |
+| **Förstå systemet snabbt**    | SYSTEMDOKUMENTATION.md (Översikt & Syfte)          |
+| **Se senaste ändringar**      | RECENT_CHANGES.md ⭐                               |
+| **Installera projektet**      | SYSTEMDOKUMENTATION.md (Installation)              |
+| **Sätta upp databasen**       | complete_testdata.sql                              |
 | **Lära mig databasen**        | SYSTEMDOKUMENTATION.md (Databas - Komplett Schema) |
 | **Bygga ny feature**          | SYSTEMDOKUMENTATION.md (Teknisk Implementation)    |
 | **Fixa ett fel**              | SYSTEMDOKUMENTATION.md (Felsökning)                |
@@ -91,16 +90,28 @@ Gör ALLT i en fil:
 
 ---
 
-### Obsoleta Filer (ignorera dessa)
+## 🔄 Senaste Uppdateringar (30 okt 2025)
 
-Följande SQL-filer har rensats bort (30 okt 2025):
+### ✨ EditDogModal - Skapar & Redigerar Nu
 
-- ❌ `direct-testdata.sql`, `simple_testdata.sql`, `setup-testdata.sql`
-- ❌ `hunddagis-tables.sql`, `hundpensionat-database-extended.sql`
-- ❌ `fix_triggers.sql`, `database-improvements.sql`
-- ❌ 11 andra obsoleta SQL-filer
+- Modal kan nu både lägga till nya hundar OCH redigera befintliga
+- Klicka "Ny hund" → Tom modal
+- Klicka på hund i tabell → Modal med förifyllda data
+- Auto-save: INSERT för nya, UPDATE för befintliga
 
-**Använd endast:** `complete_testdata.sql`
+### 🎨 UI/UX Redesign
+
+- **Dashboard:** Hero-bild med 4 fokuserade kort
+- **Hunddagis:** Hero + 6 stats overlay + grön tabell
+- **Navbar:** Minimalistisk med större logo, inga nav-länkar
+
+### 🗑️ Borttaget (för att undvika förvirring)
+
+- `/app/hunddagis/new/page.tsx` - Ersatt av EditDogModal
+- 12 gamla SQL-filer - Använd endast `complete_testdata.sql`
+- 13 gamla dokumentationsfiler - Se RECENT_CHANGES.md istället
+
+**Se [`RECENT_CHANGES.md`](./RECENT_CHANGES.md) för fullständiga detaljer!**
 
 ---
 

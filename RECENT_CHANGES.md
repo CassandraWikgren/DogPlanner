@@ -1,8 +1,117 @@
-# Senaste ändringar - UI/UX Redesign (30 okt 2025)
+# Senaste ändringar - DogPlanner (30 okt 2025)
 
 ## 📋 Översikt
 
-Omfattande UI/UX-redesign av Dashboard och Hunddagis-sidan för att skapa en mer professionell och lättanvänd upplevelse.
+Omfattande uppdateringar av Dashboard, Hunddagis och EditDogModal för professionell och funktionell användarupplevelse.
+
+---
+
+## ✨ EDITDOGMODAL - NY & REDIGERA FUNKTION
+
+### 🎉 Största ändringen: Modal hanterar nu både nya och befintliga hundar
+
+**Tidigare:** Kunde bara skapa nya hundar, separat sida för att lägga till
+**Nu:** En modal för allt - både skapa nya och redigera befintliga hundar
+
+### Ändringar i `components/EditDogModal.tsx`
+
+✅ **Ny prop: `initialDog`**
+
+- Optional (kan vara `null` för nya hundar)
+- Type: `any` (flexibel för olika hundstrukturer)
+- När den finns → redigera-läge, annars → skapa-läge
+
+✅ **Auto-population av formulär**
+
+- `useEffect` som lyssnar på `open` och `initialDog`
+- Fyller automatiskt i alla fält när hund redigeras:
+  - Ägare: namn, email, telefon, adress, personnummer, kundnummer
+  - Kontaktperson 2: namn, telefon
+  - Hund: namn, ras, höjd, födelsedatum, kön, försäkring, foto
+  - Hälsa: försäkringsbolag, vaccinationer (DHP, PI), vårdinformation
+  - Abonnemang: typ, start, slut, rum, dagar
+- Byter till "ägare"-fliken automatiskt vid redigering
+
+✅ **Smart save-logik**
+
+```typescript
+if (initialDog?.id) {
+  // UPDATE befintlig hund
+  await supabase.from("dogs").update(dogPayload).eq("id", initialDog.id);
+} else {
+  // INSERT ny hund
+  await supabase.from("dogs").insert([dogPayload]);
+}
+```
+
+✅ **Dynamisk modal-titel**
+
+- `initialDog ? "Redigera hund" : "Lägg till hund"`
+
+✅ **Form reset vid stängning**
+
+- useEffect rensar alla fält när `open` blir `false`
+- Förhindrar att gammal data ligger kvar
+
+### Ändringar i `app/hunddagis/page.tsx`
+
+✅ **"Ny hund" knapp ändrad från Link till button**
+
+```typescript
+// FÖRE:
+<Link href="/hunddagis/new">Ny hund</Link>
+
+// EFTER:
+<button onClick={() => {
+  setEditingDog(null);    // Tom = ny hund
+  setShowModal(true);
+}}>Ny hund</button>
+```
+
+✅ **Klickbara tabell-rader för redigering**
+
+```typescript
+<tr onClick={() => {
+  setEditingDog(d);       // Sätt vald hund
+  setShowModal(true);     // Öppna modal
+}}>
+```
+
+✅ **Modal får rätt data**
+
+```typescript
+<EditDogModal
+  initialDog={editingDog} // null = ny, objekt = redigera
+  open={showModal}
+  onCloseAction={() => {
+    setShowModal(false);
+    setEditingDog(null);
+  }}
+  onSavedAction={handleSaved}
+/>
+```
+
+### Borttagna filer
+
+🗑️ **`/app/hunddagis/new/page.tsx`** - Överflödig, modal ersätter den
+🗑️ **`DEVELOPMENT_LOG.md`** - Gammal dokumentation
+🗑️ **`SNABBSTART.md`** - Inaktuell
+
+### Användning
+
+**Skapa ny hund:**
+
+1. Klicka "Ny hund" i gröna header-baren
+2. Tom modal öppnas
+3. Fyll i alla uppgifter
+4. Spara → INSERT i databas
+
+**Redigera befintlig hund:**
+
+1. Klicka på en hund i tabellen
+2. Modal öppnas med alla data förifyllda
+3. Ändra vad du vill
+4. Spara → UPDATE i databas
 
 ---
 
