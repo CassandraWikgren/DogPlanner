@@ -1,5 +1,109 @@
 AI får läsa README för att förstå DogPlanners uppbyggnad och syfte och kunna efterfölja det som står. Men AI får inte under några omständigheter ändra eller ta bort text ifrån README.md.
 
+---
+
+## 📚 Dokumentation
+
+> **🎯 VIKTIG INFORMATION FÖR NYA UTVECKLARE**  
+> Läs [`SYSTEMDOKUMENTATION.md`](./SYSTEMDOKUMENTATION.md) FÖRST innan du börjar!  
+> Detta är den mest kompletta guiden med över 2000 rader detaljerad dokumentation.
+
+### Huvuddokumentation
+
+**📘 [`SYSTEMDOKUMENTATION.md`](./SYSTEMDOKUMENTATION.md)** - ⭐ **START HÄR!**
+
+Detta är den centrala källan till sanning för DogPlanner. Innehåller:
+
+- ✅ **Översikt & Syfte** - Vad systemet gör och för vem
+- ✅ **Systemarkitektur** - Multi-tenant, Next.js 15, Supabase, TypeScript
+- ✅ **Email-System** - Två-nivåers (DogPlanner + organisation)
+- ✅ **Databas** - Alla 7 tabeller med schema, relationer, testdata
+- ✅ **Filstruktur** - 60+ filer förklarade och kategoriserade
+- ✅ **Installation** - 12 steg som är omöjliga att göra fel
+- ✅ **Användning** - 5 detaljerade admin-workflows
+- ✅ **Teknisk Implementation** - Supabase, RLS, triggers, PDF, email
+- ✅ **Säkerhet & GDPR** - Compliance och best practices
+- ✅ **Felsökning** - 16 vanliga problem med lösningar
+- ✅ **TODO & Roadmap** - Prioriterad lista med tidsestimat
+
+**Tidsåtgång att läsa:** 30-45 minuter  
+**Omfattning:** 2000+ rader, 12 huvudsektioner  
+**Målgrupp:** Alla (nybörjare till erfarna utvecklare)
+
+---
+
+### Specialiserade Guider
+
+**📧 [`EMAIL_SYSTEM_README.md`](./EMAIL_SYSTEM_README.md)**
+
+- Teknisk djupdykning i email-systemet
+- Hur man integrerar Resend/SendGrid/SES
+- Kod-exempel för att skicka email
+- SPF/DKIM/DMARC konfiguration
+
+**⚡ [`SNABBSTART.md`](./SNABBSTART.md)**
+
+- Snabbguide för databas-setup
+- Kör `complete_testdata.sql` i 5 minuter
+- Verifiering och troubleshooting
+
+**📧 [`EMAIL_SYSTEM_SUMMARY.md`](./EMAIL_SYSTEM_SUMMARY.md)**
+
+- Användarvänlig översikt av email-systemet
+- För icke-tekniska användare
+- Visuella exempel
+
+---
+
+### Databas
+
+**💾 [`complete_testdata.sql`](./complete_testdata.sql)** - ⭐ **HUVUDFIL FÖR DATABAS**
+
+Gör ALLT i en fil:
+
+1. Tar bort triggers och inaktiverar RLS
+2. Lägger till saknade kolumner (IF NOT EXISTS)
+3. Skapar nya tabeller
+4. Rensar befintlig testdata
+5. Skapar komplett testdata (org, ägare, hundar, ansökningar, priser)
+6. Verifierar installation
+
+**Kör i:** Supabase SQL Editor  
+**Tidsåtgång:** 2-3 sekunder  
+**Resultat:** Fullt fungerande databas med testdata
+
+---
+
+### Snabbnavigering
+
+| Jag vill...                   | Läs detta dokument                                 |
+| ----------------------------- | -------------------------------------------------- |
+| **Komma igång från noll**     | SYSTEMDOKUMENTATION.md (hela)                      |
+| **Förstå systemet på 10 min** | SYSTEMDOKUMENTATION.md (Översikt + Arkitektur)     |
+| **Installera projektet**      | SYSTEMDOKUMENTATION.md (Installation & Setup)      |
+| **Sätta upp databasen**       | SNABBSTART.md ELLER complete_testdata.sql          |
+| **Konfigurera email**         | EMAIL_SYSTEM_README.md                             |
+| **Förstå email-systemet**     | SYSTEMDOKUMENTATION.md (Email-System)              |
+| **Lära mig databasen**        | SYSTEMDOKUMENTATION.md (Databas - Komplett Schema) |
+| **Bygga ny feature**          | SYSTEMDOKUMENTATION.md (Teknisk Implementation)    |
+| **Fixa ett fel**              | SYSTEMDOKUMENTATION.md (Felsökning)                |
+| **Bidra till projektet**      | SYSTEMDOKUMENTATION.md (Bidra till Projektet)      |
+
+---
+
+### Obsoleta Filer (ignorera dessa)
+
+Följande SQL-filer har rensats bort (30 okt 2025):
+
+- ❌ `direct-testdata.sql`, `simple_testdata.sql`, `setup-testdata.sql`
+- ❌ `hunddagis-tables.sql`, `hundpensionat-database-extended.sql`
+- ❌ `fix_triggers.sql`, `database-improvements.sql`
+- ❌ 11 andra obsoleta SQL-filer
+
+**Använd endast:** `complete_testdata.sql`
+
+---
+
 🐾 DogPlanner – Översikt & Arkitektur
 
 1. Introduktion
