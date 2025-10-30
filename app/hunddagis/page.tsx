@@ -1267,129 +1267,162 @@ export default function HunddagisPage() {
           </div>
         </div>
       ) : (
-        <div className="min-h-screen bg-gray-50 py-8">
-          {/* Page Header with Actions */}
-          <div className="max-w-7xl mx-auto px-6 mb-8">
-            <div className="flex items-center justify-between">
+        <div className="min-h-screen bg-gray-50">
+          {/* Hero Section with Stats Overlay */}
+          <section
+            className="relative text-center text-white overflow-hidden pb-32"
+            style={{
+              paddingTop: "140px",
+              background:
+                'linear-gradient(rgba(44, 122, 76, 0.7), rgba(44, 122, 76, 0.7)), url("/Hero.jpeg") center/cover no-repeat',
+            }}
+          >
+            <div className="relative z-10 max-w-4xl mx-auto px-6 mb-12">
+              <h1 className="text-5xl font-bold mb-4 drop-shadow-lg">
+                🐕 Hunddagis
+              </h1>
+              <p className="text-xl leading-relaxed opacity-100 max-w-2xl mx-auto drop-shadow-md">
+                Sammanställning, statistik och hantering av dagishundar
+              </p>
+            </div>
+
+            {/* Stats Cards - Overlay on Hero */}
+            <div className="relative z-20 max-w-7xl mx-auto px-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                {/* 1. Dagishundar */}
+                <div
+                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  onClick={() => setCurrentView("all")}
+                  title="Alla registrerade dagishundar"
+                >
+                  <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                    {live.dagishundar}
+                  </div>
+                  <div className="text-xs text-gray-600">Dagishundar</div>
+                </div>
+
+                {/* 2. Promenader */}
+                <div
+                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  onClick={() => setCurrentView("all")}
+                  title="Promenader inne idag"
+                >
+                  <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                    {live.promenaderIdag}
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    Promenader (inne idag)
+                  </div>
+                </div>
+
+                {/* 3. Intresseanmälningar */}
+                <div
+                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  onClick={() =>
+                    (window.location.href = "/hunddagis/intresseanmalningar")
+                  }
+                  title="Nya intresseanmälningar"
+                >
+                  <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                    {live.intresseSenasteMån}
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    Intresseanmälningar
+                  </div>
+                </div>
+
+                {/* 4. Tjänster */}
+                <div
+                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  onClick={() => setCurrentView("services")}
+                  title="Tjänster (kloklipp/tasklipp/bad)"
+                >
+                  <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                    {live.tjänsterDennaMån}
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    Tjänster (kloklipp/tasklipp/bad)
+                  </div>
+                </div>
+
+                {/* 5. Hundrum */}
+                <div
+                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  onClick={() => setCurrentView("rooms")}
+                  title="Antal rum & beläggning"
+                >
+                  <div className="text-2xl font-bold text-gray-900 mb-0.5">
+                    {live.hundrum}
+                  </div>
+                  <div className="text-xs text-gray-600">Hundrum</div>
+                </div>
+
+                {/* 6. Mina priser */}
+                <div
+                  className="bg-white/95 backdrop-blur rounded-lg p-4 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  onClick={() => (window.location.href = "/hunddagis/priser")}
+                  title="Gå till prisinställningar"
+                >
+                  <div className="text-2xl font-bold text-emerald-600 mb-0.5">
+                    €
+                  </div>
+                  <div className="text-xs text-gray-600">Mina priser</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Main Content - Kompakt tabell-layout */}
+          <div className="max-w-7xl mx-auto px-6 -mt-16 pb-12">
+            {/* Compact Header Bar med action buttons */}
+            <div className="bg-[#2c7a4c] text-white rounded-t-lg px-6 py-4 shadow-md flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  Hunddagis
-                </h1>
-                <p className="text-gray-600">
-                  Sammanställning, statistik och hantering av dagishundar
+                <h2 className="text-2xl font-bold mb-1">🐾 Mitt hunddagis</h2>
+                <p className="text-sm text-green-100">
+                  Sök, filtrera och hantera dina hundar
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <Link
                   href="/hunddagis/new"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#2c7a4c] font-semibold rounded-lg hover:bg-green-50 transition-colors shadow-sm"
                 >
                   <Plus className="h-4 w-4" /> Ny hund
                 </Link>
                 <button
                   onClick={exportPDF}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-white/20 backdrop-blur text-white rounded-lg hover:bg-white/30 transition-colors"
+                  title="Exportera till PDF"
                 >
-                  <Download className="h-4 w-4" /> PDF
+                  <Download className="h-4 w-4" /> PDF-export
+                </button>
+                <button
+                  onClick={() => setShowColsMenu((s) => !s)}
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-white/20 backdrop-blur text-white rounded-lg hover:bg-white/30 transition-colors relative"
+                  title="Välj kolumner"
+                >
+                  <Settings2 className="h-4 w-4" /> Kolumner
                 </button>
                 <button
                   onClick={loadDogs}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-white/20 backdrop-blur text-white rounded-lg hover:bg-white/30 transition-colors"
+                  title="Ladda om data"
                 >
-                  <RefreshCcw className="h-4 w-4" />
+                  <RefreshCcw className="h-4 w-4" /> Ladda om
                 </button>
               </div>
             </div>
-          </div>
 
-          {/* Stats Cards - Clean & Modern */}
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-              {/* 1. Dagishundar */}
-              <div
-                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setCurrentView("all")}
-                title="Alla registrerade dagishundar"
-              >
-                <div className="text-3xl font-bold text-gray-900 mb-1">
-                  {live.dagishundar}
-                </div>
-                <div className="text-sm text-gray-600">Dagishundar</div>
-              </div>
-
-              {/* 2. Promenader */}
-              <div
-                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setCurrentView("all")}
-                title="Hundar incheckade idag"
-              >
-                <div className="text-3xl font-bold text-gray-900 mb-1">
-                  {live.promenaderIdag}
-                </div>
-                <div className="text-sm text-gray-600">Promenader</div>
-              </div>
-
-              {/* 3. Intresseanmälningar */}
-              <div
-                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() =>
-                  (window.location.href = "/hunddagis/intresseanmalningar")
-                }
-                title="Nya intresseanmälningar"
-              >
-                <div className="text-3xl font-bold text-gray-900 mb-1">
-                  {live.intresseSenasteMån}
-                </div>
-                <div className="text-sm text-gray-600">Intresseanmälningar</div>
-              </div>
-
-              {/* 4. Tjänster */}
-              <div
-                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setCurrentView("services")}
-                title="Tjänster denna månaden"
-              >
-                <div className="text-3xl font-bold text-gray-900 mb-1">
-                  {live.tjänsterDennaMån}
-                </div>
-                <div className="text-sm text-gray-600">Tjänster</div>
-              </div>
-
-              {/* 5. Hundrum */}
-              <div
-                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setCurrentView("rooms")}
-                title="Antal rum & beläggning"
-              >
-                <div className="text-3xl font-bold text-gray-900 mb-1">
-                  {live.hundrum}
-                </div>
-                <div className="text-sm text-gray-600">Hundrum</div>
-              </div>
-
-              {/* 6. Mina priser */}
-              <div
-                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => (window.location.href = "/hunddagis/priser")}
-                title="Gå till prisinställningar"
-              >
-                <div className="text-3xl font-bold text-emerald-600 mb-1">
-                  €
-                </div>
-                <div className="text-sm text-gray-600">Mina priser</div>
-              </div>
-            </div>
-
-            {/* Search & Filter Controls - Modern */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-              <div className="flex flex-col md:flex-row gap-4">
+            {/* Search & Filter - Direkt under header */}
+            <div className="bg-white border-x border-gray-200 px-6 py-4">
+              <div className="flex flex-wrap items-center gap-3">
                 {/* Search */}
-                <div className="flex-1">
+                <div className="flex-1 min-w-[250px]">
                   <input
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
-                    placeholder="🔍 Sök... (hund, ägare, telefon, rum...)"
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                    placeholder="Sök... (hund, ägare, telefon, rum...)"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   />
                 </div>
 
@@ -1397,7 +1430,7 @@ export default function HunddagisPage() {
                 <select
                   value={subFilter}
                   onChange={(e) => setSubFilter(e.target.value)}
-                  className="px-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                  className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 >
                   <option value="">Alla abonnemang</option>
                   <option value="Heltid">Heltid</option>
@@ -1411,54 +1444,56 @@ export default function HunddagisPage() {
                   type="month"
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
-                  className="px-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                  title="Filtrerar på startmånad (eller skapad om start saknas)"
+                  className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                  title="Filtrerar på startmånad"
                 />
-
-                {/* Column Selector */}
-                <div className="relative">
-                  <button
-                    onClick={() => setShowColsMenu((s) => !s)}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors"
-                    title="Kolumnval"
-                  >
-                    <Settings2 className="h-4 w-4" /> Kolumner
-                  </button>
-                  {showColsMenu && (
-                    <div className="absolute right-0 mt-2 w-64 rounded-lg border border-gray-200 bg-white shadow-lg z-10 p-3">
-                      <div className="space-y-1.5">
-                        {Object.keys(COLUMN_LABELS).map((c) => (
-                          <label
-                            key={c}
-                            className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={columns.includes(c)}
-                              onChange={() =>
-                                setColumns((prev) =>
-                                  prev.includes(c)
-                                    ? prev.filter((x) => x !== c)
-                                    : [...prev, c]
-                                )
-                              }
-                              className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-                            />
-                            <span className="text-gray-700">
-                              {COLUMN_LABELS[c]}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
 
+            {/* Column Selector Menu (flyover) */}
+            {showColsMenu && (
+              <div className="fixed top-32 right-8 w-64 rounded-lg border border-gray-200 bg-white shadow-xl z-50 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-gray-900">Välj kolumner</h3>
+                  <button
+                    onClick={() => setShowColsMenu(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="space-y-1.5 max-h-96 overflow-y-auto">
+                  {Object.keys(COLUMN_LABELS).map((c) => (
+                    <label
+                      key={c}
+                      className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={columns.includes(c)}
+                        onChange={() =>
+                          setColumns((prev) =>
+                            prev.includes(c)
+                              ? prev.filter((x) => x !== c)
+                              : [...prev, c]
+                          )
+                        }
+                        className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                      />
+                      <span className="text-gray-700">
+                        {COLUMN_LABELS[c]}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Table Section */}
+            <div className="bg-white border border-gray-200 rounded-b-lg shadow-sm overflow-hidden">
             {/* Error Message */}
             {errMsg && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 m-6">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
@@ -1984,38 +2019,62 @@ export default function HunddagisPage() {
 
             {/* Standardtabell (visas när vy inte ersätter tabellen) */}
             {currentView !== "services" && currentView !== "rooms" && (
-              <div className="table-wrap">
-                <table className="tbl">
+              <div className="overflow-x-auto">
+                <table className="w-full">
                   <thead>
-                    <tr>
-                      {columns.includes("name") &&
-                        headerCell("name", COLUMN_LABELS["name"])}
-                      {columns.includes("breed") &&
-                        headerCell("breed", COLUMN_LABELS["breed"])}
-                      {columns.includes("owner") &&
-                        headerCell("owner", COLUMN_LABELS["owner"])}
-                      {columns.includes("phone") &&
-                        headerCell("phone", "Telefon")}
-                      {columns.includes("subscription") &&
-                        headerCell(
-                          "subscription",
-                          COLUMN_LABELS["subscription"]
-                        )}
-                      {columns.includes("room_id") &&
-                        headerCell("room_id", COLUMN_LABELS["room_id"])}
-                      {columns.includes("days") &&
-                        headerCell("days", COLUMN_LABELS["days"])}
-                      {columns.includes("startdate") &&
-                        headerCell("startdate", COLUMN_LABELS["startdate"])}
-                      {columns.includes("enddate") &&
-                        headerCell("enddate", COLUMN_LABELS["enddate"])}
+                    <tr className="bg-[#2c7a4c] text-white text-left">
+                      {columns.includes("name") && (
+                        <th className="py-3 px-4 font-semibold text-sm">
+                          {COLUMN_LABELS["name"]} ▲
+                        </th>
+                      )}
+                      {columns.includes("breed") && (
+                        <th className="py-3 px-4 font-semibold text-sm">
+                          {COLUMN_LABELS["breed"]}
+                        </th>
+                      )}
+                      {columns.includes("owner") && (
+                        <th className="py-3 px-4 font-semibold text-sm">
+                          {COLUMN_LABELS["owner"]}
+                        </th>
+                      )}
+                      {columns.includes("phone") && (
+                        <th className="py-3 px-4 font-semibold text-sm">
+                          Telefon
+                        </th>
+                      )}
+                      {columns.includes("subscription") && (
+                        <th className="py-3 px-4 font-semibold text-sm">
+                          {COLUMN_LABELS["subscription"]}
+                        </th>
+                      )}
+                      {columns.includes("room_id") && (
+                        <th className="py-3 px-4 font-semibold text-sm">
+                          {COLUMN_LABELS["room_id"]}
+                        </th>
+                      )}
+                      {columns.includes("days") && (
+                        <th className="py-3 px-4 font-semibold text-sm">
+                          {COLUMN_LABELS["days"]}
+                        </th>
+                      )}
+                      {columns.includes("startdate") && (
+                        <th className="py-3 px-4 font-semibold text-sm">
+                          {COLUMN_LABELS["startdate"]}
+                        </th>
+                      )}
+                      {columns.includes("enddate") && (
+                        <th className="py-3 px-4 font-semibold text-sm">
+                          {COLUMN_LABELS["enddate"]}
+                        </th>
+                      )}
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="bg-white divide-y divide-gray-200">
                     {loading ? (
                       <tr>
                         <td
-                          className="py-4 px-3 text-gray-500"
+                          className="py-8 px-4 text-center text-gray-500"
                           colSpan={columns.length}
                         >
                           Laddar hundar…
@@ -2024,7 +2083,7 @@ export default function HunddagisPage() {
                     ) : viewDogs.length === 0 ? (
                       <tr>
                         <td
-                          className="py-4 px-3 text-gray-500"
+                          className="py-8 px-4 text-center text-gray-500"
                           colSpan={columns.length}
                         >
                           Inga hundar matchar dina filter.
@@ -2034,28 +2093,30 @@ export default function HunddagisPage() {
                       viewDogs.map((d) => (
                         <tr
                           key={d.id}
-                          className={`border-t hover:bg-green-50 ${rowColor(
-                            d
-                          )}`}
+                          className="hover:bg-gray-50 transition-colors cursor-pointer"
+                          onClick={() => {
+                            setEditingDog(d);
+                            setShowModal(true);
+                          }}
                         >
                           {columns.includes("name") && (
-                            <td className="py-2 px-3">
-                              <div className="flex items-center gap-2">
+                            <td className="py-3 px-4">
+                              <div className="flex items-center gap-3">
                                 {d.photo_url ? (
                                   <img
                                     src={d.photo_url}
                                     alt="hund"
-                                    className="h-8 w-8 rounded-full object-cover border"
+                                    className="h-10 w-10 rounded-full object-cover border-2 border-gray-200"
                                   />
                                 ) : (
-                                  <div className="h-8 w-8 rounded-full grid place-content-center bg-gray-100 text-gray-500 text-xs">
+                                  <div className="h-10 w-10 rounded-full grid place-content-center bg-gray-100 text-gray-500">
                                     🐶
                                   </div>
                                 )}
                                 <div>
-                                  <div className="font-semibold">{d.name}</div>
+                                  <div className="font-medium text-gray-900">{d.name}</div>
                                   {d.breed && (
-                                    <div className="text-xs text-gray-500">
+                                    <div className="text-sm text-gray-500">
                                       {d.breed}
                                     </div>
                                   )}
@@ -2064,22 +2125,22 @@ export default function HunddagisPage() {
                             </td>
                           )}
                           {columns.includes("breed") && (
-                            <td className="py-2 px-3">{d.breed || "-"}</td>
+                            <td className="py-3 px-4 text-gray-700">{d.breed || "-"}</td>
                           )}
                           {columns.includes("owner") && (
-                            <td className="py-2 px-3">
+                            <td className="py-3 px-4 text-gray-700">
                               {d.owners?.full_name || "-"}
                             </td>
                           )}
                           {columns.includes("phone") && (
-                            <td className="py-2 px-3">
+                            <td className="py-3 px-4 text-gray-700">
                               {d.owners?.phone || "-"}
                             </td>
                           )}
                           {columns.includes("subscription") && (
-                            <td className="py-2 px-3">
+                            <td className="py-3 px-4">
                               <span
-                                className={`px-2 py-1 rounded font-semibold ${
+                                className={`px-2 py-1 rounded text-sm font-medium ${
                                   d.subscription === "Heltid"
                                     ? "bg-green-100 text-green-800"
                                     : d.subscription?.startsWith("Deltid")
@@ -2094,15 +2155,15 @@ export default function HunddagisPage() {
                             </td>
                           )}
                           {columns.includes("room_id") && (
-                            <td className="py-2 px-3">{d.room_id || "-"}</td>
+                            <td className="py-3 px-4 text-gray-700">{d.room_id || "-"}</td>
                           )}
                           {columns.includes("days") && (
-                            <td className="py-2 px-3">
+                            <td className="py-3 px-4">
                               {d.days
                                 ? d.days.split(",").map((day, i) => (
                                     <span
                                       key={i}
-                                      className="inline-block px-1 py-0.5 rounded bg-gray-100 text-gray-700 mr-1"
+                                      className="inline-block px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700 mr-1"
                                     >
                                       {day.slice(0, 3)}
                                     </span>
@@ -2111,7 +2172,7 @@ export default function HunddagisPage() {
                             </td>
                           )}
                           {columns.includes("startdate") && (
-                            <td className="py-2 px-3">
+                            <td className="py-3 px-4 text-gray-700">
                               {d.startdate
                                 ? new Date(d.startdate).toLocaleDateString(
                                     "sv-SE"
@@ -2120,7 +2181,7 @@ export default function HunddagisPage() {
                             </td>
                           )}
                           {columns.includes("enddate") && (
-                            <td className="py-2 px-3">
+                            <td className="py-3 px-4 text-gray-700">
                               {d.enddate
                                 ? new Date(d.enddate).toLocaleDateString(
                                     "sv-SE"

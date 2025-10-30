@@ -19,17 +19,18 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white pt-16">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
       {/* Hero Section - ingen gap */}
       <section
         className="relative text-center text-white overflow-hidden"
         style={{
-          padding: "60px 20px 80px",
+          paddingTop: "140px",
+          paddingBottom: "80px",
           background:
-            'linear-gradient(rgba(44, 122, 76, 0.95), rgba(44, 122, 76, 0.95)), url("/Hero.jpeg") center/cover no-repeat',
+            'linear-gradient(rgba(44, 122, 76, 0.7), rgba(44, 122, 76, 0.7)), url("/Hero.jpeg") center/cover no-repeat',
         }}
       >
-        <div className="relative z-10 max-w-4xl mx-auto">
+        <div className="relative z-10 max-w-4xl mx-auto px-6">
           <h1 className="text-5xl font-bold mb-4 drop-shadow-lg">
             Välkommen till ditt Dashboard
           </h1>
