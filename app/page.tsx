@@ -1,85 +1,118 @@
 import Link from "next/link";
-import Image from "next/image";
-import {
-  CheckCircle,
-  Calendar,
-  CreditCard,
-  BarChart3,
-  Users,
-  Clock,
-  Shield,
-  Sparkles,
-  Heart,
-  Scissors,
-} from "lucide-react";
+import { CheckCircle, Calendar, CreditCard, BarChart3, Users, Clock, Shield } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-800">
+    <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-white/90 border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#2c7a4c] to-[#1f5738] rounded-xl flex items-center justify-center shadow-md">
-              <Heart className="w-6 h-6 text-white" fill="currentColor" />
+            <div className="w-10 h-10 bg-[#2c7a4c] rounded-xl flex items-center justify-center">
+              <span className="text-white text-2xl">🐕</span>
             </div>
-            <span className="font-bold text-xl text-[#2C7A4C]">DogPlanner</span>
+            <span className="font-bold text-xl text-gray-900">DogPlanner</span>
           </div>
-          <nav className="hidden md:flex gap-6 text-sm font-medium">
-            <a
-              href="#features"
-              className="text-gray-700 hover:text-[#2C7A4C] transition"
-            >
-              Funktioner
-            </a>
-            <a
-              href="#how-it-works"
-              className="text-gray-700 hover:text-[#2C7A4C] transition"
-            >
-              Så fungerar det
-            </a>
-            <a
-              href="#pricing"
-              className="text-gray-700 hover:text-[#2C7A4C] transition"
-            >
-              Priser
-            </a>
-            <a
-              href="#testimonials"
-              className="text-gray-700 hover:text-[#2C7A4C] transition"
-            >
-              Omdömen
-            </a>
-          </nav>
           <div className="flex gap-3">
             <Link
               href="/login"
-              className="px-4 py-2 font-medium text-[#2C7A4C] hover:bg-green-50 rounded-lg transition"
+              className="px-4 py-2 font-medium text-gray-700 hover:text-[#2c7a4c] transition"
             >
               Logga in
             </Link>
             <Link
               href="/register"
-              className="px-5 py-2 font-semibold bg-[#2C7A4C] text-white rounded-lg shadow-md hover:bg-[#236139] hover:shadow-lg transition transform hover:-translate-y-0.5"
+              className="px-6 py-2 font-semibold bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition"
             >
-              Starta gratis
+              Prova gratis
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 overflow-hidden pt-20">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232c7a4c' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
+      {/* Hero Section - Compact */}
+      <section className="relative bg-gradient-to-br from-[#2c7a4c] to-[#1f5738] text-white py-20">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-5">
+            Få full koll på din hundverksamhet
+          </h1>
+          <p className="text-lg md:text-xl text-green-100 mb-8 max-w-2xl mx-auto">
+            DogPlanner gör det enkelt att driva hunddagis och pensionat.<br />
+            Mer tid för hundarna, mindre för papper.
+          </p>
+          <Link
+            href="/register"
+            className="inline-block px-8 py-3 bg-white text-[#2c7a4c] font-bold rounded-lg hover:bg-gray-100 transition text-lg shadow-lg"
+          >
+            Prova gratis i 2 månader
+          </Link>
         </div>
+      </section>
 
+      {/* Why Choose Section - Compact */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-5xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+            Varför välja DogPlanner?
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#2c7a4c] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Calendar className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Spara tid</h3>
+              <p className="text-gray-600 text-sm">
+                All planering samlad på ett ställe – schema, bokningar och notiser hanteras enkelt.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#2c7a4c] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <BarChart3 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Ha full kontroll</h3>
+              <p className="text-gray-600 text-sm">
+                Få en tydlig överblick över hundar, kunder och personal i realtid.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-[#2c7a4c] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <CreditCard className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Smidig fakturering</h3>
+              <p className="text-gray-600 text-sm">
+                Automatisera abonnemang och fakturor så du slipper manuell hantering.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer - Simple */}
+      <footer className="bg-gray-900 text-gray-400 py-8 mt-auto">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-sm">
+              © {new Date().getFullYear()} DogPlanner — Alla rättigheter förbehållna
+            </div>
+            <div className="flex gap-6 text-sm">
+              <Link href="/terms" className="hover:text-white transition">
+                Villkor
+              </Link>
+              <a href="mailto:gdpr@dogplanner.se" className="hover:text-white transition">
+                Integritetspolicy
+              </a>
+              <a href="mailto:support@dogplanner.se" className="hover:text-white transition">
+                Kontakt
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
         <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-[#2c7a4c] rounded-full text-sm font-semibold mb-6 shadow-sm">
