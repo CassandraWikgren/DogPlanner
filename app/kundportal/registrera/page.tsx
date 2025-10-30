@@ -36,6 +36,8 @@ export default function CustomerRegisterPage() {
     city: "",
     password: "",
     confirmPassword: "",
+    gdprConsent: false,
+    marketingConsent: false,
   });
 
   // Steg 2: Kontaktperson
@@ -70,7 +72,11 @@ export default function CustomerRegisterPage() {
   });
 
   const handleOwnerChange = (field: string, value: string) => {
-    setOwnerData((prev) => ({ ...prev, [field]: value }));
+    if (field === "gdprConsent" || field === "marketingConsent") {
+      setOwnerData((prev) => ({ ...prev, [field]: value === "true" }));
+    } else {
+      setOwnerData((prev) => ({ ...prev, [field]: value }));
+    }
   };
 
   const handleContactChange = (field: string, value: string) => {
@@ -92,6 +98,8 @@ export default function CustomerRegisterPage() {
       return "Lösenorden matchar inte";
     if (ownerData.password.length < 6)
       return "Lösenordet måste vara minst 6 tecken";
+    if (!ownerData.gdprConsent)
+      return "Du måste godkänna villkoren och GDPR för att fortsätta";
     return null;
   };
 
@@ -165,8 +173,8 @@ export default function CustomerRegisterPage() {
       }
 
       // Lägg till consent-fält om de finns
-      ownerData_insert.gdpr_consent = true;
-      ownerData_insert.marketing_consent = false;
+      ownerData_insert.gdpr_consent = ownerData.gdprConsent;
+      ownerData_insert.marketing_consent = ownerData.marketingConsent;
       ownerData_insert.photo_consent = false;
       ownerData_insert.notes = `Kundportal-registrering: ${new Date().toLocaleDateString(
         "sv-SE"
@@ -518,6 +526,73 @@ export default function CustomerRegisterPage() {
                       className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                       placeholder="Samma som ovan"
                     />
+                  </div>
+
+                  {/* GDPR och villkor */}
+                  <div className="md:col-span-2 space-y-3 mt-4 pt-4 border-t">
+                    <div className="flex items-start">
+                      <input
+                        type="checkbox"
+                        id="gdprConsent"
+                        checked={ownerData.gdprConsent}
+                        onChange={(e) =>
+                          handleOwnerChange(
+                            "gdprConsent",
+                            e.target.checked.toString()
+                          )
+                        }
+                        className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
+                      />
+                      <label
+                        htmlFor="gdprConsent"
+                        className="ml-2 text-sm text-gray-700"
+                      >
+                        Jag godkänner att mina personuppgifter behandlas enligt{" "}
+                        <Link
+                          href="/gdpr"
+                          className="text-[#2c7a4c] underline hover:text-[#245a3e]"
+                          target="_blank"
+                        >
+                          GDPR
+                        </Link>{" "}
+                        och{" "}
+                        <Link
+                          href="/terms"
+                          className="text-[#2c7a4c] underline hover:text-[#245a3e]"
+                          target="_blank"
+                        >
+                          användarvillkoren
+                        </Link>
+                        . *
+                      </label>
+                    </div>
+
+                    <div className="flex items-start">
+                      <input
+                        type="checkbox"
+                        id="marketingConsent"
+                        checked={ownerData.marketingConsent}
+                        onChange={(e) =>
+                          handleOwnerChange(
+                            "marketingConsent",
+                            e.target.checked.toString()
+                          )
+                        }
+                        className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
+                      />
+                      <label
+                        htmlFor="marketingConsent"
+                        className="ml-2 text-sm text-gray-700"
+                      >
+                        Jag vill ta emot nyheter och erbjudanden via e-post
+                        (valfritt)
+                      </label>
+                    </div>
+
+                    <p className="text-xs text-gray-500 italic">
+                      * Obligatoriska fält måste fyllas i för att kunna
+                      fortsätta
+                    </p>
                   </div>
                 </div>
               )}

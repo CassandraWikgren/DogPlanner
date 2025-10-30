@@ -204,18 +204,22 @@ function LoginPageContent() {
         {/* Demo login för testning */}
         <Card className="mt-4 bg-blue-50 border-blue-200">
           <CardContent className="p-4">
-            <p className="text-sm text-blue-700 text-center mb-3">
-              <strong>För testning:</strong> Använd demo-inloggning
+            <p className="text-sm text-blue-700 text-center mb-2">
+              <strong>För testning:</strong> Använd demo-konto
+            </p>
+            <p className="text-xs text-blue-600 text-center mb-3">
+              E-post: <strong>demo@kundportal.se</strong> | Lösenord:{" "}
+              <strong>demo123</strong>
             </p>
             <Button
-              onClick={async () => {
-                await fetch("/api/demo-login");
-                router.push("/kundportal/dashboard");
+              onClick={() => {
+                setEmail("demo@kundportal.se");
+                setPassword("demo123");
               }}
               variant="outline"
               className="w-full border-blue-300 text-blue-700 hover:bg-blue-100"
             >
-              Demo-inloggning
+              Fyll i demo-uppgifter
             </Button>
           </CardContent>
         </Card>
