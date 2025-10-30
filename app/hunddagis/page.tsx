@@ -1371,11 +1371,6 @@ export default function HunddagisPage() {
               <div>
                 <h2 className="text-xl font-bold">🐾 Mitt hunddagis</h2>
               </div>
-                <h2 className="text-2xl font-bold mb-1">🐾 Mitt hunddagis</h2>
-                <p className="text-sm text-green-100">
-                  Sök, filtrera och hantera dina hundar
-                </p>
-              </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
