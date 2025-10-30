@@ -295,488 +295,82 @@ export default function HundpensionatPage() {
   }
 
   return (
-    <>
-      <style jsx>{`
-        :root {
-          --primary-green: #2c7a4c;
-          --light-green: rgba(44, 122, 76, 0.1);
-          --success-green: #28a745;
-          --warning-yellow: #ffc107;
-          --danger-red: #dc3545;
-        }
-
-        .pensionat-container {
-          min-height: 100vh;
-          background: linear-gradient(
-            135deg,
-            rgba(44, 122, 76, 0.1) 0%,
-            rgba(76, 175, 80, 0.05) 100%
-          );
-          padding: 20px;
-        }
-
-        .pensionat-header {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(44, 122, 76, 0.2);
-          border-radius: 8px;
-          padding: 20px 30px;
-          margin-bottom: 20px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .pensionat-back-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          color: var(--primary-green);
-          text-decoration: none;
-          font-weight: 500;
-          padding: 8px 16px;
-          border-radius: 6px;
-          transition: all 0.2s ease;
-          border: 1px solid transparent;
-        }
-
-        .pensionat-back-btn:hover {
-          background: var(--light-green);
-          border-color: var(--primary-green);
-        }
-
-        .pensionat-hero {
-          text-align: center;
-          padding: 60px 20px;
-          background: linear-gradient(
-              rgba(44, 122, 76, 0.85),
-              rgba(44, 122, 76, 0.85)
-            ),
-            url("/Hero.jpeg") center/cover no-repeat;
-          color: #fff;
-          border-radius: 12px;
-          margin-bottom: 30px;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .pensionat-hero::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100"><path d="M0,0 C150,100 350,0 500,50 C650,100 850,0 1000,50 L1000,100 L0,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
-          background-size: cover;
-          opacity: 0.2;
-        }
-
-        .pensionat-hero h1 {
-          font-size: 2.5rem;
-          font-weight: 700;
-          margin-bottom: 16px;
-          position: relative;
-          z-index: 1;
-        }
-
-        .pensionat-hero p {
-          font-size: 1.1rem;
-          line-height: 1.6;
-          max-width: 600px;
-          margin: 0 auto;
-          opacity: 0.95;
-          position: relative;
-          z-index: 1;
-        }
-
-        .pensionat-stats {
-          display: grid;
-          grid-template-columns: repeat(6, 1fr);
-          gap: 20px;
-          max-width: 1200px;
-          margin: 0 auto;
-          position: relative;
-          z-index: 1;
-        }
-
-        .pensionat-stat-card {
-          background: rgba(255, 255, 255, 0.15);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 8px;
-          padding: 16px 12px;
-          text-align: center;
-          transition: all 0.3s ease;
-          min-height: 100px;
-          max-height: 100px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-
-        .pensionat-stat-card:hover {
-          background: rgba(255, 255, 255, 0.25);
-          transform: translateY(-2px);
-        }
-
-        .pensionat-stat-value {
-          font-size: 24px;
-          font-weight: 700;
-          color: white;
-          margin-bottom: 4px;
-        }
-
-        .pensionat-stat-label {
-          font-size: 11px;
-          opacity: 0.9;
-          color: white;
-          font-weight: 500;
-        }
-
-        .pensionat-controls {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(44, 122, 76, 0.2);
-          border-radius: 8px;
-          padding: 20px;
-          margin-bottom: 20px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 20px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .pensionat-controls-left {
-          display: flex;
-          gap: 12px;
-          align-items: center;
-        }
-
-        .pensionat-controls-right {
-          display: flex;
-          gap: 8px;
-          align-items: center;
-        }
-
-        .pensionat-select,
-        .pensionat-input {
-          padding: 8px 12px;
-          border: 1px solid rgba(44, 122, 76, 0.3);
-          border-radius: 6px;
-          font-size: 14px;
-          background: white;
-          transition: all 0.2s ease;
-        }
-
-        .pensionat-select:focus,
-        .pensionat-input:focus {
-          outline: none;
-          border-color: var(--primary-green);
-          box-shadow: 0 0 0 2px rgba(44, 122, 76, 0.1);
-        }
-
-        .pensionat-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 16px;
-          border-radius: 6px;
-          font-size: 14px;
-          font-weight: 500;
-          text-decoration: none;
-          border: none;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .pensionat-btn-primary {
-          background: var(--primary-green);
-          color: white;
-        }
-
-        .pensionat-btn-primary:hover {
-          background: #245a3a;
-          transform: translateY(-1px);
-        }
-
-        .pensionat-btn-secondary {
-          background: #6c757d;
-          color: white;
-        }
-
-        .pensionat-btn-secondary:hover {
-          background: #5a6268;
-          transform: translateY(-1px);
-        }
-
-        .pensionat-btn-accent {
-          background: var(--success-green);
-          color: white;
-        }
-
-        .pensionat-btn-accent:hover {
-          background: #218838;
-          transform: translateY(-1px);
-        }
-
-        .pensionat-table-wrapper {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(44, 122, 76, 0.2);
-          border-radius: 8px;
-          overflow: hidden;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .pensionat-table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-
-        .pensionat-table th {
-          background: var(--primary-green);
-          color: white;
-          padding: 12px 16px;
-          text-align: left;
-          font-weight: 600;
-          cursor: pointer;
-          user-select: none;
-        }
-
-        .pensionat-table th:hover {
-          background: rgba(255, 255, 255, 0.1);
-        }
-
-        .pensionat-table tbody tr:nth-child(even) {
-          background: var(--light-green);
-        }
-
-        .pensionat-table tbody tr:hover {
-          background: #f0f8f0;
-        }
-
-        .pensionat-table td {
-          padding: 12px 16px;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .pensionat-status {
-          padding: 4px 8px;
-          border-radius: 3px;
-          font-size: 12px;
-          font-weight: 500;
-          text-align: center;
-          min-width: 70px;
-          display: inline-block;
-        }
-
-        .pensionat-status-confirmed {
-          background: #d4edda;
-          color: #155724;
-          border: 1px solid #c3e6cb;
-        }
-
-        .pensionat-status-pending {
-          background: #fff3cd;
-          color: #856404;
-          border: 1px solid #ffeaa7;
-        }
-
-        .pensionat-status-cancelled {
-          background: #f8d7da;
-          color: #721c24;
-          border: 1px solid #f5c6cb;
-        }
-
-        .pensionat-error {
-          background: #f8d7da;
-          border: 1px solid #f5c6cb;
-          color: #721c24;
-          padding: 12px;
-          border-radius: 4px;
-          margin-bottom: 16px;
-        }
-
-        .pensionat-loading,
-        .pensionat-empty {
-          text-align: center;
-          padding: 40px;
-          color: #666;
-        }
-
-        @media (max-width: 1200px) {
-          .pensionat-stats {
-            grid-template-columns: repeat(6, 1fr);
-            max-width: 1000px;
-            gap: 15px;
-          }
-
-          .pensionat-stat-card {
-            min-height: 85px;
-            max-height: 85px;
-            padding: 12px 8px;
-          }
-
-          .pensionat-stat-value {
-            font-size: 20px;
-          }
-
-          .pensionat-stat-label {
-            font-size: 10px;
-          }
-        }
-
-        @media (max-width: 900px) {
-          .pensionat-stats {
-            grid-template-columns: repeat(6, 1fr);
-            gap: 12px;
-            max-width: 700px;
-          }
-
-          .pensionat-stat-card {
-            min-height: 75px;
-            max-height: 75px;
-            padding: 10px 6px;
-          }
-
-          .pensionat-stat-value {
-            font-size: 18px;
-          }
-
-          .pensionat-stat-label {
-            font-size: 9px;
-          }
-
-          .pensionat-controls {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .pensionat-controls-left,
-          .pensionat-controls-right {
-            width: 100%;
-            justify-content: center;
-          }
-
-          .pensionat-hero h1 {
-            font-size: 1.5rem;
-          }
-
-          .pensionat-table-wrapper {
-            overflow-x: auto;
-          }
-
-          .pensionat-header {
-            padding: 15px 20px;
-          }
-        }
-
-        @media (max-width: 600px) {
-          .pensionat-stats {
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-            max-width: 500px;
-          }
-
-          .pensionat-stat-card {
-            min-height: 65px;
-            max-height: 65px;
-            padding: 8px 4px;
-          }
-
-          .pensionat-stat-value {
-            font-size: 16px;
-          }
-
-          .pensionat-stat-label {
-            font-size: 8px;
-          }
-        }
-
-        @media (max-width: 420px) {
-          .pensionat-stats {
-            grid-template-columns: repeat(6, 1fr);
-            max-width: 350px;
-            gap: 6px;
-          }
-
-          .pensionat-stat-card {
-            min-height: 55px;
-            max-height: 55px;
-            padding: 6px 2px;
-          }
-
-          .pensionat-stat-value {
-            font-size: 14px;
-          }
-
-          .pensionat-stat-label {
-            font-size: 7px;
-          }
-        }
-      `}</style>
-
-      <div className="pensionat-container">
-        {/* Header */}
-        <header className="pensionat-header"></header>
-
-        {/* Hero Section */}
-        <section className="pensionat-hero">
-          <h1>Hundpensionat</h1>
-          <p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section - Samma som Dashboard, Hunddagis, Ekonomi */}
+      <div
+        className="relative bg-cover bg-center pt-20 pb-28"
+        style={{
+          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url('/Hero.jpeg')`,
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Hundpensionat
+          </h1>
+          <p className="text-lg text-white/90 max-w-2xl mx-auto">
             Professionell pensionathantering med fullständig översikt över
             bokningar, rum och gäster. Skapa trygghet för både hundar och ägare.
           </p>
+        </div>
+      </div>
 
-          {/* Live-statistik kort som overlay på hero - precis som på dashboard */}
-          <div className="max-w-6xl mx-auto mt-12">
-            <div className="pensionat-stats">
-              <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Antal hundar</p>
-                <p className="pensionat-stat-value">{liveStats.hundarIdag}</p>
-              </div>
-
-              <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Ankomster</p>
-                <p className="pensionat-stat-value">{liveStats.incheckIdag}</p>
-              </div>
-
-              <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Avresor</p>
-                <p className="pensionat-stat-value">{liveStats.utcheckIdag}</p>
-              </div>
-
-              <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Tjänster</p>
-                <p className="pensionat-stat-value">
-                  {liveStats.tjänsterImorgon}
-                </p>
-              </div>
-
-              <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Kunder</p>
-                <p className="pensionat-stat-value">{liveStats.totalOwners}</p>
-              </div>
-
-              <div className="pensionat-stat-card">
-                <p className="pensionat-stat-label">Intäkt</p>
-                <p className="pensionat-stat-value">
-                  {liveStats.monthlyRevenue.toLocaleString()} kr
-                </p>
-              </div>
-            </div>
+      {/* Floating Stats Cards - Moderna kort som överlappar hero */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow">
+            <p className="text-sm text-gray-600 mb-1">Antal hundar</p>
+            <p className="text-3xl font-bold text-[#2c7a4c]">
+              {liveStats.hundarIdag}
+            </p>
           </div>
-        </section>
 
-        {/* Main Content */}
-        <main>
-          {/* Kontroller */}
-          <div className="pensionat-controls">
-            <div className="pensionat-controls-left">
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-green-200 hover:shadow-xl transition-shadow">
+            <p className="text-sm text-gray-600 mb-1">Ankomster</p>
+            <p className="text-3xl font-bold text-[#2c7a4c]">
+              {liveStats.incheckIdag}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-orange-200 hover:shadow-xl transition-shadow">
+            <p className="text-sm text-gray-600 mb-1">Avresor</p>
+            <p className="text-3xl font-bold text-orange-600">
+              {liveStats.utcheckIdag}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-200 hover:shadow-xl transition-shadow">
+            <p className="text-sm text-gray-600 mb-1">Tjänster imorgon</p>
+            <p className="text-3xl font-bold text-blue-600">
+              {liveStats.tjänsterImorgon}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-purple-200 hover:shadow-xl transition-shadow">
+            <p className="text-sm text-gray-600 mb-1">Kunder</p>
+            <p className="text-3xl font-bold text-purple-600">
+              {liveStats.totalOwners}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-green-200 hover:shadow-xl transition-shadow">
+            <p className="text-sm text-gray-600 mb-1">Månadsintäkt</p>
+            <p className="text-2xl font-bold text-[#2c7a4c]">
+              {liveStats.monthlyRevenue.toLocaleString()} kr
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        {/* Kontroller */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <select
                 value={selectedMonthId}
                 onChange={(e) => setSelectedMonthId(e.target.value)}
-                className="pensionat-select"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
               >
                 <option value="">Alla månader</option>
                 {availableMonths.map((month) => (
@@ -789,117 +383,169 @@ export default function HundpensionatPage() {
                 ))}
               </select>
 
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="🔍 Sök bokningar..."
-                className="pensionat-input"
-                style={{ minWidth: "200px" }}
-              />
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Sök bokningar..."
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                />
+              </div>
             </div>
 
-            <div className="pensionat-controls-right">
+            <div className="flex gap-2 w-full md:w-auto">
               <button
                 onClick={loadBookings}
-                className="pensionat-btn pensionat-btn-primary"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
               >
                 <RefreshCcw size={16} />
-                Uppdatera
+                <span className="hidden sm:inline">Uppdatera</span>
               </button>
               <button
                 onClick={exportToPDF}
-                className="pensionat-btn pensionat-btn-secondary"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
               >
                 <Download size={16} />
-                Exportera PDF
+                <span className="hidden sm:inline">PDF</span>
               </button>
               <Link
                 href="/hundpensionat/new"
-                className="pensionat-btn pensionat-btn-accent"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
               >
                 <Plus size={16} />
-                Ny bokning
+                <span className="hidden sm:inline">Ny bokning</span>
               </Link>
             </div>
           </div>
+        </div>
 
-          {/* Error display */}
-          {error && <div className="pensionat-error">{error}</div>}
+        {/* Error display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
 
-          {/* Tabell */}
-          <div className="pensionat-table-wrapper">
-            <table className="pensionat-table">
-              <thead>
+        {/* Tabell */}
+        <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-[#2c7a4c]">
                 <tr>
-                  <th onClick={() => handleSort("room")}>
+                  <th
+                    onClick={() => handleSort("room")}
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                  >
                     Rum {sortKey === "room" && (sortAsc ? "↑" : "↓")}
                   </th>
-                  <th onClick={() => handleSort("dog")}>
+                  <th
+                    onClick={() => handleSort("dog")}
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                  >
                     Hund {sortKey === "dog" && (sortAsc ? "↑" : "↓")}
                   </th>
-                  <th onClick={() => handleSort("owner")}>
+                  <th
+                    onClick={() => handleSort("owner")}
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                  >
                     Ägare {sortKey === "owner" && (sortAsc ? "↑" : "↓")}
                   </th>
-                  <th onClick={() => handleSort("start_date")}>
+                  <th
+                    onClick={() => handleSort("start_date")}
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                  >
                     Startdatum{" "}
                     {sortKey === "start_date" && (sortAsc ? "↑" : "↓")}
                   </th>
-                  <th onClick={() => handleSort("end_date")}>
+                  <th
+                    onClick={() => handleSort("end_date")}
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                  >
                     Slutdatum {sortKey === "end_date" && (sortAsc ? "↑" : "↓")}
                   </th>
-                  <th onClick={() => handleSort("status")}>
+                  <th
+                    onClick={() => handleSort("status")}
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                  >
                     Status {sortKey === "status" && (sortAsc ? "↑" : "↓")}
                   </th>
-                  <th onClick={() => handleSort("total_price")}>
+                  <th
+                    onClick={() => handleSort("total_price")}
+                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                  >
                     Totalpris{" "}
                     {sortKey === "total_price" && (sortAsc ? "↑" : "↓")}
                   </th>
-                  <th>Rabatt</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                    Rabatt
+                  </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={8} className="pensionat-loading">
+                    <td
+                      colSpan={8}
+                      className="px-6 py-12 text-center text-gray-500"
+                    >
                       Laddar bokningar...
                     </td>
                   </tr>
                 ) : sorted.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="pensionat-empty">
+                    <td
+                      colSpan={8}
+                      className="px-6 py-12 text-center text-gray-500"
+                    >
                       {search || selectedMonthId
                         ? "Inga bokningar matchade din sökning"
                         : "Inga bokningar hittades"}
                     </td>
                   </tr>
                 ) : (
-                  sorted.map((booking) => (
-                    <tr key={booking.id}>
-                      <td>{booking.rooms?.name ?? "—"}</td>
-                      <td>{booking.dogs?.name ?? "—"}</td>
-                      <td>{booking.dogs?.owners?.full_name ?? "—"}</td>
-                      <td>{booking.start_date}</td>
-                      <td>{booking.end_date}</td>
-                      <td>
+                  sorted.map((booking, idx) => (
+                    <tr
+                      key={booking.id}
+                      className={`${
+                        idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-green-50 transition-colors`}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {booking.rooms?.name ?? "—"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {booking.dogs?.name ?? "—"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {booking.dogs?.owners?.full_name ?? "—"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {booking.start_date}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {booking.end_date}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span
-                          className={`pensionat-status ${
+                          className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             booking.status === "confirmed"
-                              ? "pensionat-status-confirmed"
+                              ? "bg-green-100 text-green-800"
                               : booking.status === "pending"
-                              ? "pensionat-status-pending"
-                              : "pensionat-status-cancelled"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
                           }`}
                         >
                           {booking.status}
                         </span>
                       </td>
-                      <td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                         {booking.total_price
                           ? `${booking.total_price} kr`
                           : "—"}
                       </td>
-                      <td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {booking.discount_amount
                           ? `${booking.discount_amount} kr`
                           : "—"}
@@ -910,8 +556,8 @@ export default function HundpensionatPage() {
               </tbody>
             </table>
           </div>
-        </main>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
