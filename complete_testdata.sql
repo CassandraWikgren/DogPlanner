@@ -251,6 +251,115 @@ CREATE TABLE IF NOT EXISTS public.interest_applications (
   updated_at timestamptz DEFAULT now()
 );
 
+-- Lägg till saknade kolumner i interest_applications om de inte finns
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='parent_name') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN parent_name text NOT NULL DEFAULT 'Unknown';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='parent_email') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN parent_email text NOT NULL DEFAULT 'unknown@example.com';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='parent_phone') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN parent_phone text NOT NULL DEFAULT '000-0000000';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='owner_city') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN owner_city text;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='owner_address') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN owner_address text;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='dog_name') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN dog_name text NOT NULL DEFAULT 'Unknown';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='dog_breed') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN dog_breed text;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='dog_birth') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN dog_birth date;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='dog_gender') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN dog_gender text CHECK (dog_gender IN ('hane', 'tik'));
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='dog_height_cm') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN dog_height_cm integer;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='subscription_type') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN subscription_type text;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='preferred_start_date') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN preferred_start_date date;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='preferred_days') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN preferred_days text[];
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='special_care_needs') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN special_care_needs text;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='is_neutered') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN is_neutered boolean DEFAULT false;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='is_escape_artist') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN is_escape_artist boolean DEFAULT false;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='destroys_things') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN destroys_things boolean DEFAULT false;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='not_house_trained') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN not_house_trained boolean DEFAULT false;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='gdpr_consent') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN gdpr_consent boolean DEFAULT false;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='status') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'contacted', 'accepted', 'declined'));
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='interest_applications' AND column_name='notes') THEN
+    ALTER TABLE public.interest_applications ADD COLUMN notes text;
+  END IF;
+END $$;
+
 -- === STEG 4: RENSA BEFINTLIG TESTDATA ===
 
 TRUNCATE public.daycare_service_completions CASCADE;
