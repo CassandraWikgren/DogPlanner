@@ -396,6 +396,13 @@ export default function HundpensionatPage() {
             </div>
 
             <div className="flex gap-2 w-full md:w-auto">
+              <Link
+                href="/hundpensionat/kalender"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Calendar size={16} />
+                <span className="hidden sm:inline">Kalender</span>
+              </Link>
               <button
                 onClick={loadBookings}
                 className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
