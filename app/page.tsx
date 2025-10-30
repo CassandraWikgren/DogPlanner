@@ -87,12 +87,12 @@ export default function HomePage() {
               >
                 ✨ Prova gratis i 2 månader
               </Link>
-              <Link
-                href="/login"
+              <a
+                href="#features"
                 className="px-8 py-4 border-2 border-white text-white rounded-lg hover:bg-white/10 font-semibold text-lg transition-all backdrop-blur text-center"
               >
                 Se hur det fungerar
-              </Link>
+              </a>
             </div>
             <div className="flex items-center gap-4 text-white/90 text-sm">
               <span className="flex items-center gap-2">
@@ -176,7 +176,7 @@ export default function HomePage() {
       </section>
 
       {/* Solution Features */}
-      <section className="py-20 bg-white">
+      <section id="features" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
