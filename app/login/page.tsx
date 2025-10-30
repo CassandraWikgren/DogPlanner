@@ -23,9 +23,9 @@ export default function LoginPage() {
 
     if (!authLoading && user && !forceLogin) {
       console.log(
-        "LoginPage: User already logged in, redirecting to dashboard"
+        "LoginPage: User already logged in, redirecting to hunddagis"
       );
-      router.push("/dashboard");
+      router.push("/hunddagis");
     }
   }, [user, authLoading, router]);
 
@@ -53,7 +53,8 @@ export default function LoginPage() {
       if (error) throw error;
 
       if (data?.user) {
-        router.push("/dashboard");
+        // Omdirigera till hunddagis-dashboard efter lyckad inloggning
+        router.push("/hunddagis");
       } else {
         setError("Inloggningen misslyckades. Kontrollera dina uppgifter.");
       }
@@ -116,31 +117,6 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-white flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-        {demoUser && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-            <p className="text-sm text-blue-700 mb-2">
-              Du är inloggad som demo-användare: <strong>{demoUser}</strong>
-            </p>
-            <p className="text-xs text-blue-600 mb-2">
-              Du kan fortfarande logga in med en riktig användare nedan, eller:
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={clearDemoLogin}
-                className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition"
-              >
-                Logga ut från demo
-              </button>
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="text-sm bg-[#2c7a4c] text-white px-3 py-1.5 rounded-lg hover:bg-green-800 transition"
-              >
-                Gå till dashboard
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Logo/Icon */}
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 bg-gradient-to-br from-[#2c7a4c] to-[#1f5738] rounded-2xl flex items-center justify-center shadow-lg">
