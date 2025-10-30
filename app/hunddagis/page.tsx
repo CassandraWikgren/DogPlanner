@@ -1480,9 +1480,7 @@ export default function HunddagisPage() {
                         }
                         className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                       />
-                      <span className="text-gray-700">
-                        {COLUMN_LABELS[c]}
-                      </span>
+                      <span className="text-gray-700">{COLUMN_LABELS[c]}</span>
                     </label>
                   ))}
                 </div>
@@ -1491,58 +1489,213 @@ export default function HunddagisPage() {
 
             {/* Table Section */}
             <div className="bg-white border border-gray-200 rounded-b-lg shadow-sm overflow-hidden">
-            {/* Error Message */}
-            {errMsg && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 m-6">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm text-red-800 font-medium">{errMsg}</p>
+              {/* Error Message */}
+              {errMsg && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 m-6">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm text-red-800 font-medium">
+                        {errMsg}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-            {/* === VYER === */}
+              )}
+              {/* === VYER === */}
 
-            {/* Tjänster (checklista) */}
-            {currentView === "services" && (
-              <div className="panel">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-[#2c7a4c] mb-1">
-                      Tillvalstjänster denna månad
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Kloklipp, tassklipp och bad - markera när utfört
-                    </p>
+              {/* Tjänster (checklista) */}
+              {currentView === "services" && (
+                <div className="panel">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-[#2c7a4c] mb-1">
+                        Tillvalstjänster denna månad
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Kloklipp, tassklipp och bad - markera när utfört
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                <div className="overflow-x-auto bg-white rounded-xl border">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b">
-                      <tr>
-                        <th className="text-left px-4 py-3 font-semibold text-gray-700">
-                          Hund
-                        </th>
-                        <th className="text-left px-4 py-3 font-semibold text-gray-700">
-                          Ägare
-                        </th>
-                        <th className="text-left px-4 py-3 font-semibold text-gray-700">
-                          Tjänst
-                        </th>
-                        <th className="text-center px-4 py-3 font-semibold text-gray-700">
-                          Status
-                        </th>
-                        <th className="text-left px-4 py-3 font-semibold text-gray-700">
-                          Utförd av
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                      {dogs
-                        .filter((d) => {
-                          // Filtrera hundar som har tillvalstjänster
+                  <div className="overflow-x-auto bg-white rounded-xl border">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b">
+                        <tr>
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">
+                            Hund
+                          </th>
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">
+                            Ägare
+                          </th>
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">
+                            Tjänst
+                          </th>
+                          <th className="text-center px-4 py-3 font-semibold text-gray-700">
+                            Status
+                          </th>
+                          <th className="text-left px-4 py-3 font-semibold text-gray-700">
+                            Utförd av
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {dogs
+                          .filter((d) => {
+                            // Filtrera hundar som har tillvalstjänster
+                            const KEYWORDS = ["kloklipp", "tassklipp", "bad"];
+                            const ym = new Date().toISOString().slice(0, 7);
+                            try {
+                              const arr = Array.isArray(d.events)
+                                ? d.events
+                                : d.events
+                                ? JSON.parse(d.events)
+                                : [];
+                              return (arr || []).some((e: any) => {
+                                const when: string = e?.date || e?.datum || "";
+                                const txt = `${e?.type || ""} ${
+                                  e?.title || ""
+                                }`.toLowerCase();
+                                return (
+                                  when.startsWith(ym) &&
+                                  KEYWORDS.some((k) => txt.includes(k))
+                                );
+                              });
+                            } catch {
+                              return false;
+                            }
+                          })
+                          .map((d) => {
+                            const ym = new Date().toISOString().slice(0, 7);
+                            const key = `${ym}:${d.id}`;
+                            let items: string[] = [];
+                            try {
+                              const arr = Array.isArray(d.events)
+                                ? d.events
+                                : d.events
+                                ? JSON.parse(d.events)
+                                : [];
+                              items = (arr || [])
+                                .filter((e: any) =>
+                                  (e?.date || "").startsWith(ym)
+                                )
+                                .map(
+                                  (e: any) => e?.title || e?.type || "Tjänst"
+                                );
+                            } catch {}
+
+                            const isChecked = !!serviceChecked[key];
+                            const staffName = serviceChecked[key]
+                              ? user?.user_metadata?.full_name || "Personal"
+                              : "-";
+
+                            return (
+                              <tr key={d.id} className="hover:bg-gray-50">
+                                <td className="px-4 py-3 font-medium">
+                                  {d.name}
+                                </td>
+                                <td className="px-4 py-3 text-gray-600">
+                                  {d.owners?.full_name || "-"}
+                                </td>
+                                <td className="px-4 py-3">
+                                  <div className="flex flex-wrap gap-1">
+                                    {items.length
+                                      ? items.map((item, idx) => (
+                                          <span
+                                            key={idx}
+                                            className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
+                                          >
+                                            {item}
+                                          </span>
+                                        ))
+                                      : "-"}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  <label className="inline-flex items-center gap-2 cursor-pointer">
+                                    <input
+                                      type="checkbox"
+                                      className="w-5 h-5 text-green-600 rounded focus:ring-green-500"
+                                      checked={isChecked}
+                                      onChange={async () => {
+                                        const next = !isChecked;
+                                        // Uppdatera local state
+                                        setServiceChecked((prev) => ({
+                                          ...prev,
+                                          [key]: next,
+                                        }));
+
+                                        // Försök spara i daycare_service_completions
+                                        try {
+                                          if (next) {
+                                            // Markera som utförd
+                                            const serviceData = {
+                                              org_id:
+                                                user?.user_metadata?.org_id ||
+                                                null,
+                                              dog_id: d.id,
+                                              service_type: "kloklipp" as
+                                                | "kloklipp"
+                                                | "tassklipp"
+                                                | "bad",
+                                              scheduled_date: `${ym}-01`,
+                                              completed_at:
+                                                new Date().toISOString(),
+                                              completed_by:
+                                                user?.user_metadata
+                                                  ?.full_name ||
+                                                user?.email ||
+                                                "Personal",
+                                              notes: null,
+                                            };
+
+                                            await supabase
+                                              .from(
+                                                "daycare_service_completions"
+                                              )
+                                              .upsert(serviceData as any);
+                                          } else {
+                                            // Ta bort markering
+                                            await supabase
+                                              .from(
+                                                "daycare_service_completions"
+                                              )
+                                              .delete()
+                                              .eq("dog_id", d.id)
+                                              .gte("scheduled_date", `${ym}-01`)
+                                              .lt(
+                                                "scheduled_date",
+                                                `${ym.split("-")[0]}-${String(
+                                                  parseInt(ym.split("-")[1]) + 1
+                                                ).padStart(2, "0")}-01`
+                                              );
+                                          }
+                                        } catch (e) {
+                                          console.warn(
+                                            "Kunde inte spara i daycare_service_completions:",
+                                            e
+                                          );
+                                        }
+                                      }}
+                                    />
+                                    <span
+                                      className={`text-sm font-medium ${
+                                        isChecked
+                                          ? "text-green-600"
+                                          : "text-gray-500"
+                                      }`}
+                                    >
+                                      {isChecked ? "✓ Utfört" : "Ej klart"}
+                                    </span>
+                                  </label>
+                                </td>
+                                <td className="px-4 py-3 text-sm text-gray-600">
+                                  {staffName}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        {dogs.filter((d) => {
                           const KEYWORDS = ["kloklipp", "tassklipp", "bad"];
                           const ym = new Date().toISOString().slice(0, 7);
                           try {
@@ -1564,638 +1717,500 @@ export default function HunddagisPage() {
                           } catch {
                             return false;
                           }
-                        })
-                        .map((d) => {
-                          const ym = new Date().toISOString().slice(0, 7);
-                          const key = `${ym}:${d.id}`;
-                          let items: string[] = [];
-                          try {
-                            const arr = Array.isArray(d.events)
-                              ? d.events
-                              : d.events
-                              ? JSON.parse(d.events)
-                              : [];
-                            items = (arr || [])
-                              .filter((e: any) =>
-                                (e?.date || "").startsWith(ym)
-                              )
-                              .map((e: any) => e?.title || e?.type || "Tjänst");
-                          } catch {}
-
-                          const isChecked = !!serviceChecked[key];
-                          const staffName = serviceChecked[key]
-                            ? user?.user_metadata?.full_name || "Personal"
-                            : "-";
-
-                          return (
-                            <tr key={d.id} className="hover:bg-gray-50">
-                              <td className="px-4 py-3 font-medium">
-                                {d.name}
-                              </td>
-                              <td className="px-4 py-3 text-gray-600">
-                                {d.owners?.full_name || "-"}
-                              </td>
-                              <td className="px-4 py-3">
-                                <div className="flex flex-wrap gap-1">
-                                  {items.length
-                                    ? items.map((item, idx) => (
-                                        <span
-                                          key={idx}
-                                          className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
-                                        >
-                                          {item}
-                                        </span>
-                                      ))
-                                    : "-"}
-                                </div>
-                              </td>
-                              <td className="px-4 py-3 text-center">
-                                <label className="inline-flex items-center gap-2 cursor-pointer">
-                                  <input
-                                    type="checkbox"
-                                    className="w-5 h-5 text-green-600 rounded focus:ring-green-500"
-                                    checked={isChecked}
-                                    onChange={async () => {
-                                      const next = !isChecked;
-                                      // Uppdatera local state
-                                      setServiceChecked((prev) => ({
-                                        ...prev,
-                                        [key]: next,
-                                      }));
-
-                                      // Försök spara i daycare_service_completions
-                                      try {
-                                        if (next) {
-                                          // Markera som utförd
-                                          const serviceData = {
-                                            org_id:
-                                              user?.user_metadata?.org_id ||
-                                              null,
-                                            dog_id: d.id,
-                                            service_type: "kloklipp" as
-                                              | "kloklipp"
-                                              | "tassklipp"
-                                              | "bad",
-                                            scheduled_date: `${ym}-01`,
-                                            completed_at:
-                                              new Date().toISOString(),
-                                            completed_by:
-                                              user?.user_metadata?.full_name ||
-                                              user?.email ||
-                                              "Personal",
-                                            notes: null,
-                                          };
-
-                                          await supabase
-                                            .from("daycare_service_completions")
-                                            .upsert(serviceData as any);
-                                        } else {
-                                          // Ta bort markering
-                                          await supabase
-                                            .from("daycare_service_completions")
-                                            .delete()
-                                            .eq("dog_id", d.id)
-                                            .gte("scheduled_date", `${ym}-01`)
-                                            .lt(
-                                              "scheduled_date",
-                                              `${ym.split("-")[0]}-${String(
-                                                parseInt(ym.split("-")[1]) + 1
-                                              ).padStart(2, "0")}-01`
-                                            );
-                                        }
-                                      } catch (e) {
-                                        console.warn(
-                                          "Kunde inte spara i daycare_service_completions:",
-                                          e
-                                        );
-                                      }
-                                    }}
-                                  />
-                                  <span
-                                    className={`text-sm font-medium ${
-                                      isChecked
-                                        ? "text-green-600"
-                                        : "text-gray-500"
-                                    }`}
-                                  >
-                                    {isChecked ? "✓ Utfört" : "Ej klart"}
-                                  </span>
-                                </label>
-                              </td>
-                              <td className="px-4 py-3 text-sm text-gray-600">
-                                {staffName}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      {dogs.filter((d) => {
-                        const KEYWORDS = ["kloklipp", "tassklipp", "bad"];
-                        const ym = new Date().toISOString().slice(0, 7);
-                        try {
-                          const arr = Array.isArray(d.events)
-                            ? d.events
-                            : d.events
-                            ? JSON.parse(d.events)
-                            : [];
-                          return (arr || []).some((e: any) => {
-                            const when: string = e?.date || e?.datum || "";
-                            const txt = `${e?.type || ""} ${
-                              e?.title || ""
-                            }`.toLowerCase();
-                            return (
-                              when.startsWith(ym) &&
-                              KEYWORDS.some((k) => txt.includes(k))
-                            );
-                          });
-                        } catch {
-                          return false;
-                        }
-                      }).length === 0 && (
-                        <tr>
-                          <td
-                            colSpan={5}
-                            className="px-4 py-8 text-center text-gray-500"
-                          >
-                            <CheckSquare className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                            <p className="font-medium mb-1">
-                              Inga planerade tjänster denna månad
-                            </p>
-                            <p className="text-sm">
-                              Tjänster läggs till via hundprofilen under
-                              "Tilläggsabonnemang"
-                            </p>
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Info */}
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h4 className="font-semibold text-blue-800 mb-2">
-                    💡 Så fungerar tjänster
-                  </h4>
-                  <ul className="text-sm text-blue-700 space-y-1">
-                    <li>
-                      • Tjänster läggs till via EditDogModal under
-                      "Tilläggsabonnemang"
-                    </li>
-                    <li>
-                      • Checkboxen sparar vem i personalen som utförde tjänsten
-                    </li>
-                    <li>
-                      • Data sparas i daycare_service_completions tabellen
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {/* Rumsvy med Jordbruksverket-beräkningar */}
-            {currentView === "rooms" && (
-              <div className="panel">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-[#2c7a4c] mb-1">
-                      Rumsöversikt & Beläggning
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Beräkningar enligt Jordbruksverkets föreskrifter (SJVFS
-                      2019:2)
-                    </p>
+                        }).length === 0 && (
+                          <tr>
+                            <td
+                              colSpan={5}
+                              className="px-4 py-8 text-center text-gray-500"
+                            >
+                              <CheckSquare className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                              <p className="font-medium mb-1">
+                                Inga planerade tjänster denna månad
+                              </p>
+                              <p className="text-sm">
+                                Tjänster läggs till via hundprofilen under
+                                "Tilläggsabonnemang"
+                              </p>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
                   </div>
-                  <Link
-                    href="/rooms"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all text-sm font-medium"
-                  >
-                    <Settings2 className="h-4 w-4" />
-                    Hantera rum
-                  </Link>
-                </div>
 
-                {/* Dagväljare */}
-                <div className="mb-6 flex flex-wrap gap-2">
-                  {[
-                    "Måndag",
-                    "Tisdag",
-                    "Onsdag",
-                    "Torsdag",
-                    "Fredag",
-                    "Lördag",
-                    "Söndag",
-                  ].map((day) => (
-                    <button
-                      key={day}
-                      onClick={() => setSelectedDay(day)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        selectedDay === day
-                          ? "bg-[#2c7a4c] text-white shadow-md"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  ))}
+                  {/* Info */}
+                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h4 className="font-semibold text-blue-800 mb-2">
+                      💡 Så fungerar tjänster
+                    </h4>
+                    <ul className="text-sm text-blue-700 space-y-1">
+                      <li>
+                        • Tjänster läggs till via EditDogModal under
+                        "Tilläggsabonnemang"
+                      </li>
+                      <li>
+                        • Checkboxen sparar vem i personalen som utförde
+                        tjänsten
+                      </li>
+                      <li>
+                        • Data sparas i daycare_service_completions tabellen
+                      </li>
+                    </ul>
+                  </div>
                 </div>
+              )}
 
-                {/* Rumskort */}
-                {!rooms.length ? (
-                  <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
-                    <Home className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600 font-medium mb-2">
-                      Inga rum hittades
-                    </p>
-                    <p className="text-sm text-gray-500 mb-4">
-                      Skapa rum för att börja hantera beläggning
-                    </p>
+              {/* Rumsvy med Jordbruksverket-beräkningar */}
+              {currentView === "rooms" && (
+                <div className="panel">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-[#2c7a4c] mb-1">
+                        Rumsöversikt & Beläggning
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Beräkningar enligt Jordbruksverkets föreskrifter (SJVFS
+                        2019:2)
+                      </p>
+                    </div>
                     <Link
                       href="/rooms"
                       className="inline-flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all text-sm font-medium"
                     >
-                      <Plus className="h-4 w-4" />
-                      Skapa rum
+                      <Settings2 className="h-4 w-4" />
+                      Hantera rum
                     </Link>
                   </div>
-                ) : (
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {roomOccupancies.map((occ) => (
-                      <div
-                        key={occ.room_id}
-                        className={`bg-white rounded-xl p-5 border-2 transition-all ${
-                          occ.compliance_status === "violation"
-                            ? "border-red-300 bg-red-50"
-                            : occ.compliance_status === "warning"
-                            ? "border-yellow-300 bg-yellow-50"
-                            : "border-green-200 hover:border-green-300"
+
+                  {/* Dagväljare */}
+                  <div className="mb-6 flex flex-wrap gap-2">
+                    {[
+                      "Måndag",
+                      "Tisdag",
+                      "Onsdag",
+                      "Torsdag",
+                      "Fredag",
+                      "Lördag",
+                      "Söndag",
+                    ].map((day) => (
+                      <button
+                        key={day}
+                        onClick={() => setSelectedDay(day)}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          selectedDay === day
+                            ? "bg-[#2c7a4c] text-white shadow-md"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                         }`}
                       >
-                        {/* Rumshuvud */}
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <h4 className="font-bold text-lg text-gray-900 mb-1">
-                              {occ.room_name}
-                            </h4>
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <span>{occ.total_capacity_m2} m²</span>
-                              <span>•</span>
-                              <span>{occ.dogs_count} hundar</span>
-                            </div>
-                          </div>
-                          {occ.compliance_status === "violation" ? (
-                            <AlertTriangle className="h-6 w-6 text-red-500" />
-                          ) : occ.compliance_status === "warning" ? (
-                            <AlertTriangle className="h-6 w-6 text-yellow-500" />
-                          ) : (
-                            <CheckCircle className="h-6 w-6 text-green-500" />
-                          )}
-                        </div>
-
-                        {/* Beläggningsbar */}
-                        <div className="mb-4">
-                          <div className="flex items-center justify-between text-sm mb-2">
-                            <span className="text-gray-600">Beläggning</span>
-                            <span
-                              className={`font-bold ${
-                                occ.occupancy_percentage > 100
-                                  ? "text-red-600"
-                                  : occ.occupancy_percentage > 90
-                                  ? "text-yellow-600"
-                                  : "text-green-600"
-                              }`}
-                            >
-                              {occ.occupancy_percentage}%
-                            </span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                            <div
-                              className={`h-3 rounded-full transition-all ${
-                                occ.occupancy_percentage > 100
-                                  ? "bg-red-500"
-                                  : occ.occupancy_percentage > 90
-                                  ? "bg-yellow-500"
-                                  : "bg-green-500"
-                              }`}
-                              style={{
-                                width: `${Math.min(
-                                  occ.occupancy_percentage,
-                                  100
-                                )}%`,
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-
-                        {/* Yt-information */}
-                        <div className="bg-white rounded-lg p-3 mb-4 space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">
-                              Erforderlig yta:
-                            </span>
-                            <span className="font-semibold">
-                              {occ.required_m2.toFixed(1)} m²
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">
-                              Tillgänglig yta:
-                            </span>
-                            <span
-                              className={`font-semibold ${
-                                occ.available_m2 < 0
-                                  ? "text-red-600"
-                                  : occ.available_m2 < 2
-                                  ? "text-yellow-600"
-                                  : "text-green-600"
-                              }`}
-                            >
-                              {occ.available_m2.toFixed(1)} m²
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Status-meddelande */}
-                        <div
-                          className={`text-xs font-medium p-2 rounded-lg mb-4 ${
-                            occ.compliance_status === "violation"
-                              ? "bg-red-100 text-red-800"
-                              : occ.compliance_status === "warning"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
-                          }`}
-                        >
-                          {occ.compliance_message}
-                        </div>
-
-                        {/* Hundlista */}
-                        <div className="border-t pt-3">
-                          <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
-                            Hundar {selectedDay}:
-                          </div>
-                          {occ.dogs_present.length > 0 ? (
-                            <ul className="space-y-1">
-                              {occ.dogs_present.map((dog) => (
-                                <li
-                                  key={dog.id}
-                                  className="text-sm flex items-center justify-between py-1"
-                                >
-                                  <span className="font-medium">
-                                    {dog.name}
-                                  </span>
-                                  <span className="text-xs text-gray-500">
-                                    {(dog as any).height_cm || "?"}cm
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="text-sm text-gray-500 italic">
-                              Inga hundar denna dag
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                        {day}
+                      </button>
                     ))}
                   </div>
-                )}
 
-                {/* Hjälpinfo */}
-                <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
-                  <div className="flex gap-3">
-                    <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-blue-900">
-                      <p className="font-semibold mb-2">
-                        Jordbruksverkets regler för inomhusrum:
+                  {/* Rumskort */}
+                  {!rooms.length ? (
+                    <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+                      <Home className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                      <p className="text-gray-600 font-medium mb-2">
+                        Inga rum hittades
                       </p>
-                      <ul className="space-y-1 text-xs">
-                        <li>
-                          • Grundyta för största hunden + tillägg per
-                          ytterligare hund
-                        </li>
-                        <li>• Mindre än 25 cm: 2 m² + 1 m² per extra hund</li>
-                        <li>• 25-35 cm: 2 m² + 1,5 m² per extra hund</li>
-                        <li>• 36-45 cm: 2,5 m² + 1,5 m² per extra hund</li>
-                        <li>• 46-55 cm: 3,5 m² + 2 m² per extra hund</li>
-                        <li>• 56-65 cm: 4,5 m² + 2,5 m² per extra hund</li>
-                        <li>• Över 65 cm: 5,5 m² + 3 m² per extra hund</li>
-                      </ul>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Skapa rum för att börja hantera beläggning
+                      </p>
+                      <Link
+                        href="/rooms"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all text-sm font-medium"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Skapa rum
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {roomOccupancies.map((occ) => (
+                        <div
+                          key={occ.room_id}
+                          className={`bg-white rounded-xl p-5 border-2 transition-all ${
+                            occ.compliance_status === "violation"
+                              ? "border-red-300 bg-red-50"
+                              : occ.compliance_status === "warning"
+                              ? "border-yellow-300 bg-yellow-50"
+                              : "border-green-200 hover:border-green-300"
+                          }`}
+                        >
+                          {/* Rumshuvud */}
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1">
+                              <h4 className="font-bold text-lg text-gray-900 mb-1">
+                                {occ.room_name}
+                              </h4>
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <span>{occ.total_capacity_m2} m²</span>
+                                <span>•</span>
+                                <span>{occ.dogs_count} hundar</span>
+                              </div>
+                            </div>
+                            {occ.compliance_status === "violation" ? (
+                              <AlertTriangle className="h-6 w-6 text-red-500" />
+                            ) : occ.compliance_status === "warning" ? (
+                              <AlertTriangle className="h-6 w-6 text-yellow-500" />
+                            ) : (
+                              <CheckCircle className="h-6 w-6 text-green-500" />
+                            )}
+                          </div>
+
+                          {/* Beläggningsbar */}
+                          <div className="mb-4">
+                            <div className="flex items-center justify-between text-sm mb-2">
+                              <span className="text-gray-600">Beläggning</span>
+                              <span
+                                className={`font-bold ${
+                                  occ.occupancy_percentage > 100
+                                    ? "text-red-600"
+                                    : occ.occupancy_percentage > 90
+                                    ? "text-yellow-600"
+                                    : "text-green-600"
+                                }`}
+                              >
+                                {occ.occupancy_percentage}%
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                              <div
+                                className={`h-3 rounded-full transition-all ${
+                                  occ.occupancy_percentage > 100
+                                    ? "bg-red-500"
+                                    : occ.occupancy_percentage > 90
+                                    ? "bg-yellow-500"
+                                    : "bg-green-500"
+                                }`}
+                                style={{
+                                  width: `${Math.min(
+                                    occ.occupancy_percentage,
+                                    100
+                                  )}%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+
+                          {/* Yt-information */}
+                          <div className="bg-white rounded-lg p-3 mb-4 space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">
+                                Erforderlig yta:
+                              </span>
+                              <span className="font-semibold">
+                                {occ.required_m2.toFixed(1)} m²
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">
+                                Tillgänglig yta:
+                              </span>
+                              <span
+                                className={`font-semibold ${
+                                  occ.available_m2 < 0
+                                    ? "text-red-600"
+                                    : occ.available_m2 < 2
+                                    ? "text-yellow-600"
+                                    : "text-green-600"
+                                }`}
+                              >
+                                {occ.available_m2.toFixed(1)} m²
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Status-meddelande */}
+                          <div
+                            className={`text-xs font-medium p-2 rounded-lg mb-4 ${
+                              occ.compliance_status === "violation"
+                                ? "bg-red-100 text-red-800"
+                                : occ.compliance_status === "warning"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-green-100 text-green-800"
+                            }`}
+                          >
+                            {occ.compliance_message}
+                          </div>
+
+                          {/* Hundlista */}
+                          <div className="border-t pt-3">
+                            <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                              Hundar {selectedDay}:
+                            </div>
+                            {occ.dogs_present.length > 0 ? (
+                              <ul className="space-y-1">
+                                {occ.dogs_present.map((dog) => (
+                                  <li
+                                    key={dog.id}
+                                    className="text-sm flex items-center justify-between py-1"
+                                  >
+                                    <span className="font-medium">
+                                      {dog.name}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      {(dog as any).height_cm || "?"}cm
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-sm text-gray-500 italic">
+                                Inga hundar denna dag
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Hjälpinfo */}
+                  <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <div className="flex gap-3">
+                      <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div className="text-sm text-blue-900">
+                        <p className="font-semibold mb-2">
+                          Jordbruksverkets regler för inomhusrum:
+                        </p>
+                        <ul className="space-y-1 text-xs">
+                          <li>
+                            • Grundyta för största hunden + tillägg per
+                            ytterligare hund
+                          </li>
+                          <li>• Mindre än 25 cm: 2 m² + 1 m² per extra hund</li>
+                          <li>• 25-35 cm: 2 m² + 1,5 m² per extra hund</li>
+                          <li>• 36-45 cm: 2,5 m² + 1,5 m² per extra hund</li>
+                          <li>• 46-55 cm: 3,5 m² + 2 m² per extra hund</li>
+                          <li>• 56-65 cm: 4,5 m² + 2,5 m² per extra hund</li>
+                          <li>• Över 65 cm: 5,5 m² + 3 m² per extra hund</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Intresselista – placeholder (robust mot saknad tabell) */}
-            {currentView === "applications" && (
-              <div className="panel">
-                <h3 className="font-semibold mb-2">
-                  Intresselista (senaste månaden)
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Denna sektion försöker läsa från <code>applications</code>{" "}
-                  eller <code>interests</code>. Om den databasen inte finns än
-                  visas endast totalen i livekorten. {live.intresseSenasteMån}{" "}
-                  st den här månaden.
-                </p>
-              </div>
-            )}
+              {/* Intresselista – placeholder (robust mot saknad tabell) */}
+              {currentView === "applications" && (
+                <div className="panel">
+                  <h3 className="font-semibold mb-2">
+                    Intresselista (senaste månaden)
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Denna sektion försöker läsa från <code>applications</code>{" "}
+                    eller <code>interests</code>. Om den databasen inte finns än
+                    visas endast totalen i livekorten. {live.intresseSenasteMån}{" "}
+                    st den här månaden.
+                  </p>
+                </div>
+              )}
 
-            {/* Kalender – länk ut */}
-            {currentView === "calendar" && (
-              <div className="panel">
-                <h3 className="font-semibold mb-2">Kalender</h3>
-                <p className="text-sm text-gray-600">
-                  Gå till kalendern för hunddagis{" "}
-                  <Link
-                    className="text-green-700 underline"
-                    href="/hunddagis/kalender"
-                  >
-                    här
-                  </Link>
-                  .
-                </p>
-              </div>
-            )}
+              {/* Kalender – länk ut */}
+              {currentView === "calendar" && (
+                <div className="panel">
+                  <h3 className="font-semibold mb-2">Kalender</h3>
+                  <p className="text-sm text-gray-600">
+                    Gå till kalendern för hunddagis{" "}
+                    <Link
+                      className="text-green-700 underline"
+                      href="/hunddagis/kalender"
+                    >
+                      här
+                    </Link>
+                    .
+                  </p>
+                </div>
+              )}
 
-            {/* Standardtabell (visas när vy inte ersätter tabellen) */}
-            {currentView !== "services" && currentView !== "rooms" && (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-[#2c7a4c] text-white text-left">
-                      {columns.includes("name") && (
-                        <th className="py-3 px-4 font-semibold text-sm">
-                          {COLUMN_LABELS["name"]} ▲
-                        </th>
-                      )}
-                      {columns.includes("breed") && (
-                        <th className="py-3 px-4 font-semibold text-sm">
-                          {COLUMN_LABELS["breed"]}
-                        </th>
-                      )}
-                      {columns.includes("owner") && (
-                        <th className="py-3 px-4 font-semibold text-sm">
-                          {COLUMN_LABELS["owner"]}
-                        </th>
-                      )}
-                      {columns.includes("phone") && (
-                        <th className="py-3 px-4 font-semibold text-sm">
-                          Telefon
-                        </th>
-                      )}
-                      {columns.includes("subscription") && (
-                        <th className="py-3 px-4 font-semibold text-sm">
-                          {COLUMN_LABELS["subscription"]}
-                        </th>
-                      )}
-                      {columns.includes("room_id") && (
-                        <th className="py-3 px-4 font-semibold text-sm">
-                          {COLUMN_LABELS["room_id"]}
-                        </th>
-                      )}
-                      {columns.includes("days") && (
-                        <th className="py-3 px-4 font-semibold text-sm">
-                          {COLUMN_LABELS["days"]}
-                        </th>
-                      )}
-                      {columns.includes("startdate") && (
-                        <th className="py-3 px-4 font-semibold text-sm">
-                          {COLUMN_LABELS["startdate"]}
-                        </th>
-                      )}
-                      {columns.includes("enddate") && (
-                        <th className="py-3 px-4 font-semibold text-sm">
-                          {COLUMN_LABELS["enddate"]}
-                        </th>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {loading ? (
-                      <tr>
-                        <td
-                          className="py-8 px-4 text-center text-gray-500"
-                          colSpan={columns.length}
-                        >
-                          Laddar hundar…
-                        </td>
+              {/* Standardtabell (visas när vy inte ersätter tabellen) */}
+              {currentView !== "services" && currentView !== "rooms" && (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-[#2c7a4c] text-white text-left">
+                        {columns.includes("name") && (
+                          <th className="py-3 px-4 font-semibold text-sm">
+                            {COLUMN_LABELS["name"]} ▲
+                          </th>
+                        )}
+                        {columns.includes("breed") && (
+                          <th className="py-3 px-4 font-semibold text-sm">
+                            {COLUMN_LABELS["breed"]}
+                          </th>
+                        )}
+                        {columns.includes("owner") && (
+                          <th className="py-3 px-4 font-semibold text-sm">
+                            {COLUMN_LABELS["owner"]}
+                          </th>
+                        )}
+                        {columns.includes("phone") && (
+                          <th className="py-3 px-4 font-semibold text-sm">
+                            Telefon
+                          </th>
+                        )}
+                        {columns.includes("subscription") && (
+                          <th className="py-3 px-4 font-semibold text-sm">
+                            {COLUMN_LABELS["subscription"]}
+                          </th>
+                        )}
+                        {columns.includes("room_id") && (
+                          <th className="py-3 px-4 font-semibold text-sm">
+                            {COLUMN_LABELS["room_id"]}
+                          </th>
+                        )}
+                        {columns.includes("days") && (
+                          <th className="py-3 px-4 font-semibold text-sm">
+                            {COLUMN_LABELS["days"]}
+                          </th>
+                        )}
+                        {columns.includes("startdate") && (
+                          <th className="py-3 px-4 font-semibold text-sm">
+                            {COLUMN_LABELS["startdate"]}
+                          </th>
+                        )}
+                        {columns.includes("enddate") && (
+                          <th className="py-3 px-4 font-semibold text-sm">
+                            {COLUMN_LABELS["enddate"]}
+                          </th>
+                        )}
                       </tr>
-                    ) : viewDogs.length === 0 ? (
-                      <tr>
-                        <td
-                          className="py-8 px-4 text-center text-gray-500"
-                          colSpan={columns.length}
-                        >
-                          Inga hundar matchar dina filter.
-                        </td>
-                      </tr>
-                    ) : (
-                      viewDogs.map((d) => (
-                        <tr
-                          key={d.id}
-                          className="hover:bg-gray-50 transition-colors cursor-pointer"
-                          onClick={() => {
-                            setEditingDog(d);
-                            setShowModal(true);
-                          }}
-                        >
-                          {columns.includes("name") && (
-                            <td className="py-3 px-4">
-                              <div className="flex items-center gap-3">
-                                {d.photo_url ? (
-                                  <img
-                                    src={d.photo_url}
-                                    alt="hund"
-                                    className="h-10 w-10 rounded-full object-cover border-2 border-gray-200"
-                                  />
-                                ) : (
-                                  <div className="h-10 w-10 rounded-full grid place-content-center bg-gray-100 text-gray-500">
-                                    🐶
-                                  </div>
-                                )}
-                                <div>
-                                  <div className="font-medium text-gray-900">{d.name}</div>
-                                  {d.breed && (
-                                    <div className="text-sm text-gray-500">
-                                      {d.breed}
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {loading ? (
+                        <tr>
+                          <td
+                            className="py-8 px-4 text-center text-gray-500"
+                            colSpan={columns.length}
+                          >
+                            Laddar hundar…
+                          </td>
+                        </tr>
+                      ) : viewDogs.length === 0 ? (
+                        <tr>
+                          <td
+                            className="py-8 px-4 text-center text-gray-500"
+                            colSpan={columns.length}
+                          >
+                            Inga hundar matchar dina filter.
+                          </td>
+                        </tr>
+                      ) : (
+                        viewDogs.map((d) => (
+                          <tr
+                            key={d.id}
+                            className="hover:bg-gray-50 transition-colors cursor-pointer"
+                            onClick={() => {
+                              setEditingDog(d);
+                              setShowModal(true);
+                            }}
+                          >
+                            {columns.includes("name") && (
+                              <td className="py-3 px-4">
+                                <div className="flex items-center gap-3">
+                                  {d.photo_url ? (
+                                    <img
+                                      src={d.photo_url}
+                                      alt="hund"
+                                      className="h-10 w-10 rounded-full object-cover border-2 border-gray-200"
+                                    />
+                                  ) : (
+                                    <div className="h-10 w-10 rounded-full grid place-content-center bg-gray-100 text-gray-500">
+                                      🐶
                                     </div>
                                   )}
+                                  <div>
+                                    <div className="font-medium text-gray-900">
+                                      {d.name}
+                                    </div>
+                                    {d.breed && (
+                                      <div className="text-sm text-gray-500">
+                                        {d.breed}
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                            </td>
-                          )}
-                          {columns.includes("breed") && (
-                            <td className="py-3 px-4 text-gray-700">{d.breed || "-"}</td>
-                          )}
-                          {columns.includes("owner") && (
-                            <td className="py-3 px-4 text-gray-700">
-                              {d.owners?.full_name || "-"}
-                            </td>
-                          )}
-                          {columns.includes("phone") && (
-                            <td className="py-3 px-4 text-gray-700">
-                              {d.owners?.phone || "-"}
-                            </td>
-                          )}
-                          {columns.includes("subscription") && (
-                            <td className="py-3 px-4">
-                              <span
-                                className={`px-2 py-1 rounded text-sm font-medium ${
-                                  d.subscription === "Heltid"
-                                    ? "bg-green-100 text-green-800"
-                                    : d.subscription?.startsWith("Deltid")
-                                    ? "bg-blue-100 text-blue-800"
-                                    : d.subscription === "Dagshund"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : "bg-gray-100 text-gray-800"
-                                }`}
-                              >
-                                {d.subscription || "-"}
-                              </span>
-                            </td>
-                          )}
-                          {columns.includes("room_id") && (
-                            <td className="py-3 px-4 text-gray-700">{d.room_id || "-"}</td>
-                          )}
-                          {columns.includes("days") && (
-                            <td className="py-3 px-4">
-                              {d.days
-                                ? d.days.split(",").map((day, i) => (
-                                    <span
-                                      key={i}
-                                      className="inline-block px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700 mr-1"
-                                    >
-                                      {day.slice(0, 3)}
-                                    </span>
-                                  ))
-                                : "-"}
-                            </td>
-                          )}
-                          {columns.includes("startdate") && (
-                            <td className="py-3 px-4 text-gray-700">
-                              {d.startdate
-                                ? new Date(d.startdate).toLocaleDateString(
-                                    "sv-SE"
-                                  )
-                                : "-"}
-                            </td>
-                          )}
-                          {columns.includes("enddate") && (
-                            <td className="py-3 px-4 text-gray-700">
-                              {d.enddate
-                                ? new Date(d.enddate).toLocaleDateString(
-                                    "sv-SE"
-                                  )
-                                : "-"}
-                            </td>
-                          )}
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                              </td>
+                            )}
+                            {columns.includes("breed") && (
+                              <td className="py-3 px-4 text-gray-700">
+                                {d.breed || "-"}
+                              </td>
+                            )}
+                            {columns.includes("owner") && (
+                              <td className="py-3 px-4 text-gray-700">
+                                {d.owners?.full_name || "-"}
+                              </td>
+                            )}
+                            {columns.includes("phone") && (
+                              <td className="py-3 px-4 text-gray-700">
+                                {d.owners?.phone || "-"}
+                              </td>
+                            )}
+                            {columns.includes("subscription") && (
+                              <td className="py-3 px-4">
+                                <span
+                                  className={`px-2 py-1 rounded text-sm font-medium ${
+                                    d.subscription === "Heltid"
+                                      ? "bg-green-100 text-green-800"
+                                      : d.subscription?.startsWith("Deltid")
+                                      ? "bg-blue-100 text-blue-800"
+                                      : d.subscription === "Dagshund"
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-gray-100 text-gray-800"
+                                  }`}
+                                >
+                                  {d.subscription || "-"}
+                                </span>
+                              </td>
+                            )}
+                            {columns.includes("room_id") && (
+                              <td className="py-3 px-4 text-gray-700">
+                                {d.room_id || "-"}
+                              </td>
+                            )}
+                            {columns.includes("days") && (
+                              <td className="py-3 px-4">
+                                {d.days
+                                  ? d.days.split(",").map((day, i) => (
+                                      <span
+                                        key={i}
+                                        className="inline-block px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-700 mr-1"
+                                      >
+                                        {day.slice(0, 3)}
+                                      </span>
+                                    ))
+                                  : "-"}
+                              </td>
+                            )}
+                            {columns.includes("startdate") && (
+                              <td className="py-3 px-4 text-gray-700">
+                                {d.startdate
+                                  ? new Date(d.startdate).toLocaleDateString(
+                                      "sv-SE"
+                                    )
+                                  : "-"}
+                              </td>
+                            )}
+                            {columns.includes("enddate") && (
+                              <td className="py-3 px-4 text-gray-700">
+                                {d.enddate
+                                  ? new Date(d.enddate).toLocaleDateString(
+                                      "sv-SE"
+                                    )
+                                  : "-"}
+                              </td>
+                            )}
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
 
             {/* Modal (bevarad) */}
             {showModal && (
