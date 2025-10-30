@@ -1445,25 +1445,42 @@ export default function HunddagisPage() {
             {/* Tjänster (checklista) */}
             {currentView === "services" && (
               <div className="panel">
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckSquare size={18} />
-                  <h3 className="font-semibold">
-                    Tjänster denna månad (checka när utfört)
-                  </h3>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-[#2c7a4c] mb-1">
+                      Tillvalstjänster denna månad
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Kloklipp, tassklipp och bad - markera när utfört
+                    </p>
+                  </div>
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="tbl">
-                    <thead>
+
+                <div className="overflow-x-auto bg-white rounded-xl border">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b">
                       <tr>
-                        <th>Hund</th>
-                        <th>Ägare</th>
-                        <th>Planerade tjänster</th>
-                        <th>Klarmarkera</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-700">
+                          Hund
+                        </th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-700">
+                          Ägare
+                        </th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-700">
+                          Tjänst
+                        </th>
+                        <th className="text-center px-4 py-3 font-semibold text-gray-700">
+                          Status
+                        </th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-700">
+                          Utförd av
+                        </th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y">
                       {dogs
                         .filter((d) => {
+                          // Filtrera hundar som har tillvalstjänster
                           const KEYWORDS = ["kloklipp", "tassklipp", "bad"];
                           const ym = new Date().toISOString().slice(0, 7);
                           try {
@@ -1502,76 +1519,162 @@ export default function HunddagisPage() {
                               )
                               .map((e: any) => e?.title || e?.type || "Tjänst");
                           } catch {}
+
+                          const isChecked = !!serviceChecked[key];
+                          const staffName = serviceChecked[key]
+                            ? user?.user_metadata?.full_name || "Personal"
+                            : "-";
+
                           return (
-                            <tr key={d.id}>
-                              <td className="py-2 px-3">{d.name}</td>
-                              <td className="py-2 px-3">
+                            <tr key={d.id} className="hover:bg-gray-50">
+                              <td className="px-4 py-3 font-medium">
+                                {d.name}
+                              </td>
+                              <td className="px-4 py-3 text-gray-600">
                                 {d.owners?.full_name || "-"}
                               </td>
-                              <td className="py-2 px-3">
-                                {items.length ? items.join(", ") : "-"}
+                              <td className="px-4 py-3">
+                                <div className="flex flex-wrap gap-1">
+                                  {items.length
+                                    ? items.map((item, idx) => (
+                                        <span
+                                          key={idx}
+                                          className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
+                                        >
+                                          {item}
+                                        </span>
+                                      ))
+                                    : "-"}
+                                </div>
                               </td>
-                              <td className="py-2 px-3">
-                                <label className="inline-flex items-center gap-2">
+                              <td className="px-4 py-3 text-center">
+                                <label className="inline-flex items-center gap-2 cursor-pointer">
                                   <input
                                     type="checkbox"
-                                    checked={!!serviceChecked[key]}
+                                    className="w-5 h-5 text-green-600 rounded focus:ring-green-500"
+                                    checked={isChecked}
                                     onChange={async () => {
-                                      const next = !serviceChecked[key];
-                                      // uppdatera local state + localStorage (hanteras i useEffect)
+                                      const next = !isChecked;
+                                      // Uppdatera local state
                                       setServiceChecked((prev) => ({
                                         ...prev,
                                         [key]: next,
                                       }));
-                                      // försök persistera i Supabase (om service_logs finns)
+
+                                      // Försök spara i daycare_service_completions
                                       try {
-                                        const { error } = await (
-                                          supabase as any
-                                        )
-                                          .from("service_logs")
-                                          .upsert(
-                                            {
-                                              dog_id: d.id,
-                                              ym,
-                                              done: next,
-                                              user_id: user?.id || null,
+                                        if (next) {
+                                          // Markera som utförd
+                                          await supabase
+                                            .from("daycare_service_completions")
+                                            .upsert({
                                               org_id:
                                                 user?.user_metadata?.org_id ||
                                                 null,
-                                              updated_at:
+                                              dog_id: d.id,
+                                              service_type: "kloklipp", // Default, kan förbättras
+                                              scheduled_month: ym,
+                                              completed_at:
                                                 new Date().toISOString(),
-                                            },
-                                            { onConflict: "dog_id,ym" }
-                                          );
-                                        if (error) {
-                                          console.warn(
-                                            `${ERROR_CODES.DATABASE_CONNECTION} service_logs`,
-                                            error
-                                          );
+                                              completed_by: user?.id || null,
+                                              completed_by_name:
+                                                user?.user_metadata
+                                                  ?.full_name || "Personal",
+                                              is_completed: true,
+                                            });
+                                        } else {
+                                          // Ta bort markering
+                                          await supabase
+                                            .from("daycare_service_completions")
+                                            .delete()
+                                            .eq("dog_id", d.id)
+                                            .eq("scheduled_month", ym);
                                         }
                                       } catch (e) {
                                         console.warn(
-                                          `${ERROR_CODES.DATABASE_CONNECTION} service_logs saknas`,
+                                          "Kunde inte spara i daycare_service_completions:",
                                           e
                                         );
                                       }
                                     }}
                                   />
-                                  {serviceChecked[key] ? "Utfört" : "Ej klart"}
+                                  <span
+                                    className={`text-sm font-medium ${
+                                      isChecked
+                                        ? "text-green-600"
+                                        : "text-gray-500"
+                                    }`}
+                                  >
+                                    {isChecked ? "✓ Utfört" : "Ej klart"}
+                                  </span>
                                 </label>
+                              </td>
+                              <td className="px-4 py-3 text-sm text-gray-600">
+                                {staffName}
                               </td>
                             </tr>
                           );
                         })}
-                      {dogs.length === 0 && (
+                      {dogs.filter((d) => {
+                        const KEYWORDS = ["kloklipp", "tassklipp", "bad"];
+                        const ym = new Date().toISOString().slice(0, 7);
+                        try {
+                          const arr = Array.isArray(d.events)
+                            ? d.events
+                            : d.events
+                            ? JSON.parse(d.events)
+                            : [];
+                          return (arr || []).some((e: any) => {
+                            const when: string = e?.date || e?.datum || "";
+                            const txt = `${e?.type || ""} ${
+                              e?.title || ""
+                            }`.toLowerCase();
+                            return (
+                              when.startsWith(ym) &&
+                              KEYWORDS.some((k) => txt.includes(k))
+                            );
+                          });
+                        } catch {
+                          return false;
+                        }
+                      }).length === 0 && (
                         <tr>
-                          <td colSpan={4} className="py-3 px-3 text-gray-600">
-                            Inga hundar att visa.
+                          <td
+                            colSpan={5}
+                            className="px-4 py-8 text-center text-gray-500"
+                          >
+                            <CheckSquare className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                            <p className="font-medium mb-1">
+                              Inga planerade tjänster denna månad
+                            </p>
+                            <p className="text-sm">
+                              Tjänster läggs till via hundprofilen under
+                              "Tilläggsabonnemang"
+                            </p>
                           </td>
                         </tr>
                       )}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Info */}
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h4 className="font-semibold text-blue-800 mb-2">
+                    💡 Så fungerar tjänster
+                  </h4>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>
+                      • Tjänster läggs till via EditDogModal under
+                      "Tilläggsabonnemang"
+                    </li>
+                    <li>
+                      • Checkboxen sparar vem i personalen som utförde tjänsten
+                    </li>
+                    <li>
+                      • Data sparas i daycare_service_completions tabellen
+                    </li>
+                  </ul>
                 </div>
               </div>
             )}
