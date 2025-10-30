@@ -53,6 +53,7 @@ export default function KalenderPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [roomFilter, setRoomFilter] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"month" | "week" | "day">("month");
 
   // Kalendermånad navigation
   const [currentMonth, setCurrentMonth] = useState(() => {
@@ -214,6 +215,29 @@ export default function KalenderPage() {
     setCurrentMonth(newMonth);
   }
 
+  // === VECKO/DAG DATA ===
+  const weekDays = useMemo(() => {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7)); // Månd start
+
+    const days: DayData[] = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      const dayData = calendarDays.find(
+        (d) => d.dateString === date.toISOString().split("T")[0]
+      );
+      if (dayData) days.push(dayData);
+    }
+    return days;
+  }, [calendarDays]);
+
+  const todayData = useMemo(() => {
+    const today = new Date().toISOString().split("T")[0];
+    return calendarDays.find((d) => d.dateString === today);
+  }, [calendarDays]);
+
   function getOccupancyColor(
     occupancy: number,
     hasCheckIns: boolean,
@@ -344,6 +368,40 @@ export default function KalenderPage() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              {/* View Mode Selector */}
+              <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
+                <button
+                  onClick={() => setViewMode("month")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === "month"
+                      ? "bg-[#2c7a4c] text-white"
+                      : "text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  Månad
+                </button>
+                <button
+                  onClick={() => setViewMode("week")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === "week"
+                      ? "bg-[#2c7a4c] text-white"
+                      : "text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  Vecka
+                </button>
+                <button
+                  onClick={() => setViewMode("day")}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === "day"
+                      ? "bg-[#2c7a4c] text-white"
+                      : "text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  Dag
+                </button>
+              </div>
+
               {/* Room Filter */}
               <select
                 value={roomFilter}
@@ -421,78 +479,266 @@ export default function KalenderPage() {
               </div>
 
               {/* Veckodagar */}
-              <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
-                {["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"].map(
-                  (day) => (
-                    <div
-                      key={day}
-                      className="p-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-200 last:border-r-0"
-                    >
-                      {day}
-                    </div>
-                  )
-                )}
-              </div>
+              {viewMode === "month" && (
+                <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
+                  {["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"].map(
+                    (day) => (
+                      <div
+                        key={day}
+                        className="p-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-200 last:border-r-0"
+                      >
+                        {day}
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
 
-              {/* Kalenderdagar */}
-              <div className="grid grid-cols-7">
-                {calendarDays.map((day) => (
-                  <button
-                    key={day.dateString}
-                    onClick={() => setSelectedDate(day.dateString)}
-                    className={`
-                      h-24 p-2 border-r border-b border-gray-200 last:border-r-0 hover:bg-gray-50 text-left relative transition-colors
-                      ${
-                        !day.isCurrentMonth
-                          ? "bg-gray-50 text-gray-400"
-                          : "bg-white"
-                      }
-                      ${
-                        day.isToday
-                          ? "bg-blue-50 border-blue-300 ring-1 ring-blue-300"
-                          : ""
-                      }
-                      ${
-                        selectedDate === day.dateString
-                          ? "ring-2 ring-[#2c7a4c] z-10"
-                          : ""
-                      }
-                    `}
-                  >
-                    {/* Datum */}
-                    <div
-                      className={`text-sm font-medium mb-1 ${
-                        day.isToday
-                          ? "text-blue-600 font-bold"
-                          : "text-gray-700"
-                      }`}
+              {/* MÅNADSVY */}
+              {viewMode === "month" && (
+                <div className="grid grid-cols-7">
+                  {calendarDays.map((day) => (
+                    <button
+                      key={day.dateString}
+                      onClick={() => setSelectedDate(day.dateString)}
+                      className={`
+                        h-24 p-2 border-r border-b border-gray-200 last:border-r-0 hover:bg-gray-50 text-left relative transition-colors
+                        ${
+                          !day.isCurrentMonth
+                            ? "bg-gray-50 text-gray-400"
+                            : "bg-white"
+                        }
+                        ${
+                          day.isToday
+                            ? "bg-blue-50 border-blue-300 ring-1 ring-blue-300"
+                            : ""
+                        }
+                        ${
+                          selectedDate === day.dateString
+                            ? "ring-2 ring-[#2c7a4c] z-10"
+                            : ""
+                        }
+                      `}
                     >
-                      {day.date.getDate()}
-                    </div>
+                      {/* Datum */}
+                      <div
+                        className={`text-sm font-medium mb-1 ${
+                          day.isToday
+                            ? "text-blue-600 font-bold"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {day.date.getDate()}
+                      </div>
 
-                    {/* Status indicators med spec-färger */}
-                    <div className="space-y-1">
-                      {day.checkIns.length > 0 && (
-                        <div className="text-xs px-1 py-0.5 bg-yellow-100 text-yellow-800 rounded border border-yellow-400">
-                          📥 {day.checkIns.length}
-                        </div>
-                      )}
-                      {day.checkOuts.length > 0 && (
-                        <div className="text-xs px-1 py-0.5 bg-red-100 text-red-800 rounded border border-red-400">
-                          📤 {day.checkOuts.length}
-                        </div>
-                      )}
-                      {day.bookings.length > 0 &&
-                        !day.checkIns.length &&
-                        !day.checkOuts.length && (
-                          <div className="text-xs px-1 py-0.5 bg-green-100 text-green-800 rounded border border-green-400">
-                            {day.bookings.length} inne
+                      {/* Status indicators med spec-färger */}
+                      <div className="space-y-1">
+                        {day.checkIns.length > 0 && (
+                          <div className="text-xs px-1 py-0.5 bg-yellow-100 text-yellow-800 rounded border border-yellow-400">
+                            📥 {day.checkIns.length}
                           </div>
                         )}
+                        {day.checkOuts.length > 0 && (
+                          <div className="text-xs px-1 py-0.5 bg-red-100 text-red-800 rounded border border-red-400">
+                            📤 {day.checkOuts.length}
+                          </div>
+                        )}
+                        {day.bookings.length > 0 &&
+                          !day.checkIns.length &&
+                          !day.checkOuts.length && (
+                            <div className="text-xs px-1 py-0.5 bg-green-100 text-green-800 rounded border border-green-400">
+                              {day.bookings.length} inne
+                            </div>
+                          )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* VECKOVISNING */}
+              {viewMode === "week" && (
+                <div className="grid grid-cols-7 gap-4 p-4">
+                  {weekDays.map((day) => (
+                    <div
+                      key={day.dateString}
+                      onClick={() => setSelectedDate(day.dateString)}
+                      className={`
+                        cursor-pointer rounded-lg border-2 p-4 min-h-[220px] hover:shadow-lg transition-all
+                        ${day.isToday ? "ring-2 ring-blue-500" : ""}
+                        ${
+                          selectedDate === day.dateString
+                            ? "ring-2 ring-[#2c7a4c]"
+                            : ""
+                        }
+                        ${
+                          day.checkIns.length > 0
+                            ? "bg-yellow-50 border-yellow-400"
+                            : day.checkOuts.length > 0
+                            ? "bg-red-50 border-red-400"
+                            : day.bookings.length > 0
+                            ? "bg-green-50 border-green-400"
+                            : "bg-white border-gray-300"
+                        }
+                      `}
+                    >
+                      <div className="text-center mb-3">
+                        <div className="text-xs text-gray-600 uppercase">
+                          {day.date.toLocaleDateString("sv-SE", {
+                            weekday: "short",
+                          })}
+                        </div>
+                        <div className="text-2xl font-bold text-gray-800">
+                          {day.date.getDate()}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {day.date.toLocaleDateString("sv-SE", {
+                            month: "short",
+                          })}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {day.checkIns.length > 0 && (
+                          <div className="text-sm px-2 py-1 bg-yellow-100 text-yellow-800 rounded border border-yellow-400">
+                            📥 {day.checkIns.length} in
+                          </div>
+                        )}
+                        {day.checkOuts.length > 0 && (
+                          <div className="text-sm px-2 py-1 bg-red-100 text-red-800 rounded border border-red-400">
+                            📤 {day.checkOuts.length} ut
+                          </div>
+                        )}
+                        {day.bookings.length > 0 && (
+                          <div className="text-sm px-2 py-1 bg-green-100 text-green-800 rounded border border-green-400">
+                            🐕 {day.bookings.length} inne
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </button>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
+
+              {/* DAGVISNING */}
+              {viewMode === "day" && todayData && (
+                <div className="p-6">
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-bold text-gray-800">
+                      {todayData.date.toLocaleDateString("sv-SE", {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </h3>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* Incheckningar */}
+                    {todayData.checkIns.length > 0 && (
+                      <div>
+                        <h4 className="text-lg font-semibold text-yellow-800 mb-3 flex items-center gap-2">
+                          📥 Incheckningar ({todayData.checkIns.length})
+                        </h4>
+                        <div className="space-y-2">
+                          {todayData.checkIns.map((booking) => (
+                            <div
+                              key={booking.id}
+                              className="p-4 bg-yellow-50 border border-yellow-300 rounded-lg"
+                            >
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <div className="font-semibold text-gray-800">
+                                    Hund ID: {booking.dog_id}
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    Ägare ID: {booking.owner_id}
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {booking.start_date} → {booking.end_date}
+                                  </div>
+                                </div>
+                                <button className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm font-medium">
+                                  Checka in
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Utcheckningar */}
+                    {todayData.checkOuts.length > 0 && (
+                      <div>
+                        <h4 className="text-lg font-semibold text-red-800 mb-3 flex items-center gap-2">
+                          📤 Utcheckningar ({todayData.checkOuts.length})
+                        </h4>
+                        <div className="space-y-2">
+                          {todayData.checkOuts.map((booking) => (
+                            <div
+                              key={booking.id}
+                              className="p-4 bg-red-50 border border-red-300 rounded-lg"
+                            >
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <div className="font-semibold text-gray-800">
+                                    Hund ID: {booking.dog_id}
+                                  </div>
+                                  <div className="text-sm text-gray-600">
+                                    Ägare ID: {booking.owner_id}
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {booking.start_date} → {booking.end_date}
+                                  </div>
+                                </div>
+                                <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm font-medium">
+                                  Checka ut
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Hundar inne */}
+                    {todayData.bookings.length > 0 && (
+                      <div>
+                        <h4 className="text-lg font-semibold text-green-800 mb-3 flex items-center gap-2">
+                          🐕 Hundar inne ({todayData.bookings.length})
+                        </h4>
+                        <div className="space-y-2">
+                          {todayData.bookings.map((booking) => (
+                            <div
+                              key={booking.id}
+                              className="p-4 bg-green-50 border border-green-300 rounded-lg"
+                            >
+                              <div className="font-semibold text-gray-800">
+                                Hund ID: {booking.dog_id}
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                Ägare ID: {booking.owner_id}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {booking.start_date} → {booking.end_date}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {todayData.bookings.length === 0 &&
+                      todayData.checkIns.length === 0 &&
+                      todayData.checkOuts.length === 0 && (
+                        <div className="text-center py-12 text-gray-500">
+                          Inga bokningar denna dag
+                        </div>
+                      )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
