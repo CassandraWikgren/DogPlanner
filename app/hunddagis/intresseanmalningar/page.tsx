@@ -33,17 +33,30 @@ import { useAuth } from "@/app/context/AuthContext";
 
 interface InterestApplication {
   id: string;
+  org_id?: string;
   parent_name: string;
   parent_email: string;
   parent_phone: string;
+  owner_city?: string;
+  owner_address?: string;
   dog_name: string;
   dog_breed?: string;
+  dog_birth?: string;
   dog_age?: number;
-  dog_size: "small" | "medium" | "large";
+  dog_gender?: "hane" | "tik";
+  dog_size?: "small" | "medium" | "large";
+  dog_height_cm?: number;
+  subscription_type?: string;
   preferred_start_date?: string;
   preferred_days?: string[];
   special_needs?: string;
+  special_care_needs?: string;
+  is_neutered?: boolean;
+  is_escape_artist?: boolean;
+  destroys_things?: boolean;
+  not_house_trained?: boolean;
   previous_daycare_experience?: boolean;
+  gdpr_consent?: boolean;
   status: "pending" | "contacted" | "accepted" | "declined";
   notes?: string;
   created_at: string;
@@ -182,34 +195,134 @@ export default function HunddagisIntresseanmalningarPage() {
   const transferToHunddagis = async (application: InterestApplication) => {
     if (!currentOrgId) return;
 
+    if (
+      !confirm(
+        `Överför ${application.dog_name} till hunddagis?\n\nDetta skapar:\n- Ägare: ${application.parent_name}\n- Hund: ${application.dog_name}\n\nFortsätt?`
+      )
+    ) {
+      return;
+    }
+
     setTransferring(true);
     try {
-      // TODO: Implementera när databastabellerna är korrekt konfigurerade
-      console.log("Skulle överföra ansökan:", application);
+      // 1. Skapa eller hitta ägare
+      let ownerId: string | null = null;
 
-      // Simulera överföring
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Försök hitta befintlig ägare via e-post
+      const { data: existingOwner } = await supabase
+        .from("owners")
+        .select("id")
+        .eq("org_id", currentOrgId)
+        .ilike("email", application.parent_email)
+        .maybeSingle();
 
-      // Uppdatera ansökan med anteckning om överföring
+      if (existingOwner) {
+        ownerId = existingOwner.id;
+        console.log("Hittade befintlig ägare:", ownerId);
+      } else {
+        // Skapa ny ägare
+        const { data: newOwner, error: ownerError } = await supabase
+          .from("owners")
+          .insert([
+            {
+              org_id: currentOrgId,
+              full_name: application.parent_name,
+              email: application.parent_email,
+              phone: application.parent_phone,
+              city: application.owner_city || null,
+              address: application.owner_address || null,
+              gdpr_consent: application.gdpr_consent || false,
+              notes: `Från intresseanmälan ${new Date().toLocaleDateString(
+                "sv-SE"
+              )}`,
+            },
+          ])
+          .select("id")
+          .single();
+
+        if (ownerError) throw ownerError;
+        ownerId = newOwner.id;
+        console.log("Skapade ny ägare:", ownerId);
+      }
+
+      // 2. Konvertera preferred_days till string (kommaseparerad)
+      const daysString = application.preferred_days?.join(",") || "";
+
+      // 3. Skapa hund
+      const { data: newDog, error: dogError } = await supabase
+        .from("dogs")
+        .insert([
+          {
+            org_id: currentOrgId,
+            owner_id: ownerId,
+            name: application.dog_name,
+            breed: application.dog_breed || null,
+            birth: application.dog_birth || null,
+            gender: application.dog_gender || null,
+            heightcm: application.dog_height_cm || null,
+            subscription: application.subscription_type || null,
+            days: daysString,
+            startdate: application.preferred_start_date || null,
+            special_needs:
+              application.special_care_needs ||
+              application.special_needs ||
+              null,
+            is_castrated: application.is_neutered || false,
+            is_escape_artist: application.is_escape_artist || false,
+            destroys_things: application.destroys_things || false,
+            is_house_trained: !application.not_house_trained,
+            notes: `Från intresseanmälan: ${
+              application.notes || "Ingen kommentar"
+            }`,
+          },
+        ])
+        .select("id, name")
+        .single();
+
+      if (dogError) throw dogError;
+
+      console.log("Skapade hund:", newDog);
+
+      // 4. Uppdatera ansökan till "accepted" med anteckning
       await updateApplicationStatus(
         application.id,
         "accepted",
         `${
           application.notes || ""
-        }\n\n✅ MARKERAD FÖR ÖVERFÖRING TILL HUNDDAGIS:\n- Överförd: ${new Date().toLocaleString(
+        }\n\n✅ ÖVERFÖRD TILL HUNDDAGIS:\n- Datum: ${new Date().toLocaleString(
           "sv-SE"
-        )}\n- Status: Väntar på implementation`
+        )}\n- Ägare ID: ${ownerId}\n- Hund ID: ${newDog.id}\n- Hund: ${
+          newDog.name
+        }`
       );
+
+      // 5. TODO: Skicka bekräftelse-mejl till ägaren
+      // await sendConfirmationEmail(application.parent_email, {
+      //   ownerName: application.parent_name,
+      //   dogName: application.dog_name,
+      //   startDate: application.preferred_start_date,
+      // });
 
       alert(
-        `✅ Ansökan markerad för överföring!\n\nÄgare: ${application.parent_name}\nHund: ${application.dog_name}\n\nFunktionaliteten implementeras snart.`
+        `✅ Överföringen lyckades!\n\n` +
+          `Ägare: ${application.parent_name}\n` +
+          `Hund: ${application.dog_name}\n\n` +
+          `Hunden finns nu i hunddagis-listan.`
       );
 
-      // Uppdatera listan
+      // Ladda om listan
       await loadApplications();
     } catch (err: any) {
       console.error("Error transferring to hunddagis:", err);
-      setError(err.message || "[ERR-5002] Kunde inte överföra till hunddagis");
+      setError(
+        err.message ||
+          "[ERR-5002] Kunde inte överföra till hunddagis. Kontrollera att alla obligatoriska fält är ifyllda."
+      );
+      alert(
+        `❌ Fel vid överföring:\n\n${
+          err.message || "Okänt fel"
+        }\n\nKontrollera att alla obligatoriska fält är ifyllda i ansökan.`
+      );
     } finally {
       setTransferring(false);
     }
@@ -419,7 +532,9 @@ export default function HunddagisIntresseanmalningarPage() {
                       )}
                       <div>
                         <strong>Storlek:</strong>{" "}
-                        {dogSizes[selectedApplication.dog_size]}
+                        {selectedApplication.dog_size
+                          ? dogSizes[selectedApplication.dog_size]
+                          : "Ej angivet"}
                       </div>
                     </div>
                   </div>
@@ -551,10 +666,77 @@ export default function HunddagisIntresseanmalningarPage() {
                   {/* Transfer to Hunddagis */}
                   {selectedApplication.status === "accepted" && (
                     <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-2">🎯 Överföring</h4>
+                      <h4 className="font-semibold mb-2">
+                        🎯 Överföring till Hunddagis
+                      </h4>
+
+                      {/* Visa varning om hunden redan är överförd */}
+                      {selectedApplication.notes?.includes(
+                        "ÖVERFÖRD TILL HUNDDAGIS"
+                      ) ? (
+                        <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                          <p className="text-sm text-green-800">
+                            ✅ Denna hund har redan överförts till hunddagis.
+                          </p>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Kontrollera obligatoriska fält */}
+                          {!selectedApplication.dog_name ||
+                          !selectedApplication.parent_name ||
+                          !selectedApplication.parent_email ? (
+                            <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                              <p className="text-sm text-yellow-800">
+                                ⚠️ Obligatoriska fält saknas. Kontrollera att
+                                namn, e-post och hundens namn är ifyllda.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                              <p className="text-sm text-blue-800 mb-2">
+                                <strong>Detta kommer att skapa:</strong>
+                              </p>
+                              <ul className="text-sm text-blue-700 space-y-1">
+                                <li>
+                                  • Ägare: {selectedApplication.parent_name}
+                                </li>
+                                <li>
+                                  • Hund: {selectedApplication.dog_name}{" "}
+                                  {selectedApplication.dog_breed
+                                    ? `(${selectedApplication.dog_breed})`
+                                    : ""}
+                                </li>
+                                {selectedApplication.subscription_type && (
+                                  <li>
+                                    • Abonnemang:{" "}
+                                    {selectedApplication.subscription_type}
+                                  </li>
+                                )}
+                                {selectedApplication.preferred_start_date && (
+                                  <li>
+                                    • Startdatum:{" "}
+                                    {new Date(
+                                      selectedApplication.preferred_start_date
+                                    ).toLocaleDateString("sv-SE")}
+                                  </li>
+                                )}
+                              </ul>
+                            </div>
+                          )}
+                        </>
+                      )}
+
                       <Button
                         onClick={() => transferToHunddagis(selectedApplication)}
-                        disabled={transferring}
+                        disabled={
+                          transferring ||
+                          selectedApplication.notes?.includes(
+                            "ÖVERFÖRD TILL HUNDDAGIS"
+                          ) ||
+                          !selectedApplication.dog_name ||
+                          !selectedApplication.parent_name ||
+                          !selectedApplication.parent_email
+                        }
                         className="w-full"
                         variant="default"
                       >
@@ -562,6 +744,13 @@ export default function HunddagisIntresseanmalningarPage() {
                           <>
                             <Clock className="h-4 w-4 mr-2 animate-spin" />
                             Överför...
+                          </>
+                        ) : selectedApplication.notes?.includes(
+                            "ÖVERFÖRD TILL HUNDDAGIS"
+                          ) ? (
+                          <>
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            Redan överförd
                           </>
                         ) : (
                           <>
