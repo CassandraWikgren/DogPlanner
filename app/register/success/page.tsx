@@ -1,52 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle } from "lucide-react";
 
 export default function RegisterSuccessPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="text-center">
-          <CheckCircle className="mx-auto h-16 w-16 text-green-600" />
-          <h1 className="mt-4 text-3xl font-bold text-gray-900">
-            Registrering lyckades!
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white flex items-center justify-center px-4 py-10">
+      <div className="max-w-lg w-full">
+        <div className="bg-white rounded-2xl shadow-lg p-10 text-center border border-gray-200">
+          {/* Emoji/Icon */}
+          <div className="mb-6">
+            <span className="text-6xl">🎉</span>
+          </div>
+
+          {/* Heading */}
+          <h1 className="text-3xl font-bold text-[#2c7a4c] mb-4">
+            Välkommen till DogPlanner-familjen!
           </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Din användare har skapats framgångsrikt.
+
+          {/* Description */}
+          <p className="text-gray-700 text-lg leading-relaxed mb-8">
+            Din registrering är klar och du är nu redo att komma igång.
+            <br />
+            Vi finns här för att göra din vardag enklare – och för att ge dig
+            full kontroll på allt som rör ditt företag.
           </p>
-        </div>
 
-        <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-lg font-medium text-gray-900">
-                Vad händer nu?
-              </h2>
-              <div className="mt-4 space-y-2 text-sm text-gray-600">
-                <p>✅ Ditt konto är nu aktiverat</p>
-                <p>✅ Du har fått 3 månaders gratis provperiod</p>
-                <p>✅ Du kan börja använda alla funktioner direkt</p>
-              </div>
-            </div>
-
-            <div className="text-center">
-              <Link
-                href="/login"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-              >
-                Logga in nu
-              </Link>
-            </div>
-
-            <div className="text-center">
-              <p className="text-xs text-gray-500">
-                Har du frågor? Kontakta oss på{" "}
-                <a href="mailto:support@dogplanner.se" className="text-emerald-600 hover:text-emerald-500">
-                  support@dogplanner.se
-                </a>
-              </p>
-            </div>
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/"
+              className="inline-block px-6 py-3 bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold rounded-lg shadow-sm transition text-center"
+            >
+              Tillbaka till startsidan
+            </Link>
+            <Link
+              href="/login"
+              className="inline-block px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition text-center"
+            >
+              Logga in
+            </Link>
           </div>
         </div>
       </div>
