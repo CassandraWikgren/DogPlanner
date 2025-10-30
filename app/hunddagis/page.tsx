@@ -1267,125 +1267,145 @@ export default function HunddagisPage() {
           </div>
         </div>
       ) : (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
-          {/* Header */}
-          <header className="dagis-header max-w-7xl mx-auto">
-            <Link className="back-btn" href="/dashboard">
-              ← Tillbaka
-            </Link>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <span>Hunddagis</span>
+        <div className="min-h-screen bg-gray-50">
+          {/* Modern Clean Header */}
+          <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+            <div className="max-w-7xl mx-auto px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Link
+                    href="/dashboard"
+                    className="text-gray-600 hover:text-gray-900 flex items-center gap-2 text-sm font-medium transition-colors"
+                  >
+                    ← Tillbaka
+                  </Link>
+                  <div className="h-6 w-px bg-gray-300" />
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    Hunddagis
+                  </h1>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Link
+                    href="/hunddagis/new"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+                  >
+                    <Plus className="h-4 w-4" /> Ny hund
+                  </Link>
+                  <button
+                    onClick={exportPDF}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+                  >
+                    <Download className="h-4 w-4" /> PDF
+                  </button>
+                  <button
+                    onClick={loadDogs}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+                  >
+                    <RefreshCcw className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
             </div>
           </header>
 
-          {/* Hero + livekort */}
-          <section className="dagis-hero">
-            <h1>Hunddagis</h1>
-            <p>Sammanställning, statistik och hantering av dagishundar.</p>
-          </section>
-
-          {/* Main content with floating live cards */}
-          <div className="max-w-7xl mx-auto px-6 -mt-16 relative z-20">
-            {/* Live boxes - floating over hero */}
-            <div className="live-grid">
+          {/* Stats Cards - Clean & Modern */}
+          <div className="max-w-7xl mx-auto px-6 py-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
               {/* 1. Dagishundar */}
               <div
-                className="live-card"
+                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => setCurrentView("all")}
                 title="Alla registrerade dagishundar"
               >
-                <div className="live-value">{live.dagishundar}</div>
-                <div className="live-label">Dagishundar</div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">
+                  {live.dagishundar}
+                </div>
+                <div className="text-sm text-gray-600">Dagishundar</div>
               </div>
 
-              {/* 2. Promenader (inne idag) */}
+              {/* 2. Promenader */}
               <div
-                className="live-card"
+                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => setCurrentView("all")}
                 title="Hundar incheckade idag"
               >
-                <div className="live-value">{live.promenaderIdag}</div>
-                <div className="live-label">Promenader</div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">
+                  {live.promenaderIdag}
+                </div>
+                <div className="text-sm text-gray-600">Promenader</div>
               </div>
 
               {/* 3. Intresseanmälningar */}
               <div
-                className="live-card cursor-pointer"
+                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() =>
                   (window.location.href = "/hunddagis/intresseanmalningar")
                 }
-                title="Nya intresseanmälningar denna månaden - Klicka för att se lista"
+                title="Nya intresseanmälningar"
               >
-                <div className="live-value">{live.intresseSenasteMån}</div>
-                <div className="live-label">Intresseanmälningar</div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">
+                  {live.intresseSenasteMån}
+                </div>
+                <div className="text-sm text-gray-600">Intresseanmälningar</div>
               </div>
 
-              {/* 4. Tjänster (kloklipp/tassklipp/bad) */}
+              {/* 4. Tjänster */}
               <div
-                className="live-card cursor-pointer"
+                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => setCurrentView("services")}
-                title="Tjänster denna månaden - Klicka för att se checklista"
+                title="Tjänster denna månaden"
               >
-                <div className="live-value">{live.tjänsterDennaMån}</div>
-                <div className="live-label">Tjänster</div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">
+                  {live.tjänsterDennaMån}
+                </div>
+                <div className="text-sm text-gray-600">Tjänster</div>
               </div>
 
               {/* 5. Hundrum */}
               <div
-                className="live-card cursor-pointer"
+                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => setCurrentView("rooms")}
-                title="Antal rum & beläggning - Klicka för att se detaljer"
+                title="Antal rum & beläggning"
               >
-                <div className="live-value">{live.hundrum}</div>
-                <div className="live-label">Hundrum</div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">
+                  {live.hundrum}
+                </div>
+                <div className="text-sm text-gray-600">Hundrum</div>
               </div>
 
               {/* 6. Mina priser */}
               <div
-                className="live-card cursor-pointer"
+                className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => (window.location.href = "/hunddagis/priser")}
                 title="Gå till prisinställningar"
               >
-                <div className="live-value">€</div>
-                <div className="live-label">Mina priser</div>
+                <div className="text-3xl font-bold text-emerald-600 mb-1">
+                  €
+                </div>
+                <div className="text-sm text-gray-600">Mina priser</div>
               </div>
             </div>
 
-            {/* Primära knappar under liveboxarna */}
-            <div className="flex flex-wrap gap-4 justify-center mt-6 mb-8">
-              <Link
-                href="/hunddagis/new"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white font-semibold rounded-lg hover:bg-[#236139] transition-all shadow-md hover:shadow-lg"
-              >
-                <Plus className="h-4 w-4" /> Ny hund
-              </Link>
-              <button
-                onClick={exportPDF}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#2c7a4c] font-semibold rounded-lg border-2 border-[#2c7a4c] hover:bg-green-50 transition-all shadow-md hover:shadow-lg"
-              >
-                <Download className="h-4 w-4" /> PDF-export
-              </button>
-              <button
-                onClick={loadDogs}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-all shadow-md"
-              >
-                <RefreshCcw className="h-4 w-4" /> Ladda om
-              </button>
             </div>
 
-            {/* Kontroller */}
-            <div className="controls">
-              <div className="left">
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="🔍 Sök… (hund, ägare, telefon, rum…)"
-                  className="input"
-                />
+            {/* Search & Filter Controls - Modern */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                {/* Search */}
+                <div className="flex-1">
+                  <input
+                    value={q}
+                    onChange={(e) => setQ(e.target.value)}
+                    placeholder="🔍 Sök... (hund, ägare, telefon, rum...)"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                  />
+                </div>
+
+                {/* Subscription Filter */}
                 <select
                   value={subFilter}
                   onChange={(e) => setSubFilter(e.target.value)}
-                  className="select"
+                  className="px-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                 >
                   <option value="">Alla abonnemang</option>
                   <option value="Heltid">Heltid</option>
@@ -1393,53 +1413,66 @@ export default function HunddagisPage() {
                   <option value="Deltid 2">Deltid 2</option>
                   <option value="Dagshund">Dagshund</option>
                 </select>
+
+                {/* Month Filter */}
                 <input
                   type="month"
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
-                  className="select"
+                  className="px-4 py-2.5 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
                   title="Filtrerar på startmånad (eller skapad om start saknas)"
                 />
-              </div>
 
-              <div className="right">
+                {/* Column Selector */}
                 <div className="relative">
                   <button
                     onClick={() => setShowColsMenu((s) => !s)}
-                    className="btn btn-ghost"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors"
                     title="Kolumnval"
                   >
                     <Settings2 className="h-4 w-4" /> Kolumner
                   </button>
                   {showColsMenu && (
-                    <div className="absolute right-0 mt-2 w-56 rounded-md border bg-white shadow z-10 p-2">
-                      {Object.keys(COLUMN_LABELS).map((c) => (
-                        <label
-                          key={c}
-                          className="flex items-center gap-2 px-2 py-1 text-sm"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={columns.includes(c)}
-                            onChange={() =>
-                              setColumns((prev) =>
-                                prev.includes(c)
-                                  ? prev.filter((x) => x !== c)
-                                  : [...prev, c]
-                              )
-                            }
-                          />
-                          {COLUMN_LABELS[c]}
-                        </label>
-                      ))}
+                    <div className="absolute right-0 mt-2 w-64 rounded-lg border border-gray-200 bg-white shadow-lg z-10 p-3">
+                      <div className="space-y-1.5">
+                        {Object.keys(COLUMN_LABELS).map((c) => (
+                          <label
+                            key={c}
+                            className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={columns.includes(c)}
+                              onChange={() =>
+                                setColumns((prev) =>
+                                  prev.includes(c)
+                                    ? prev.filter((x) => x !== c)
+                                    : [...prev, c]
+                                )
+                              }
+                              className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                            />
+                            <span className="text-gray-700">{COLUMN_LABELS[c]}</span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Felvisning */}
-            {errMsg && <div className="error">{errMsg}</div>}
+            {/* Error Message */}
+            {errMsg && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm text-red-800 font-medium">{errMsg}</p>
+                  </div>
+                </div>
+              </div>
+            )}
             {/* === VYER === */}
 
             {/* Tjänster (checklista) */}
