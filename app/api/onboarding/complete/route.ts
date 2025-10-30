@@ -15,7 +15,8 @@ export async function POST(req: Request) {
     }
 
     // Skapa Supabase-klient (service role key för admin-operationer)
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = await cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
     // 1) Verifiera vem som anropar
     const { data: userData, error: userErr } = await supabase.auth.getUser(
       token

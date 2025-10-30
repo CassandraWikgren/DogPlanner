@@ -35,10 +35,19 @@ const nextConfig: NextConfig = {
 
   // 🖼️ Bildoptimering för Supabase-lagrade bilder
   images: {
-    domains: [
-      "lh3.googleusercontent.com",
-      "supabase.co",
-      "avatars.githubusercontent.com",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
     ],
   },
 

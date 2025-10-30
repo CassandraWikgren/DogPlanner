@@ -7,9 +7,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-09-30.clover" as any,
 });
 
-const supabase = createRouteHandlerClient({ cookies });
-
 export async function POST(req: Request) {
+  const cookieStore = await cookies();
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+
   const sig = req.headers.get("stripe-signature");
   const body = await req.text();
 

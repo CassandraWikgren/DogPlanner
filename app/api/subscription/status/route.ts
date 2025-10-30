@@ -14,7 +14,8 @@ export async function GET(req: Request) {
       );
     }
 
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = await cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
     // 🧩 Hämta användaren från token
     const { data: userData, error: userErr } = await supabase.auth.getUser(

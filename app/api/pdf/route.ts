@@ -47,7 +47,7 @@ type InvoiceResult = {
 // Supabase-konfiguration
 // ==========================
 
-const supabase = createRouteHandlerClient({ cookies });
+// (Moved inside POST function for Next.js 15 async cookies)
 
 // ==========================
 // POST – generera faktura-PDF
@@ -55,6 +55,9 @@ const supabase = createRouteHandlerClient({ cookies });
 
 export async function POST(req: Request) {
   try {
+    const cookieStore = await cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+
     const { invoiceId } = await req.json();
     if (!invoiceId) {
       console.error("[ERR-1001] Ingen faktura angiven i POST-body.");

@@ -9,14 +9,14 @@ export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // Redirect inloggade användare till dashboard
+  // Inloggade användare ska INTE se landing page - redirecta till dashboard
   useEffect(() => {
     if (!loading && user) {
-      router.push("/dashboard");
+      router.replace("/dashboard");
     }
   }, [user, loading, router]);
 
-  // Visa ingenting medan vi kollar auth-status
+  // Visa laddning medan vi kollar auth
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -25,12 +25,12 @@ export default function HomePage() {
     );
   }
 
-  // Om användaren är inloggad, visa ingenting (redirect pågår)
+  // Om inloggad, visa ingenting (redirect pågår)
   if (user) {
     return null;
   }
 
-  // Publika förstasidan (endast för utloggade)
+  // Landing page - ENDAST för utloggade besökare
   return (
     <div className="min-h-screen bg-white">
       {/* Simple Header */}
