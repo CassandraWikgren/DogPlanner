@@ -115,13 +115,13 @@ export default function LoginPage() {
       : null;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-50 to-white flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+    <main className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
         {/* Logo/Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#2c7a4c] to-[#1f5738] rounded-2xl flex items-center justify-center shadow-lg">
+          <div className="w-16 h-16 bg-[#2c7a4c] rounded-xl flex items-center justify-center">
             <svg
-              className="w-10 h-10 text-white"
+              className="w-8 h-8 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -188,7 +188,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold py-3 rounded-lg text-base shadow-sm transition disabled:opacity-60"
+            className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold py-3 rounded-lg transition disabled:opacity-60"
           >
             {loading
               ? "Bearbetar..."
@@ -199,14 +199,14 @@ export default function LoginPage() {
         </form>
 
         {!resetMode && (
-          <div className="text-center mt-4">
+          <div className="text-center mt-5">
             <button
               onClick={() => {
                 setResetMode(true);
                 setError(null);
                 setMessage(null);
               }}
-              className="text-sm text-gray-600 hover:text-gray-900 hover:underline"
+              className="text-sm text-gray-600 hover:text-gray-900"
             >
               Har du glömt ditt lösenord?
             </button>
@@ -221,7 +221,7 @@ export default function LoginPage() {
                 setError(null);
                 setMessage(null);
               }}
-              className="text-sm text-[#2c7a4c] hover:text-[#236139] hover:underline font-medium"
+              className="text-sm text-[#2c7a4c] hover:text-[#236139] font-medium"
             >
               Tillbaka till inloggning
             </button>
@@ -233,7 +233,7 @@ export default function LoginPage() {
             Har du inget konto?{" "}
             <a
               href="/register"
-              className="text-[#2c7a4c] font-semibold hover:underline hover:text-[#236139]"
+              className="text-[#2c7a4c] font-semibold hover:text-[#236139]"
             >
               Skapa konto
             </a>
