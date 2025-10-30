@@ -15,6 +15,7 @@ import {
   Search,
   DollarSign,
   Settings,
+  ClipboardList,
 } from "lucide-react";
 import type { Database } from "@/types/database";
 
@@ -68,6 +69,7 @@ export default function HundpensionatPage() {
     tjänsterImorgon: 0,
     totalOwners: 0,
     monthlyRevenue: 0,
+    pendingBookings: 0,
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -78,6 +80,13 @@ export default function HundpensionatPage() {
     try {
       console.log("🔍 Laddar statistik (test-data)...");
 
+      // Hämta antal pending bookings
+      const { count } = await supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("org_id", user?.user_metadata?.org_id)
+        .eq("status", "pending");
+
       // Sätt test-statistik för att visa att UI fungerar
       setLiveStats({
         hundarIdag: 5,
@@ -86,6 +95,7 @@ export default function HundpensionatPage() {
         tjänsterImorgon: 3,
         totalOwners: 25,
         monthlyRevenue: 28500,
+        pendingBookings: count || 0,
       });
 
       console.log("✅ Test-statistik laddad");
@@ -98,6 +108,7 @@ export default function HundpensionatPage() {
         tjänsterImorgon: 0,
         totalOwners: 0,
         monthlyRevenue: 0,
+        pendingBookings: 0,
       });
     }
   };
@@ -398,6 +409,18 @@ export default function HundpensionatPage() {
             </div>
 
             <div className="flex gap-2 w-full md:w-auto">
+              <Link
+                href="/hundpensionat/ansokningar"
+                className="relative flex items-center justify-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+              >
+                <ClipboardList size={16} />
+                <span className="hidden sm:inline">Ansökningar</span>
+                {liveStats.pendingBookings > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                    {liveStats.pendingBookings}
+                  </span>
+                )}
+              </Link>
               <Link
                 href="/hundpensionat/priser"
                 className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
