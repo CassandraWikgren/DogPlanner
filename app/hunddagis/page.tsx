@@ -4,6 +4,11 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/AuthContext";
+import {
+  calculateRequiredArea,
+  calculateAllRoomsOccupancy,
+  type RoomOccupancy,
+} from "@/lib/roomCalculator";
 
 // 🔔 OBS: Alla originalimports bevarade (och några kompletterande ikoner för ny UI)
 import {
@@ -13,6 +18,10 @@ import {
   RefreshCcw,
   Calendar as CalIcon,
   CheckSquare,
+  Home,
+  AlertTriangle,
+  CheckCircle,
+  Info,
 } from "lucide-react";
 
 import EditDogModal from "@/components/EditDogModal";
@@ -53,12 +62,13 @@ type Dog = {
   id: string;
   name: string;
   breed: string | null;
-  heightcm: number | null;
+  heightcm: number | null; // mankhöjd - används för Jordbruksverket-regler
+  height_cm?: number | null; // alias för roomCalculator
   birth: string | null;
   subscription: string | null;
   startdate: string | null;
   enddate: string | null;
-  days: string | null; // t.ex. "Mån,Tis,Ons"
+  days: string | null; // t.ex. "Mån,Tis,Ons" eller "Måndag,Tisdag,Onsdag"
   room_id: string | null;
   owner_id: string | null; // ✅ korrekt relation: dogs.owner_id → owners.id
   org_id: string | null;
@@ -71,13 +81,17 @@ type Dog = {
   weight_kg?: number | null;
   created_at?: string | null;
   owners?: Owner | null; // join
+  owner?: Owner | null; // alias för roomCalculator
 };
 
 type Room = {
   id: string;
   name: string;
   capacity?: number | null;
+  capacity_m2?: number | null; // kvadratmeter för Jordbruksverket-regler
   org_id?: string | null;
+  room_type?: "daycare" | "boarding" | "both" | null;
+  is_active?: boolean | null;
 };
 
 type SortKey =
@@ -125,6 +139,8 @@ export default function HunddagisPage() {
   // === State (ALLT bevarat + kompletterat för nya vyer) ===
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]); // nytt för rumsvy
+  const [roomOccupancies, setRoomOccupancies] = useState<RoomOccupancy[]>([]); // beläggning per rum
+  const [selectedDay, setSelectedDay] = useState<string>("Måndag"); // för dagvis rumsvy
 
   const [loading, setLoading] = useState(true);
   const [errMsg, setErrMsg] = useState<string | null>(null);
@@ -512,6 +528,93 @@ export default function HunddagisPage() {
   useEffect(() => {
     refreshLive(dogs);
   }, [dogs, rooms, refreshLive]);
+
+  /* ===========================
+   * Rumsbeläggning per dag (Jordbruksverket-regler)
+   * =========================== */
+  const calculateRoomOccupancyForDay = useCallback(
+    (dayName: string) => {
+      if (!rooms.length || !dogs.length) return [];
+
+      const occupancies: RoomOccupancy[] = [];
+
+      rooms.forEach((room) => {
+        // Hitta hundar som är i detta rum OCH går denna dag
+        const dogsInRoomThisDay = dogs
+          .filter((dog) => {
+            if (dog.room_id !== room.id) return false;
+
+            // Kolla om hunden går denna dag
+            const dogDays = dog.days || "";
+            const dayVariants = [
+              dayName,
+              dayName.slice(0, 3), // "Mån" etc
+              dayName.toLowerCase(),
+            ];
+            return dayVariants.some((variant) => dogDays.includes(variant));
+          })
+          .map((dog) => ({
+            ...dog,
+            height_cm: dog.heightcm || dog.height_cm || 30,
+            owner: dog.owners || dog.owner,
+            weight_kg: dog.weight_kg || undefined, // konvertera null till undefined
+          })) as any[]; // Cast för att undvika type-konflikt med RoomOccupancy
+
+        // Beräkna erforderlig yta enligt Jordbruksverket
+        const required_m2 = calculateRequiredArea(dogsInRoomThisDay as any);
+        const total_capacity_m2 = room.capacity_m2 || room.capacity || 0;
+        const available_m2 = Math.max(0, total_capacity_m2 - required_m2);
+        const occupancy_percentage =
+          total_capacity_m2 > 0
+            ? Math.round((required_m2 / total_capacity_m2) * 100)
+            : 0;
+
+        const is_overcrowded = required_m2 > total_capacity_m2;
+        const is_full = available_m2 < 2; // mindre än 2 m² kvar
+
+        let compliance_status: "compliant" | "warning" | "violation" =
+          "compliant";
+        let compliance_message = "Rummet följer Jordbruksverkets regler";
+
+        if (is_overcrowded) {
+          compliance_status = "violation";
+          compliance_message = `⚠️ ÖVERBELAGT! Behöver ${required_m2.toFixed(
+            1
+          )} m², har endast ${total_capacity_m2} m²`;
+        } else if (is_full) {
+          compliance_status = "warning";
+          compliance_message = "Nästan fullt - begränsat utrymme kvar";
+        }
+
+        occupancies.push({
+          room_id: room.id,
+          room_name: room.name,
+          total_capacity_m2,
+          required_m2,
+          available_m2,
+          occupancy_percentage,
+          is_overcrowded,
+          is_full,
+          dogs_present: dogsInRoomThisDay as any,
+          dogs_count: dogsInRoomThisDay.length,
+          max_additional_dogs: 0, // kan beräknas vid behov
+          compliance_status,
+          compliance_message,
+        });
+      });
+
+      return occupancies;
+    },
+    [rooms, dogs]
+  );
+
+  // Uppdatera rumsbeläggning när dag, rum eller hundar ändras
+  useEffect(() => {
+    if (currentView === "rooms") {
+      const occupancies = calculateRoomOccupancyForDay(selectedDay);
+      setRoomOccupancies(occupancies);
+    }
+  }, [selectedDay, rooms, dogs, currentView, calculateRoomOccupancyForDay]);
 
   /* ===========================
    * Filter & sort (bevarat)
@@ -1471,41 +1574,235 @@ export default function HunddagisPage() {
               </div>
             )}
 
-            {/* Rumsvy */}
+            {/* Rumsvy med Jordbruksverket-beräkningar */}
             {currentView === "rooms" && (
               <div className="panel">
-                <h3 className="font-semibold mb-2">Rumsöversikt</h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {rooms.map((r) => {
-                    const dogsInRoom = dogs.filter((d) => d.room_id === r.id);
-                    const cap = r.capacity || null;
-                    return (
-                      <div key={r.id} className="border rounded-md p-3">
-                        <div className="font-semibold">
-                          {r.name}{" "}
-                          {cap ? (
-                            <span className="text-sm text-gray-500">
-                              ({dogsInRoom.length}/{cap})
-                            </span>
-                          ) : null}
-                        </div>
-                        <ul className="mt-2 text-sm">
-                          {dogsInRoom.length ? (
-                            dogsInRoom.map((d) => (
-                              <li key={d.id}>• {d.name}</li>
-                            ))
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-[#2c7a4c] mb-1">
+                      Rumsöversikt & Beläggning
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Beräkningar enligt Jordbruksverkets föreskrifter (SJVFS
+                      2019:2)
+                    </p>
+                  </div>
+                  <Link
+                    href="/rooms"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all text-sm font-medium"
+                  >
+                    <Settings2 className="h-4 w-4" />
+                    Hantera rum
+                  </Link>
+                </div>
+
+                {/* Dagväljare */}
+                <div className="mb-6 flex flex-wrap gap-2">
+                  {[
+                    "Måndag",
+                    "Tisdag",
+                    "Onsdag",
+                    "Torsdag",
+                    "Fredag",
+                    "Lördag",
+                    "Söndag",
+                  ].map((day) => (
+                    <button
+                      key={day}
+                      onClick={() => setSelectedDay(day)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        selectedDay === day
+                          ? "bg-[#2c7a4c] text-white shadow-md"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Rumskort */}
+                {!rooms.length ? (
+                  <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+                    <Home className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-gray-600 font-medium mb-2">
+                      Inga rum hittades
+                    </p>
+                    <p className="text-sm text-gray-500 mb-4">
+                      Skapa rum för att börja hantera beläggning
+                    </p>
+                    <Link
+                      href="/rooms"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all text-sm font-medium"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Skapa rum
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {roomOccupancies.map((occ) => (
+                      <div
+                        key={occ.room_id}
+                        className={`bg-white rounded-xl p-5 border-2 transition-all ${
+                          occ.compliance_status === "violation"
+                            ? "border-red-300 bg-red-50"
+                            : occ.compliance_status === "warning"
+                            ? "border-yellow-300 bg-yellow-50"
+                            : "border-green-200 hover:border-green-300"
+                        }`}
+                      >
+                        {/* Rumshuvud */}
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h4 className="font-bold text-lg text-gray-900 mb-1">
+                              {occ.room_name}
+                            </h4>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <span>{occ.total_capacity_m2} m²</span>
+                              <span>•</span>
+                              <span>{occ.dogs_count} hundar</span>
+                            </div>
+                          </div>
+                          {occ.compliance_status === "violation" ? (
+                            <AlertTriangle className="h-6 w-6 text-red-500" />
+                          ) : occ.compliance_status === "warning" ? (
+                            <AlertTriangle className="h-6 w-6 text-yellow-500" />
                           ) : (
-                            <li className="text-gray-500">Inga hundar</li>
+                            <CheckCircle className="h-6 w-6 text-green-500" />
                           )}
-                        </ul>
+                        </div>
+
+                        {/* Beläggningsbar */}
+                        <div className="mb-4">
+                          <div className="flex items-center justify-between text-sm mb-2">
+                            <span className="text-gray-600">Beläggning</span>
+                            <span
+                              className={`font-bold ${
+                                occ.occupancy_percentage > 100
+                                  ? "text-red-600"
+                                  : occ.occupancy_percentage > 90
+                                  ? "text-yellow-600"
+                                  : "text-green-600"
+                              }`}
+                            >
+                              {occ.occupancy_percentage}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                            <div
+                              className={`h-3 rounded-full transition-all ${
+                                occ.occupancy_percentage > 100
+                                  ? "bg-red-500"
+                                  : occ.occupancy_percentage > 90
+                                  ? "bg-yellow-500"
+                                  : "bg-green-500"
+                              }`}
+                              style={{
+                                width: `${Math.min(
+                                  occ.occupancy_percentage,
+                                  100
+                                )}%`,
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        {/* Yt-information */}
+                        <div className="bg-white rounded-lg p-3 mb-4 space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">
+                              Erforderlig yta:
+                            </span>
+                            <span className="font-semibold">
+                              {occ.required_m2.toFixed(1)} m²
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">
+                              Tillgänglig yta:
+                            </span>
+                            <span
+                              className={`font-semibold ${
+                                occ.available_m2 < 0
+                                  ? "text-red-600"
+                                  : occ.available_m2 < 2
+                                  ? "text-yellow-600"
+                                  : "text-green-600"
+                              }`}
+                            >
+                              {occ.available_m2.toFixed(1)} m²
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Status-meddelande */}
+                        <div
+                          className={`text-xs font-medium p-2 rounded-lg mb-4 ${
+                            occ.compliance_status === "violation"
+                              ? "bg-red-100 text-red-800"
+                              : occ.compliance_status === "warning"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-green-100 text-green-800"
+                          }`}
+                        >
+                          {occ.compliance_message}
+                        </div>
+
+                        {/* Hundlista */}
+                        <div className="border-t pt-3">
+                          <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                            Hundar {selectedDay}:
+                          </div>
+                          {occ.dogs_present.length > 0 ? (
+                            <ul className="space-y-1">
+                              {occ.dogs_present.map((dog) => (
+                                <li
+                                  key={dog.id}
+                                  className="text-sm flex items-center justify-between py-1"
+                                >
+                                  <span className="font-medium">
+                                    {dog.name}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    {(dog as any).height_cm || "?"}cm
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-sm text-gray-500 italic">
+                              Inga hundar denna dag
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    );
-                  })}
-                  {!rooms.length && (
-                    <div className="text-sm text-gray-600">
-                      Inga rum hittades.
+                    ))}
+                  </div>
+                )}
+
+                {/* Hjälpinfo */}
+                <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
+                  <div className="flex gap-3">
+                    <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-blue-900">
+                      <p className="font-semibold mb-2">
+                        Jordbruksverkets regler för inomhusrum:
+                      </p>
+                      <ul className="space-y-1 text-xs">
+                        <li>
+                          • Grundyta för största hunden + tillägg per
+                          ytterligare hund
+                        </li>
+                        <li>• Mindre än 25 cm: 2 m² + 1 m² per extra hund</li>
+                        <li>• 25-35 cm: 2 m² + 1,5 m² per extra hund</li>
+                        <li>• 36-45 cm: 2,5 m² + 1,5 m² per extra hund</li>
+                        <li>• 46-55 cm: 3,5 m² + 2 m² per extra hund</li>
+                        <li>• 56-65 cm: 4,5 m² + 2,5 m² per extra hund</li>
+                        <li>• Över 65 cm: 5,5 m² + 3 m² per extra hund</li>
+                      </ul>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             )}
