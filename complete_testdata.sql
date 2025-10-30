@@ -117,9 +117,41 @@ BEGIN
   END IF;
 END $$;
 
--- Orgs: email-konfiguration
+-- Orgs: email-konfiguration och grundläggande fält
 DO $$ 
 BEGIN
+  -- Först, lägg till grundläggande email-kolumn om den saknas
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='orgs' AND column_name='email') THEN
+    ALTER TABLE public.orgs ADD COLUMN email text;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='orgs' AND column_name='phone') THEN
+    ALTER TABLE public.orgs ADD COLUMN phone text;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='orgs' AND column_name='address') THEN
+    ALTER TABLE public.orgs ADD COLUMN address text;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='orgs' AND column_name='vat_included') THEN
+    ALTER TABLE public.orgs ADD COLUMN vat_included boolean DEFAULT true;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='orgs' AND column_name='vat_rate') THEN
+    ALTER TABLE public.orgs ADD COLUMN vat_rate numeric DEFAULT 25;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                 WHERE table_name='orgs' AND column_name='pricing_currency') THEN
+    ALTER TABLE public.orgs ADD COLUMN pricing_currency text DEFAULT 'SEK';
+  END IF;
+  
+  -- Email-konfiguration
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
                  WHERE table_name='orgs' AND column_name='contact_email') THEN
     ALTER TABLE public.orgs ADD COLUMN contact_email text;
