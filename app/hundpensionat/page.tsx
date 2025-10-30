@@ -13,6 +13,7 @@ import {
   RefreshCcw,
   Filter,
   Search,
+  DollarSign,
 } from "lucide-react";
 import type { Database } from "@/types/database";
 
@@ -396,6 +397,13 @@ export default function HundpensionatPage() {
             </div>
 
             <div className="flex gap-2 w-full md:w-auto">
+              <Link
+                href="/hundpensionat/priser"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <DollarSign size={16} />
+                <span className="hidden sm:inline">Priser</span>
+              </Link>
               <Link
                 href="/hundpensionat/kalender"
                 className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
