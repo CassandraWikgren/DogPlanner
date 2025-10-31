@@ -42,8 +42,14 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-6 py-12">
-        {/* Feature Cards Grid - 4 huvudflikar (mer kompakta) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Feature Cards Grid - 4 huvudflikar (TVINGAD DESKTOP-LAYOUT) */}
+        <div
+          className="grid gap-4"
+          style={{
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            display: "grid",
+          }}
+        >
           {/* Hunddagis */}
           <Link
             href="/hunddagis"
