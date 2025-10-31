@@ -1,8 +1,8 @@
-# Senaste ändringar - DogPlanner (30 okt 2025)
+# Senaste ändringar - DogPlanner (31 okt 2025)
 
 ## 📋 Översikt
 
-Omfattande uppdateringar av Dashboard, Hunddagis och EditDogModal för professionell och funktionell användarupplevelse.
+Omfattande uppdateringar av Dashboard, Hunddagis och EditDogModal för professionell och funktionell användarupplevelse. Senaste uppdatering inkluderar nya hälsofält, journalhistorik och automatisk kundnummersgenerering.
 
 ---
 
@@ -112,6 +112,136 @@ if (initialDog?.id) {
 2. Modal öppnas med alla data förifyllda
 3. Ändra vad du vill
 4. Spara → UPDATE i databas
+
+---
+
+## 🆕 EDITDOGMODAL - NYA FÄLT & FUNKTIONER (31 okt 2025)
+
+### ✨ Nya hälsofält i Hälsa-tabben
+
+✅ **Allergier** (`dogs.allergies`)
+
+- Textarea för att lista allergier
+- Placeholder: "T.ex. kyckling, nöt, gräs..."
+- Sparas i separat databaskolumn
+
+✅ **Mediciner** (`dogs.medications`)
+
+- Textarea för medicin och dosering
+- Placeholder: "Ange medicin och dosering..."
+- Sparas i separat databaskolumn
+
+✅ **Specialbehov** (`dogs.special_needs`)
+
+- Textarea för specialkost/tillgänglighet
+- Placeholder: "Specialkost, tillgänglighet..."
+- Sparas i separat databaskolumn
+
+✅ **Beteendeanteckningar** (`dogs.behavior_notes`)
+
+- Textarea för viktiga beteendenoteringar
+- Placeholder: "Viktiga beteendenoteringar..."
+- Sparas i separat databaskolumn
+
+### ✨ Nya flaggor/checkboxar
+
+✅ **Rymmare (Escape Artist)** (`dogs.is_escape_artist`)
+
+- Boolean checkbox
+- Viktig säkerhetsinformation
+
+✅ **Kan vara med andra hundar** (`dogs.can_be_with_other_dogs`)
+
+- Boolean checkbox
+- Viktig för gruppindelning
+
+### 🔧 Tekniska förbättringar
+
+✅ **Data sparas i rätt databaskolumner**
+
+- Tidigare sparades fält felaktigt i `events` JSONB
+- Nu sparas alla fält i sina egna kolumner:
+  - `allergies`, `medications`, `special_needs`, `behavior_notes`, `food_info`
+  - `is_castrated`, `destroys_things`, `is_house_trained`
+  - `is_escape_artist`, `can_be_with_other_dogs`
+
+✅ **POPULATE-funktion uppdaterad**
+
+- Läser från både separata kolumner OCH events JSONB
+- Prioriterar separata kolumner
+- Fallback till events för bakåtkompatibilitet
+- Fixat kolumnnamn: `birth` (inte `birthdate`), `vaccdhp`, `vaccpi`, `gender`
+
+✅ **Journalhistorik implementerad**
+
+- Hämtar alla tidigare journalanteckningar vid öppning
+- Visar dem under journaltextfältet med datum/tid
+- Auto-uppdatering efter ny anteckning sparas
+- Sparas i `dog_journal.content` med `entry_type: 'note'`
+- Sorterad från nyast till äldst
+- Scrollbar för många anteckningar (max 300px höjd)
+
+✅ **Auto-generering av kundnummer**
+
+- När ny ägare skapas utan kundnummer:
+  - Hämtar `max(customer_number)` från `owners`-tabellen
+  - Lägger till 1 och sparar
+- Garanterar unika kundnummer automatiskt
+
+✅ **UI-förbättringar**
+
+- Veckodags-knappar nu synliga: `border-gray-300` + `text-gray-700`
+- Avbryt-knapp finns och fungerar
+- Förbättrad checkbox-layout i 2-kolumns grid
+
+### 📊 Dataflöde (före vs efter)
+
+**FÖRE:**
+
+```typescript
+dogPayload = {
+  birthdate: birth, // Fel kolumnnamn
+  vaccination_dhppi: vaccDhp, // Fel kolumnnamn
+  // Hälsofält saknades eller sparades i events JSONB
+  events: {
+    /* alla fält här */
+  },
+};
+```
+
+**EFTER:**
+
+```typescript
+dogPayload = {
+  birth: birth, // ✅ Rätt kolumnnamn
+  gender: gender, // ✅ Tillagt
+  vaccdhp: vaccDhp, // ✅ Rätt kolumnnamn
+  vaccpi: vaccPi, // ✅ Rätt kolumnnamn
+  allergies: allergies, // ✅ Separat kolumn
+  medications: medications, // ✅ Separat kolumn
+  special_needs: specialNeeds, // ✅ Separat kolumn
+  behavior_notes: behaviorNotes, // ✅ Separat kolumn
+  food_info: foodInfo, // ✅ Separat kolumn
+  is_castrated: flagCast, // ✅ Separat kolumn
+  is_escape_artist: flagEscapeArtist, // ✅ Separat kolumn
+  can_be_with_other_dogs: flagCanBeWithOtherDogs, // ✅ Separat kolumn
+  events, // JSONB för övrigt
+};
+```
+
+### 🗑️ Städning av hunddagis-mappen
+
+Borttagna backup-filer (304 KB totalt):
+
+- `page_backup_compact.tsx`
+- `page_clean.tsx`
+- `page_compact.tsx`
+- `page_complex.tsx`
+- `page_correct.tsx`
+- `page_modern.tsx`
+- `page_old.tsx`
+
+**Aktiv fil:** `app/hunddagis/page.tsx` (1200 rader)
 
 ---
 
@@ -424,14 +554,12 @@ Modal (EditDogModal)
 ### Prioriterat
 
 1. **Admin sub-sidor**
-
    - `/admin/priser/dagis` - Hunddagis prishantering
    - `/admin/priser/pensionat` - Pensionat prishantering
    - `/admin/priser/frisor` - Frisör prishantering
    - `/admin/users` - Användarhantering (skapa kollegor)
 
 2. **Role-based access control**
-
    - Admin-sidor ska endast vara tillgängliga för admin-role
    - Middleware eller client-side check
 

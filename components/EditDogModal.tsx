@@ -102,11 +102,23 @@ export default function EditDogModal({
             .single();
           setIsAdmin(prof?.role === "admin");
         }
+
+        // Hämta journalhistorik om vi redigerar befintlig hund
+        if (initialDog?.id) {
+          const { data: journalData } = await supabase
+            .from("dog_journal")
+            .select("*")
+            .eq("dog_id", initialDog.id)
+            .order("created_at", { ascending: false });
+          setJournalHistory(journalData || []);
+        } else {
+          setJournalHistory([]);
+        }
       } catch (e) {
         console.error("Init modal error:", e);
       }
     })();
-  }, [open, supabase]);
+  }, [open, supabase, initialDog]);
 
   /* ===========================
    *   FORM STATE
@@ -143,6 +155,10 @@ export default function EditDogModal({
   const [vaccDhp, setVaccDhp] = React.useState<string>("");
   const [vaccPi, setVaccPi] = React.useState<string>("");
   const [careNotes, setCareNotes] = React.useState("");
+  const [allergies, setAllergies] = React.useState("");
+  const [medications, setMedications] = React.useState("");
+  const [specialNeeds, setSpecialNeeds] = React.useState("");
+  const [behaviorNotes, setBehaviorNotes] = React.useState("");
 
   // Övrigt hund (bocklista) → events.flags
   const [flagCast, setFlagCast] = React.useState(false);
@@ -151,11 +167,15 @@ export default function EditDogModal({
   const [flagSkallig, setFlagSkallig] = React.useState(false);
   const [flagPersonal, setFlagPersonal] = React.useState(false);
   const [flagPensionat, setFlagPensionat] = React.useState(false);
+  const [flagEscapeArtist, setFlagEscapeArtist] = React.useState(false);
+  const [flagCanBeWithOtherDogs, setFlagCanBeWithOtherDogs] =
+    React.useState(false);
 
   // --- KOMMENTARER ---
   const [journalText, setJournalText] = React.useState(""); // → dog_journal
   const [ownerComment, setOwnerComment] = React.useState(""); // → events.owner_comment
   const [foodInfo, setFoodInfo] = React.useState(""); // → events.food
+  const [journalHistory, setJournalHistory] = React.useState<any[]>([]); // Tidigare journalanteckningar
 
   // --- ABONNEMANG ---
   const [subscription, setSubscription] = React.useState("");
@@ -234,16 +254,43 @@ export default function EditDogModal({
     setName(initialDog.name || "");
     setBreed(initialDog.breed || "");
     setHeightcm(initialDog.heightcm?.toString() || "");
-    setBirth(initialDog.birthdate || "");
+    setBirth(initialDog.birth || initialDog.birthdate || "");
     setGender((initialDog.gender as "Tik" | "Hane" | "") || "");
     setInsuranceNo(initialDog.insurance_number || "");
     setPhotoUrl(initialDog.photo_url || null);
 
-    // Hälsa
+    // Hälsa - läs från både separata kolumner OCH events
     setInsuranceCompany(initialDog.insurance_company || "");
-    setVaccDhp(initialDog.vaccination_dhppi || "");
-    setVaccPi(initialDog.vaccination_pi || "");
+    setVaccDhp(initialDog.vaccdhp || initialDog.vaccination_dhppi || "");
+    setVaccPi(initialDog.vaccpi || initialDog.vaccination_pi || "");
     setCareNotes(initialDog.care_notes || "");
+
+    // Läs från events JSONB eller separata kolumner (prioritera separata kolumner)
+    const evts = initialDog.events || {};
+    setAllergies(initialDog.allergies || evts.allergies || "");
+    setMedications(initialDog.medications || evts.medications || "");
+    setSpecialNeeds(initialDog.special_needs || evts.special_needs || "");
+    setBehaviorNotes(initialDog.behavior_notes || evts.behavior_notes || "");
+    setFoodInfo(initialDog.food_info || evts.food || "");
+    setOwnerAddress(evts.owner_address || "");
+    setOwnerComment(evts.owner_comment || "");
+
+    // Flags från både separata kolumner OCH events.flags
+    const flags = evts.flags || {};
+    setFlagCast(initialDog.is_castrated ?? flags.kastrerad ?? false);
+    setFlagBiter(initialDog.destroys_things ?? flags.biter_saker ?? false);
+    setFlagKiss(
+      initialDog.is_house_trained === false || flags.kissar_inne || false
+    );
+    setFlagSkallig(flags.hund_skallig || false);
+    setFlagPersonal(flags.personalhund || false);
+    setFlagPensionat(flags.pensionatshund || false);
+    setFlagEscapeArtist(
+      initialDog.is_escape_artist ?? flags.is_escape_artist ?? false
+    );
+    setFlagCanBeWithOtherDogs(
+      initialDog.can_be_with_other_dogs ?? flags.can_be_with_other_dogs ?? true
+    );
 
     // Abonnemang
     setSubscription(initialDog.subscription || "");
@@ -354,6 +401,18 @@ export default function EditDogModal({
       }
 
       if (!ownerId) {
+        // Auto-generera customer_number om det inte finns
+        if (!baseOwner.customer_number) {
+          const { data: maxData } = await supabase
+            .from("owners")
+            .select("customer_number")
+            .order("customer_number", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          const maxNum = maxData?.customer_number || 0;
+          baseOwner.customer_number = maxNum + 1;
+        }
+
         const { data: created } = await supabase
           .from("owners")
           .insert([baseOwner])
@@ -376,6 +435,10 @@ export default function EditDogModal({
         care_notes: careNotes || null,
         owner_comment: ownerComment || null,
         food: foodInfo || null,
+        allergies: allergies || null,
+        medications: medications || null,
+        special_needs: specialNeeds || null,
+        behavior_notes: behaviorNotes || null,
         flags: {
           kastrerad: flagCast,
           biter_saker: flagBiter,
@@ -383,6 +446,8 @@ export default function EditDogModal({
           hund_skallig: flagSkallig,
           personalhund: flagPersonal,
           pensionatshund: flagPensionat,
+          is_escape_artist: flagEscapeArtist,
+          can_be_with_other_dogs: flagCanBeWithOtherDogs,
         },
       };
 
@@ -391,20 +456,33 @@ export default function EditDogModal({
         name: name.trim(),
         breed: breed.trim() || null,
         heightcm: heightcm ? Number(heightcm) : null,
-        birthdate: birth || null,
+        birth: birth || null,
+        gender: gender || null,
         subscription: subscription || null,
         startdate: subStart || null,
         enddate: subEnd || null,
         room_id: roomId || null,
         days: days.join(",") || null,
-        vaccination_dhppi: vaccDhp || null,
-        vaccination_pi: vaccPi || null,
+        vaccdhp: vaccDhp || null,
+        vaccpi: vaccPi || null,
         insurance_company: insuranceCompany || null,
         insurance_number: insuranceNo || null,
         photo_url: photoUrl || null,
         notes: null,
         owner_id: ownerId, // ✅ dogs.owner_id → owners.id
-        events, // JSONB
+        // Hälsofält i separata kolumner
+        allergies: allergies || null,
+        medications: medications || null,
+        special_needs: specialNeeds || null,
+        behavior_notes: behaviorNotes || null,
+        food_info: foodInfo || null,
+        // Boolean flags i separata kolumner
+        is_castrated: flagCast,
+        destroys_things: flagBiter,
+        is_house_trained: !flagKiss, // kissar_inne är inverterad
+        is_escape_artist: flagEscapeArtist,
+        can_be_with_other_dogs: flagCanBeWithOtherDogs,
+        events, // JSONB för övrigt
       };
 
       let dogId: string;
@@ -432,8 +510,23 @@ export default function EditDogModal({
       if (journalText.trim()) {
         await supabase
           .from("dog_journal")
-          .insert([{ dog_id: dogId, text: journalText.trim() }])
+          .insert([
+            {
+              dog_id: dogId,
+              content: journalText.trim(),
+              entry_type: "note",
+            },
+          ])
           .throwOnError();
+
+        // Ladda om journalhistorik efter sparning
+        const { data: updatedJournal } = await supabase
+          .from("dog_journal")
+          .select("*")
+          .eq("dog_id", dogId)
+          .order("created_at", { ascending: false });
+        setJournalHistory(updatedJournal || []);
+        setJournalText(""); // Rensa textfältet efter sparning
       }
 
       // 5) Tilläggsabonnemang (extra_service)
@@ -517,12 +610,18 @@ export default function EditDogModal({
       setVaccDhp("");
       setVaccPi("");
       setCareNotes("");
+      setAllergies("");
+      setMedications("");
+      setSpecialNeeds("");
+      setBehaviorNotes("");
       setFlagCast(false);
       setFlagBiter(false);
       setFlagKiss(false);
       setFlagSkallig(false);
       setFlagPersonal(false);
       setFlagPensionat(false);
+      setFlagEscapeArtist(false);
+      setFlagCanBeWithOtherDogs(false);
       setJournalText("");
       setOwnerComment("");
       setFoodInfo("");
@@ -960,6 +1059,68 @@ export default function EditDogModal({
                     onChange={(e) => setCareNotes(e.target.value)}
                   />
                 </div>
+                <div className="md:col-span-2">
+                  <label className="text-xs text-[#2c7a4c]">Allergier</label>
+                  <textarea
+                    className="w-full border rounded-lg px-3 py-2 min-h-[60px]"
+                    value={allergies}
+                    onChange={(e) => setAllergies(e.target.value)}
+                    placeholder="T.ex. kyckling, nöt, gräs..."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-xs text-[#2c7a4c]">Mediciner</label>
+                  <textarea
+                    className="w-full border rounded-lg px-3 py-2 min-h-[60px]"
+                    value={medications}
+                    onChange={(e) => setMedications(e.target.value)}
+                    placeholder="Ange medicin och dosering..."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-xs text-[#2c7a4c]">Specialbehov</label>
+                  <textarea
+                    className="w-full border rounded-lg px-3 py-2 min-h-[60px]"
+                    value={specialNeeds}
+                    onChange={(e) => setSpecialNeeds(e.target.value)}
+                    placeholder="Specialkost, tillgänglighet..."
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-xs text-[#2c7a4c]">
+                    Beteendeanteckningar
+                  </label>
+                  <textarea
+                    className="w-full border rounded-lg px-3 py-2 min-h-[60px]"
+                    value={behaviorNotes}
+                    onChange={(e) => setBehaviorNotes(e.target.value)}
+                    placeholder="Viktiga beteendenoteringar..."
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <SectionTitle>Status & Flaggor</SectionTitle>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={flagEscapeArtist}
+                    onChange={(e) => setFlagEscapeArtist(e.target.checked)}
+                  />
+                  Rymmare (Escape Artist)
+                </label>
+                <label className="inline-flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={flagCanBeWithOtherDogs}
+                    onChange={(e) =>
+                      setFlagCanBeWithOtherDogs(e.target.checked)
+                    }
+                  />
+                  Kan vara med andra hundar
+                </label>
               </div>
             </div>
           )}
@@ -970,13 +1131,55 @@ export default function EditDogModal({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs text-[#2c7a4c]">
-                    Journalanteckning
+                    Journalanteckning (ny)
                   </label>
                   <textarea
                     className="w-full border rounded-lg px-3 py-2 min-h-[120px]"
                     value={journalText}
                     onChange={(e) => setJournalText(e.target.value)}
+                    placeholder="Skriv ny journalanteckning här..."
                   />
+
+                  {/* Journalhistorik */}
+                  {journalHistory.length > 0 && (
+                    <div className="mt-4">
+                      <div className="text-xs font-semibold text-[#2c7a4c] mb-2">
+                        Tidigare journalanteckningar
+                      </div>
+                      <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                        {journalHistory.map((entry) => (
+                          <div
+                            key={entry.id}
+                            className="border rounded-lg p-2 bg-gray-50 text-xs"
+                          >
+                            <div className="flex justify-between items-start mb-1">
+                              <span className="font-semibold text-gray-700">
+                                {new Date(entry.created_at).toLocaleString(
+                                  "sv-SE",
+                                  {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )}
+                              </span>
+                              {entry.entry_type &&
+                                entry.entry_type !== "note" && (
+                                  <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px]">
+                                    {entry.entry_type}
+                                  </span>
+                                )}
+                            </div>
+                            <p className="text-gray-600 whitespace-pre-wrap">
+                              {entry.content}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="text-xs text-[#2c7a4c]">
@@ -1067,7 +1270,7 @@ export default function EditDogModal({
                       className={`rounded-full border px-3 py-1 text-sm ${
                         days.includes(d)
                           ? "border-emerald-600 bg-emerald-50 text-emerald-700"
-                          : "hover:bg-gray-50"
+                          : "border-gray-300 text-gray-700 hover:bg-gray-50"
                       }`}
                     >
                       {d}

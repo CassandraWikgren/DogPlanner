@@ -235,7 +235,7 @@ Gör ALLT i en fil:
 2. Hunddagis
    2.1 Syfte
    Hunddagismodulen hanterar dagliga bokningar, abonnemang och kundrelationer.
-   Den används främst för löpande placeringar där kunder abonnerar på heltids- eller deltidsplatser.
+   Den används främst för löpande placeringar där kunder abonnerar på heltids- eller deltidsplatser (månadsabonemang)
 
    2.2 Funktioner
    Bokningar per dag – varje bokning motsvarar en heldag eller deltid (2 eller 3).

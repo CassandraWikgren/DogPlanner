@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/AuthContext";
 
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 
 import EditDogModal from "@/components/EditDogModal";
+import TjansterView from "@/components/TjansterView";
 
 /* ===========================
  * Types & Constants
@@ -127,38 +129,60 @@ const DEFAULT_COLUMNS = [
 const ALL_COLUMNS = [
   "name",
   "breed",
+  "gender",
   "heightcm",
   "birth",
-  "days",
-  "subscription",
-  "room_id",
   "owner",
+  "customer_number",
+  "personnummer",
   "phone",
   "email",
   "address",
+  "contact_person_2",
+  "contact_phone_2",
+  "subscription",
+  "days",
   "startdate",
   "enddate",
+  "room_id",
+  "insurance_company",
+  "insurance_number",
   "vaccdhp",
   "vaccpi",
+  "is_castrated",
+  "destroys_things",
+  "is_house_trained",
+  "food_info",
   "notes",
 ];
 
 const COLUMN_LABELS: Record<string, string> = {
   name: "Hund",
   breed: "Ras",
-  heightcm: "Mankhöjd",
+  gender: "Kön",
+  heightcm: "Mankhöjd (cm)",
   birth: "Födelsedatum",
-  subscription: "Abonnemang",
-  room_id: "Rum",
   owner: "Ägare",
+  customer_number: "Kundnummer",
+  personnummer: "Personnummer",
   phone: "Telefon",
   email: "E-post",
   address: "Adress",
+  contact_person_2: "Kontaktperson 2",
+  contact_phone_2: "Kontakt 2 telefon",
+  subscription: "Abonnemang",
+  days: "Veckodagar",
   startdate: "Startdatum",
   enddate: "Slutdatum",
-  days: "Veckodagar",
+  room_id: "Rum",
+  insurance_company: "Försäkringsbolag",
+  insurance_number: "Försäkringsnummer",
   vaccdhp: "Vaccination DHP",
   vaccpi: "Vaccination Pi",
+  is_castrated: "Kasterad/Steriliserad",
+  destroys_things: "Biter på saker",
+  is_house_trained: "Rumsren",
+  food_info: "Foder",
   notes: "Anteckningar",
 };
 
@@ -176,9 +200,7 @@ export default function HunddagisPage() {
   const [columns, setColumns] = useState<string[]>(DEFAULT_COLUMNS);
   const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
   const [showColumnSettings, setShowColumnSettings] = useState(false);
-  const [currentView, setCurrentView] = useState<"hunddagis" | "vantelista">(
-    "hunddagis"
-  );
+  const [showAddDogModal, setShowAddDogModal] = useState(false);
 
   // Debug logging function
   const logDebug = useCallback((level: string, message: string, data?: any) => {
@@ -207,7 +229,12 @@ export default function HunddagisPage() {
             phone,
             email,
             customer_number,
-            address
+            personnummer,
+            address,
+            postal_code,
+            city,
+            contact_person_2,
+            contact_phone_2
           )
         `
         )
@@ -279,8 +306,11 @@ export default function HunddagisPage() {
         dog.owners?.phone?.includes(searchTerm) ||
         dog.subscription?.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesSubscription =
-        filterSubscription === "all" || dog.subscription === filterSubscription;
+      // Ny filterlogik för Våra hundar / Tjänster / Väntelistan
+      const matchesView =
+        filterSubscription === "all" ||
+        (filterSubscription === "services" && dog.subscription) ||
+        (filterSubscription === "vantelista" && !dog.subscription);
 
       const matchesMonth =
         filterMonth === "all" ||
@@ -290,7 +320,7 @@ export default function HunddagisPage() {
           return startMonth.toString() === filterMonth;
         })();
 
-      return matchesSearch && matchesSubscription && matchesMonth;
+      return matchesSearch && matchesView && matchesMonth;
     });
 
     // Sort
@@ -487,197 +517,178 @@ export default function HunddagisPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Standard DogPlanner Header */}
+      {/* Grön header upptill */}
       <div className="bg-[#2c7a4c] shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               {/* DogPlanner Logo - klickbar för att gå till dashboard */}
               <Link
                 href="/dashboard"
-                className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+                className="flex items-center hover:opacity-80 transition-opacity"
               >
-                <span className="text-2xl">🐕</span>
-                <span className="text-xl font-bold text-white">DogPlanner</span>
+                <Image
+                  src="/logo.png"
+                  alt="DogPlanner"
+                  width={50}
+                  height={50}
+                  className="object-contain"
+                />
               </Link>
-              <div className="h-6 w-px bg-green-400"></div>
-              <h1 className="text-xl font-bold text-white">
-                Hunddagis – Dagens sammanställning
-              </h1>
-            </div>
-
-            {/* Navigation Tabs - mer diskreta som originalet */}
-            <div className="flex items-center space-x-1">
-              <button
-                onClick={() => setCurrentView("hunddagis")}
-                className={`px-4 py-2 text-sm font-medium rounded transition-colors ${
-                  currentView === "hunddagis"
-                    ? "bg-white text-[#2c7a4c]"
-                    : "text-green-100 hover:text-white hover:bg-[#236139]"
-                }`}
-              >
-                Antagna hundar
-              </button>
-              <button
-                onClick={() => setCurrentView("vantelista")}
-                className={`px-4 py-2 text-sm font-medium rounded transition-colors ${
-                  currentView === "vantelista"
-                    ? "bg-white text-[#2c7a4c]"
-                    : "text-green-100 hover:text-white hover:bg-[#236139]"
-                }`}
-              >
-                Väntelista
-              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Subtitle - enklare stil */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <p className="text-gray-600">
-          Sök, filtrera, exportera och lägg till nya hundar.
-        </p>
-      </div>
+      {/* Header med titel och statistik */}
+      <div className="border-b border-gray-200 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-[#2c7a4c]">
+                Hunddagis – Dagens sammanställning
+              </h1>
+              <p className="mt-1 text-sm text-gray-600">
+                Sök, filtrera, exportera och lägg till nya hundar.
+              </p>
+            </div>
 
-      {/* Error Display */}
-      {error && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
-          <div className="bg-red-50 border border-red-200 rounded-md p-4">
-            <div className="flex">
-              <AlertTriangle className="h-5 w-5 text-red-400" />
-              <div className="ml-3">
-                <p className="text-sm text-red-800">{error}</p>
+            {/* Statistik i högra hörnet */}
+            <div className="flex items-center space-x-6">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-[#2c7a4c]">
+                  {dogs.filter((d) => d.subscription).length}
+                </p>
+                <p className="text-sm text-gray-600">Antagna hundar</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-orange-600">
+                  {dogs.filter((d) => !d.subscription).length}
+                </p>
+                <p className="text-sm text-gray-600">Väntelista</p>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-        {/* Current View Content */}
-        {currentView === "hunddagis" && (
-          <>
-            {/* Action Buttons Row - standard DogPlanner styling */}
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center space-x-3">
-                <Link
-                  href="/hunddagis/new"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Ny hund
-                </Link>
-                <button
-                  onClick={exportToPDF}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  PDF-export
-                </button>
-                <button
-                  onClick={() => setShowColumnSettings(!showColumnSettings)}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <Settings2 className="h-4 w-4 mr-2" />
-                  Kolumner
-                </button>
-                <button
-                  onClick={() => {
-                    fetchDogs();
-                    fetchRooms();
-                  }}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <RefreshCcw className="h-4 w-4 mr-2" />
-                  Ladda om
-                </button>
+        {/* Action Buttons Row - standard DogPlanner styling */}
+        <div className="flex justify-between items-center mb-6 mt-6">
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setShowAddDogModal(true)}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Ny hund
+            </button>
+            <button
+              onClick={exportToPDF}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              PDF-export
+            </button>
+            <button
+              onClick={() => setShowColumnSettings(!showColumnSettings)}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+            >
+              <Settings2 className="h-4 w-4 mr-2" />
+              Kolumner
+            </button>
+            <button
+              onClick={() => {
+                fetchDogs();
+                fetchRooms();
+              }}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+            >
+              <RefreshCcw className="h-4 w-4 mr-2" />
+              Ladda om
+            </button>
+          </div>
+        </div>
+
+        {/* Search and Filter Row */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+          <div className="flex flex-col lg:flex-row space-y-3 lg:space-y-0 lg:space-x-4">
+            {/* Sökruta - större och tydligare */}
+            <div className="flex-1 lg:min-w-[400px]">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Sök på hundnamn, ägarnamn, telefon, ras..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
+                />
               </div>
             </div>
 
-            {/* Search and Filter Row */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-              <div className="flex flex-col lg:flex-row space-y-3 lg:space-y-0 lg:space-x-4">
-                {/* Sökruta - större och tydligare */}
-                <div className="flex-1 lg:min-w-[400px]">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Sök på hundnamn, ägarnamn, telefon, ras..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
-                    />
-                  </div>
-                </div>
+            {/* Filter dropdowns */}
+            <div className="flex space-x-3">
+              <select
+                value={filterSubscription}
+                onChange={(e) => setFilterSubscription(e.target.value)}
+                className="px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c] text-sm"
+              >
+                <option value="all">Våra hundar</option>
+                <option value="services">Tjänster</option>
+                <option value="vantelista">Väntelistan</option>
+              </select>
 
-                {/* Filter dropdowns */}
-                <div className="flex space-x-3">
-                  <select
-                    value={filterSubscription}
-                    onChange={(e) => setFilterSubscription(e.target.value)}
-                    className="px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c] text-sm"
+              <select
+                value={filterMonth}
+                onChange={(e) => setFilterMonth(e.target.value)}
+                className="px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c] text-sm"
+              >
+                <option value="all">Alla månader</option>
+                <option value="0">Januari</option>
+                <option value="1">Februari</option>
+                <option value="2">Mars</option>
+                <option value="3">April</option>
+                <option value="4">Maj</option>
+                <option value="5">Juni</option>
+                <option value="6">Juli</option>
+                <option value="7">Augusti</option>
+                <option value="8">September</option>
+                <option value="9">Oktober</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Column Settings */}
+          {showColumnSettings && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-sm font-medium text-gray-700 mb-3">
+                Dölj/visa kolumner:
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {ALL_COLUMNS.map((key) => (
+                  <label
+                    key={key}
+                    className="flex items-center space-x-3 cursor-pointer group"
                   >
-                    <option value="all">Alla abonnemang</option>
-                    <option value="Heltid">Heltid</option>
-                    <option value="Deltid 2">Deltid 2</option>
-                    <option value="Deltid 3">Deltid 3</option>
-                    <option value="Dagshund">Dagshund</option>
-                  </select>
-
-                  <select
-                    value={filterMonth}
-                    onChange={(e) => setFilterMonth(e.target.value)}
-                    className="px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c] text-sm"
-                  >
-                    <option value="all">Alla månader</option>
-                    <option value="0">Januari</option>
-                    <option value="1">Februari</option>
-                    <option value="2">Mars</option>
-                    <option value="3">April</option>
-                    <option value="4">Maj</option>
-                    <option value="5">Juni</option>
-                    <option value="6">Juli</option>
-                    <option value="7">Augusti</option>
-                    <option value="8">September</option>
-                    <option value="9">Oktober</option>
-                    <option value="10">November</option>
-                    <option value="11">December</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Column Settings */}
-              {showColumnSettings && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <p className="text-sm font-medium text-gray-700 mb-3">
-                    Dölj/visa kolumner:
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {ALL_COLUMNS.map((key) => (
-                      <label
-                        key={key}
-                        className="flex items-center space-x-3 cursor-pointer group"
-                      >
-                        <div className="relative">
-                          <input
-                            type="checkbox"
-                            checked={columns.includes(key)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setColumns([...columns, key]);
-                              } else {
-                                setColumns(
-                                  columns.filter((col) => col !== key)
-                                );
-                              }
-                            }}
-                            className="sr-only"
-                          />
-                          <div
-                            className={`
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={columns.includes(key)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setColumns([...columns, key]);
+                          } else {
+                            setColumns(columns.filter((col) => col !== key));
+                          }
+                        }}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`
                             w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200
                             ${
                               columns.includes(key)
@@ -685,226 +696,485 @@ export default function HunddagisPage() {
                                 : "bg-white border-gray-300 group-hover:border-[#2c7a4c]"
                             }
                           `}
+                      >
+                        {columns.includes(key) && (
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
                           >
-                            {columns.includes(key) && (
-                              <svg
-                                className="w-3 h-3 text-white"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                          </div>
-                        </div>
-                        <span className="text-sm text-gray-700 select-none">
-                          {COLUMN_LABELS[key]}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-sm text-gray-700 select-none">
+                      {COLUMN_LABELS[key]}
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
+          )}
+        </div>
 
-            {/* Dogs Table */}
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              {filteredAndSortedDogs.length === 0 ? (
-                <div className="text-center py-12">
-                  <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Inga hundar matchar dina filter.
-                  </h3>
-                  <p className="text-gray-500 mb-4">
-                    {dogs.length === 0
-                      ? "Lägg till din första hunddagishund"
-                      : "Prova att ändra sökfilter"}
-                  </p>
-                  {dogs.length === 0 && (
-                    <Link
-                      href="/hunddagis/new"
-                      className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139]"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Lägg till hund
-                    </Link>
-                  )}
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full">
-                    <thead className="bg-[#2c7a4c] text-white">
-                      <tr>
+        {/* Conditional rendering: Show TjansterView when "Tjänster" is selected */}
+        {filterSubscription === "services" ? (
+          <TjansterView />
+        ) : (
+          /* Dogs Table */
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            {filteredAndSortedDogs.length === 0 ? (
+              <div className="text-center py-12">
+                <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Inga hundar matchar dina filter.
+                </h3>
+                <p className="text-gray-500 mb-4">
+                  {dogs.length === 0
+                    ? "Lägg till din första hunddagishund"
+                    : "Prova att ändra sökfilter"}
+                </p>
+                {dogs.length === 0 && (
+                  <button
+                    onClick={() => setShowAddDogModal(true)}
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139]"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Lägg till hund
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead className="bg-[#2c7a4c] text-white">
+                    <tr>
+                      {columns.includes("name") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
+                          onClick={() => handleSort("name")}
+                        >
+                          <div className="flex items-center space-x-1">
+                            <span>
+                              Hund{" "}
+                              {sortKey === "name" &&
+                                (sortOrder === "asc" ? "▲" : "▼")}
+                            </span>
+                          </div>
+                        </th>
+                      )}
+                      {columns.includes("breed") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
+                          onClick={() => handleSort("breed")}
+                        >
+                          Ras{" "}
+                          {sortKey === "breed" &&
+                            (sortOrder === "asc" ? "▲" : "▼")}
+                        </th>
+                      )}
+                      {columns.includes("gender") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Kön
+                        </th>
+                      )}
+                      {columns.includes("heightcm") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Mankhöjd
+                        </th>
+                      )}
+                      {columns.includes("birth") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Födelsedatum
+                        </th>
+                      )}
+                      {columns.includes("owner") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
+                          onClick={() => handleSort("owner")}
+                        >
+                          Ägare{" "}
+                          {sortKey === "owner" &&
+                            (sortOrder === "asc" ? "▲" : "▼")}
+                        </th>
+                      )}
+                      {columns.includes("customer_number") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Kundnr
+                        </th>
+                      )}
+                      {columns.includes("personnummer") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Personnr
+                        </th>
+                      )}
+                      {columns.includes("phone") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Telefon
+                        </th>
+                      )}
+                      {columns.includes("email") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          E-post
+                        </th>
+                      )}
+                      {columns.includes("address") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Adress
+                        </th>
+                      )}
+                      {columns.includes("contact_person_2") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Kontaktperson 2
+                        </th>
+                      )}
+                      {columns.includes("contact_phone_2") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Tel. kontakt 2
+                        </th>
+                      )}
+                      {columns.includes("subscription") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
+                          onClick={() => handleSort("subscription")}
+                        >
+                          Abonnemang{" "}
+                          {sortKey === "subscription" &&
+                            (sortOrder === "asc" ? "▲" : "▼")}
+                        </th>
+                      )}
+                      {columns.includes("days") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Veckodagar
+                        </th>
+                      )}
+                      {columns.includes("startdate") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Startdatum
+                        </th>
+                      )}
+                      {columns.includes("enddate") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Slutdatum
+                        </th>
+                      )}
+                      {columns.includes("room_id") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Rum
+                        </th>
+                      )}
+                      {columns.includes("insurance_company") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Försäkringsbolag
+                        </th>
+                      )}
+                      {columns.includes("insurance_number") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Försäkringsnr
+                        </th>
+                      )}
+                      {columns.includes("vaccdhp") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Vacc. DHP
+                        </th>
+                      )}
+                      {columns.includes("vaccpi") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Vacc. Pi
+                        </th>
+                      )}
+                      {columns.includes("is_castrated") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Kasterad
+                        </th>
+                      )}
+                      {columns.includes("destroys_things") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Biter sönder
+                        </th>
+                      )}
+                      {columns.includes("is_house_trained") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Rumsren
+                        </th>
+                      )}
+                      {columns.includes("food_info") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Foder
+                        </th>
+                      )}
+                      {columns.includes("notes") && (
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                        >
+                          Anteckningar
+                        </th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredAndSortedDogs.map((dog, index) => (
+                      <tr
+                        key={dog.id}
+                        className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                      >
                         {columns.includes("name") && (
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
-                            onClick={() => handleSort("name")}
-                          >
-                            <div className="flex items-center space-x-1">
-                              <span>
-                                Hund{" "}
-                                {sortKey === "name" &&
-                                  (sortOrder === "asc" ? "▲" : "▼")}
-                              </span>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-8 w-8">
+                                {dog.photo_url ? (
+                                  <img
+                                    className="h-8 w-8 rounded-full object-cover"
+                                    src={dog.photo_url}
+                                    alt={dog.name}
+                                  />
+                                ) : (
+                                  <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                    <span className="text-[#2c7a4c] font-medium text-xs">
+                                      {dog.name.charAt(0).toUpperCase()}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="ml-3">
+                                <button
+                                  onClick={() => setSelectedDog(dog)}
+                                  className="text-sm font-medium text-[#2c7a4c] hover:text-[#236139] hover:underline"
+                                >
+                                  {dog.name}
+                                </button>
+                              </div>
                             </div>
-                          </th>
+                          </td>
                         )}
                         {columns.includes("breed") && (
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
-                            onClick={() => handleSort("breed")}
-                          >
-                            Ras{" "}
-                            {sortKey === "breed" &&
-                              (sortOrder === "asc" ? "▲" : "▼")}
-                          </th>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.breed || "-"}
+                          </td>
+                        )}
+                        {columns.includes("gender") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.gender || "-"}
+                          </td>
+                        )}
+                        {columns.includes("heightcm") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.heightcm ? `${dog.heightcm} cm` : "-"}
+                          </td>
+                        )}
+                        {columns.includes("birth") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.birth
+                              ? new Date(dog.birth).toLocaleDateString("sv-SE")
+                              : "-"}
+                          </td>
                         )}
                         {columns.includes("owner") && (
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
-                            onClick={() => handleSort("owner")}
-                          >
-                            Ägare{" "}
-                            {sortKey === "owner" &&
-                              (sortOrder === "asc" ? "▲" : "▼")}
-                          </th>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.owners?.full_name || "-"}
+                          </td>
+                        )}
+                        {columns.includes("customer_number") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.owners?.customer_number || "-"}
+                          </td>
+                        )}
+                        {columns.includes("personnummer") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.owners?.personnummer || "-"}
+                          </td>
                         )}
                         {columns.includes("phone") && (
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                          >
-                            Telefon
-                          </th>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.owners?.phone || "-"}
+                          </td>
+                        )}
+                        {columns.includes("email") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.owners?.email || "-"}
+                          </td>
+                        )}
+                        {columns.includes("address") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.owners?.address || "-"}
+                          </td>
+                        )}
+                        {columns.includes("contact_person_2") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.owners?.contact_person_2 || "-"}
+                          </td>
+                        )}
+                        {columns.includes("contact_phone_2") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.owners?.contact_phone_2 || "-"}
+                          </td>
                         )}
                         {columns.includes("subscription") && (
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
-                            onClick={() => handleSort("subscription")}
-                          >
-                            Abonnemang{" "}
-                            {sortKey === "subscription" &&
-                              (sortOrder === "asc" ? "▲" : "▼")}
-                          </th>
-                        )}
-                        {columns.includes("room_id") && (
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                          >
-                            Rum
-                          </th>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.subscription || "Ej valt"}
+                          </td>
                         )}
                         {columns.includes("days") && (
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                          >
-                            Veckodagar
-                          </th>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {formatDays(dog.days)}
+                          </td>
+                        )}
+                        {columns.includes("startdate") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.startdate
+                              ? new Date(dog.startdate).toLocaleDateString(
+                                  "sv-SE"
+                                )
+                              : "-"}
+                          </td>
+                        )}
+                        {columns.includes("enddate") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.enddate
+                              ? new Date(dog.enddate).toLocaleDateString(
+                                  "sv-SE"
+                                )
+                              : "-"}
+                          </td>
+                        )}
+                        {columns.includes("room_id") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {getRoomName(dog.room_id)}
+                          </td>
+                        )}
+                        {columns.includes("insurance_company") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.insurance_company || "-"}
+                          </td>
+                        )}
+                        {columns.includes("insurance_number") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.insurance_number || "-"}
+                          </td>
+                        )}
+                        {columns.includes("vaccdhp") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.vaccdhp
+                              ? new Date(dog.vaccdhp).toLocaleDateString(
+                                  "sv-SE"
+                                )
+                              : "-"}
+                          </td>
+                        )}
+                        {columns.includes("vaccpi") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.vaccpi
+                              ? new Date(dog.vaccpi).toLocaleDateString("sv-SE")
+                              : "-"}
+                          </td>
+                        )}
+                        {columns.includes("is_castrated") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.is_castrated ? "Ja" : "Nej"}
+                          </td>
+                        )}
+                        {columns.includes("destroys_things") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.destroys_things ? "Ja" : "Nej"}
+                          </td>
+                        )}
+                        {columns.includes("is_house_trained") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.is_house_trained ? "Ja" : "Nej"}
+                          </td>
+                        )}
+                        {columns.includes("food_info") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.food_info || "-"}
+                          </td>
+                        )}
+                        {columns.includes("notes") && (
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.notes || "-"}
+                          </td>
                         )}
                       </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredAndSortedDogs.map((dog, index) => (
-                        <tr
-                          key={dog.id}
-                          className={
-                            index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                          }
-                        >
-                          {columns.includes("name") && (
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="flex-shrink-0 h-8 w-8">
-                                  {dog.photo_url ? (
-                                    <img
-                                      className="h-8 w-8 rounded-full object-cover"
-                                      src={dog.photo_url}
-                                      alt={dog.name}
-                                    />
-                                  ) : (
-                                    <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                      <span className="text-[#2c7a4c] font-medium text-xs">
-                                        {dog.name.charAt(0).toUpperCase()}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="ml-3">
-                                  <button
-                                    onClick={() => setSelectedDog(dog)}
-                                    className="text-sm font-medium text-[#2c7a4c] hover:text-[#236139] hover:underline"
-                                  >
-                                    {dog.name}
-                                  </button>
-                                </div>
-                              </div>
-                            </td>
-                          )}
-                          {columns.includes("breed") && (
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {dog.breed || "-"}
-                            </td>
-                          )}
-                          {columns.includes("owner") && (
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {dog.owners?.full_name || "-"}
-                            </td>
-                          )}
-                          {columns.includes("phone") && (
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {dog.owners?.phone || "-"}
-                            </td>
-                          )}
-                          {columns.includes("subscription") && (
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {dog.subscription || "Ej valt"}
-                            </td>
-                          )}
-                          {columns.includes("room_id") && (
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {getRoomName(dog.room_id)}
-                            </td>
-                          )}
-                          {columns.includes("days") && (
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {formatDays(dog.days)}
-                            </td>
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </>
-        )}
-
-        {/* Väntelista View */}
-        {currentView === "vantelista" && (
-          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Väntelista
-            </h3>
-            <p className="text-gray-500">
-              Hantera intresseanmälningar från potentiella kunder
-            </p>
-            <Link
-              href="/hunddagis/intresseanmalningar"
-              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139]"
-            >
-              Gå till väntelista
-            </Link>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -917,6 +1187,19 @@ export default function HunddagisPage() {
           onCloseAction={() => setSelectedDog(null)}
           onSavedAction={() => {
             setSelectedDog(null);
+            fetchDogs();
+          }}
+        />
+      )}
+
+      {/* Add New Dog Modal */}
+      {showAddDogModal && (
+        <EditDogModal
+          initialDog={null}
+          open={showAddDogModal}
+          onCloseAction={() => setShowAddDogModal(false)}
+          onSavedAction={() => {
+            setShowAddDogModal(false);
             fetchDogs();
           }}
         />

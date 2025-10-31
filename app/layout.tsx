@@ -2,13 +2,13 @@
 
 import "./globals.css";
 import React, { useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { AuthProvider, useAuth } from "@/app/context/AuthContext"; // ✅ korrekt import
+import { AuthProvider, useAuth } from "@/app/context/AuthContext";
 import { NotificationProvider } from "@/app/context/NotificationContext";
 import Navbar from "@/components/Navbar";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 /**
- * Wrapper som visar Navbar endast när användaren är inloggad.
+ * Wrapper som visar Navbar och Breadcrumbs endast när användaren är inloggad.
  */
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -16,22 +16,20 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen bg-[#f9fafb] text-gray-900">
       {user && <Navbar />}
-      <main className={`flex-1 ${user ? "pt-20" : ""}`}>{children}</main>
+      {user && <Breadcrumbs />}
+      <main className={`flex-1 ${user ? "pt-32" : ""}`}>{children}</main>
     </div>
   );
 }
 
 /**
- * RootLayout – global HTML-struktur, Supabase, Auth och grundstil.
+ * RootLayout – global HTML-struktur, Auth och grundstil.
  */
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // ✅ Skapa Supabase-klient endast en gång
-  const supabase = createClientComponentClient();
-
   return (
     <html lang="sv" suppressHydrationWarning>
       <body className="min-h-screen font-sans antialiased selection:bg-[#2c7a4c]/20 selection:text-[#2c7a4c]">
