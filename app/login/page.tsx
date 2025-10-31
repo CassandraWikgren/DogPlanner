@@ -23,9 +23,9 @@ export default function LoginPage() {
 
     if (!authLoading && user && !forceLogin) {
       console.log(
-        "LoginPage: User already logged in, redirecting to hunddagis"
+        "LoginPage: User already logged in, redirecting to dashboard"
       );
-      router.push("/hunddagis");
+      router.push("/dashboard");
     }
   }, [user, authLoading, router]);
 
@@ -53,8 +53,8 @@ export default function LoginPage() {
       if (error) throw error;
 
       if (data?.user) {
-        // Omdirigera till hunddagis-dashboard efter lyckad inloggning
-        router.push("/hunddagis");
+        // Omdirigera till dashboard efter lyckad inloggning
+        router.push("/dashboard");
       } else {
         setError("Inloggningen misslyckades. Kontrollera dina uppgifter.");
       }
@@ -193,8 +193,8 @@ export default function LoginPage() {
             {loading
               ? "Bearbetar..."
               : resetMode
-              ? "Skicka återställningsmejl"
-              : "Logga in"}
+                ? "Skicka återställningsmejl"
+                : "Logga in"}
           </button>
         </form>
 
