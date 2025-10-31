@@ -18,6 +18,7 @@ import {
 
 import EditDogModal from "@/components/EditDogModal";
 import TjansterView from "@/components/TjansterView";
+import HundrumView from "@/components/HundrumView";
 
 /* ===========================
  * Types & Constants
@@ -637,6 +638,7 @@ export default function HunddagisPage() {
               >
                 <option value="all">Våra hundar</option>
                 <option value="services">Tjänster</option>
+                <option value="hundrum">Hundrum</option>
                 <option value="vantelista">Väntelistan</option>
               </select>
 
@@ -722,9 +724,11 @@ export default function HunddagisPage() {
           )}
         </div>
 
-        {/* Conditional rendering: Show TjansterView when "Tjänster" is selected */}
+        {/* Conditional rendering: Show different views based on selection */}
         {filterSubscription === "services" ? (
           <TjansterView />
+        ) : filterSubscription === "hundrum" ? (
+          <HundrumView />
         ) : (
           /* Dogs Table */
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
