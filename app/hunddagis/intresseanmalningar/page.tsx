@@ -30,6 +30,12 @@ import {
 } from "lucide-react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
+import {
+  sendWelcomeEmail,
+  createApplicationReceivedEmail,
+  createRejectionEmail,
+  sendEmail,
+} from "@/lib/emailSender";
 
 interface InterestApplication {
   id: string;
@@ -168,6 +174,35 @@ export default function HunddagisIntresseanmalningarPage() {
         throw new Error(`[ERR-4001] Uppdatering: ${error.message}`);
       }
 
+      // 📧 Skicka email vid statusuppdatering
+      if (newStatus === "declined" && selectedApplication) {
+        try {
+          console.log("📧 Skickar avslagsmail...");
+          const rejectionTemplate = createRejectionEmail(
+            selectedApplication.parent_name,
+            selectedApplication.dog_name,
+            notes || "Tyvärr kan vi inte erbjuda en plats just nu.",
+            undefined // orgName hämtas automatiskt
+          );
+
+          const emailResult = await sendEmail(rejectionTemplate, {
+            to: selectedApplication.parent_email,
+            orgId: currentOrgId || undefined,
+          });
+
+          if (emailResult.success) {
+            console.log("✅ Avslagsmail skickat framgångsrikt");
+          } else {
+            console.warn(
+              "⚠️ Kunde inte skicka avslagsmail:",
+              emailResult.error
+            );
+          }
+        } catch (emailError) {
+          console.warn("⚠️ Email-fel vid avslag:", emailError);
+        }
+      }
+
       await loadApplications();
       if (selectedApplication?.id === applicationId) {
         setSelectedApplication((prev) =>
@@ -296,12 +331,27 @@ export default function HunddagisIntresseanmalningarPage() {
         }`
       );
 
-      // 5. TODO: Skicka bekräftelse-mejl till ägaren
-      // await sendConfirmationEmail(application.parent_email, {
-      //   ownerName: application.parent_name,
-      //   dogName: application.dog_name,
-      //   startDate: application.preferred_start_date,
-      // });
+      // 5. Skicka bekräftelse-mejl till ägaren
+      try {
+        console.log("📧 Skickar välkomstmail...");
+        const emailResult = await sendWelcomeEmail(
+          application.parent_email,
+          application.parent_name,
+          application.dog_name,
+          application.preferred_start_date,
+          currentOrgId
+        );
+
+        if (emailResult.success) {
+          console.log("✅ Välkomstmail skickat framgångsrikt");
+        } else {
+          console.warn("⚠️ Kunde inte skicka välkomstmail:", emailResult.error);
+          // Fortsätt ändå - email-fel ska inte stoppa överföringen
+        }
+      } catch (emailError) {
+        console.warn("⚠️ Email-fel:", emailError);
+        // Fortsätt ändå - email-fel ska inte stoppa överföringen
+      }
 
       alert(
         `✅ Överföringen lyckades!\n\n` +
