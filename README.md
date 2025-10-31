@@ -1,5 +1,7 @@
 AI får läsa README för att förstå DogPlanners uppbyggnad och syfte och kunna efterfölja det som står. Men AI får inte under några omständigheter ändra eller ta bort text ifrån README.md.
 
+<!-- Last updated: 2025-11-01 -->
+
 ---
 
 ## 📚 Dokumentation
