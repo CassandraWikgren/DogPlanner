@@ -260,6 +260,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCurrentOrgId(null);
     setRole(null);
     setSubscription(null);
+
+    // Redirecta till startsidan efter utloggning
+    window.location.href = "/";
   }
 
   return (
