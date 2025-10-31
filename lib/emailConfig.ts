@@ -7,6 +7,7 @@
  */
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase as supabaseClient } from "@/lib/supabase";
 
 // ============================================
 // SYSTEM-NIVÅ EMAIL (DogPlanner)
@@ -54,7 +55,12 @@ export interface OrgEmailConfig {
 export async function getOrgEmailConfig(
   orgId: string
 ): Promise<OrgEmailConfig> {
-  const supabase = createClientComponentClient();
+  if (!supabaseClient) {
+    console.error("Supabase client not available");
+    return {};
+  }
+
+  const supabase = supabaseClient;
 
   const { data, error } = await supabase
     .from("orgs")
@@ -69,11 +75,19 @@ export async function getOrgEmailConfig(
     return {};
   }
 
+  if (!data) {
+    return {};
+  }
+
   return {
-    contact_email: data.contact_email || data.email || undefined,
-    invoice_email: data.invoice_email || data.email || undefined,
-    reply_to_email: data.reply_to_email || data.email || undefined,
-    email_sender_name: data.email_sender_name || data.name || undefined,
+    contact_email:
+      (data as any).contact_email || (data as any).email || undefined,
+    invoice_email:
+      (data as any).invoice_email || (data as any).email || undefined,
+    reply_to_email:
+      (data as any).reply_to_email || (data as any).email || undefined,
+    email_sender_name:
+      (data as any).email_sender_name || (data as any).name || undefined,
   };
 }
 
@@ -146,9 +160,13 @@ export async function updateOrgEmailConfig(
   orgId: string,
   config: Partial<OrgEmailConfig>
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClientComponentClient();
+  if (!supabaseClient) {
+    return { success: false, error: "Supabase client not available" };
+  }
 
-  const { error } = await supabase
+  const supabase = supabaseClient;
+
+  const { error } = await (supabase as any)
     .from("orgs")
     .update({
       contact_email: config.contact_email,
