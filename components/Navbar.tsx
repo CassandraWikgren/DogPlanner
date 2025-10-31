@@ -45,10 +45,10 @@ export default function Navbar() {
                     {role === "admin"
                       ? "Administratör"
                       : role === "staff"
-                      ? "Personal"
-                      : role === "groomer"
-                      ? "Frisör"
-                      : "Hundägare"}
+                        ? "Personal"
+                        : role === "groomer"
+                          ? "Frisör"
+                          : "Hundägare"}
                   </span>
                 )}
               </div>
@@ -108,7 +108,51 @@ export default function Navbar() {
                   <X size={24} />
                 </button>
 
-                {/* Användarmeny - inga nav-länkar */}
+                {/* Navigeringslänkar */}
+                <div className="space-y-3 pt-4 border-b border-green-600 pb-4">
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-green-700 transition"
+                  >
+                    <span className="text-lg">🏠</span>
+                    <span>Dashboard</span>
+                  </Link>
+                  <Link
+                    href="/hunddagis"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-green-700 transition"
+                  >
+                    <span className="text-lg">🐕</span>
+                    <span>Hunddagis</span>
+                  </Link>
+                  <Link
+                    href="/hundpensionat"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-green-700 transition"
+                  >
+                    <span className="text-lg">🏨</span>
+                    <span>Hundpensionat</span>
+                  </Link>
+                  <Link
+                    href="/frisor"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-green-700 transition"
+                  >
+                    <span className="text-lg">✂️</span>
+                    <span>Hundfrisör</span>
+                  </Link>
+                  <Link
+                    href="/admin"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-green-700 transition"
+                  >
+                    <span className="text-lg">⚙️</span>
+                    <span>Admin</span>
+                  </Link>
+                </div>
+
+                {/* Användarmeny */}
                 <div className="pt-4">
                   {user && (
                     <div className="mb-3 text-sm">
@@ -120,10 +164,10 @@ export default function Navbar() {
                           {role === "admin"
                             ? "Administratör"
                             : role === "staff"
-                            ? "Personal"
-                            : role === "groomer"
-                            ? "Frisör"
-                            : "Hundägare"}
+                              ? "Personal"
+                              : role === "groomer"
+                                ? "Frisör"
+                                : "Hundägare"}
                         </p>
                       )}
                     </div>

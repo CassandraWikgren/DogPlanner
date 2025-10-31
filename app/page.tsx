@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -36,12 +37,19 @@ export default function HomePage() {
       {/* Header */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">🐕</span>
-            <span className="text-2xl font-bold text-[#2c7a4c]">
-              DogPlanner
-            </span>
-          </div>
+          <Link
+            href="/dashboard"
+            className="flex items-center hover:opacity-90 transition-opacity"
+          >
+            <Image
+              src="/logo.png"
+              alt="DogPlanner"
+              width={50}
+              height={50}
+              priority
+              className="rounded-lg"
+            />
+          </Link>
           <div className="flex items-center gap-4">
             <Link
               href="/login"
@@ -706,10 +714,19 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">🐕</span>
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 mb-4 hover:opacity-90 transition-opacity"
+              >
+                <Image
+                  src="/logo.png"
+                  alt="DogPlanner"
+                  width={40}
+                  height={40}
+                  className="rounded-lg"
+                />
                 <span className="font-bold text-xl">DogPlanner</span>
-              </div>
+              </Link>
               <p className="text-gray-400 text-sm">
                 Hantera ditt hunddagis enklare. Slipp Excel-kaos och
                 papperslappar.

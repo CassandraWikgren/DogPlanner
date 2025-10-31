@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PawPrint, User, Calendar, FileText, Heart } from "lucide-react";
@@ -17,10 +18,19 @@ export default function CustomerPortalPage() {
       <header className="bg-[#2c7a4c] text-white shadow-lg">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <PawPrint className="h-8 w-8" />
+            <Link
+              href="/dashboard"
+              className="flex items-center space-x-3 hover:opacity-90 transition-opacity"
+            >
+              <Image
+                src="/logo.png"
+                alt="DogPlanner"
+                width={32}
+                height={32}
+                className="rounded-lg"
+              />
               <h1 className="text-2xl font-bold">DogPlanner Kundportal</h1>
-            </div>
+            </Link>
             <div className="flex space-x-4">
               <Link href="/kundportal/login">
                 <Button
