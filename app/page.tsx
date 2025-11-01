@@ -82,7 +82,7 @@ export default function HomePage() {
         <div className="relative max-w-7xl mx-auto px-6 py-20 md:py-32">
           <div className="max-w-2xl">
             <h1
-              className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg"
+              className="font-bold text-white mb-6 leading-tight drop-shadow-lg"
               style={{
                 fontSize: "3rem",
                 fontWeight: "bold",
@@ -94,7 +94,7 @@ export default function HomePage() {
               Hunddagis som hanterar sig självt
             </h1>
             <p
-              className="text-xl md:text-2xl text-white/95 mb-8 leading-relaxed drop-shadow-md"
+              className="text-white mb-8 leading-relaxed drop-shadow-md"
               style={{
                 fontSize: "1.25rem",
                 color: "rgba(255, 255, 255, 0.95)",
@@ -108,7 +108,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <Link
                 href="/register"
-                className="px-8 py-4 bg-white text-[#2c7a4c] rounded-lg hover:bg-gray-50 font-bold text-lg transition-all shadow-lg hover:shadow-xl text-center"
+                className="px-8 py-4 bg-white rounded-lg hover:bg-gray-50 font-bold transition-all shadow-lg hover:shadow-xl text-center"
                 style={{
                   backgroundColor: "white",
                   color: "#2c7a4c",
@@ -122,7 +122,7 @@ export default function HomePage() {
               </Link>
               <a
                 href="#features"
-                className="px-8 py-4 border-2 border-white text-white rounded-lg hover:bg-white/10 font-semibold text-lg transition-all backdrop-blur text-center"
+                className="px-8 py-4 border-2 rounded-lg hover:bg-white/10 font-semibold transition-all backdrop-blur text-center"
                 style={{
                   border: "2px solid white",
                   color: "white",
@@ -136,7 +136,7 @@ export default function HomePage() {
               </a>
             </div>
             <div
-              className="flex items-center gap-4 text-white/90 text-sm"
+              className="flex items-center gap-4"
               style={{
                 color: "rgba(255, 255, 255, 0.9)",
                 fontSize: "0.875rem",
