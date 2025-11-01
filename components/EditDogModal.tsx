@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useAuth } from "@/app/context/AuthContext";
 
 /** Props */
 type Props = {
@@ -67,6 +68,7 @@ export default function EditDogModal({
   onSavedAction,
 }: Props) {
   const supabase = createClientComponentClient(); // Korrekt klient för client components
+  const { user, currentOrgId } = useAuth(); // Hämta user och org_id från AuthContext
 
   // UI
   const [activeTab, setActiveTab] = React.useState<
@@ -370,10 +372,12 @@ export default function EditDogModal({
     setError(null);
     setOk(null);
 
-    // Säkerställ aktiv session (för RLS triggers)
-    const { data: sess } = await supabase.auth.getSession();
-    if (!sess.session?.user?.id) {
-      setError("Du är inte inloggad – kunde inte spara.");
+    // Säkerställ aktiv session och organisation
+    if (!user || !currentOrgId) {
+      setError(
+        "Du är inte inloggad eller saknar organisation – kunde inte spara."
+      );
+      console.error("EditDogModal: No user or org_id", { user, currentOrgId });
       return;
     }
 
@@ -422,6 +426,9 @@ export default function EditDogModal({
           [kp2First.trim(), kp2Last.trim()].filter(Boolean).join(" ") || null,
         contact_phone_2: kp2Phone || null,
       };
+
+      // Lägg alltid till org_id (viktigt när triggers är disabled)
+      (baseOwner as any).org_id = currentOrgId;
 
       if (isAdmin) {
         baseOwner.customer_number = ownerCustomerNo
@@ -482,7 +489,7 @@ export default function EditDogModal({
       };
 
       // 3) Insert eller Update hund (dogs) — små bokstäver + rätt relationer
-      const dogPayload = {
+      const dogPayload: any = {
         name: name.trim(),
         breed: breed.trim() || null,
         heightcm: heightcm ? Number(heightcm) : null,
@@ -500,6 +507,7 @@ export default function EditDogModal({
         photo_url: photoUrl || null,
         notes: null,
         owner_id: ownerId, // ✅ dogs.owner_id → owners.id
+        org_id: currentOrgId, // ✅ Lägg alltid till org_id (viktigt när triggers är disabled)
         // Hälsofält i separata kolumner
         allergies: allergies || null,
         medications: medications || null,
