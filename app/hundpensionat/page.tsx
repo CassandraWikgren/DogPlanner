@@ -324,68 +324,93 @@ export default function HundpensionatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Kompakt och genomtänkt */}
-      <div
-        className="relative bg-cover bg-center"
-        style={{
-          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.85), rgba(44, 122, 76, 0.75)), url('/Hero.jpeg')`,
-          minHeight: "240px",
-        }}
-      >
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 pb-20">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
+      {/* Hero Section - Mer kompakt och elegant */}
+      <div className="bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
             Hundpensionat
           </h1>
-          <p className="text-lg text-white/95 max-w-2xl mx-auto">
-            Professionell pensionathantering med översikt över bokningar, rum
-            och gäster — enkelt att administrera och tryggt för kunder.
+          <p className="text-white/90 text-lg max-w-2xl mx-auto">
+            Professionell pensionathantering med fullständig översikt
           </p>
         </div>
       </div>
-      {/* Stats Cards - Enklare 4-kolumns layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-8 relative z-20">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#2c7a4c]">
-            <p className="text-sm font-medium text-gray-600 mb-2">
-              Antal hundar idag
-            </p>
-            <p className="text-3xl font-bold text-[#2c7a4c]">
-              {liveStats.hundarIdag}
-            </p>
+      {/* Stats Cards - Mer kompakt och elegant layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Antal hundar
+                </p>
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {liveStats.hundarIdag}
+                </p>
+                <p className="text-xs text-gray-500">aktiva idag</p>
+              </div>
+              <div className="w-12 h-12 bg-[#2c7a4c]/10 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">🐕</span>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
-            <p className="text-sm font-medium text-gray-600 mb-2">
-              Ankomster idag
-            </p>
-            <p className="text-3xl font-bold text-blue-600">
-              {liveStats.incheckIdag}
-            </p>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Ankomster idag
+                </p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {liveStats.incheckIdag}
+                </p>
+                <p className="text-xs text-gray-500">nya incheckning</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">📅</span>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
-            <p className="text-sm font-medium text-gray-600 mb-2">
-              Ankomster imorgon
-            </p>
-            <p className="text-3xl font-bold text-orange-600">
-              {liveStats.incheckImorgon}
-            </p>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Ankomster imorgon
+                </p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {liveStats.incheckImorgon}
+                </p>
+                <p className="text-xs text-gray-500">planerade</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">🧳</span>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
-            <p className="text-sm font-medium text-gray-600 mb-2">
-              Avresor imorgon
-            </p>
-            <p className="text-3xl font-bold text-purple-600">
-              {liveStats.utcheckImorgon}
-            </p>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Avresor imorgon
+                </p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {liveStats.utcheckImorgon}
+                </p>
+                <p className="text-xs text-gray-500">utcheckning</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
+                <span className="text-2xl">👋</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>{" "}
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        {/* Kontroller - Modernare design */}
-        <div className="bg-white rounded-xl shadow-md p-5 mb-6 border border-gray-100">
+        {/* Kontroller */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             {/* Sök och Filter */}
             <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto flex-1">
@@ -416,8 +441,6 @@ export default function HundpensionatPage() {
                 />
               </div>
             </div>
-
-            {/* Action Buttons - Enhetlig grön färgpalett */}
             <div className="flex flex-wrap gap-2 w-full lg:w-auto">
               <Link
                 href="/hundpensionat/ansokningar"
