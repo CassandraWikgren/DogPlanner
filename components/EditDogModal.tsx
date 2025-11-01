@@ -430,26 +430,31 @@ export default function EditDogModal({
       // Lägg alltid till org_id (viktigt när triggers är disabled)
       (baseOwner as any).org_id = currentOrgId;
 
+      // Auto-generera customer_number OM det inte redan finns
+      if (!ownerId && !baseOwner.customer_number) {
+        const { data: maxData } = await supabase
+          .from("owners")
+          .select("customer_number")
+          .order("customer_number", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        const maxNum = maxData?.customer_number || 0;
+        baseOwner.customer_number = maxNum + 1;
+        console.log(
+          "Auto-generated customer_number:",
+          baseOwner.customer_number
+        );
+      }
+
       if (isAdmin) {
-        baseOwner.customer_number = ownerCustomerNo
-          ? Number(ownerCustomerNo)
-          : null;
+        // Admin kan manuellt sätta kundnummer (skriver över auto-genererat)
+        if (ownerCustomerNo) {
+          baseOwner.customer_number = Number(ownerCustomerNo);
+        }
         baseOwner.personnummer = ownerPersonnummer || null;
       }
 
       if (!ownerId) {
-        // Auto-generera customer_number om det inte finns
-        if (!baseOwner.customer_number) {
-          const { data: maxData } = await supabase
-            .from("owners")
-            .select("customer_number")
-            .order("customer_number", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          const maxNum = maxData?.customer_number || 0;
-          baseOwner.customer_number = maxNum + 1;
-        }
-
         const { data: created } = await supabase
           .from("owners")
           .insert([baseOwner])
