@@ -335,73 +335,248 @@ export default function HundpensionatPage() {
           </p>
         </div>
       </div>
-      {/* Stats Cards - Mer kompakt och elegant layout */}
+      {/* Stats Cards - Flexbox layout med inline styles för garanterad styling */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "1.5rem",
+            marginBottom: "2rem",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "0.75rem",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+              padding: "1.5rem",
+              flex: "1 1 300px",
+              minWidth: "280px",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
+                <p
+                  style={{
+                    fontSize: "0.875rem",
+                    fontWeight: "500",
+                    color: "#6b7280",
+                    marginBottom: "0.5rem",
+                  }}
+                >
                   Antal hundar
                 </p>
-                <p className="text-2xl font-bold text-[#2c7a4c]">
+                <p
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    color: "#059669",
+                  }}
+                >
                   {liveStats.hundarIdag}
                 </p>
-                <p className="text-xs text-gray-500">aktiva idag</p>
+                <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                  aktiva idag
+                </p>
               </div>
-              <div className="w-12 h-12 bg-[#2c7a4c]/10 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">🐕</span>
+              <div
+                style={{
+                  width: "3rem",
+                  height: "3rem",
+                  backgroundColor: "#ecfdf5",
+                  borderRadius: "0.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.5rem",
+                }}
+              >
+                🐕
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "0.75rem",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+              padding: "1.5rem",
+              flex: "1 1 300px",
+              minWidth: "280px",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
+                <p
+                  style={{
+                    fontSize: "0.875rem",
+                    fontWeight: "500",
+                    color: "#6b7280",
+                    marginBottom: "0.5rem",
+                  }}
+                >
                   Ankomster idag
                 </p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    color: "#2563eb",
+                  }}
+                >
                   {liveStats.incheckIdag}
                 </p>
-                <p className="text-xs text-gray-500">nya incheckning</p>
+                <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                  nya incheckning
+                </p>
               </div>
-              <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📅</span>
+              <div
+                style={{
+                  width: "3rem",
+                  height: "3rem",
+                  backgroundColor: "#eff6ff",
+                  borderRadius: "0.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.5rem",
+                }}
+              >
+                📅
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "0.75rem",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+              padding: "1.5rem",
+              flex: "1 1 300px",
+              minWidth: "280px",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
+                <p
+                  style={{
+                    fontSize: "0.875rem",
+                    fontWeight: "500",
+                    color: "#6b7280",
+                    marginBottom: "0.5rem",
+                  }}
+                >
                   Ankomster imorgon
                 </p>
-                <p className="text-2xl font-bold text-orange-600">
+                <p
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    color: "#ea580c",
+                  }}
+                >
                   {liveStats.incheckImorgon}
                 </p>
-                <p className="text-xs text-gray-500">planerade</p>
+                <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                  planerade
+                </p>
               </div>
-              <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">🧳</span>
+              <div
+                style={{
+                  width: "3rem",
+                  height: "3rem",
+                  backgroundColor: "#fff7ed",
+                  borderRadius: "0.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.5rem",
+                }}
+              >
+                🧳
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "0.75rem",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+              padding: "1.5rem",
+              flex: "1 1 300px",
+              minWidth: "280px",
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
+                <p
+                  style={{
+                    fontSize: "0.875rem",
+                    fontWeight: "500",
+                    color: "#6b7280",
+                    marginBottom: "0.5rem",
+                  }}
+                >
                   Avresor imorgon
                 </p>
-                <p className="text-2xl font-bold text-purple-600">
+                <p
+                  style={{
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    color: "#9333ea",
+                  }}
+                >
                   {liveStats.utcheckImorgon}
                 </p>
-                <p className="text-xs text-gray-500">utcheckning</p>
+                <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                  utcheckning
+                </p>
               </div>
-              <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">👋</span>
+              <div
+                style={{
+                  width: "3rem",
+                  height: "3rem",
+                  backgroundColor: "#faf5ff",
+                  borderRadius: "0.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.5rem",
+                }}
+              >
+                👋
               </div>
             </div>
           </div>
