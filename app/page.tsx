@@ -81,10 +81,27 @@ export default function HomePage() {
         {/* Content */}
         <div className="relative max-w-7xl mx-auto px-6 py-20 md:py-32">
           <div className="max-w-2xl">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+            <h1
+              className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg"
+              style={{
+                fontSize: "3rem",
+                fontWeight: "bold",
+                color: "white",
+                marginBottom: "1.5rem",
+                lineHeight: "1.2",
+              }}
+            >
               Hunddagis som hanterar sig självt
             </h1>
-            <p className="text-xl md:text-2xl text-white/95 mb-8 leading-relaxed drop-shadow-md">
+            <p
+              className="text-xl md:text-2xl text-white/95 mb-8 leading-relaxed drop-shadow-md"
+              style={{
+                fontSize: "1.25rem",
+                color: "rgba(255, 255, 255, 0.95)",
+                marginBottom: "2rem",
+                lineHeight: "1.6",
+              }}
+            >
               Slipp Excel-kaoset. Hantera bokningar, hundregister och
               fakturering på ett ställe. Enklare än någonsin.
             </p>
@@ -92,17 +109,39 @@ export default function HomePage() {
               <Link
                 href="/register"
                 className="px-8 py-4 bg-white text-[#2c7a4c] rounded-lg hover:bg-gray-50 font-bold text-lg transition-all shadow-lg hover:shadow-xl text-center"
+                style={{
+                  backgroundColor: "white",
+                  color: "#2c7a4c",
+                  padding: "1rem 2rem",
+                  borderRadius: "0.5rem",
+                  fontWeight: "bold",
+                  fontSize: "1.125rem",
+                }}
               >
                 ✨ Prova gratis i 2 månader
               </Link>
               <a
                 href="#features"
                 className="px-8 py-4 border-2 border-white text-white rounded-lg hover:bg-white/10 font-semibold text-lg transition-all backdrop-blur text-center"
+                style={{
+                  border: "2px solid white",
+                  color: "white",
+                  padding: "1rem 2rem",
+                  borderRadius: "0.5rem",
+                  fontWeight: "600",
+                  fontSize: "1.125rem",
+                }}
               >
                 Se hur det fungerar
               </a>
             </div>
-            <div className="flex items-center gap-4 text-white/90 text-sm">
+            <div
+              className="flex items-center gap-4 text-white/90 text-sm"
+              style={{
+                color: "rgba(255, 255, 255, 0.9)",
+                fontSize: "0.875rem",
+              }}
+            >
               <span className="flex items-center gap-2">
                 <svg
                   className="w-5 h-5 text-green-300"
