@@ -570,13 +570,6 @@ export default function HunddagisPage() {
               PDF-export
             </button>
             <button
-              onClick={() => setShowColumnSettings(!showColumnSettings)}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-            >
-              <Settings2 className="h-4 w-4 mr-2 text-white" />
-              Kolumner
-            </button>
-            <button
               onClick={() => {
                 fetchDogs();
                 fetchRooms();
@@ -607,7 +600,7 @@ export default function HunddagisPage() {
             </div>
 
             {/* Filter dropdowns */}
-            <div className="flex space-x-3">
+            <div className="flex space-x-3 items-center">
               <select
                 value={filterSubscription}
                 onChange={(e) => setFilterSubscription(e.target.value)}
@@ -638,67 +631,92 @@ export default function HunddagisPage() {
                 <option value="10">November</option>
                 <option value="11">December</option>
               </select>
+
+              {/* Kolumner dropdown - istället för kolumner-knapp */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowColumnSettings(!showColumnSettings)}
+                  className="inline-flex items-center px-4 py-2.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                >
+                  <Settings2 className="h-4 w-4 mr-2" />
+                  Kolumner
+                </button>
+
+                {/* Dropdown meny för kolumner */}
+                {showColumnSettings && (
+                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[500px] overflow-y-auto">
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-3 pb-2 border-b">
+                        <p className="text-sm font-semibold text-gray-900">
+                          Dölj/visa kolumner
+                        </p>
+                        <button
+                          onClick={() => setShowColumnSettings(false)}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        {ALL_COLUMNS.map((key) => (
+                          <label
+                            key={key}
+                            className="flex items-center space-x-3 cursor-pointer group py-1 hover:bg-gray-50 rounded px-2"
+                          >
+                            <div className="relative">
+                              <input
+                                type="checkbox"
+                                checked={columns.includes(key)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setColumns([...columns, key]);
+                                  } else {
+                                    setColumns(
+                                      columns.filter((col) => col !== key)
+                                    );
+                                  }
+                                }}
+                                className="sr-only"
+                              />
+                              <div
+                                className={`
+                                  w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200
+                                  ${
+                                    columns.includes(key)
+                                      ? "bg-[#2c7a4c] border-[#2c7a4c]"
+                                      : "bg-white border-gray-300 group-hover:border-[#2c7a4c]"
+                                  }
+                                `}
+                              >
+                                {columns.includes(key) && (
+                                  <svg
+                                    className="w-3 h-3 text-white"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                )}
+                              </div>
+                            </div>
+                            <span className="text-sm text-gray-700 select-none">
+                              {COLUMN_LABELS[key]}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Column Settings */}
-          {showColumnSettings && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-sm font-medium text-gray-700 mb-3">
-                Dölj/visa kolumner:
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {ALL_COLUMNS.map((key) => (
-                  <label
-                    key={key}
-                    className="flex items-center space-x-3 cursor-pointer group"
-                  >
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        checked={columns.includes(key)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setColumns([...columns, key]);
-                          } else {
-                            setColumns(columns.filter((col) => col !== key));
-                          }
-                        }}
-                        className="sr-only"
-                      />
-                      <div
-                        className={`
-                            w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200
-                            ${
-                              columns.includes(key)
-                                ? "bg-[#2c7a4c] border-[#2c7a4c]"
-                                : "bg-white border-gray-300 group-hover:border-[#2c7a4c]"
-                            }
-                          `}
-                      >
-                        {columns.includes(key) && (
-                          <svg
-                            className="w-3 h-3 text-white"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                    <span className="text-sm text-gray-700 select-none">
-                      {COLUMN_LABELS[key]}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Ta bort den gamla column settings sectionen */}
         </div>
 
         {/* Conditional rendering: Show different views based on selection */}

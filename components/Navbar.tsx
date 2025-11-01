@@ -5,7 +5,15 @@ import Link from "next/link";
 import { useAuth } from "@/app/context/AuthContext";
 import NotificationDropdown from "@/components/NotificationDropdown";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  X,
+  Home,
+  Dog,
+  Building2,
+  Scissors,
+  Settings,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
@@ -98,69 +106,69 @@ export default function Navbar() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="fixed top-0 left-0 w-64 h-full bg-[#2c7a4c] z-50 md:hidden shadow-2xl"
             >
-              <div className="flex flex-col px-6 py-6 space-y-3 text-base">
+              <div className="flex flex-col px-6 py-6 space-y-3 text-base text-white">
                 {/* Stäng-knapp */}
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="self-start p-2 hover:bg-green-700 rounded transition"
+                  className="self-start p-2 hover:bg-green-700 rounded transition text-white"
                   aria-label="Stäng meny"
                 >
                   <X size={24} />
                 </button>
 
                 {/* Navigeringslänkar */}
-                <div className="space-y-3 pt-4 border-b border-green-600 pb-4">
+                <div className="space-y-1 pt-4 border-b border-green-600 pb-4">
                   <Link
                     href="/dashboard"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-green-700 transition"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
                   >
-                    <span className="text-lg">🏠</span>
-                    <span>Dashboard</span>
+                    <Home size={20} />
+                    <span className="font-medium">Dashboard</span>
                   </Link>
                   <Link
                     href="/hunddagis"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-green-700 transition"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
                   >
-                    <span className="text-lg">🐕</span>
-                    <span>Hunddagis</span>
+                    <Dog size={20} />
+                    <span className="font-medium">Hunddagis</span>
                   </Link>
                   <Link
                     href="/hundpensionat"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-green-700 transition"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
                   >
-                    <span className="text-lg">🏨</span>
-                    <span>Hundpensionat</span>
+                    <Building2 size={20} />
+                    <span className="font-medium">Hundpensionat</span>
                   </Link>
                   <Link
                     href="/frisor"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-green-700 transition"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
                   >
-                    <span className="text-lg">✂️</span>
-                    <span>Hundfrisör</span>
+                    <Scissors size={20} />
+                    <span className="font-medium">Hundfrisör</span>
                   </Link>
                   <Link
                     href="/admin"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-green-700 transition"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
                   >
-                    <span className="text-lg">⚙️</span>
-                    <span>Admin</span>
+                    <Settings size={20} />
+                    <span className="font-medium">Admin</span>
                   </Link>
                 </div>
 
                 {/* Användarmeny */}
                 <div className="pt-4">
                   {user && (
-                    <div className="mb-3 text-sm">
+                    <div className="mb-3 text-sm text-white">
                       <p className="font-semibold">
                         {user.email?.split("@")[0]}
                       </p>
                       {role && (
-                        <p className="text-xs text-green-200 capitalize">
+                        <p className="text-xs text-green-100 capitalize">
                           {role === "admin"
                             ? "Administratör"
                             : role === "staff"
@@ -178,7 +186,7 @@ export default function Navbar() {
                         logout();
                         setMenuOpen(false);
                       }}
-                      className="w-full bg-white text-[#2c7a4c] px-4 py-3 rounded-md font-semibold hover:bg-green-50 transition"
+                      className="w-full bg-white text-[#2c7a4c] px-4 py-3 rounded-md font-semibold hover:bg-green-50 transition shadow-sm"
                     >
                       Logga ut
                     </button>
@@ -186,7 +194,7 @@ export default function Navbar() {
                     <Link
                       href={"/login" as const}
                       onClick={() => setMenuOpen(false)}
-                      className="block text-center bg-white text-[#2c7a4c] px-4 py-3 rounded-md font-semibold hover:bg-green-50 transition"
+                      className="block text-center bg-white text-[#2c7a4c] px-4 py-3 rounded-md font-semibold hover:bg-green-50 transition shadow-sm"
                     >
                       Logga in
                     </Link>
