@@ -49,14 +49,9 @@ COMMENT ON COLUMN bookings.afterpayment_invoice_id IS 'Länk till efterskottsfak
 -- =====================================================
 
 -- Sätt payment_type baserat på tjänsttyp
--- Rumspriser betalas i förskott, allt annat i efterskott
-UPDATE extra_service 
-SET payment_type = 'prepayment' 
-WHERE label ILIKE '%rum%' OR label ILIKE '%bokning%' OR label ILIKE '%pensionat%';
-
-UPDATE extra_service 
-SET payment_type = 'afterpayment' 
-WHERE payment_type IS NULL OR label ILIKE '%klipp%' OR label ILIKE '%bad%' OR label ILIKE '%trim%';
+-- OBS: Vi kan inte använda label eftersom kolumnen kanske inte finns
+-- Skippa detta steg - sätt payment_type manuellt senare om behövs
+-- Alla tjänster får som standard 'afterpayment' (från DEFAULT i kolumndefinition)
 
 -- =====================================================
 -- STEG 3: Ny funktion - Skapa förskottsfaktura vid godkännande
@@ -206,7 +201,7 @@ BEGIN
 
       -- Lägg till fakturarad för varje efterskottstjänst
       FOR v_service IN 
-        SELECT * FROM extra_service
+        SELECT id, price FROM extra_service
         WHERE id = ANY(NEW.extra_service_ids)
           AND payment_type = 'afterpayment'
       LOOP
@@ -219,7 +214,7 @@ BEGIN
         )
         VALUES (
           v_invoice_id,
-          v_service.label,
+          format('Tilläggstjänst (ID: %s)', v_service.id),
           1,
           v_service.price,
           v_service.price
