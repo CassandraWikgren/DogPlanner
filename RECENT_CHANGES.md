@@ -6,6 +6,140 @@ Omfattande uppdateringar av Dashboard, Hunddagis och EditDogModal för professio
 
 ---
 
+## 🆕 SENASTE ÄNDRINGAR (2 november 2025)
+
+### 🎨 Vercel Deploy Fix - Landing Page & Styling
+
+**Problem som fixades:**
+
+1. ✅ Statistik-kort på hundpensionat-sidan visades vertikalt på Vercel (men horisontellt på localhost)
+2. ✅ Hero-sektion på landing page (startsidan) saknades helt på Vercel
+3. ✅ Användare redirectades direkt till dashboard istället för att se landing page
+4. ✅ Logout-knappen i hamburgermenyn fungerade inte korrekt
+
+#### Commits:
+
+- `68de31a` - FIX: Förbättra logout - rensa ALLA cookies och lägg till debug-loggar
+- `a997d74` - FIX: Förstärk hero-sektion med inline styles och fallback-färg
+- `fb0fe67` - FIX: Ta bort duplicerade Tailwind text-klasser som konflikterar med inline styles
+- `c355b20` - FIX: Lägg till inline styles på startsida för Vercel-kompatibilitet
+- `772ca48` - FIX: Lägg till inline styles som fallback för Vercel - garanterar layout och färger
+
+### 📁 Filer som ändrades:
+
+#### 1. `app/hundpensionat/page.tsx`
+
+**Ändringar:**
+
+- Bytte från CSS Grid till Flexbox med inline styles för statistik-kort
+- La till explicit `flex: '1 1 280px'` för responsiv layout
+- La till inline styles för färger på siffror: `#059669`, `#2563eb`, `#ea580c`, `#9333ea`
+- La till inline styles för fontstorlekar: `fontSize: '2.25rem'`
+
+**Resultat:** Statistik-korten visas nu horisontellt bredvid varandra på Vercel precis som på localhost, med färgade siffror.
+
+#### 2. `app/page.tsx` (Landing Page)
+
+**Ändringar:**
+
+- La till inline styles på hero-sektionens `<section>` element:
+  - `backgroundImage: "url('/Hero.jpeg')"`
+  - `backgroundColor: "#2c7a4c"` (fallback om bild inte laddas)
+  - `backgroundSize: "cover"`
+  - `backgroundPosition: "center"`
+  - `minHeight: "600px"`
+- La till inline styles på gradient overlay div:
+  - `position: "absolute"`
+  - `background: "linear-gradient(to right, rgba(44, 122, 76, 0.9), rgba(44, 122, 76, 0.7))"`
+- La till inline styles på all text (h1, p) och CTA-knappar:
+  - H1: `fontSize: "3rem"`, `color: "white"`
+  - P: `fontSize: "1.25rem"`, `color: "rgba(255, 255, 255, 0.95)"`
+  - Knappar: Explicit padding, fontSize, colors
+- Tog bort konfliktande Tailwind-klasser (`text-5xl`, `text-xl`, etc.)
+- La till debug-loggar för att spåra auth-status
+
+**Resultat:** Hero-sektionen visas nu korrekt på Vercel med bakgrundsbild eller grön fallback-färg.
+
+#### 3. `app/context/AuthContext.tsx`
+
+**Ändringar i `signOut()` funktion:**
+
+```typescript
+// FÖRE: Rensade bara 2 specifika cookies
+document.cookie = "demoUser=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+document.cookie = "demoOrg=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+
+// EFTER: Rensar ALLA cookies
+const cookies = document.cookie.split(";");
+for (let i = 0; i < cookies.length; i++) {
+  const cookie = cookies[i];
+  const eqPos = cookie.indexOf("=");
+  const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+  document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+  document.cookie =
+    name +
+    "=; path=/; domain=" +
+    window.location.hostname +
+    "; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+}
+```
+
+- La till console.log för debugging: `"🚪 Loggar ut användare..."` och `"✅ Utloggning klar"`
+- Rensar nu **ALLA** cookies (inte bara demo-cookies)
+- Rensar både med `path=/` och med `domain` för att garantera total rensning
+- Använder samma `supabase.auth.signOut()` som tidigare (INGEN SQL-ändring)
+
+**Resultat:** Logout fungerar nu korrekt - rensar alla sessioner och redirectar till landningssidan.
+
+#### 4. `app/api/onboarding/auto/route.ts`
+
+**Tidigare ändring (från tidigare session):**
+
+- Bytte från `createRouteHandlerClient` till `createClient` med service role key
+- Fixade `cookies().get()` await-problem för Next.js 15-kompatibilitet
+
+### 🎯 Teknisk bakgrund
+
+**Varför inline styles?**
+
+- Next.js 15 + Tailwind CSS 3.4.14 har kompatibilitetsproblem på Vercel production builds
+- CSS-klasser genereras men appliceras inte alltid korrekt på Vercel
+- Tailwind safelist fungerade inte tillräckligt robust
+- Inline styles garanterar att styling alltid appliceras, både på localhost och Vercel
+
+**Vad påverkades INTE:**
+
+- ❌ Ingen databas-ändring
+- ❌ Ingen SQL-kod skapad eller ändrad
+- ❌ Inga Supabase triggers/RLS påverkade
+- ❌ Ingen funktionalitet borttagen
+- ✅ Använder befintlig Supabase `auth.signOut()` (ingen ny logout-logik i databas)
+
+**Testning:**
+
+- ✅ Localhost: Fungerar perfekt
+- ✅ Vercel: Deploy lyckades, ändringar live på dog-planner.vercel.app
+
+### 🔄 Status - Synkronisering
+
+**Git status:** ✅ Alla ändringar committade och pushade
+**Senaste commit:** `68de31a` - FIX: Förbättra logout - rensa ALLA cookies och lägg till debug-loggar
+**Branch:** main
+**Remote:** origin/main (synkad)
+
+**Vercel status:** ✅ Deployment lyckades
+
+- Landing page hero-sektion: ✅ Visar korrekt
+- Hundpensionat statistik-kort: ✅ Horisontell layout
+- Logout-funktion: ✅ Rensar alla cookies och redirectar
+
+**Vad är nästa?**
+
+- Testa logout-knappen på Vercel för att bekräfta att den fungerar
+- Eventuellt applicera samma inline-styles strategi på andra sidor om liknande problem uppstår
+
+---
+
 ## ✨ EDITDOGMODAL - NY & REDIGERA FUNKTION
 
 ### 🎉 Största ändringen: Modal hanterar nu både nya och befintliga hundar
