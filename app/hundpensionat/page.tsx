@@ -335,240 +335,254 @@ export default function HundpensionatPage() {
           </p>
         </div>
       </div>
-      {/* Stats Cards - CSS Grid layout med inline styles */}
+      {/* Stats Cards - Tabell-layout för garanterad horisontell layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "1.5rem",
+            display: "table",
+            width: "100%",
             marginBottom: "2rem",
+            borderSpacing: "1.5rem",
           }}
         >
-          <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "0.75rem",
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-              padding: "1.5rem",
-              border: "1px solid #e5e7eb",
-            }}
-          >
+          <div style={{ display: "table-row" }}>
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                display: "table-cell",
+                backgroundColor: "white",
+                borderRadius: "0.75rem",
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+                padding: "1.5rem",
+                border: "1px solid #e5e7eb",
+                width: "25%",
+                verticalAlign: "top",
               }}
             >
-              <div>
-                <p
-                  style={{
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#6b7280",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Antal hundar
-                </p>
-                <p
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                    color: "#059669",
-                  }}
-                >
-                  {liveStats.hundarIdag}
-                </p>
-                <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-                  aktiva idag
-                </p>
-              </div>
               <div
                 style={{
-                  width: "3rem",
-                  height: "3rem",
-                  backgroundColor: "#ecfdf5",
-                  borderRadius: "0.5rem",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.5rem",
+                  justifyContent: "space-between",
                 }}
               >
-                🐕
+                <div>
+                  <p
+                    style={{
+                      fontSize: "0.875rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      marginBottom: "0.5rem",
+                    }}
+                  >
+                    Antal hundar
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "2rem",
+                      fontWeight: "bold",
+                      color: "#059669",
+                    }}
+                  >
+                    {liveStats.hundarIdag}
+                  </p>
+                  <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                    aktiva idag
+                  </p>
+                </div>
+                <div
+                  style={{
+                    width: "3rem",
+                    height: "3rem",
+                    backgroundColor: "#ecfdf5",
+                    borderRadius: "0.5rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "1.5rem",
+                  }}
+                >
+                  🐕
+                </div>
               </div>
             </div>
-          </div>
 
-          <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "0.75rem",
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-              padding: "1.5rem",
-              border: "1px solid #e5e7eb",
-            }}
-          >
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                display: "table-cell",
+                backgroundColor: "white",
+                borderRadius: "0.75rem",
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+                padding: "1.5rem",
+                border: "1px solid #e5e7eb",
+                width: "25%",
+                verticalAlign: "top",
               }}
             >
-              <div>
-                <p
-                  style={{
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#6b7280",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Ankomster idag
-                </p>
-                <p
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                    color: "#2563eb",
-                  }}
-                >
-                  {liveStats.incheckIdag}
-                </p>
-                <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-                  nya incheckning
-                </p>
-              </div>
               <div
                 style={{
-                  width: "3rem",
-                  height: "3rem",
-                  backgroundColor: "#eff6ff",
-                  borderRadius: "0.5rem",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.5rem",
+                  justifyContent: "space-between",
                 }}
               >
-                📅
+                <div>
+                  <p
+                    style={{
+                      fontSize: "0.875rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      marginBottom: "0.5rem",
+                    }}
+                  >
+                    Ankomster idag
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "2rem",
+                      fontWeight: "bold",
+                      color: "#2563eb",
+                    }}
+                  >
+                    {liveStats.incheckIdag}
+                  </p>
+                  <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                    nya incheckning
+                  </p>
+                </div>
+                <div
+                  style={{
+                    width: "3rem",
+                    height: "3rem",
+                    backgroundColor: "#eff6ff",
+                    borderRadius: "0.5rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "1.5rem",
+                  }}
+                >
+                  📅
+                </div>
               </div>
             </div>
-          </div>
 
-          <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "0.75rem",
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-              padding: "1.5rem",
-              border: "1px solid #e5e7eb",
-            }}
-          >
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                display: "table-cell",
+                backgroundColor: "white",
+                borderRadius: "0.75rem",
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+                padding: "1.5rem",
+                border: "1px solid #e5e7eb",
+                width: "25%",
+                verticalAlign: "top",
               }}
             >
-              <div>
-                <p
-                  style={{
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#6b7280",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Ankomster imorgon
-                </p>
-                <p
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                    color: "#ea580c",
-                  }}
-                >
-                  {liveStats.incheckImorgon}
-                </p>
-                <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-                  planerade
-                </p>
-              </div>
               <div
                 style={{
-                  width: "3rem",
-                  height: "3rem",
-                  backgroundColor: "#fff7ed",
-                  borderRadius: "0.5rem",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.5rem",
+                  justifyContent: "space-between",
                 }}
               >
-                🧳
+                <div>
+                  <p
+                    style={{
+                      fontSize: "0.875rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      marginBottom: "0.5rem",
+                    }}
+                  >
+                    Ankomster imorgon
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "2rem",
+                      fontWeight: "bold",
+                      color: "#ea580c",
+                    }}
+                  >
+                    {liveStats.incheckImorgon}
+                  </p>
+                  <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                    planerade
+                  </p>
+                </div>
+                <div
+                  style={{
+                    width: "3rem",
+                    height: "3rem",
+                    backgroundColor: "#fff7ed",
+                    borderRadius: "0.5rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "1.5rem",
+                  }}
+                >
+                  🧳
+                </div>
               </div>
             </div>
-          </div>
 
-          <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "0.75rem",
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-              padding: "1.5rem",
-              border: "1px solid #e5e7eb",
-            }}
-          >
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                display: "table-cell",
+                backgroundColor: "white",
+                borderRadius: "0.75rem",
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+                padding: "1.5rem",
+                border: "1px solid #e5e7eb",
+                width: "25%",
+                verticalAlign: "top",
               }}
             >
-              <div>
-                <p
-                  style={{
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#6b7280",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Avresor imorgon
-                </p>
-                <p
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                    color: "#9333ea",
-                  }}
-                >
-                  {liveStats.utcheckImorgon}
-                </p>
-                <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-                  utcheckning
-                </p>
-              </div>
               <div
                 style={{
-                  width: "3rem",
-                  height: "3rem",
-                  backgroundColor: "#faf5ff",
-                  borderRadius: "0.5rem",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.5rem",
+                  justifyContent: "space-between",
                 }}
               >
-                👋
+                <div>
+                  <p
+                    style={{
+                      fontSize: "0.875rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      marginBottom: "0.5rem",
+                    }}
+                  >
+                    Avresor imorgon
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "2rem",
+                      fontWeight: "bold",
+                      color: "#9333ea",
+                    }}
+                  >
+                    {liveStats.utcheckImorgon}
+                  </p>
+                  <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                    utcheckning
+                  </p>
+                </div>
+                <div
+                  style={{
+                    width: "3rem",
+                    height: "3rem",
+                    backgroundColor: "#faf5ff",
+                    borderRadius: "0.5rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "1.5rem",
+                  }}
+                >
+                  👋
+                </div>
               </div>
             </div>
           </div>
