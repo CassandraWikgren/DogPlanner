@@ -10,68 +10,46 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   safelist: [
-    // Säkerställ att DogPlanner-färger alltid inkluderas
+    // Pattern matching för att fånga ALLA varianter dynamiskt
+    {
+      pattern: /grid-cols-(1|2|3|4|5|6|7|8|9|10|11|12)/,
+      variants: ["sm", "md", "lg", "xl", "2xl"],
+    },
+    {
+      pattern:
+        /text-(emerald|blue|orange|purple|pink|amber|slate|gray|green)-(50|100|200|300|400|500|600|700|800|900)/,
+    },
+    {
+      pattern:
+        /bg-(emerald|blue|orange|purple|pink|amber|slate|gray|green)-(50|100|200|300|400|500|600|700|800|900)/,
+    },
+    {
+      pattern:
+        /border-(emerald|blue|orange|purple|pink|amber|slate|gray|green)-(50|100|200|300|400|500|600|700|800|900)/,
+    },
+    {
+      pattern: /text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)/,
+    },
+    {
+      pattern: /gap-(0|1|2|3|4|5|6|7|8|9|10|11|12|14|16|20|24|28|32)/,
+    },
+    {
+      pattern: /(w|h)-(0|1|2|3|4|5|6|7|8|9|10|11|12|14|16|20|24|28|32)/,
+    },
+
+    // Specifika klasser som används överallt
     "bg-[#2c7a4c]",
     "hover:bg-[#236139]",
     "text-[#2c7a4c]",
     "border-[#2c7a4c]",
     "hover:border-[#2c7a4c]",
-
-    // Statistik-kort färger (ALLA varianter som används)
-    "text-emerald-600",
-    "bg-emerald-50",
-    "text-blue-600",
-    "bg-blue-50",
-    "text-orange-600",
-    "bg-orange-50",
-    "text-purple-600",
-    "bg-purple-50",
-    "border-blue-500",
-    "border-orange-500",
-    "border-purple-500",
-    "border-pink-500",
-    "text-pink-600",
-    "border-emerald-500",
-    "border-amber-600",
-    "text-amber-600",
-    "border-slate-600",
-    "text-slate-600",
-
-    // Text-storlekar för statistik
-    "text-4xl",
-    "text-3xl",
-    "text-2xl",
-
-    // Layout och spacing
-    "grid-cols-1",
-    "grid-cols-2",
-    "grid-cols-4",
-    "sm:grid-cols-2",
-    "lg:grid-cols-4",
-    "md:grid-cols-5",
-    "gap-6",
     "mb-8",
-    "w-14",
-    "h-14",
     "ml-4",
-
-    // Knappfärger
-    "bg-amber-600",
-    "hover:bg-amber-700",
-    "bg-emerald-600",
-    "hover:bg-emerald-700",
-    "bg-slate-600",
-    "hover:bg-slate-700",
-    "bg-gray-600",
-    "hover:bg-gray-700",
-
-    // Övriga
     "pt-12",
     "pb-16",
     "-mt-12",
     "mb-6",
     "p-3",
-    "gap-3",
   ],
   theme: {
     extend: {
