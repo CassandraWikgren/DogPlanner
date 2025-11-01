@@ -190,10 +190,18 @@ export default function EditDogModal({
     );
 
   // --- TILLÄGG & EKONOMI ---
-  const [addonName, setAddonName] = React.useState("");
-  const [addonQty, setAddonQty] = React.useState("1"); // kan vara tomt → undvik ledande nollor
-  const [addonStart, setAddonStart] = React.useState<string>("");
-  const [addonEnd, setAddonEnd] = React.useState<string>("");
+  type Addon = {
+    id: string;
+    name: string;
+    qty: string;
+    start: string;
+    end: string;
+  };
+  const [addons, setAddons] = React.useState<Addon[]>([]);
+  const [currentAddonName, setCurrentAddonName] = React.useState("");
+  const [currentAddonQty, setCurrentAddonQty] = React.useState("1");
+  const [currentAddonStart, setCurrentAddonStart] = React.useState<string>("");
+  const [currentAddonEnd, setCurrentAddonEnd] = React.useState<string>("");
   const [financeNote, setFinanceNote] = React.useState("");
 
   /* ===========================
@@ -213,7 +221,7 @@ export default function EditDogModal({
       return "Ogiltig e-postadress.";
     if (heightcm && isNaN(Number(heightcm)))
       return "Mankhöjd måste vara ett heltal (cm).";
-    if (addonQty && isNaN(Number(addonQty)))
+    if (currentAddonQty && isNaN(Number(currentAddonQty)))
       return "Antal i tilläggsabonnemang måste vara en siffra.";
     // Endast tillåt kända abonnemangstyper
     if (
@@ -529,22 +537,21 @@ export default function EditDogModal({
         setJournalText(""); // Rensa textfältet efter sparning
       }
 
-      // 5) Tilläggsabonnemang (extra_service)
-      if (addonName.trim()) {
-        const qty =
-          addonQty.trim() === "" ? null : Number(addonQty.replace(/^0+/, "")); // ta bort ledande nollor
+      // 5) Tilläggsabonnemang (extra_service) - spara alla addons
+      if (addons.length > 0) {
+        const addonInserts = addons.map((addon) => ({
+          dogs_id: dogId,
+          service_type: addon.name.trim(),
+          quantity:
+            addon.qty.trim() === "" ? 1 : Number(addon.qty.replace(/^0+/, "")),
+          price: null,
+          performed_at: addon.start || null,
+          notes: addon.end ? `Gäller t.o.m. ${addon.end}` : null,
+        }));
+
         await supabase
           .from("extra_service")
-          .insert([
-            {
-              dogs_id: dogId, // ✅ relation mot dogs.id
-              service_type: addonName.trim(),
-              quantity: qty ?? 1,
-              price: null,
-              performed_at: addonStart || null,
-              notes: addonEnd ? `Gäller t.o.m. ${addonEnd}` : null,
-            },
-          ])
+          .insert(addonInserts)
           .throwOnError();
       }
 
@@ -1284,6 +1291,49 @@ export default function EditDogModal({
           {activeTab === "tillägg" && (
             <div className="rounded-xl border p-4">
               <SectionTitle>Tilläggsabonnemang & Merförsäljning</SectionTitle>
+              
+              {/* Lista över tillagda addons */}
+              {addons.length > 0 && (
+                <div className="mb-4 space-y-2">
+                  <label className="text-xs text-[#2c7a4c] font-semibold">
+                    Tillagda tilläggsabonnemang:
+                  </label>
+                  {addons.map((addon) => (
+                    <div
+                      key={addon.id}
+                      className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 border"
+                    >
+                      <div className="flex-1">
+                        <span className="font-medium">{addon.name}</span>
+                        <span className="text-gray-600 ml-2">
+                          ({addon.qty} ggr/mån)
+                        </span>
+                        {addon.start && (
+                          <span className="text-gray-500 text-sm ml-2">
+                            Start: {addon.start}
+                          </span>
+                        )}
+                        {addon.end && (
+                          <span className="text-gray-500 text-sm ml-2">
+                            Slut: {addon.end}
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAddons(addons.filter((a) => a.id !== addon.id));
+                        }}
+                        className="text-red-600 hover:text-red-800 text-sm px-2"
+                      >
+                        Ta bort
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Formulär för att lägga till nytt addon */}
               <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
                 <div className="md:col-span-2">
                   <label className="text-xs text-[#2c7a4c]">
@@ -1292,18 +1342,18 @@ export default function EditDogModal({
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     placeholder="t.ex. Kloklipp"
-                    value={addonName}
-                    onChange={(e) => setAddonName(e.target.value)}
+                    value={currentAddonName}
+                    onChange={(e) => setCurrentAddonName(e.target.value)}
                   />
                 </div>
                 <div>
                   <label className="text-xs text-[#2c7a4c]">Gånger/månad</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
-                    value={addonQty}
+                    value={currentAddonQty}
                     onChange={(e) => {
                       const v = e.target.value.replace(/[^\d]/g, "");
-                      setAddonQty(v); // tillåter tom sträng (undviker 099-problemet)
+                      setCurrentAddonQty(v);
                     }}
                   />
                 </div>
@@ -1312,8 +1362,8 @@ export default function EditDogModal({
                   <input
                     type="date"
                     className="w-full border rounded-lg px-3 py-2"
-                    value={addonStart}
-                    onChange={(e) => setAddonStart(e.target.value)}
+                    value={currentAddonStart}
+                    onChange={(e) => setCurrentAddonStart(e.target.value)}
                   />
                 </div>
                 <div>
@@ -1321,22 +1371,51 @@ export default function EditDogModal({
                   <input
                     type="date"
                     className="w-full border rounded-lg px-3 py-2"
-                    value={addonEnd}
-                    onChange={(e) => setAddonEnd(e.target.value)}
+                    value={currentAddonEnd}
+                    onChange={(e) => setCurrentAddonEnd(e.target.value)}
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <label className="text-xs text-[#2c7a4c]">
-                    Anvisningar till ekonomi
-                  </label>
-                  <input
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="t.ex. ändring D3 → Heltid fr.o.m. 1/11"
-                    value={financeNote}
-                    onChange={(e) => setFinanceNote(e.target.value)}
-                  />
+                <div className="flex items-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!currentAddonName.trim()) {
+                        alert("Ange namn på tilläggsabonnemang");
+                        return;
+                      }
+                      const newAddon: Addon = {
+                        id: Date.now().toString(),
+                        name: currentAddonName.trim(),
+                        qty: currentAddonQty || "1",
+                        start: currentAddonStart,
+                        end: currentAddonEnd,
+                      };
+                      setAddons([...addons, newAddon]);
+                      // Reset form
+                      setCurrentAddonName("");
+                      setCurrentAddonQty("1");
+                      setCurrentAddonStart("");
+                      setCurrentAddonEnd("");
+                    }}
+                    className="w-full bg-[#2c7a4c] text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-green-700"
+                  >
+                    + Lägg till
+                  </button>
                 </div>
               </div>
+
+              <div className="mt-4 md:col-span-6">
+                <label className="text-xs text-[#2c7a4c]">
+                  Anvisningar till ekonomi
+                </label>
+                <input
+                  className="w-full border rounded-lg px-3 py-2"
+                  placeholder="t.ex. ändring D3 → Heltid fr.o.m. 1/11"
+                  value={financeNote}
+                  onChange={(e) => setFinanceNote(e.target.value)}
+                />
+              </div>
+
               <p className="mt-2 text-xs text-gray-500">
                 Allt i denna sektion kopplas till fakturaunderlag via{" "}
                 <code>dogs</code> och <code>extra_service</code>.
