@@ -2,7 +2,7 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx,css}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./lib/**/*.{js,ts,jsx,tsx,mdx}",
     "./types/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,46 +10,46 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   safelist: [
-    // Pattern matching för att fånga ALLA varianter dynamiskt
-    {
-      pattern: /grid-cols-(1|2|3|4|5|6|7|8|9|10|11|12)/,
-      variants: ["sm", "md", "lg", "xl", "2xl"],
-    },
-    {
-      pattern:
-        /text-(emerald|blue|orange|purple|pink|amber|slate|gray|green)-(50|100|200|300|400|500|600|700|800|900)/,
-    },
-    {
-      pattern:
-        /bg-(emerald|blue|orange|purple|pink|amber|slate|gray|green)-(50|100|200|300|400|500|600|700|800|900)/,
-    },
-    {
-      pattern:
-        /border-(emerald|blue|orange|purple|pink|amber|slate|gray|green)-(50|100|200|300|400|500|600|700|800|900)/,
-    },
-    {
-      pattern: /text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)/,
-    },
-    {
-      pattern: /gap-(0|1|2|3|4|5|6|7|8|9|10|11|12|14|16|20|24|28|32)/,
-    },
-    {
-      pattern: /(w|h)-(0|1|2|3|4|5|6|7|8|9|10|11|12|14|16|20|24|28|32)/,
-    },
-
-    // Specifika klasser som används överallt
+    // Säkerställ att DogPlanner-färger alltid inkluderas
     "bg-[#2c7a4c]",
     "hover:bg-[#236139]",
     "text-[#2c7a4c]",
     "border-[#2c7a4c]",
     "hover:border-[#2c7a4c]",
-    "mb-8",
-    "ml-4",
+    // Statistik-kort färger
+    "border-blue-500",
+    "text-blue-600",
+    "border-orange-500",
+    "text-orange-600",
+    "border-purple-500",
+    "text-purple-600",
+    "border-pink-500",
+    "text-pink-600",
+    "border-emerald-500",
+    "text-emerald-600",
+    "border-amber-600",
+    "text-amber-600",
+    "border-slate-600",
+    "text-slate-600",
+    // Knappfärger
+    "bg-amber-600",
+    "hover:bg-amber-700",
+    "bg-emerald-600",
+    "hover:bg-emerald-700",
+    "bg-slate-600",
+    "hover:bg-slate-700",
+    "bg-gray-600",
+    "hover:bg-gray-700",
+    // Spacing som används
     "pt-12",
     "pb-16",
     "-mt-12",
     "mb-6",
     "p-3",
+    "gap-3",
+    // Grid layouts
+    "grid-cols-2",
+    "md:grid-cols-5",
   ],
   theme: {
     extend: {
