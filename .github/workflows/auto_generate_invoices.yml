@@ -23,10 +23,16 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -d "{\"month\": \"$MONTH\"}")
 
-          if [ "$RESPONSE" != "200" ]; then
-            echo "[ERR-1001] Fakturagenerering misslyckades – statuskod: $RESPONSE" >> $GITHUB_ENV
-          fi
           echo "RESPONSE_CODE=$RESPONSE" >> $GITHUB_ENV
+
+          if [ "$RESPONSE" != "200" ]; then
+            echo "❌ Fakturagenerering misslyckades – statuskod: $RESPONSE"
+            cat response.txt
+            exit 1
+          fi
+
+          echo "✅ Fakturagenerering lyckades!"
+          cat response.txt
 
       - name: Log to Supabase invoice_runs
         if: always()
