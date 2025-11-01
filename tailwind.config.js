@@ -16,21 +16,45 @@ module.exports = {
     "text-[#2c7a4c]",
     "border-[#2c7a4c]",
     "hover:border-[#2c7a4c]",
-    // Statistik-kort färger
-    "border-blue-500",
+
+    // Statistik-kort färger (ALLA varianter som används)
+    "text-emerald-600",
+    "bg-emerald-50",
     "text-blue-600",
-    "border-orange-500",
+    "bg-blue-50",
     "text-orange-600",
-    "border-purple-500",
+    "bg-orange-50",
     "text-purple-600",
+    "bg-purple-50",
+    "border-blue-500",
+    "border-orange-500",
+    "border-purple-500",
     "border-pink-500",
     "text-pink-600",
     "border-emerald-500",
-    "text-emerald-600",
     "border-amber-600",
     "text-amber-600",
     "border-slate-600",
     "text-slate-600",
+
+    // Text-storlekar för statistik
+    "text-4xl",
+    "text-3xl",
+    "text-2xl",
+
+    // Layout och spacing
+    "grid-cols-1",
+    "grid-cols-2",
+    "grid-cols-4",
+    "sm:grid-cols-2",
+    "lg:grid-cols-4",
+    "md:grid-cols-5",
+    "gap-6",
+    "mb-8",
+    "w-14",
+    "h-14",
+    "ml-4",
+
     // Knappfärger
     "bg-amber-600",
     "hover:bg-amber-700",
@@ -40,16 +64,14 @@ module.exports = {
     "hover:bg-slate-700",
     "bg-gray-600",
     "hover:bg-gray-700",
-    // Spacing som används
+
+    // Övriga
     "pt-12",
     "pb-16",
     "-mt-12",
     "mb-6",
     "p-3",
     "gap-3",
-    // Grid layouts
-    "grid-cols-2",
-    "md:grid-cols-5",
   ],
   theme: {
     extend: {
