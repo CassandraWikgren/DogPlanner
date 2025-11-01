@@ -92,9 +92,51 @@ Gör ALLT i en fil:
 
 ---
 
-## 🔄 Senaste Uppdateringar (30 okt 2025)
+## 🔄 Senaste Uppdateringar
 
-### ✨ EditDogModal - Skapar & Redigerar Nu
+### 📅 1 november 2025 - Automatisk månadsfakturering & förskottssystem
+
+#### ✨ Månadsfakturering (Automated Monthly Invoicing)
+- **GitHub Actions workflow** för automatisk fakturagenerering 1:a varje månad kl 08:00 UTC
+- **Supabase Edge Function** `generate_invoices` som skapar konsoliderade fakturor per ägare
+- **Fakturastruktur:**
+  - Grupperar alla hundar per ägare
+  - Inkluderar abonnemang, extra_service och pension_stays
+  - Skapar invoice med invoice_items (separat insert)
+  - Sätter due_date till 30 dagar från invoice_date
+- **E-postnotifieringar** vid success/failure
+- **Migration:** `add_due_date_to_invoices.sql` - Lade till due_date kolumn
+- **Deployment:** Edge Functions måste deployas manuellt via Supabase Dashboard
+- **Troubleshooting:** Fullständig guide i README (401 errors, schema mismatches, deployment)
+
+#### 💰 Förskotts-/efterskottssystem (Prepayment/Afterpayment)
+- **Automatiska triggers** för pensionatsbokningar:
+  - Förskottsfaktura (50%) vid godkännande (status='confirmed')
+  - Efterskottsfaktura (50%) vid utcheckning (status='completed')
+- **Nya kolumner:**
+  - `bookings.prepayment_status`, `prepayment_invoice_id`, `afterpayment_invoice_id`
+  - `invoices.invoice_type` ('prepayment' / 'afterpayment' / 'full')
+  - `extra_service.payment_type` ('prepayment' / 'afterpayment')
+- **Migration:** `add_prepayment_system.sql`
+- **UI:** Visar prepayment_invoice_id i ansökningsgränssnittet efter godkännande
+
+#### 📚 Dokumentation
+- **schema.sql:** Fullständigt uppdaterad med:
+  - Detaljerad beskrivning av månadsfakturering
+  - Förskotts-/efterskottssystem
+  - Migration history
+  - Troubleshooting guide
+  - Kolumnkommentarer
+- **README.md:** Nya sektioner:
+  - 5.3 Automatisk månadsfakturering (komplett guide)
+  - 3.3 Förskotts-/efterskottssystem (pensionat)
+  - Deployment instruktioner
+  - Felsökningsguide
+
+### 📋 30 oktober 2025
+
+#### ✨ EditDogModal - Skapar & Redigerar Nu
+
 
 - Modal kan nu både lägga till nya hundar OCH redigera befintliga
 - Klicka "Ny hund" → Tom modal
@@ -265,7 +307,40 @@ Gör ALLT i en fil:
    Säsongshantering (högsäsong, storhelger, lov).
    Rabatter för långvistelse eller flera hundar.
    Fakturering vid utcheckning eller samlad per månad.
-   3.3 Prislogik
+   3.3 Förskotts-/efterskottssystem (2025-11-01)
+   Pensionatsbokningar använder ett automatiserat system för delad betalning:
+   
+   **FÖRSKOTTSFAKTURA (Prepayment):**
+   • Skapas automatiskt när bokning godkänns (status ändras till 'confirmed')
+   • Trigger: `trg_create_prepayment_invoice` (BEFORE UPDATE på bookings)
+   • Innehåller: 50% av total_price + extra_service med payment_type='prepayment'
+   • Sparas i `bookings.prepayment_invoice_id`
+   • Invoice_type: 'prepayment'
+   
+   **EFTERSKOTTSFAKTURA (Afterpayment):**
+   • Skapas automatiskt vid utcheckning (status ändras till 'completed')
+   • Trigger: `trg_create_invoice_on_checkout` (uppdaterad 2025-11-01)
+   • Innehåller: Resterande 50% av total_price + extra_service med payment_type='afterpayment'
+   • Sparas i `bookings.afterpayment_invoice_id`
+   • Invoice_type: 'afterpayment'
+   
+   **KOLUMNER:**
+   • bookings.prepayment_status: 'pending' / 'invoiced' / 'paid'
+   • bookings.prepayment_invoice_id: Länk till förskottsfaktura
+   • bookings.afterpayment_invoice_id: Länk till efterskottsfaktura
+   • invoices.invoice_type: 'prepayment' / 'afterpayment' / 'full'
+   • extra_service.payment_type: 'prepayment' / 'afterpayment'
+   
+   **UI:**
+   • `app/hundpensionat/ansokningar/page.tsx` visar prepayment_invoice_id efter godkännande
+   • Systemet väntar på trigger, hämtar uppdaterad booking, visar faktura-ID
+   
+   **MIGRATION:**
+   • Migration: `supabase/migrations/add_prepayment_system.sql` (2025-11-01)
+   • Lägger till kolumner, triggers och funktioner
+   • Dokumenterad i schema.sql header
+   
+   3.4 Prislogik
    Priser definieras per organisation och kan delas upp i:
    Vardagspris: standard per natt.
    Helgpris: separat för helger.
@@ -296,12 +371,75 @@ Gör ALLT i en fil:
    Skickad: blå
    Betald: grön
    Makulerad: röd
-   5.3 Fakturaunderlag
+   5.3 Automatisk månadsfakturering
+   DogPlanner har ett automatiserat system för månadsfakturering som körs den 1:a varje månad kl 08:00 UTC.
+
+   **ARKITEKTUR:**
+   • GitHub Actions workflow: `.github/workflows/auto_generate_invoices.yml`
+   • Supabase Edge Function: `supabase/functions/generate_invoices/index.ts`
+   • Databastabeller: `invoices`, `invoice_items`, `function_logs`
+   • Migrations: `add_prepayment_system.sql`, `add_due_date_to_invoices.sql`
+
+   **WORKFLOW:**
+   1. GitHub Actions triggas automatiskt (cron: '0 8 1 \* \*')
+   2. Workflow anropar Edge Function via POST request med `SUPABASE_SERVICE_ROLE_KEY`
+   3. Edge Function:
+      - Hämtar alla hundar med ägare från `dogs` och `owners` tabeller
+      - Grupperar hundar per ägare för konsoliderade fakturor
+      - För varje hund läggs till:
+        - Abonnemang (från `dogs.subscription` mot `price_lists`)
+        - Extra tjänster (från `extra_service` inom månaden)
+        - Pensionatsvistelser (från `pension_stays` inom månaden)
+      - Skapar invoice med `invoice_type='full'` (vs 'prepayment'/'afterpayment')
+      - Skapar invoice_items för varje fakturarad (separat insert)
+      - Sätter `due_date` till 30 dagar från `invoice_date`
+   4. Workflow loggar resultat till `function_logs` och `invoice_runs` tabeller
+   5. E-postnotifiering skickas vid success eller failure
+
+   **VIKTIGA KOLUMNER:**
+   • invoices.owner_id: Länk till owners (används för gruppering)
+   • invoices.billed_name: Kopierat från owner.full_name
+   • invoices.billed_email: Kopierat från owner.email
+   • invoices.invoice_date: Startdatum för månaden (YYYY-MM-DD)
+   • invoices.due_date: Förfallodatum (invoice_date + 30 dagar)
+   • invoices.invoice_type: 'full' för månadsfakturor
+   • invoices.status: Alltid 'draft' vid skapande
+
+   **DEPLOYMENT:**
+   Edge Functions måste deployas manuellt via Supabase Dashboard:
+   1. Gå till Supabase Project → Edge Functions
+   2. Välj funktionen `generate_invoices`
+   3. Klicka på Code tab
+   4. Klicka Deploy updates
+
+   **AUTHENTICATION:**
+   Workflow använder `SUPABASE_SERVICE_ROLE_KEY` från GitHub Secrets.
+   Vid 401 Unauthorized: Verifiera att rätt key är satt i GitHub repo Settings → Secrets.
+
+   **TROUBLESHOOTING:**
+   • 401 Unauthorized: Kolla SUPABASE_SERVICE_ROLE_KEY i GitHub Secrets
+   • Schema fel: Verifiera att alla kolumner finns i faktisk databas (kör migrations)
+   • Deploy fel: Edge Function måste deployas manuellt efter kodändringar
+   • Loggning: Kolla `function_logs` tabellen för detaljerad felinfo
+   • Workflow logs: GitHub Actions → Workflows → Run monthly invoice generator
+
+   **TESTNING:**
+   Workflow kan triggas manuellt via GitHub Actions:
+   1. Gå till GitHub repo → Actions
+   2. Välj workflow "Run monthly invoice generator"
+   3. Klicka "Run workflow" och välj branch
+
+   **MIGRATION HISTORY:**
+   • 2025-11-01: `add_prepayment_system.sql` - Lade till invoice_type, prepayment system
+   • 2025-11-01: `add_due_date_to_invoices.sql` - Lade till due_date kolumn
+
+   5.4 Fakturaunderlag
    Endast följande skickas till fakturering:
    Aktiva abonnemang
    Tilläggstjänster
    Merförsäljning
    Personalens kommentarer visas i ekonomimodulen för manuell justering.
+
 6. Prissättning
    6.1 Syfte
    Låter varje organisation hantera egen prislista, anpassad för olika tjänster och säsonger.

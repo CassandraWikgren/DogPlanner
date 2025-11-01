@@ -1,6 +1,6 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-01 (inkl. förskotts-/efterskottssystem)
+-- Uppdaterad 2025-11-01 (inkl. förskotts-/efterskottssystem + månadsfakturering)
 -- ========================================
 --
 -- === RELATERADE SQL-FILER I PROJEKTET ===
@@ -10,6 +10,7 @@
 --   • enable_triggers_for_production.sql    → Sätter org_id automatiskt för owners/dogs/rooms (FRIVILLIGT)
 --   • complete_testdata.sql                 → Testdata för development (DISABLAR triggers!)
 --   • add_prepayment_system.sql             → Förskotts-/efterskottsfakturering (2025-11-01)
+--   • add_due_date_to_invoices.sql          → Lägger till due_date i invoices-tabellen (2025-11-01)
 --
 -- 🛠️ MANUELLA FIXES (används vid behov):
 --   • fix_cassandra_profile_20251101.sql    → Fixade Cassandras profil (körts 2025-11-01)
@@ -26,18 +27,39 @@
 --   • RLS är DISABLED i development för enklare debugging
 --
 -- 💰 FÖRSKOTTS-/EFTERSKOTTSSYSTEM (2025-11-01):
+--   • Migration: supabase/migrations/add_prepayment_system.sql
 --   • bookings.prepayment_status          → Status för förskottsbetalning
 --   • bookings.prepayment_invoice_id      → Länk till förskottsfaktura (skapas vid godkännande)
 --   • bookings.afterpayment_invoice_id    → Länk till efterskottsfaktura (skapas vid utcheckning)
 --   • invoices.invoice_type               → prepayment/afterpayment/full
 --   • extra_service.payment_type          → prepayment (betalas i förskott) / afterpayment (betalas vid utcheckning)
 --   • Triggers: trg_create_prepayment_invoice, trg_create_invoice_on_checkout
+--   • UI: app/hundpensionat/ansokningar/page.tsx visar prepayment_invoice_id efter godkännande
 --
--- 📅 MÅNADSFAKTURERING:
+-- 📅 MÅNADSFAKTURERING (2025-11-01):
+--   • Migration: supabase/migrations/add_due_date_to_invoices.sql (lägger till due_date kolumn)
 --   • Edge Function: supabase/functions/generate_invoices/index.ts
---   • GitHub Actions: .github/workflows/auto_generate_invoices.yml (kör 1:a varje månad kl 08:00 UTC)
---   • Skapar 'full'-fakturor i invoices-tabellen med invoice_items för alla aktiva abonnemang
---   • Skickar e-postnotifiering vid success/failure
+--   • GitHub Actions: .github/workflows/auto_generate_invoices.yml
+--     - Körs automatiskt: 1:a varje månad kl 08:00 UTC
+--     - Anropar Edge Function med SUPABASE_SERVICE_ROLE_KEY
+--     - Loggar till function_logs och invoice_runs tabeller
+--     - Skickar e-postnotifiering vid success/failure
+--   • Deployment: Edge Functions måste deployas manuellt via Supabase Dashboard (Code tab)
+--   • Fakturering:
+--     - Skapar 'full'-fakturor (invoice_type='full') i invoices-tabellen
+--     - Grupperar hundar per ägare för konsoliderade fakturor
+--     - Inkluderar: abonnemang (dogs.subscription), extra_service, pension_stays
+--     - Skapar invoice_items för varje rad (separat insert efter invoice)
+--     - Sätter due_date till 30 dagar från invoice_date
+--   • Kolumner som används:
+--     - invoices: org_id, owner_id, billed_name, billed_email, invoice_date, due_date, 
+--                 total_amount, status, invoice_type
+--     - invoice_items: invoice_id, description, quantity, unit_price, total_amount
+--   • Felsökning:
+--     - 401 Unauthorized: Verifiera SUPABASE_SERVICE_ROLE_KEY i GitHub Secrets
+--     - Schema fel: Kontrollera att alla kolumner finns i faktisk databas (not just schema.sql)
+--     - Deploy fel: Edge Function måste deployas via Supabase Dashboard efter kodändringar
+--     - Använd function_logs tabellen för detaljerad loggning
 --
 -- ========================================
 
@@ -386,29 +408,68 @@ CREATE TABLE IF NOT EXISTS invoice_logs (
 --   1. Pensionatsbokningar (via triggers för förskott/efterskott)
 --   2. Månatlig fakturagenerering (Edge Function generate_invoices)
 --   3. Manuell fakturering
+--
+-- MÅNADSFAKTURERING (Edge Function: generate_invoices):
+--   • Körs automatiskt via GitHub Actions: 1:a varje månad kl 08:00 UTC
+--   • Workflow: .github/workflows/auto_generate_invoices.yml
+--   • Använder SUPABASE_SERVICE_ROLE_KEY för autentisering
+--   • Deployment: Manuell deployment via Supabase Dashboard (Edge Functions → Code → Deploy)
+--   
+--   DATAFLÖDE:
+--   1. Hämtar alla hundar med owners (dogs + owners tabeller)
+--   2. Grupperar per ägare (billed_name) för konsoliderade fakturor
+--   3. För varje hund:
+--      - Lägg till abonnemang (dogs.subscription mot price_lists)
+--      - Lägg till extra_service records inom månaden
+--      - Lägg till pension_stays inom månaden
+--   4. Skapar invoice med totalsumma (invoice_type='full')
+--   5. Skapar invoice_items för varje rad (separat insert)
+--   6. Loggar till function_logs tabellen
+--   7. Skickar e-postnotifiering
+--
+--   VIKTIGA KOLUMNER:
+--   • owner_id: Länk till owners (används för gruppering)
+--   • billed_name: Kopierat från owner.full_name (för fakturans skull)
+--   • billed_email: Kopierat från owner.email
+--   • invoice_date: Startdatum för månaden (YYYY-MM-DD)
+--   • due_date: Förfallodatum, sätts till 30 dagar från invoice_date
+--   • invoice_type: 'full' för månadsfakturor (vs 'prepayment'/'afterpayment')
+--   • status: Alltid 'draft' vid skapande
+--
+--   TROUBLESHOOTING:
+--   • 401 Unauthorized: Kolla SUPABASE_SERVICE_ROLE_KEY i GitHub Secrets
+--   • Schema fel: Verifiera att alla kolumner finns i faktisk databas (kör migrations)
+--   • Deploy fel: Edge Function måste deployas manuellt efter kodändringar
+--   • Loggning: Kolla function_logs tabellen för detaljerad felinfo
+--
+--   MIGRATION HISTORY:
+--   • 2025-11-01: add_due_date_to_invoices.sql - Lade till due_date kolumn
+--   • 2025-11-01: add_prepayment_system.sql - Lade till invoice_type, prepayment system
 CREATE TABLE IF NOT EXISTS invoices (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
   owner_id uuid REFERENCES owners(id) ON DELETE CASCADE,
   invoice_date date NOT NULL,
-  due_date date,
+  due_date date, -- Tillagt 2025-11-01 (migration: add_due_date_to_invoices.sql)
   total_amount numeric NOT NULL,
   status text CHECK (status IN ('draft', 'sent', 'paid', 'overdue', 'cancelled')) DEFAULT 'draft',
   -- FÖRSKOTTS-/EFTERSKOTTSFAKTURERING (tillagt 2025-11-01)
   invoice_type text CHECK (invoice_type IN ('prepayment', 'afterpayment', 'full')) DEFAULT 'full',
   paid_at timestamptz,
-  billed_name text,
-  billed_email text,
+  billed_name text, -- Namn på fakturamottagare (kopieras från owner.full_name)
+  billed_email text, -- E-post till fakturamottagare (kopieras från owner.email)
   billed_address text,
   notes text,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
 
-COMMENT ON TABLE invoices IS 'Fakturor för pensionat och månadsfakturering';
-COMMENT ON COLUMN invoices.invoice_type IS 'prepayment=förskott (vid godkännande), afterpayment=efterskott (vid utcheckning), full=komplett månadsfaktura';
-COMMENT ON COLUMN invoices.billed_name IS 'Fakturamottagarens namn (kopierat från owner)';
-COMMENT ON COLUMN invoices.billed_email IS 'Fakturamottagarens e-post';
+COMMENT ON TABLE invoices IS 'Fakturor för pensionat och månadsfakturering. Används av Edge Function generate_invoices (månadsvis) och triggers för pensionatsbokningar.';
+COMMENT ON COLUMN invoices.invoice_type IS 'prepayment=förskott (vid godkännande), afterpayment=efterskott (vid utcheckning), full=komplett månadsfaktura (från generate_invoices Edge Function)';
+COMMENT ON COLUMN invoices.billed_name IS 'Fakturamottagarens namn (kopierat från owner.full_name vid generering)';
+COMMENT ON COLUMN invoices.billed_email IS 'Fakturamottagarens e-post (kopierat från owner.email vid generering)';
+COMMENT ON COLUMN invoices.due_date IS 'Förfallodatum (sätts till invoice_date + 30 dagar av generate_invoices). Tillagt 2025-11-01.';
+COMMENT ON COLUMN invoices.owner_id IS 'Länk till owners-tabellen. Används för att gruppera fakturor per ägare i månadsfakturering.';
 
 -- === FAKTURARADER ===
 -- Kopplas till både invoice_logs OCH invoices
