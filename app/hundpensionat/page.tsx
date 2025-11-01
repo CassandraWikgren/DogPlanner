@@ -322,7 +322,7 @@ export default function HundpensionatPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-wrap gap-6 mb-8">
           {/* Antal hundar */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-gray-600 mb-2">
@@ -340,7 +340,7 @@ export default function HundpensionatPage() {
           </div>
 
           {/* Ankomster idag */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-gray-600 mb-2">
@@ -358,7 +358,7 @@ export default function HundpensionatPage() {
           </div>
 
           {/* Ankomster imorgon */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-gray-600 mb-2">
@@ -376,7 +376,7 @@ export default function HundpensionatPage() {
           </div>
 
           {/* Avresor imorgon */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-gray-600 mb-2">
