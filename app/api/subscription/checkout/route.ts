@@ -1,40 +1,40 @@
-// Tillfällig loggning för felsökning av miljövariabler på Vercel
-console.log("SUPABASE_URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-console.log("SUPABASE_ANON_KEY:", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-// --- Kontrollera att alla miljövariabler finns ---
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-if (!url || !anonKey || url.trim() === "" || anonKey.trim() === "") {
-  console.error(
-    `[ERR-1001] Saknar Supabase-nycklar: NEXT_PUBLIC_SUPABASE_URL='${url}', NEXT_PUBLIC_SUPABASE_ANON_KEY='${anonKey}'`
-  );
-  throw new Error(
-    `[ERR-1001] Saknar Supabase-nycklar.\nNEXT_PUBLIC_SUPABASE_URL='${url}'\nNEXT_PUBLIC_SUPABASE_ANON_KEY='${anonKey}'\nKolla att båda är korrekt satta i Vercel Environment Variables!`
-  );
-}
-
-// --- Stripe-klient ---
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20" as any,
-});
-
-// --- Stripe-priser (fyll i dina faktiska pris-ID:n från Stripe Dashboard) ---
-// Supabase-klient måste skapas inuti POST-funktionen för att få tillgång till cookies
-
 // --- Stripe-priser (fyll i dina faktiska pris-ID:n från Stripe Dashboard) ---
 const PRICE_IDS: Record<string, string> = {
-  basic: process.env.STRIPE_PRICE_ID_BASIC!, // 99 kr/mån
-  dual: process.env.STRIPE_PRICE_ID_DUAL!, // 199 kr/mån
-  full: process.env.STRIPE_PRICE_ID_FULL!, // 299 kr/mån
+  basic: process.env.STRIPE_PRICE_ID_BASIC || "", // 149 kr/mån
+  full: process.env.STRIPE_PRICE_ID_FULL || "", // 299 kr/mån
 };
 
 export async function POST(req: Request) {
   try {
+    // --- 0. Kontrollera miljövariabler ---
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+
+    if (!url || !anonKey) {
+      return NextResponse.json(
+        { error: "Supabase miljövariabler saknas" },
+        { status: 500 }
+      );
+    }
+
+    if (!stripeKey) {
+      return NextResponse.json(
+        { error: "Stripe miljövariabler saknas" },
+        { status: 500 }
+      );
+    }
+
+    // --- Skapa Stripe-klient ---
+    const stripe = new Stripe(stripeKey, {
+      apiVersion: "2024-06-20" as any,
+    });
+
     // --- 1. Hämta och verifiera användar-token ---
     const auth = req.headers.get("authorization") || "";
     const token = auth.startsWith("Bearer ") ? auth.slice(7) : null;
@@ -50,9 +50,8 @@ export async function POST(req: Request) {
     await cookies(); // Await cookies to satisfy Next.js 15
     const supabase = createRouteHandlerClient({ cookies });
 
-    const { data: userData, error: userErr } = await supabase.auth.getUser(
-      token
-    );
+    const { data: userData, error: userErr } =
+      await supabase.auth.getUser(token);
     if (userErr || !userData?.user) {
       return NextResponse.json(
         { error: "Ogiltig användare." },
