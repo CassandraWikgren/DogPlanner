@@ -1,6 +1,6 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-01
+-- Uppdaterad 2025-11-01 (inkl. förskotts-/efterskottssystem)
 -- ========================================
 --
 -- === RELATERADE SQL-FILER I PROJEKTET ===
@@ -9,6 +9,7 @@
 --   • fix_registration_triggers.sql         → AUTO-SKAPAR org/profil vid registrering (VIKTIGT!)
 --   • enable_triggers_for_production.sql    → Sätter org_id automatiskt för owners/dogs/rooms (FRIVILLIGT)
 --   • complete_testdata.sql                 → Testdata för development (DISABLAR triggers!)
+--   • add_prepayment_system.sql             → Förskotts-/efterskottsfakturering (2025-11-01)
 --
 -- 🛠️ MANUELLA FIXES (används vid behov):
 --   • fix_cassandra_profile_20251101.sql    → Fixade Cassandras profil (körts 2025-11-01)
@@ -23,6 +24,14 @@
 --   • Koden sätter org_id MANUELLT i EditDogModal (fungerar utan triggers)
 --   • Triggers är BACKUP-lösning för extra säkerhet
 --   • RLS är DISABLED i development för enklare debugging
+--
+-- 💰 FÖRSKOTTS-/EFTERSKOTTSSYSTEM (2025-11-01):
+--   • bookings.prepayment_status          → Status för förskottsbetalning
+--   • bookings.prepayment_invoice_id      → Länk till förskottsfaktura (skapas vid godkännande)
+--   • bookings.afterpayment_invoice_id    → Länk till efterskottsfaktura (skapas vid utcheckning)
+--   • invoices.invoice_type               → prepayment/afterpayment/full
+--   • extra_service.payment_type          → prepayment (betalas i förskott) / afterpayment (betalas vid utcheckning)
+--   • Triggers: trg_create_prepayment_invoice, trg_create_invoice_on_checkout
 --
 -- ========================================
 
@@ -158,6 +167,10 @@ CREATE TABLE IF NOT EXISTS bookings (
   extra_service_ids jsonb,
   notes text,
   special_requests text,
+  -- FÖRSKOTTS-/EFTERSKOTTSFAKTURERING (tillagt 2025-11-01)
+  prepayment_status text CHECK (prepayment_status IN ('unpaid', 'paid', 'partially_paid', 'refunded')) DEFAULT 'unpaid',
+  prepayment_invoice_id uuid REFERENCES invoices(id) ON DELETE SET NULL,
+  afterpayment_invoice_id uuid REFERENCES invoices(id) ON DELETE SET NULL,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
@@ -176,6 +189,8 @@ CREATE TABLE IF NOT EXISTS extra_service (
   price_large numeric,
   description text,
   is_active boolean DEFAULT true,
+  -- BETALNINGSTYP FÖR FÖRSKOTT/EFTERSKOTT (tillagt 2025-11-01)
+  payment_type text CHECK (payment_type IN ('prepayment', 'afterpayment')) DEFAULT 'afterpayment',
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
@@ -355,6 +370,26 @@ CREATE TABLE IF NOT EXISTS invoice_logs (
   total_amount numeric NOT NULL,
   status text CHECK (status IN ('draft', 'sent', 'paid', 'overdue', 'cancelled')) DEFAULT 'draft',
   paid_at timestamptz,
+  notes text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- === FAKTUROR (NY STRUKTUR - används av pensionat) ===
+CREATE TABLE IF NOT EXISTS invoices (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  owner_id uuid REFERENCES owners(id) ON DELETE CASCADE,
+  invoice_date date NOT NULL,
+  due_date date,
+  total_amount numeric NOT NULL,
+  status text CHECK (status IN ('draft', 'sent', 'paid', 'overdue', 'cancelled')) DEFAULT 'draft',
+  -- FÖRSKOTTS-/EFTERSKOTTSFAKTURERING (tillagt 2025-11-01)
+  invoice_type text CHECK (invoice_type IN ('prepayment', 'afterpayment', 'full')) DEFAULT 'full',
+  paid_at timestamptz,
+  billed_name text,
+  billed_email text,
+  billed_address text,
   notes text,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
