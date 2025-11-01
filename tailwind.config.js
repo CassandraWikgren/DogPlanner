@@ -9,8 +9,9 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  // EXPLICIT SAFELIST: Alla klasser som behövs för statistik-kort
+  // EXPLICIT SAFELIST: Alla klasser som behövs för statistik-kort och färger
   safelist: [
+    // Layout
     "grid",
     "grid-cols-1",
     "grid-cols-2",
@@ -21,9 +22,33 @@ module.exports = {
     "mb-8",
     "hidden",
     "flex",
+    "flex-1",
+    "flex-wrap",
     "block",
     "inline",
     "inline-block",
+    // Färger för statistik-kort (text)
+    "text-emerald-600",
+    "text-blue-600",
+    "text-orange-600",
+    "text-purple-600",
+    // Färger för statistik-kort (bakgrund)
+    "bg-emerald-50",
+    "bg-blue-50",
+    "bg-orange-50",
+    "bg-purple-50",
+    // Text-storlekar
+    "text-4xl",
+    "text-sm",
+    "text-xs",
+    // Font-weights
+    "font-bold",
+    "font-medium",
+    // Övriga utility-klasser
+    "min-w-[280px]",
+    "max-w-full",
+    "sm:max-w-[calc(50%-12px)]",
+    "lg:max-w-[calc(25%-18px)]",
   ],
   theme: {
     extend: {
