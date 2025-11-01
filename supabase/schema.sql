@@ -33,6 +33,12 @@
 --   • extra_service.payment_type          → prepayment (betalas i förskott) / afterpayment (betalas vid utcheckning)
 --   • Triggers: trg_create_prepayment_invoice, trg_create_invoice_on_checkout
 --
+-- 📅 MÅNADSFAKTURERING:
+--   • Edge Function: supabase/functions/generate_invoices/index.ts
+--   • GitHub Actions: .github/workflows/auto_generate_invoices.yml (kör 1:a varje månad kl 08:00 UTC)
+--   • Skapar 'full'-fakturor i invoices-tabellen med invoice_items för alla aktiva abonnemang
+--   • Skickar e-postnotifiering vid success/failure
+--
 -- ========================================
 
 -- Enable extensions
@@ -375,7 +381,11 @@ CREATE TABLE IF NOT EXISTS invoice_logs (
   updated_at timestamptz DEFAULT now()
 );
 
--- === FAKTUROR (NY STRUKTUR - används av pensionat) ===
+-- === FAKTUROR (NY STRUKTUR - används av pensionat & månadsvis generering) ===
+-- OBS: Denna tabell används av:
+--   1. Pensionatsbokningar (via triggers för förskott/efterskott)
+--   2. Månatlig fakturagenerering (Edge Function generate_invoices)
+--   3. Manuell fakturering
 CREATE TABLE IF NOT EXISTS invoices (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
@@ -395,11 +405,17 @@ CREATE TABLE IF NOT EXISTS invoices (
   updated_at timestamptz DEFAULT now()
 );
 
+COMMENT ON TABLE invoices IS 'Fakturor för pensionat och månadsfakturering';
+COMMENT ON COLUMN invoices.invoice_type IS 'prepayment=förskott (vid godkännande), afterpayment=efterskott (vid utcheckning), full=komplett månadsfaktura';
+COMMENT ON COLUMN invoices.billed_name IS 'Fakturamottagarens namn (kopierat från owner)';
+COMMENT ON COLUMN invoices.billed_email IS 'Fakturamottagarens e-post';
+
 -- === FAKTURARADER ===
+-- Kopplas till både invoice_logs OCH invoices
 CREATE TABLE IF NOT EXISTS invoice_items (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
-  invoice_id uuid REFERENCES invoice_logs(id) ON DELETE CASCADE,
+  invoice_id uuid, -- Kan referera till antingen invoices ELLER invoice_logs
   description text NOT NULL,
   quantity numeric DEFAULT 1,
   unit_price numeric NOT NULL,
@@ -407,6 +423,9 @@ CREATE TABLE IF NOT EXISTS invoice_items (
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
+
+COMMENT ON TABLE invoice_items IS 'Fakturarader för både invoice_logs och invoices tabellerna';
+COMMENT ON COLUMN invoice_items.invoice_id IS 'Foreign key till antingen invoices.id eller invoice_logs.id';
 
 -- === TJÄNSTER ===
 CREATE TABLE IF NOT EXISTS services (
