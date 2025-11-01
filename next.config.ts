@@ -67,6 +67,12 @@ const nextConfig: NextConfig = {
   experimental: {
     disableOptimizedLoading: true,
   },
+
+  // 🎨 CSS optimering för konsistent styling mellan miljöer
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false,
+  },
 };
 
 // 🧭 Alias-stöd för importvägar

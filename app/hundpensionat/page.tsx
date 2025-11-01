@@ -332,7 +332,7 @@ export default function HundpensionatPage() {
           minHeight: "280px",
         }}
       >
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-12 pb-16">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-12 pb-16 hero-compact">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
             Hundpensionat
           </h1>
@@ -344,18 +344,18 @@ export default function HundpensionatPage() {
       </div>
 
       {/* Stats Cards - Floating över hero med snygg design */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-6 relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-[#2c7a4c] hover:shadow-lg transition-all duration-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-6 relative z-20 hero-compact">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 stats-card">
+          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-[#2c7a4c] hover:shadow-lg transition-all duration-200 dogplanner-border-primary">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
               Antal hundar
             </p>
-            <p className="text-2xl font-bold text-[#2c7a4c]">
+            <p className="text-2xl font-bold text-[#2c7a4c] dogplanner-text-primary">
               {liveStats.hundarIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-blue-500 hover:shadow-lg transition-all duration-200">
+          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-blue-500 hover:shadow-lg transition-all duration-200 stats-blue">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
               Ankomster idag
             </p>
@@ -364,7 +364,7 @@ export default function HundpensionatPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-orange-500 hover:shadow-lg transition-all duration-200">
+          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-orange-500 hover:shadow-lg transition-all duration-200 stats-orange">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
               Avresor idag
             </p>
@@ -373,7 +373,7 @@ export default function HundpensionatPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-purple-500 hover:shadow-lg transition-all duration-200">
+          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-purple-500 hover:shadow-lg transition-all duration-200 stats-purple">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
               Ankomster imorgon
             </p>
@@ -382,7 +382,7 @@ export default function HundpensionatPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-pink-500 hover:shadow-lg transition-all duration-200">
+          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-pink-500 hover:shadow-lg transition-all duration-200 stats-pink">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
               Avresor imorgon
             </p>
@@ -445,7 +445,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/priser"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium dogplanner-primary"
               >
                 <DollarSign className="w-4 h-4" />
                 <span>Priser</span>
@@ -453,7 +453,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/tillval"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium dogplanner-primary"
               >
                 <Settings className="w-4 h-4" />
                 <span>Tillval</span>
@@ -461,7 +461,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/kalender"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium dogplanner-primary"
               >
                 <Calendar className="w-4 h-4" />
                 <span>Kalender</span>
