@@ -3,6 +3,10 @@
 import { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
+
+// Förhindra prerendering för att undvika build-fel
+export const dynamic = "force-dynamic";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Percent, User, Calendar, Trash2, Edit, Plus } from "lucide-react";
@@ -503,8 +507,8 @@ export default function CustomerDiscountsPage() {
                       {loading
                         ? "Sparar..."
                         : editingDiscount
-                        ? "Uppdatera"
-                        : "Skapa"}
+                          ? "Uppdatera"
+                          : "Skapa"}
                     </Button>
                     <Button
                       variant="outline"
