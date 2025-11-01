@@ -318,122 +318,247 @@ export default function HundpensionatPage() {
           </p>
         </div>
       </div>
-      {/* Stats Cards - Ren CSS utan Tailwind */}
+      {/* Stats Cards - Inline styles för garanterad cross-platform kompatibilitet */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <style jsx>{`
-          .stats-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            margin-bottom: 32px;
-          }
-          .stats-card {
-            flex: 1 1 250px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-            padding: 24px;
-            min-width: 250px;
-          }
-          .stats-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          }
-          .stats-text h3 {
-            font-size: 14px;
-            font-weight: 500;
-            color: #6b7280;
-            margin: 0 0 8px 0;
-          }
-          .stats-text .number {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 0 0 4px 0;
-          }
-          .stats-text .subtitle {
-            font-size: 12px;
-            color: #9ca3af;
-            margin: 0;
-          }
-          .stats-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-          }
-          .green {
-            color: #059669;
-          }
-          .green-bg {
-            background-color: #ecfdf5;
-          }
-          .blue {
-            color: #2563eb;
-          }
-          .blue-bg {
-            background-color: #eff6ff;
-          }
-          .orange {
-            color: #ea580c;
-          }
-          .orange-bg {
-            background-color: #fff7ed;
-          }
-          .purple {
-            color: #9333ea;
-          }
-          .purple-bg {
-            background-color: #faf5ff;
-          }
-        `}</style>
-
-        <div className="stats-container">
-          <div className="stats-card">
-            <div className="stats-content">
-              <div className="stats-text">
-                <h3>Antal hundar</h3>
-                <p className="number green">{liveStats.hundarIdag}</p>
-                <p className="subtitle">aktiva idag</p>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+            gap: "24px",
+            marginBottom: "32px",
+          }}
+        >
+          {/* Antal hundar */}
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "8px",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+              border: "1px solid #e5e7eb",
+              padding: "24px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                <h3
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    color: "#6b7280",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Antal hundar
+                </h3>
+                <p
+                  style={{
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                    color: "#059669",
+                    marginBottom: "4px",
+                  }}
+                >
+                  {liveStats.hundarIdag}
+                </p>
+                <p style={{ fontSize: "12px", color: "#9ca3af" }}>
+                  aktiva idag
+                </p>
               </div>
-              <div className="stats-icon green-bg">🐕</div>
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  backgroundColor: "#ecfdf5",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "24px",
+                }}
+              >
+                🐕
+              </div>
             </div>
           </div>
 
-          <div className="stats-card">
-            <div className="stats-content">
-              <div className="stats-text">
-                <h3>Ankomster idag</h3>
-                <p className="number blue">{liveStats.incheckIdag}</p>
-                <p className="subtitle">nya incheckning</p>
+          {/* Ankomster idag */}
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "8px",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+              border: "1px solid #e5e7eb",
+              padding: "24px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                <h3
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    color: "#6b7280",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Ankomster idag
+                </h3>
+                <p
+                  style={{
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                    color: "#2563eb",
+                    marginBottom: "4px",
+                  }}
+                >
+                  {liveStats.incheckIdag}
+                </p>
+                <p style={{ fontSize: "12px", color: "#9ca3af" }}>
+                  nya incheckning
+                </p>
               </div>
-              <div className="stats-icon blue-bg">📅</div>
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  backgroundColor: "#eff6ff",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "24px",
+                }}
+              >
+                📅
+              </div>
             </div>
           </div>
 
-          <div className="stats-card">
-            <div className="stats-content">
-              <div className="stats-text">
-                <h3>Ankomster imorgon</h3>
-                <p className="number orange">{liveStats.incheckImorgon}</p>
-                <p className="subtitle">planerade</p>
+          {/* Ankomster imorgon */}
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "8px",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+              border: "1px solid #e5e7eb",
+              padding: "24px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                <h3
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    color: "#6b7280",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Ankomster imorgon
+                </h3>
+                <p
+                  style={{
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                    color: "#ea580c",
+                    marginBottom: "4px",
+                  }}
+                >
+                  {liveStats.incheckImorgon}
+                </p>
+                <p style={{ fontSize: "12px", color: "#9ca3af" }}>planerade</p>
               </div>
-              <div className="stats-icon orange-bg">🧳</div>
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  backgroundColor: "#fff7ed",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "24px",
+                }}
+              >
+                🧳
+              </div>
             </div>
           </div>
 
-          <div className="stats-card">
-            <div className="stats-content">
-              <div className="stats-text">
-                <h3>Avresor imorgon</h3>
-                <p className="number purple">{liveStats.utcheckImorgon}</p>
-                <p className="subtitle">utcheckning</p>
+          {/* Avresor imorgon */}
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "8px",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+              border: "1px solid #e5e7eb",
+              padding: "24px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                <h3
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    color: "#6b7280",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Avresor imorgon
+                </h3>
+                <p
+                  style={{
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                    color: "#9333ea",
+                    marginBottom: "4px",
+                  }}
+                >
+                  {liveStats.utcheckImorgon}
+                </p>
+                <p style={{ fontSize: "12px", color: "#9ca3af" }}>
+                  utcheckning
+                </p>
               </div>
-              <div className="stats-icon purple-bg">👋</div>
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  backgroundColor: "#faf5ff",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "24px",
+                }}
+              >
+                👋
+              </div>
             </div>
           </div>
         </div>

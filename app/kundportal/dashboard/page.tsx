@@ -1,5 +1,8 @@
 "use client";
 
+// Förhindra prerendering för att undvika build-fel
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -446,8 +449,8 @@ export default function CustomerDashboard() {
                           {dog.heightcm <= 34
                             ? "Liten"
                             : dog.heightcm <= 49
-                            ? "Mellan"
-                            : "Stor"}
+                              ? "Mellan"
+                              : "Stor"}
                         </Badge>
                       </div>
                     ))}

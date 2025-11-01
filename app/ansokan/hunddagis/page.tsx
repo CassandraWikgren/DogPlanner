@@ -1,5 +1,8 @@
 "use client";
 
+// Förhindra prerendering för att undvika build-fel
+export const dynamic = "force-dynamic";
+
 import React, { useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
@@ -223,8 +226,8 @@ export default function HunddagisAnsokanPage() {
                   s === step
                     ? "bg-green-600 text-white"
                     : s < step
-                    ? "bg-green-200 text-green-800"
-                    : "bg-gray-200 text-gray-500"
+                      ? "bg-green-200 text-green-800"
+                      : "bg-gray-200 text-gray-500"
                 }`}
               >
                 {s}
