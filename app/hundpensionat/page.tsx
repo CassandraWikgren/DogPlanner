@@ -307,87 +307,187 @@ export default function HundpensionatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Mer kompakt och elegant */}
-      <div className="bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] py-12">
+      {/* Hero Section - Med inline styles som fallback för Vercel */}
+      <div
+        className="bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] py-12"
+        style={{
+          background: "linear-gradient(to bottom right, #2c7a4c, #1e5a36)",
+          paddingTop: "3rem",
+          paddingBottom: "3rem",
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+          <h1
+            className="text-3xl md:text-4xl font-bold text-white mb-3"
+            style={{
+              fontSize: "2.25rem",
+              fontWeight: "bold",
+              color: "white",
+              marginBottom: "0.75rem",
+            }}
+          >
             Hundpensionat
           </h1>
-          <p className="text-white/90 text-lg max-w-2xl mx-auto">
+          <p
+            className="text-white/90 text-lg max-w-2xl mx-auto"
+            style={{
+              color: "rgba(255, 255, 255, 0.9)",
+              fontSize: "1.125rem",
+              maxWidth: "42rem",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
             Professionell pensionathantering med fullständig översikt
           </p>
         </div>
       </div>
-      {/* Stats Cards - Flexbox för bättre Vercel-kompatibilitet */}
+      {/* Stats Cards - Flexbox med inline styles som fallback för Vercel */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-wrap gap-6 mb-8">
+        <div
+          className="flex flex-wrap gap-6 mb-8"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "1.5rem",
+            marginBottom: "2rem",
+          }}
+        >
           {/* Antal hundar */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]">
+          <div
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]"
+            style={{
+              flex: "1 1 280px",
+              minWidth: "280px",
+              maxWidth: "calc(25% - 18px)",
+            }}
+          >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-gray-600 mb-2">
                   Antal hundar
                 </h3>
-                <p className="text-4xl font-bold text-emerald-600 mb-1">
+                <p
+                  className="text-4xl font-bold text-emerald-600 mb-1"
+                  style={{
+                    fontSize: "2.25rem",
+                    fontWeight: "bold",
+                    color: "#059669",
+                  }}
+                >
                   {liveStats.hundarIdag}
                 </p>
                 <p className="text-xs text-gray-400">aktiva idag</p>
               </div>
-              <div className="flex items-center justify-center w-14 h-14 rounded-lg bg-emerald-50 text-3xl ml-4">
+              <div
+                className="flex items-center justify-center w-14 h-14 rounded-lg bg-emerald-50 text-3xl ml-4"
+                style={{ backgroundColor: "#ecfdf5" }}
+              >
                 🐕
               </div>
             </div>
           </div>
 
           {/* Ankomster idag */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]">
+          <div
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]"
+            style={{
+              flex: "1 1 280px",
+              minWidth: "280px",
+              maxWidth: "calc(25% - 18px)",
+            }}
+          >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-gray-600 mb-2">
                   Ankomster idag
                 </h3>
-                <p className="text-4xl font-bold text-blue-600 mb-1">
+                <p
+                  className="text-4xl font-bold text-blue-600 mb-1"
+                  style={{
+                    fontSize: "2.25rem",
+                    fontWeight: "bold",
+                    color: "#2563eb",
+                  }}
+                >
                   {liveStats.incheckIdag}
                 </p>
                 <p className="text-xs text-gray-400">nya incheckning</p>
               </div>
-              <div className="flex items-center justify-center w-14 h-14 rounded-lg bg-blue-50 text-3xl ml-4">
+              <div
+                className="flex items-center justify-center w-14 h-14 rounded-lg bg-blue-50 text-3xl ml-4"
+                style={{ backgroundColor: "#eff6ff" }}
+              >
                 📅
               </div>
             </div>
           </div>
 
           {/* Ankomster imorgon */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]">
+          <div
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]"
+            style={{
+              flex: "1 1 280px",
+              minWidth: "280px",
+              maxWidth: "calc(25% - 18px)",
+            }}
+          >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-gray-600 mb-2">
                   Ankomster imorgon
                 </h3>
-                <p className="text-4xl font-bold text-orange-600 mb-1">
+                <p
+                  className="text-4xl font-bold text-orange-600 mb-1"
+                  style={{
+                    fontSize: "2.25rem",
+                    fontWeight: "bold",
+                    color: "#ea580c",
+                  }}
+                >
                   {liveStats.incheckImorgon}
                 </p>
                 <p className="text-xs text-gray-400">planerade</p>
               </div>
-              <div className="flex items-center justify-center w-14 h-14 rounded-lg bg-orange-50 text-3xl ml-4">
+              <div
+                className="flex items-center justify-center w-14 h-14 rounded-lg bg-orange-50 text-3xl ml-4"
+                style={{ backgroundColor: "#fff7ed" }}
+              >
                 🧳
               </div>
             </div>
           </div>
 
           {/* Avresor imorgon */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]">
+          <div
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]"
+            style={{
+              flex: "1 1 280px",
+              minWidth: "280px",
+              maxWidth: "calc(25% - 18px)",
+            }}
+          >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-gray-600 mb-2">
                   Avresor imorgon
                 </h3>
-                <p className="text-4xl font-bold text-purple-600 mb-1">
+                <p
+                  className="text-4xl font-bold text-purple-600 mb-1"
+                  style={{
+                    fontSize: "2.25rem",
+                    fontWeight: "bold",
+                    color: "#9333ea",
+                  }}
+                >
                   {liveStats.utcheckImorgon}
                 </p>
                 <p className="text-xs text-gray-400">utcheckning</p>
               </div>
-              <div className="flex items-center justify-center w-14 h-14 rounded-lg bg-purple-50 text-3xl ml-4">
+              <div
+                className="flex items-center justify-center w-14 h-14 rounded-lg bg-purple-50 text-3xl ml-4"
+                style={{ backgroundColor: "#faf5ff" }}
+              >
                 👋
               </div>
             </div>
