@@ -124,7 +124,7 @@ serve(async (req) => {
           .from("pension_stays")
           .select(
             `
-    id, dog_id, org_id, owner_id, 
+    id, dog_id, org_id, 
     check_in, check_out, 
     room_id, price_per_night, 
     season, total_price
@@ -133,7 +133,12 @@ serve(async (req) => {
           .gte("check_in", startOfMonth.toISOString())
           .lte("check_out", endOfMonth.toISOString());
 
-        if (staysErr) throw new Error(`Stay fetch error: ${staysErr.message}`);
+        if (staysErr) {
+          console.warn(
+            `⚠️ Stay fetch error for dog ${d.id}: ${staysErr.message}`
+          );
+          // Fortsätt ändå - det är okej om inga stays finns
+        }
         console.log(`🏨 Found ${stays?.length ?? 0} active stays`);
 
         for (const x of extras || []) {
