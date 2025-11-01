@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* === Statistik-kort Safelist === */
+@import "./safelist.css";
+
 /* === DogPlanner Safelist - Kritiska CSS-klasser som aldrig ska purgas === */
 /*
 bg-[#2c7a4c] hover:bg-[#236139] text-[#2c7a4c] border-[#2c7a4c] 

@@ -1,0 +1,65 @@
+/* 
+ * Safelist CSS - Tvingar Tailwind att inkludera dessa klasser i production
+ * Denna fil refereras i tailwind.config.js content array
+ */
+
+/* Grid layouts för statistik-kort */
+.force-grid-cols-1 {
+  @apply grid-cols-1;
+}
+.force-grid-cols-2 {
+  @apply grid-cols-2;
+}
+.force-grid-cols-4 {
+  @apply grid-cols-4;
+}
+.force-sm-grid-cols-2 {
+  @apply sm:grid-cols-2;
+}
+.force-lg-grid-cols-4 {
+  @apply lg:grid-cols-4;
+}
+
+/* Text färger för statistik */
+.force-text-emerald-600 {
+  @apply text-emerald-600;
+}
+.force-text-blue-600 {
+  @apply text-blue-600;
+}
+.force-text-orange-600 {
+  @apply text-orange-600;
+}
+.force-text-purple-600 {
+  @apply text-purple-600;
+}
+
+/* Background färger */
+.force-bg-emerald-50 {
+  @apply bg-emerald-50;
+}
+.force-bg-blue-50 {
+  @apply bg-blue-50;
+}
+.force-bg-orange-50 {
+  @apply bg-orange-50;
+}
+.force-bg-purple-50 {
+  @apply bg-purple-50;
+}
+
+/* Text storlekar */
+.force-text-4xl {
+  @apply text-4xl;
+}
+.force-text-3xl {
+  @apply text-3xl;
+}
+
+/* Spacing */
+.force-gap-6 {
+  @apply gap-6;
+}
+.force-mb-8 {
+  @apply mb-8;
+}
