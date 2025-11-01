@@ -6,7 +6,6 @@ import { AuthProvider, useAuth } from "@/app/context/AuthContext";
 import { NotificationProvider } from "@/app/context/NotificationContext";
 import Navbar from "@/components/Navbar";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { TailwindForcer } from "@/components/TailwindForcer";
 
 /**
  * Wrapper som visar Navbar och Breadcrumbs endast när användaren är inloggad.
@@ -16,7 +15,6 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f9fafb] text-gray-900">
-      <TailwindForcer />
       {user && <Navbar />}
       {user && <Breadcrumbs />}
       <main className={`flex-1 ${user ? "pt-32" : ""}`}>{children}</main>
