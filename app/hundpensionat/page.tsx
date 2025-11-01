@@ -309,63 +309,66 @@ export default function HundpensionatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Samma som Dashboard, Hunddagis, Ekonomi */}
+      {/* Hero Section - Samma som Dashboard, Hunddagis, Ekonomi (mer kompakt) */}
       <div
-        className="relative bg-cover bg-center pt-20 pb-28"
+        className="relative bg-cover bg-center pt-16 pb-20"
         style={{
-          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url('/Hero.jpeg')`,
+          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.82), rgba(44, 122, 76, 0.7)), url('/Hero.jpeg')`,
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+        {/* Subtle overlay to ensure text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#2c7a4c]/90 to-[#2c7a4c]/70" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-2 drop-shadow-md">
             Hundpensionat
           </h1>
-          <p className="text-lg text-white/90 max-w-2xl mx-auto">
-            Professionell pensionathantering med fullständig översikt över
-            bokningar, rum och gäster. Skapa trygghet för både hundar och ägare.
+          <p className="text-md md:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed">
+            Professionell pensionathantering med översikt över bokningar, rum
+            och gäster — enkelt att administrera och tryggt för kunder.
           </p>
         </div>
       </div>
 
       {/* Floating Stats Cards - Moderna kort som överlappar hero */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-8">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
             <p className="text-sm text-gray-600 mb-1">Antal hundar</p>
             <p className="text-3xl font-bold text-[#2c7a4c]">
               {liveStats.hundarIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-green-200 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
             <p className="text-sm text-gray-600 mb-1">Ankomster</p>
             <p className="text-3xl font-bold text-[#2c7a4c]">
               {liveStats.incheckIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-orange-200 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
             <p className="text-sm text-gray-600 mb-1">Avresor</p>
             <p className="text-3xl font-bold text-orange-600">
               {liveStats.utcheckIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-200 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
             <p className="text-sm text-gray-600 mb-1">Tjänster imorgon</p>
-            <p className="text-3xl font-bold text-blue-600">
+            <p className="text-3xl font-bold text-[#2c7a4c]">
               {liveStats.tjänsterImorgon}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-purple-200 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
             <p className="text-sm text-gray-600 mb-1">Kunder</p>
-            <p className="text-3xl font-bold text-purple-600">
+            <p className="text-3xl font-bold text-[#2c7a4c]">
               {liveStats.totalOwners}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-green-200 hover:shadow-xl transition-shadow">
+          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
             <p className="text-sm text-gray-600 mb-1">Månadsintäkt</p>
             <p className="text-2xl font-bold text-[#2c7a4c]">
               {liveStats.monthlyRevenue.toLocaleString()} kr
@@ -377,8 +380,8 @@ export default function HundpensionatPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {/* Kontroller */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="bg-white rounded-lg shadow-md p-4 mb-4 border border-gray-200">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <select
                 value={selectedMonthId}
@@ -411,7 +414,7 @@ export default function HundpensionatPage() {
             <div className="flex gap-2 w-full md:w-auto">
               <Link
                 href="/hundpensionat/ansokningar"
-                className="relative flex items-center justify-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+                className="relative flex items-center justify-center gap-2 px-3 py-1.5 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
               >
                 <ClipboardList size={16} />
                 <span className="hidden sm:inline">Ansökningar</span>
@@ -423,42 +426,42 @@ export default function HundpensionatPage() {
               </Link>
               <Link
                 href="/hundpensionat/priser"
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
               >
                 <DollarSign size={16} />
                 <span className="hidden sm:inline">Priser</span>
               </Link>
               <Link
                 href="/hundpensionat/tillval"
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
               >
                 <Settings size={16} />
                 <span className="hidden sm:inline">Tillval</span>
               </Link>
               <Link
                 href="/hundpensionat/kalender"
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
               >
                 <Calendar size={16} />
                 <span className="hidden sm:inline">Kalender</span>
               </Link>
               <button
                 onClick={loadBookings}
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
               >
                 <RefreshCcw size={16} />
                 <span className="hidden sm:inline">Uppdatera</span>
               </button>
               <button
                 onClick={exportToPDF}
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
               >
                 <Download size={16} />
                 <span className="hidden sm:inline">PDF</span>
               </button>
               <Link
                 href="/hundpensionat/new"
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
               >
                 <Plus size={16} />
                 <span className="hidden sm:inline">Ny bokning</span>
@@ -482,49 +485,49 @@ export default function HundpensionatPage() {
                 <tr>
                   <th
                     onClick={() => handleSort("room")}
-                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
                   >
                     Rum {sortKey === "room" && (sortAsc ? "↑" : "↓")}
                   </th>
                   <th
                     onClick={() => handleSort("dog")}
-                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
                   >
                     Hund {sortKey === "dog" && (sortAsc ? "↑" : "↓")}
                   </th>
                   <th
                     onClick={() => handleSort("owner")}
-                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
                   >
                     Ägare {sortKey === "owner" && (sortAsc ? "↑" : "↓")}
                   </th>
                   <th
                     onClick={() => handleSort("start_date")}
-                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
                   >
                     Startdatum{" "}
                     {sortKey === "start_date" && (sortAsc ? "↑" : "↓")}
                   </th>
                   <th
                     onClick={() => handleSort("end_date")}
-                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
                   >
                     Slutdatum {sortKey === "end_date" && (sortAsc ? "↑" : "↓")}
                   </th>
                   <th
                     onClick={() => handleSort("status")}
-                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
                   >
                     Status {sortKey === "status" && (sortAsc ? "↑" : "↓")}
                   </th>
                   <th
                     onClick={() => handleSort("total_price")}
-                    className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
                   >
                     Totalpris{" "}
                     {sortKey === "total_price" && (sortAsc ? "↑" : "↓")}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider">
                     Rabatt
                   </th>
                 </tr>
@@ -534,7 +537,7 @@ export default function HundpensionatPage() {
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-6 py-12 text-center text-gray-500"
+                      className="px-4 py-8 text-center text-gray-500"
                     >
                       Laddar bokningar...
                     </td>
@@ -543,7 +546,7 @@ export default function HundpensionatPage() {
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-6 py-12 text-center text-gray-500"
+                      className="px-4 py-8 text-center text-gray-500"
                     >
                       {search || selectedMonthId
                         ? "Inga bokningar matchade din sökning"
@@ -558,40 +561,40 @@ export default function HundpensionatPage() {
                         idx % 2 === 0 ? "bg-white" : "bg-gray-50"
                       } hover:bg-green-50 transition-colors`}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                         {booking.rooms?.name ?? "—"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                         {booking.dogs?.name ?? "—"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                         {booking.dogs?.owners?.full_name ?? "—"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                         {booking.start_date}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                         {booking.end_date}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm">
                         <span
                           className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             booking.status === "confirmed"
                               ? "bg-green-100 text-green-800"
                               : booking.status === "pending"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
                           }`}
                         >
                           {booking.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-medium">
                         {booking.total_price
                           ? `${booking.total_price} kr`
                           : "—"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                         {booking.discount_amount
                           ? `${booking.discount_amount} kr`
                           : "—"}
