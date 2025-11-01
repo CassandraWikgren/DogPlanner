@@ -47,9 +47,23 @@ module.exports = {
     "mb-6",
     "p-3",
     "gap-3",
-    // Grid layouts
+    "gap-6",
+    "gap-8",
+    // Grid layouts - VIKTIGT för att fungera på Vercel
+    "grid",
+    "grid-cols-1",
     "grid-cols-2",
+    "grid-cols-3",
+    "grid-cols-4",
+    "sm:grid-cols-2",
+    "sm:grid-cols-3",
+    "sm:grid-cols-4",
+    "md:grid-cols-3",
+    "md:grid-cols-4",
     "md:grid-cols-5",
+    "lg:grid-cols-3",
+    "lg:grid-cols-4",
+    "lg:grid-cols-5",
   ],
   theme: {
     extend: {
