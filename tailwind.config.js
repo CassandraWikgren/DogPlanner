@@ -9,12 +9,8 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  // TEMPORARY TEST: Inaktivera all purging för att testa på Vercel
-  safelist: [
-    {
-      pattern: /.*/,
-    },
-  ],
+  // EXPLICIT SAFELIST: Tvinga Tailwind att inkludera grid display property
+  safelist: ["grid", "hidden", "flex", "block", "inline", "inline-block"],
   theme: {
     extend: {
       colors: {
