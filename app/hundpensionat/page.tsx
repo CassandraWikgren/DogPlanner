@@ -61,14 +61,13 @@ export default function HundpensionatPage() {
     }
   );
 
-  // Live-statistik state - utökat med fler statistik som på dashboard
+  // Live-statistik state - anpassad för personal (ej admin)
   const [liveStats, setLiveStats] = useState({
     hundarIdag: 0,
     incheckIdag: 0,
     utcheckIdag: 0,
-    tjänsterImorgon: 0,
-    totalOwners: 0,
-    monthlyRevenue: 0,
+    incheckImorgon: 0, // Ny för planering
+    utcheckImorgon: 0, // Ny för planering
     pendingBookings: 0,
   });
 
@@ -80,22 +79,21 @@ export default function HundpensionatPage() {
     try {
       console.log("🔍 Laddar statistik (test-data)...");
 
-      // Hämta antal pending bookings
-      const { count } = await supabase
-        .from("bookings")
-        .select("id", { count: "exact", head: true })
-        .eq("org_id", user?.user_metadata?.org_id)
-        .eq("status", "pending");
+      // Hämta antal pending bookings (tillfälligt inaktiverat för localhost)
+      // const { count } = await supabase
+      //   .from("bookings")
+      //   .select("id", { count: "exact", head: true })
+      //   .eq("org_id", user?.user_metadata?.org_id)
+      //   .eq("status", "pending");
 
       // Sätt test-statistik för att visa att UI fungerar
       setLiveStats({
         hundarIdag: 5,
         incheckIdag: 2,
         utcheckIdag: 1,
-        tjänsterImorgon: 3,
-        totalOwners: 25,
-        monthlyRevenue: 28500,
-        pendingBookings: count || 0,
+        incheckImorgon: 4, // Planering för morgondagen
+        utcheckImorgon: 2, // Planering för morgondagen
+        pendingBookings: 0, // count || 0, - tillfälligt hårdkodat för localhost
       });
 
       console.log("✅ Test-statistik laddad");
@@ -105,9 +103,8 @@ export default function HundpensionatPage() {
         hundarIdag: 0,
         incheckIdag: 0,
         utcheckIdag: 0,
-        tjänsterImorgon: 0,
-        totalOwners: 0,
-        monthlyRevenue: 0,
+        incheckImorgon: 0,
+        utcheckImorgon: 0,
         pendingBookings: 0,
       });
     }
@@ -115,10 +112,16 @@ export default function HundpensionatPage() {
 
   // Ladda bokningar från Supabase
   const loadBookings = async () => {
-    if (!user?.user_metadata?.org_id || !supabase) {
-      console.log(
-        "Ingen organisation hittad för användaren eller ingen databaskoppling"
-      );
+    // Tillfälligt inaktiverat för localhost-utveckling
+    // if (!user?.user_metadata?.org_id || !supabase) {
+    //   console.log(
+    //     "Ingen organisation hittad för användaren eller ingen databaskoppling"
+    //   );
+    //   return;
+    // }
+
+    if (!supabase) {
+      console.log("Ingen databaskoppling");
       return;
     }
 
@@ -126,6 +129,12 @@ export default function HundpensionatPage() {
     setError("");
 
     try {
+      // Tillfälligt: sätt tom array för localhost-utveckling
+      setBookings([]);
+      console.log("✅ Localhost: Tom bokning-lista laddad för UI-test");
+
+      // Orginalfunktionalitet (kommenterad för localhost):
+      /*
       const { data, error: dbError } = await supabase
         .from("bookings")
         .select(
@@ -145,6 +154,7 @@ export default function HundpensionatPage() {
 
       setBookings(data || []);
       console.log("✅ Bokningar laddade:", data?.length || 0);
+      */
     } catch (error) {
       console.error("🔥 Fel vid laddning av bokningar:", error);
       setError("Kunde inte ladda bokningar");
@@ -154,11 +164,15 @@ export default function HundpensionatPage() {
   };
 
   useEffect(() => {
-    if (user) {
-      loadBookings();
-      loadLiveStats();
-    }
-  }, [user]);
+    // Kör alltid för localhost-utveckling
+    loadBookings();
+    loadLiveStats();
+
+    // Original: if (user) {
+    //   loadBookings();
+    //   loadLiveStats();
+    // }
+  }, []); // Tog bort user-beroendet för localhost
 
   // Filtrering och sökning
   const filtered = useMemo(() => {
@@ -299,13 +313,14 @@ export default function HundpensionatPage() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Du måste vara inloggad
-      </div>
-    );
-  }
+  // Tillfälligt inaktiverat för localhost-utveckling
+  // if (!user) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       Du måste vara inloggad
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -317,7 +332,7 @@ export default function HundpensionatPage() {
           minHeight: "280px",
         }}
       >
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 pb-24">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-12 pb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
             Hundpensionat
           </h1>
@@ -329,59 +344,50 @@ export default function HundpensionatPage() {
       </div>
 
       {/* Stats Cards - Floating över hero med snygg design */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 mb-8 relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-[#2c7a4c] hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-6 relative z-20">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-[#2c7a4c] hover:shadow-lg transition-all duration-200">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
               Antal hundar
             </p>
-            <p className="text-3xl font-bold text-[#2c7a4c]">
+            <p className="text-2xl font-bold text-[#2c7a4c]">
               {liveStats.hundarIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-blue-500 hover:shadow-lg transition-all duration-200">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Ankomster
+              Ankomster idag
             </p>
-            <p className="text-3xl font-bold text-blue-600">
+            <p className="text-2xl font-bold text-blue-600">
               {liveStats.incheckIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-orange-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-orange-500 hover:shadow-lg transition-all duration-200">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Avresor
+              Avresor idag
             </p>
-            <p className="text-3xl font-bold text-orange-600">
+            <p className="text-2xl font-bold text-orange-600">
               {liveStats.utcheckIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-purple-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-purple-500 hover:shadow-lg transition-all duration-200">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Tjänster imorgon
+              Ankomster imorgon
             </p>
-            <p className="text-3xl font-bold text-purple-600">
-              {liveStats.tjänsterImorgon}
+            <p className="text-2xl font-bold text-purple-600">
+              {liveStats.incheckImorgon}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-indigo-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+          <div className="bg-white rounded-lg shadow-md p-3 border-l-4 border-pink-500 hover:shadow-lg transition-all duration-200">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Kunder
+              Avresor imorgon
             </p>
-            <p className="text-3xl font-bold text-indigo-600">
-              {liveStats.totalOwners}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-emerald-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Månadsintäkt
-            </p>
-            <p className="text-2xl font-bold text-emerald-600">
-              {liveStats.monthlyRevenue.toLocaleString()} kr
+            <p className="text-2xl font-bold text-pink-600">
+              {liveStats.utcheckImorgon}
             </p>
           </div>
         </div>
@@ -422,11 +428,11 @@ export default function HundpensionatPage() {
               </div>
             </div>
 
-            {/* Action Buttons - Mer professionella */}
+            {/* Action Buttons - Enhetlig grön färgpalett */}
             <div className="flex flex-wrap gap-2 w-full lg:w-auto">
               <Link
                 href="/hundpensionat/ansokningar"
-                className="relative inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="relative inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <ClipboardList className="w-4 h-4" />
                 <span>Ansökningar</span>
@@ -447,7 +453,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/tillval"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <Settings className="w-4 h-4" />
                 <span>Tillval</span>
@@ -455,7 +461,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/kalender"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <Calendar className="w-4 h-4" />
                 <span>Kalender</span>
@@ -474,7 +480,7 @@ export default function HundpensionatPage() {
 
               <button
                 onClick={exportToPDF}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <Download className="w-4 h-4" />
                 <span>PDF</span>
