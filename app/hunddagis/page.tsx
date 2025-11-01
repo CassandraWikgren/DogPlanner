@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
@@ -202,6 +208,9 @@ export default function HunddagisPage() {
   const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
   const [showColumnSettings, setShowColumnSettings] = useState(false);
   const [showAddDogModal, setShowAddDogModal] = useState(false);
+
+  // Ref för kolumninställningar dropdown
+  const columnSettingsRef = useRef<HTMLDivElement>(null);
 
   // Debug logging function
   const logDebug = useCallback((level: string, message: string, data?: any) => {
@@ -420,6 +429,28 @@ export default function HunddagisPage() {
     };
   }, [currentOrgId, fetchDogs, fetchRooms, logDebug]);
 
+  // Stäng kolumninställningar när man klickar utanför
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        columnSettingsRef.current &&
+        !columnSettingsRef.current.contains(event.target as Node)
+      ) {
+        setShowColumnSettings(false);
+      }
+    }
+
+    // Lägg till event listener när menyn är öppen
+    if (showColumnSettings) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showColumnSettings]);
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -633,7 +664,7 @@ export default function HunddagisPage() {
               </select>
 
               {/* Kolumner dropdown - istället för kolumner-knapp */}
-              <div className="relative">
+              <div className="relative" ref={columnSettingsRef}>
                 <button
                   onClick={() => setShowColumnSettings(!showColumnSettings)}
                   className="inline-flex items-center px-4 py-2.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
