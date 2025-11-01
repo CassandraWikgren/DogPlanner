@@ -10,9 +10,15 @@ export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  // Debug: Logga auth-status
+  useEffect(() => {
+    console.log("🏠 Landing Page - Auth status:", { user: !!user, loading });
+  }, [user, loading]);
+
   // Inloggade användare ska INTE se landing page - redirecta till dashboard
   useEffect(() => {
     if (!loading && user) {
+      console.log("🔄 Inloggad användare, redirectar till dashboard...");
       router.replace("/dashboard");
     }
   }, [user, loading, router]);

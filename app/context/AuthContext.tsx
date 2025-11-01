@@ -245,21 +245,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 🚪 Logga ut-funktion med null-check
   async function signOut() {
-    // Rensa demo-cookies
-    document.cookie =
-      "demoUser=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-    document.cookie =
-      "demoOrg=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    console.log("🚪 Loggar ut användare...");
 
+    // Rensa ALLA cookies (inte bara demo)
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+      document.cookie =
+        name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+      document.cookie =
+        name +
+        "=; path=/; domain=" +
+        window.location.hostname +
+        "; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    }
+
+    // Logga ut från Supabase
     if (supabase) {
       await supabase.auth.signOut();
     }
 
+    // Nollställ state
     setUser(null);
     setProfile(null);
     setCurrentOrgId(null);
     setRole(null);
     setSubscription(null);
+
+    console.log("✅ Utloggning klar, redirectar till startsidan...");
 
     // Redirecta till startsidan efter utloggning
     window.location.href = "/";
