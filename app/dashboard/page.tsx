@@ -24,17 +24,19 @@ export default function Dashboard() {
       <section
         className="relative text-center text-white overflow-hidden"
         style={{
-          paddingTop: "140px",
-          paddingBottom: "80px",
+          paddingTop: "100px",
+          paddingBottom: "100px",
           background:
-            'linear-gradient(rgba(44, 122, 76, 0.7), rgba(44, 122, 76, 0.7)), url("/Hero.jpeg") center/cover no-repeat',
+            'linear-gradient(rgba(44, 122, 76, 0.7), rgba(44, 122, 76, 0.7)), url("/Hero.jpeg")',
+          backgroundSize: "cover",
+          backgroundPosition: "center 35%",
         }}
       >
         <div className="relative z-10 max-w-4xl mx-auto px-6">
-          <h1 className="text-5xl font-bold mb-4 drop-shadow-lg">
+          <h1 className="text-5xl font-extrabold mb-4 drop-shadow-lg">
             Välkommen till ditt Dashboard
           </h1>
-          <p className="text-xl mb-8 leading-relaxed opacity-100 max-w-2xl mx-auto drop-shadow-md">
+          <p className="text-xl mb-8 leading-relaxed font-normal max-w-2xl mx-auto drop-shadow-md">
             Här får du snabb tillgång till dina hundar, abonnemang och fakturor.
           </p>
         </div>

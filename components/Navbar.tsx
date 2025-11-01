@@ -15,6 +15,17 @@ export default function Navbar() {
   return (
     <nav className="bg-[#2c7a4c] text-white shadow-md fixed top-0 left-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+        {/* Mobil: hamburgermeny - visas alltid när inloggad - VÄNSTER SIDA */}
+        {user && (
+          <button
+            className="md:hidden p-2 rounded hover:bg-green-700 transition"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Meny"
+          >
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        )}
+
         {/* Logo - större och länka till dashboard */}
         <Link
           href={user ? "/dashboard" : "/"}
@@ -61,17 +72,6 @@ export default function Navbar() {
             </div>
           </>
         )}
-
-        {/* Mobil: hamburgermeny - visas alltid när inloggad */}
-        {user && (
-          <button
-            className="md:hidden p-2 rounded hover:bg-green-700 transition"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Meny"
-          >
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        )}
       </div>
 
       {/* 🪄 Overlay + animerad mobilmeny */}
@@ -92,17 +92,17 @@ export default function Navbar() {
             {/* Själva menyn */}
             <motion.div
               key="mobile-menu"
-              initial={{ x: "100%", opacity: 0 }}
+              initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "100%", opacity: 0 }}
+              exit={{ x: "-100%", opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="fixed top-0 right-0 w-64 h-full bg-[#2c7a4c] z-50 md:hidden shadow-2xl"
+              className="fixed top-0 left-0 w-64 h-full bg-[#2c7a4c] z-50 md:hidden shadow-2xl"
             >
               <div className="flex flex-col px-6 py-6 space-y-3 text-base">
                 {/* Stäng-knapp */}
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="self-end p-2 hover:bg-green-700 rounded transition"
+                  className="self-start p-2 hover:bg-green-700 rounded transition"
                   aria-label="Stäng meny"
                 >
                   <X size={24} />

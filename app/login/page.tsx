@@ -115,13 +115,13 @@ export default function LoginPage() {
       : null;
 
   return (
-    <main className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-10 border border-gray-100">
         {/* Logo/Icon */}
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-[#2c7a4c] rounded-xl flex items-center justify-center">
+          <div className="w-20 h-20 bg-[#2c7a4c] rounded-2xl flex items-center justify-center shadow-md">
             <svg
-              className="w-8 h-8 text-white"
+              className="w-10 h-10 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -136,16 +136,16 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 text-center mb-8">
+        <h1 className="text-3xl font-bold text-[#2c7a4c] text-center mb-8">
           {resetMode ? "Återställ lösenord" : "Logga in till DogPlanner"}
         </h1>
 
         <form
           onSubmit={resetMode ? handleResetPassword : handleLogin}
-          className="space-y-5"
+          className="space-y-6"
         >
           <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
+            <label className="block text-sm font-semibold mb-2 text-gray-900">
               E-postadress
             </label>
             <input
@@ -160,7 +160,7 @@ export default function LoginPage() {
 
           {!resetMode && (
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-700">
+              <label className="block text-sm font-semibold mb-2 text-gray-900">
                 Lösenord
               </label>
               <input
@@ -188,7 +188,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold py-3 rounded-lg transition disabled:opacity-60"
+            className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white font-bold py-4 rounded-lg transition disabled:opacity-60 shadow-sm text-lg"
           >
             {loading
               ? "Bearbetar..."
@@ -199,14 +199,14 @@ export default function LoginPage() {
         </form>
 
         {!resetMode && (
-          <div className="text-center mt-5">
+          <div className="text-center mt-6">
             <button
               onClick={() => {
                 setResetMode(true);
                 setError(null);
                 setMessage(null);
               }}
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="text-sm text-gray-600 hover:text-[#2c7a4c] font-medium transition"
             >
               Har du glömt ditt lösenord?
             </button>
@@ -214,14 +214,14 @@ export default function LoginPage() {
         )}
 
         {resetMode && (
-          <div className="text-center mt-4">
+          <div className="text-center mt-6">
             <button
               onClick={() => {
                 setResetMode(false);
                 setError(null);
                 setMessage(null);
               }}
-              className="text-sm text-[#2c7a4c] hover:text-[#236139] font-medium"
+              className="text-sm text-[#2c7a4c] hover:text-[#236139] font-semibold transition"
             >
               Tillbaka till inloggning
             </button>
@@ -229,11 +229,11 @@ export default function LoginPage() {
         )}
 
         {!resetMode && (
-          <p className="text-center text-sm text-gray-600 mt-6">
+          <p className="text-center text-base text-gray-700 mt-6 pt-6 border-t border-gray-200">
             Har du inget konto?{" "}
             <a
               href="/register"
-              className="text-[#2c7a4c] font-semibold hover:text-[#236139]"
+              className="text-[#2c7a4c] font-bold hover:text-[#236139] transition"
             >
               Skapa konto
             </a>
