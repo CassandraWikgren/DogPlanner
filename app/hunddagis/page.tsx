@@ -517,7 +517,7 @@ export default function HunddagisPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-20">
+    <div className="min-h-screen bg-white pt-16">
       {/* Header med titel och statistik */}
       <div className="border-b border-gray-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -560,14 +560,14 @@ export default function HunddagisPage() {
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
             >
               <Plus className="h-4 w-4 mr-2 text-white" />
-              Ny hund
+              <span className="text-white">Ny hund</span>
             </button>
             <button
               onClick={exportToPDF}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
             >
               <Download className="h-4 w-4 mr-2 text-white" />
-              PDF-export
+              <span className="text-white">PDF-export</span>
             </button>
             <button
               onClick={() => {
@@ -577,7 +577,7 @@ export default function HunddagisPage() {
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
             >
               <RefreshCcw className="h-4 w-4 mr-2 text-white" />
-              Ladda om
+              <span className="text-white">Ladda om</span>
             </button>
           </div>
         </div>
@@ -743,8 +743,8 @@ export default function HunddagisPage() {
                     onClick={() => setShowAddDogModal(true)}
                     className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139]"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Lägg till hund
+                    <Plus className="h-4 w-4 mr-2 text-white" />
+                    <span className="text-white">Lägg till hund</span>
                   </button>
                 )}
               </div>
