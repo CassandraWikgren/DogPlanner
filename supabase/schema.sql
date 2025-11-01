@@ -1,6 +1,29 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-10-16 baserat på faktisk databas
+-- Uppdaterad 2025-11-01
+-- ========================================
+--
+-- === RELATERADE SQL-FILER I PROJEKTET ===
+--
+-- 🔧 SETUP & TRIGGERS:
+--   • fix_registration_triggers.sql         → AUTO-SKAPAR org/profil vid registrering (VIKTIGT!)
+--   • enable_triggers_for_production.sql    → Sätter org_id automatiskt för owners/dogs/rooms (FRIVILLIGT)
+--   • complete_testdata.sql                 → Testdata för development (DISABLAR triggers!)
+--
+-- 🛠️ MANUELLA FIXES (används vid behov):
+--   • fix_cassandra_profile_20251101.sql    → Fixade Cassandras profil (körts 2025-11-01)
+--   • create_org_and_profile.sql            → Skapa org + profil manuellt
+--   • check_user_profile.sql                → Kolla användarens profil/org status
+--
+-- 💡 ONBOARDING:
+--   • Kod: app/api/onboarding/auto/route.ts → Backup om trigger misslyckas
+--   • Kod: app/context/AuthContext.tsx      → Anropar auto-onboarding vid login
+--
+-- 🔐 SÄKERHET:
+--   • Koden sätter org_id MANUELLT i EditDogModal (fungerar utan triggers)
+--   • Triggers är BACKUP-lösning för extra säkerhet
+--   • RLS är DISABLED i development för enklare debugging
+--
 -- ========================================
 
 -- Enable extensions
@@ -435,13 +458,28 @@ CREATE TABLE IF NOT EXISTS error_logs (
 -- TRIGGERS OCH FUNKTIONER
 -- =======================================
 
--- ⚠️ OBS: TRIGGERS ÄR REDAN AKTIVERADE I PRODUCTION (Vercel/Supabase)
--- I DEVELOPMENT (localhost) är de DISABLED av complete_testdata.sql
--- Detta är AVSIKTLIGT för enklare debugging och testning.
+-- ⚠️ TRIGGER-STATUS OCH SETUP-FILER:
 --
--- Koden i EditDogModal sätter org_id manuellt, vilket fungerar både:
--- - MED triggers (om NEW.org_id redan är satt, ändras inget)
--- - UTAN triggers (sätts direkt i koden)
+-- 🟢 PRODUCTION (Vercel/Supabase):
+--    • fix_registration_triggers.sql         → Kör denna för att aktivera auto-registrering
+--    • enable_triggers_for_production.sql    → Kör denna för org_id auto-setting (valfritt)
+--    • Triggers MÅSTE vara aktiva för nya användare ska få org/profil automatiskt
+--
+-- 🔴 DEVELOPMENT (localhost):
+--    • complete_testdata.sql                 → DISABLAR alla triggers för enklare debugging
+--    • Koden sätter org_id MANUELLT i EditDogModal/AuthContext
+--    • Fungerar perfekt utan triggers!
+--
+-- 💡 DUBBEL SÄKERHET:
+--    Koden fungerar BÅDE med och utan triggers:
+--    - MED triggers: Om NEW.org_id redan är satt, ändras inget (IF NEW.org_id IS NULL)
+--    - UTAN triggers: Sätts direkt i TypeScript-koden (se EditDogModal.tsx)
+--
+-- 🔍 VERIFIERA TRIGGER-STATUS:
+--    SELECT trigger_name, event_object_table 
+--    FROM information_schema.triggers 
+--    WHERE trigger_schema = 'public' 
+--    ORDER BY event_object_table;
 
 -- === AUTOMATISK UPDATED_AT ===
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -455,6 +493,7 @@ $$ LANGUAGE plpgsql;
 -- === ORGANISATIONSHANTERING ===
 
 -- Funktion för att sätta org_id automatiskt från användarens profil
+-- Aktiveras med: enable_triggers_for_production.sql
 -- Används i produktion för automatisk org_id-tilldelning
 CREATE OR REPLACE FUNCTION set_org_id_for_owners()
 RETURNS trigger AS $$
@@ -507,7 +546,9 @@ $$ LANGUAGE plpgsql;
 
 -- === ANVÄNDARHANTERING ===
 
--- Hantera nya användare
+-- Hantera nya användare vid registrering
+-- ⚠️ VIKTIG TRIGGER - Aktiveras med: fix_registration_triggers.sql
+-- Skapar automatiskt: organisation + profil + 3 månaders gratis prenumeration
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS trigger AS $$
 DECLARE
