@@ -188,7 +188,7 @@ const COLUMN_LABELS: Record<string, string> = {
 };
 
 export default function HunddagisPage() {
-  const { user } = useAuth();
+  const { user, currentOrgId } = useAuth();
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
@@ -214,7 +214,7 @@ export default function HunddagisPage() {
 
   // Fetch data functions
   const fetchDogs = useCallback(async () => {
-    if (!user?.org_id) return;
+    if (!currentOrgId) return;
 
     try {
       logDebug("info", "Hämtar hundar från Supabase...");
@@ -239,7 +239,7 @@ export default function HunddagisPage() {
           )
         `
         )
-        .eq("org_id", user.org_id)
+        .eq("org_id", currentOrgId)
         .order("name");
 
       if (dogsError) {
@@ -262,16 +262,16 @@ export default function HunddagisPage() {
       );
       setError("Ett oväntat fel inträffade vid hämtning av hundar");
     }
-  }, [user?.org_id, logDebug]);
+  }, [currentOrgId, logDebug]);
 
   const fetchRooms = useCallback(async () => {
-    if (!user?.org_id) return;
+    if (!currentOrgId) return;
 
     try {
       const { data: roomsData, error: roomsError } = await supabase
         .from("rooms")
         .select("*")
-        .eq("org_id", user.org_id)
+        .eq("org_id", currentOrgId)
         .eq("is_active", true)
         .order("name");
 
@@ -353,12 +353,12 @@ export default function HunddagisPage() {
 
   // Setup subscriptions and fetch data
   useEffect(() => {
-    if (!user?.org_id) {
+    if (!currentOrgId) {
       const timer = setTimeout(() => {
         setLoading(false);
         if (!user) {
           setError("Ingen användare inloggad");
-        } else if (!user.org_id) {
+        } else if (!currentOrgId) {
           setError("Ingen organisation tilldelad användaren");
         }
       }, 3000);
@@ -374,11 +374,11 @@ export default function HunddagisPage() {
     };
 
     loadData();
-  }, [user?.org_id, fetchDogs, fetchRooms]);
+  }, [currentOrgId, fetchDogs, fetchRooms]);
 
   // Real-time subscriptions
   useEffect(() => {
-    if (!user?.org_id) return;
+    if (!currentOrgId) return;
 
     const dogsSubscription = supabase
       .channel("dogs_changes")
@@ -388,7 +388,7 @@ export default function HunddagisPage() {
           event: "*",
           schema: "public",
           table: "dogs",
-          filter: `org_id=eq.${user.org_id}`,
+          filter: `org_id=eq.${currentOrgId}`,
         },
         () => {
           logDebug("info", "Hundar uppdaterade via realtime");
@@ -405,7 +405,7 @@ export default function HunddagisPage() {
           event: "*",
           schema: "public",
           table: "rooms",
-          filter: `org_id=eq.${user.org_id}`,
+          filter: `org_id=eq.${currentOrgId}`,
         },
         () => {
           logDebug("info", "Rum uppdaterade via realtime");
@@ -418,7 +418,7 @@ export default function HunddagisPage() {
       supabase.removeChannel(dogsSubscription);
       supabase.removeChannel(roomsSubscription);
     };
-  }, [user?.org_id, fetchDogs, fetchRooms, logDebug]);
+  }, [currentOrgId, fetchDogs, fetchRooms, logDebug]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -508,7 +508,7 @@ export default function HunddagisPage() {
           {!user && (
             <p className="text-red-600 mt-2">Ingen användare inloggad</p>
           )}
-          {user && !user.org_id && (
+          {user && !currentOrgId && (
             <p className="text-red-600 mt-2">Ingen organisation tilldelad</p>
           )}
         </div>
