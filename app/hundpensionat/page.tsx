@@ -335,12 +335,12 @@ export default function HundpensionatPage() {
           </p>
         </div>
       </div>
-      {/* Stats Cards - Flexbox layout med inline styles för garanterad styling */}
+      {/* Stats Cards - CSS Grid layout med inline styles */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div
           style={{
-            display: "flex",
-            flexWrap: "wrap",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
             gap: "1.5rem",
             marginBottom: "2rem",
           }}
@@ -351,8 +351,6 @@ export default function HundpensionatPage() {
               borderRadius: "0.75rem",
               boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
               padding: "1.5rem",
-              flex: "1 1 300px",
-              minWidth: "280px",
               border: "1px solid #e5e7eb",
             }}
           >
@@ -410,8 +408,6 @@ export default function HundpensionatPage() {
               borderRadius: "0.75rem",
               boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
               padding: "1.5rem",
-              flex: "1 1 300px",
-              minWidth: "280px",
               border: "1px solid #e5e7eb",
             }}
           >
@@ -469,8 +465,6 @@ export default function HundpensionatPage() {
               borderRadius: "0.75rem",
               boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
               padding: "1.5rem",
-              flex: "1 1 300px",
-              minWidth: "280px",
               border: "1px solid #e5e7eb",
             }}
           >
@@ -528,8 +522,6 @@ export default function HundpensionatPage() {
               borderRadius: "0.75rem",
               boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
               padding: "1.5rem",
-              flex: "1 1 300px",
-              minWidth: "280px",
               border: "1px solid #e5e7eb",
             }}
           >
