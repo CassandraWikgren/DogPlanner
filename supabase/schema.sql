@@ -435,6 +435,14 @@ CREATE TABLE IF NOT EXISTS error_logs (
 -- TRIGGERS OCH FUNKTIONER
 -- =======================================
 
+-- ⚠️ OBS: TRIGGERS ÄR REDAN AKTIVERADE I PRODUCTION (Vercel/Supabase)
+-- I DEVELOPMENT (localhost) är de DISABLED av complete_testdata.sql
+-- Detta är AVSIKTLIGT för enklare debugging och testning.
+--
+-- Koden i EditDogModal sätter org_id manuellt, vilket fungerar både:
+-- - MED triggers (om NEW.org_id redan är satt, ändras inget)
+-- - UTAN triggers (sätts direkt i koden)
+
 -- === AUTOMATISK UPDATED_AT ===
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS trigger AS $$
@@ -446,7 +454,8 @@ $$ LANGUAGE plpgsql;
 
 -- === ORGANISATIONSHANTERING ===
 
--- Funktion för att sätta org_id automatiskt
+-- Funktion för att sätta org_id automatiskt från användarens profil
+-- Används i produktion för automatisk org_id-tilldelning
 CREATE OR REPLACE FUNCTION set_org_id_for_owners()
 RETURNS trigger AS $$
 BEGIN
@@ -457,7 +466,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE OR REPLACE FUNCTION set_org_id_for_dogs()
 RETURNS trigger AS $$
@@ -469,7 +478,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE OR REPLACE FUNCTION set_org_id_for_rooms()
 RETURNS trigger AS $$
@@ -481,7 +490,7 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE OR REPLACE FUNCTION set_org_user()
 RETURNS trigger AS $$
@@ -584,26 +593,20 @@ $$ LANGUAGE plpgsql;
 -- TRIGGERS
 -- =======================================
 
--- Updated_at triggers
-CREATE TRIGGER trg_update_orgs_updated_at BEFORE UPDATE ON orgs 
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- ⚠️ VIKTIGT: I PRODUCTION (Vercel) är dessa triggers AKTIVA
+-- I DEVELOPMENT (localhost) är de DISABLED av complete_testdata.sql
+--
+-- TRIGGERS SOM ÄR AKTIVA I PRODUCTION:
+-- - trg_set_org_id_owners (BEFORE INSERT ON owners)
+-- - trg_set_org_id_dogs (BEFORE INSERT ON dogs)  
+-- - trg_set_org_id_rooms (BEFORE INSERT ON rooms)
+-- - trg_set_org_user_dog_journal (BEFORE INSERT ON dog_journal)
+-- - trg_update_*_updated_at (BEFORE UPDATE för auto-timestamp)
+--
+-- Koden i EditDogModal.tsx sätter org_id manuellt, vilket fungerar perfekt
+-- både med och utan triggers (triggers kollar IF NEW.org_id IS NULL först)
 
-CREATE TRIGGER trg_update_profiles_updated_at BEFORE UPDATE ON profiles 
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER trg_update_owners_updated_at BEFORE UPDATE ON owners 
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER trg_update_rooms_updated_at BEFORE UPDATE ON rooms 
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER trg_update_dogs_updated_at BEFORE UPDATE ON dogs 
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER trg_update_bookings_updated_at BEFORE UPDATE ON bookings 
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
--- Org ID triggers
+-- Org ID triggers - sätt org_id från användarens profil
 CREATE TRIGGER trg_set_org_id_owners BEFORE INSERT ON owners
   FOR EACH ROW EXECUTE FUNCTION set_org_id_for_owners();
 
