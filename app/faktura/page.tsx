@@ -1,5 +1,8 @@
 "use client";
 
+// Förhindra prerendering för att undvika build-fel
+export const dynamic = "force-dynamic";
+
 import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
@@ -1311,19 +1314,19 @@ const FakturorPage = () => {
                                         inv.status === "draft"
                                           ? "bg-gray-100 text-gray-600"
                                           : inv.status === "sent"
-                                          ? "bg-blue-100 text-blue-700"
-                                          : inv.status === "paid"
-                                          ? "bg-emerald-100 text-emerald-700"
-                                          : "bg-red-100 text-red-700"
+                                            ? "bg-blue-100 text-blue-700"
+                                            : inv.status === "paid"
+                                              ? "bg-emerald-100 text-emerald-700"
+                                              : "bg-red-100 text-red-700"
                                       }`}
                                     >
                                       {inv.status === "draft"
                                         ? "Utkast"
                                         : inv.status === "sent"
-                                        ? "Skickad"
-                                        : inv.status === "paid"
-                                        ? "Betald"
-                                        : "Makulerad"}
+                                          ? "Skickad"
+                                          : inv.status === "paid"
+                                            ? "Betald"
+                                            : "Makulerad"}
                                     </span>
                                   </td>
                                 )}
@@ -1372,8 +1375,8 @@ const FakturorPage = () => {
                       log.type === "error"
                         ? "border-red-500 text-red-400"
                         : log.type === "success"
-                        ? "border-emerald-500 text-emerald-400"
-                        : "border-blue-500 text-blue-400"
+                          ? "border-emerald-500 text-emerald-400"
+                          : "border-blue-500 text-blue-400"
                     }`}
                   >
                     <span className="text-gray-400">{log.time}</span>{" "}
