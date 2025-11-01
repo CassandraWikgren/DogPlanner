@@ -72,14 +72,36 @@ export default function HomePage() {
         className="relative bg-cover bg-center"
         style={{
           backgroundImage: "url('/Hero.jpeg')",
+          backgroundColor: "#2c7a4c",
           minHeight: "600px",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          position: "relative",
         }}
       >
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#2c7a4c]/90 to-[#2c7a4c]/70"></div>
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-[#2c7a4c]/90 to-[#2c7a4c]/70"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background:
+              "linear-gradient(to right, rgba(44, 122, 76, 0.9), rgba(44, 122, 76, 0.7))",
+          }}
+        ></div>
 
         {/* Content */}
-        <div className="relative max-w-7xl mx-auto px-6 py-20 md:py-32">
+        <div
+          className="relative max-w-7xl mx-auto px-6 py-20 md:py-32"
+          style={{
+            position: "relative",
+            paddingTop: "5rem",
+            paddingBottom: "5rem",
+          }}
+        >
           <div className="max-w-2xl">
             <h1
               className="font-bold text-white mb-6 leading-tight drop-shadow-lg"
