@@ -318,74 +318,122 @@ export default function HundpensionatPage() {
           </p>
         </div>
       </div>
-      {/* Stats Cards - Flexbox med explicit styles */}
+      {/* Stats Cards - Ren CSS utan Tailwind */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-wrap gap-6 mb-8">
-          <div className="flex-1 min-w-64 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
-                  Antal hundar
-                </p>
-                <p className="text-2xl font-bold text-green-600">
-                  {liveStats.hundarIdag}
-                </p>
-                <p className="text-xs text-gray-500">aktiva idag</p>
+        <style jsx>{`
+          .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 32px;
+          }
+          .stats-card {
+            flex: 1 1 250px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            padding: 24px;
+            min-width: 250px;
+          }
+          .stats-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+          .stats-text h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            margin: 0 0 8px 0;
+          }
+          .stats-text .number {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 0 4px 0;
+          }
+          .stats-text .subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+            margin: 0;
+          }
+          .stats-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+          }
+          .green {
+            color: #059669;
+          }
+          .green-bg {
+            background-color: #ecfdf5;
+          }
+          .blue {
+            color: #2563eb;
+          }
+          .blue-bg {
+            background-color: #eff6ff;
+          }
+          .orange {
+            color: #ea580c;
+          }
+          .orange-bg {
+            background-color: #fff7ed;
+          }
+          .purple {
+            color: #9333ea;
+          }
+          .purple-bg {
+            background-color: #faf5ff;
+          }
+        `}</style>
+
+        <div className="stats-container">
+          <div className="stats-card">
+            <div className="stats-content">
+              <div className="stats-text">
+                <h3>Antal hundar</h3>
+                <p className="number green">{liveStats.hundarIdag}</p>
+                <p className="subtitle">aktiva idag</p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-2xl">
-                🐕
-              </div>
+              <div className="stats-icon green-bg">🐕</div>
             </div>
           </div>
 
-          <div className="flex-1 min-w-64 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
-                  Ankomster idag
-                </p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {liveStats.incheckIdag}
-                </p>
-                <p className="text-xs text-gray-500">nya incheckning</p>
+          <div className="stats-card">
+            <div className="stats-content">
+              <div className="stats-text">
+                <h3>Ankomster idag</h3>
+                <p className="number blue">{liveStats.incheckIdag}</p>
+                <p className="subtitle">nya incheckning</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-2xl">
-                📅
-              </div>
+              <div className="stats-icon blue-bg">📅</div>
             </div>
           </div>
 
-          <div className="flex-1 min-w-64 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
-                  Ankomster imorgon
-                </p>
-                <p className="text-2xl font-bold text-orange-600">
-                  {liveStats.incheckImorgon}
-                </p>
-                <p className="text-xs text-gray-500">planerade</p>
+          <div className="stats-card">
+            <div className="stats-content">
+              <div className="stats-text">
+                <h3>Ankomster imorgon</h3>
+                <p className="number orange">{liveStats.incheckImorgon}</p>
+                <p className="subtitle">planerade</p>
               </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-2xl">
-                🧳
-              </div>
+              <div className="stats-icon orange-bg">🧳</div>
             </div>
           </div>
 
-          <div className="flex-1 min-w-64 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
-                  Avresor imorgon
-                </p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {liveStats.utcheckImorgon}
-                </p>
-                <p className="text-xs text-gray-500">utcheckning</p>
+          <div className="stats-card">
+            <div className="stats-content">
+              <div className="stats-text">
+                <h3>Avresor imorgon</h3>
+                <p className="number purple">{liveStats.utcheckImorgon}</p>
+                <p className="subtitle">utcheckning</p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-2xl">
-                👋
-              </div>
+              <div className="stats-icon purple-bg">👋</div>
             </div>
           </div>
         </div>
