@@ -309,68 +309,78 @@ export default function HundpensionatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Samma som Dashboard, Hunddagis, Ekonomi (mer kompakt) */}
+      {/* Hero Section - Kompakt och genomtänkt */}
       <div
-        className="relative bg-cover bg-center pt-16 pb-20"
+        className="relative bg-cover bg-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.82), rgba(44, 122, 76, 0.7)), url('/Hero.jpeg')`,
+          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.85), rgba(44, 122, 76, 0.75)), url('/Hero.jpeg')`,
+          minHeight: "280px",
         }}
       >
-        {/* Subtle overlay to ensure text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#2c7a4c]/90 to-[#2c7a4c]/70" />
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-2 drop-shadow-md">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 pb-24">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
             Hundpensionat
           </h1>
-          <p className="text-md md:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-white/95 max-w-2xl mx-auto">
             Professionell pensionathantering med översikt över bokningar, rum
             och gäster — enkelt att administrera och tryggt för kunder.
           </p>
         </div>
       </div>
 
-      {/* Floating Stats Cards - Moderna kort som överlappar hero */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-8">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Antal hundar</p>
+      {/* Stats Cards - Floating över hero med snygg design */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 mb-8 relative z-20">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-[#2c7a4c] hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+              Antal hundar
+            </p>
             <p className="text-3xl font-bold text-[#2c7a4c]">
               {liveStats.hundarIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Ankomster</p>
-            <p className="text-3xl font-bold text-[#2c7a4c]">
+          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+              Ankomster
+            </p>
+            <p className="text-3xl font-bold text-blue-600">
               {liveStats.incheckIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Avresor</p>
+          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-orange-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+              Avresor
+            </p>
             <p className="text-3xl font-bold text-orange-600">
               {liveStats.utcheckIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Tjänster imorgon</p>
-            <p className="text-3xl font-bold text-[#2c7a4c]">
+          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-purple-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+              Tjänster imorgon
+            </p>
+            <p className="text-3xl font-bold text-purple-600">
               {liveStats.tjänsterImorgon}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Kunder</p>
-            <p className="text-3xl font-bold text-[#2c7a4c]">
+          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-indigo-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+              Kunder
+            </p>
+            <p className="text-3xl font-bold text-indigo-600">
               {liveStats.totalOwners}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-5 border border-gray-200 hover:shadow-lg transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Månadsintäkt</p>
-            <p className="text-2xl font-bold text-[#2c7a4c]">
+          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-emerald-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+              Månadsintäkt
+            </p>
+            <p className="text-2xl font-bold text-emerald-600">
               {liveStats.monthlyRevenue.toLocaleString()} kr
             </p>
           </div>
@@ -379,16 +389,17 @@ export default function HundpensionatPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        {/* Kontroller */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-4 border border-gray-200">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+        {/* Kontroller - Modernare design */}
+        <div className="bg-white rounded-xl shadow-md p-5 mb-6 border border-gray-100">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            {/* Sök och Filter */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto flex-1">
               <select
                 value={selectedMonthId}
                 onChange={(e) => setSelectedMonthId(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                className="px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white text-sm font-medium hover:border-gray-400 transition-colors"
               >
-                <option value="">Alla månader</option>
+                <option value="">📅 Alla månader</option>
                 {availableMonths.map((month) => (
                   <option key={month} value={month}>
                     {new Date(month + "-01").toLocaleDateString("sv-SE", {
@@ -399,72 +410,82 @@ export default function HundpensionatPage() {
                 ))}
               </select>
 
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <div className="relative flex-1 sm:min-w-[300px]">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Sök bokningar..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  placeholder="Sök efter hund, ägare eller rum..."
+                  className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-sm hover:border-gray-400 transition-colors"
                 />
               </div>
             </div>
 
-            <div className="flex gap-2 w-full md:w-auto">
+            {/* Action Buttons - Mer professionella */}
+            <div className="flex flex-wrap gap-2 w-full lg:w-auto">
               <Link
                 href="/hundpensionat/ansokningar"
-                className="relative flex items-center justify-center gap-2 px-3 py-1.5 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+                className="relative inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
-                <ClipboardList size={16} />
-                <span className="hidden sm:inline">Ansökningar</span>
+                <ClipboardList className="w-4 h-4" />
+                <span>Ansökningar</span>
                 {liveStats.pendingBookings > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-md animate-pulse">
                     {liveStats.pendingBookings}
                   </span>
                 )}
               </Link>
+
               <Link
                 href="/hundpensionat/priser"
-                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
-                <DollarSign size={16} />
-                <span className="hidden sm:inline">Priser</span>
+                <DollarSign className="w-4 h-4" />
+                <span>Priser</span>
               </Link>
+
               <Link
                 href="/hundpensionat/tillval"
-                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
-                <Settings size={16} />
-                <span className="hidden sm:inline">Tillval</span>
+                <Settings className="w-4 h-4" />
+                <span>Tillval</span>
               </Link>
+
               <Link
                 href="/hundpensionat/kalender"
-                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
-                <Calendar size={16} />
-                <span className="hidden sm:inline">Kalender</span>
+                <Calendar className="w-4 h-4" />
+                <span>Kalender</span>
               </Link>
+
               <button
                 onClick={loadBookings}
-                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+                disabled={isLoading}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <RefreshCcw size={16} />
-                <span className="hidden sm:inline">Uppdatera</span>
+                <RefreshCcw
+                  className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+                />
+                <span>Uppdatera</span>
               </button>
+
               <button
                 onClick={exportToPDF}
-                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
-                <Download size={16} />
-                <span className="hidden sm:inline">PDF</span>
+                <Download className="w-4 h-4" />
+                <span>PDF</span>
               </button>
+
               <Link
                 href="/hundpensionat/new"
-                className="flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
-                <Plus size={16} />
-                <span className="hidden sm:inline">Ny bokning</span>
+                <Plus className="w-4 h-4" />
+                <span>Ny bokning</span>
               </Link>
             </div>
           </div>
@@ -472,62 +493,80 @@ export default function HundpensionatPage() {
 
         {/* Error display */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6">
-            {error}
+          <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-5 py-4 rounded-lg mb-6 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-red-600 font-bold">⚠️</span>
+              <span className="font-medium">{error}</span>
+            </div>
           </div>
         )}
 
-        {/* Tabell */}
-        <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+        {/* Tabell - Modernare design */}
+        <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-[#2c7a4c]">
+              <thead className="bg-gradient-to-r from-[#2c7a4c] to-[#236139]">
                 <tr>
                   <th
                     onClick={() => handleSort("room")}
-                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
                   >
-                    Rum {sortKey === "room" && (sortAsc ? "↑" : "↓")}
+                    <div className="flex items-center gap-2">
+                      Rum {sortKey === "room" && (sortAsc ? "↑" : "↓")}
+                    </div>
                   </th>
                   <th
                     onClick={() => handleSort("dog")}
-                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
                   >
-                    Hund {sortKey === "dog" && (sortAsc ? "↑" : "↓")}
+                    <div className="flex items-center gap-2">
+                      Hund {sortKey === "dog" && (sortAsc ? "↑" : "↓")}
+                    </div>
                   </th>
                   <th
                     onClick={() => handleSort("owner")}
-                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
                   >
-                    Ägare {sortKey === "owner" && (sortAsc ? "↑" : "↓")}
+                    <div className="flex items-center gap-2">
+                      Ägare {sortKey === "owner" && (sortAsc ? "↑" : "↓")}
+                    </div>
                   </th>
                   <th
                     onClick={() => handleSort("start_date")}
-                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
                   >
-                    Startdatum{" "}
-                    {sortKey === "start_date" && (sortAsc ? "↑" : "↓")}
+                    <div className="flex items-center gap-2">
+                      Startdatum{" "}
+                      {sortKey === "start_date" && (sortAsc ? "↑" : "↓")}
+                    </div>
                   </th>
                   <th
                     onClick={() => handleSort("end_date")}
-                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
                   >
-                    Slutdatum {sortKey === "end_date" && (sortAsc ? "↑" : "↓")}
+                    <div className="flex items-center gap-2">
+                      Slutdatum{" "}
+                      {sortKey === "end_date" && (sortAsc ? "↑" : "↓")}
+                    </div>
                   </th>
                   <th
                     onClick={() => handleSort("status")}
-                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
                   >
-                    Status {sortKey === "status" && (sortAsc ? "↑" : "↓")}
+                    <div className="flex items-center gap-2">
+                      Status {sortKey === "status" && (sortAsc ? "↑" : "↓")}
+                    </div>
                   </th>
                   <th
                     onClick={() => handleSort("total_price")}
-                    className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-[#236139]"
+                    className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
                   >
-                    Totalpris{" "}
-                    {sortKey === "total_price" && (sortAsc ? "↑" : "↓")}
+                    <div className="flex items-center gap-2">
+                      Totalpris{" "}
+                      {sortKey === "total_price" && (sortAsc ? "↑" : "↓")}
+                    </div>
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">
                     Rabatt
                   </th>
                 </tr>
@@ -537,66 +576,81 @@ export default function HundpensionatPage() {
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-4 py-8 text-center text-gray-500"
+                      className="px-6 py-12 text-center text-gray-500"
                     >
-                      Laddar bokningar...
+                      <div className="flex items-center justify-center gap-3">
+                        <RefreshCcw className="w-5 h-5 animate-spin text-[#2c7a4c]" />
+                        <span>Laddar bokningar...</span>
+                      </div>
                     </td>
                   </tr>
                 ) : sorted.length === 0 ? (
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-4 py-8 text-center text-gray-500"
+                      className="px-6 py-12 text-center text-gray-500"
                     >
-                      {search || selectedMonthId
-                        ? "Inga bokningar matchade din sökning"
-                        : "Inga bokningar hittades"}
+                      <div className="text-center">
+                        <p className="text-lg font-medium mb-1">
+                          {search || selectedMonthId
+                            ? "Inga bokningar matchade din sökning"
+                            : "Kunde inte ladda bokningar"}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          {search || selectedMonthId
+                            ? "Prova att ändra dina sökkriterier"
+                            : "Kontrollera din anslutning och försök igen"}
+                        </p>
+                      </div>
                     </td>
                   </tr>
                 ) : (
                   sorted.map((booking, idx) => (
                     <tr
                       key={booking.id}
-                      className={`${
-                        idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-green-50 transition-colors`}
+                      className="hover:bg-emerald-50 transition-colors border-b border-gray-100"
                     >
-                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {booking.rooms?.name ?? "—"}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {booking.dogs?.name ?? "—"}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {booking.dogs?.owners?.full_name ?? "—"}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {booking.start_date}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {booking.end_date}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span
-                          className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          className={`px-3 py-1.5 inline-flex items-center text-xs font-semibold rounded-full shadow-sm ${
                             booking.status === "confirmed"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
                               : booking.status === "pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
+                                ? "bg-amber-100 text-amber-800 border border-amber-200"
+                                : booking.status === "completed"
+                                  ? "bg-blue-100 text-blue-800 border border-blue-200"
+                                  : "bg-gray-100 text-gray-800 border border-gray-200"
                           }`}
                         >
-                          {booking.status}
+                          {booking.status === "confirmed" && "✓ "}
+                          {booking.status === "pending" && "⏳ "}
+                          {booking.status === "completed" && "✓✓ "}
+                          {booking.status || "—"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                         {booking.total_price
-                          ? `${booking.total_price} kr`
+                          ? `${Number(booking.total_price).toLocaleString()} kr`
                           : "—"}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {booking.discount_amount
-                          ? `${booking.discount_amount} kr`
+                          ? `${Number(booking.discount_amount).toLocaleString()} kr`
                           : "—"}
                       </td>
                     </tr>
@@ -606,6 +660,28 @@ export default function HundpensionatPage() {
             </table>
           </div>
         </div>
+
+        {/* Footer info */}
+        {sorted.length > 0 && (
+          <div className="mt-6 text-center text-sm text-gray-500 bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+            <p>
+              Visar{" "}
+              <span className="font-semibold text-gray-700">
+                {sorted.length}
+              </span>{" "}
+              bokningar
+              {bookings.length !== sorted.length && (
+                <span>
+                  {" "}
+                  av totalt{" "}
+                  <span className="font-semibold text-gray-700">
+                    {bookings.length}
+                  </span>
+                </span>
+              )}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
