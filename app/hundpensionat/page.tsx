@@ -329,17 +329,10 @@ export default function HundpensionatPage() {
         className="relative bg-cover bg-center"
         style={{
           backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.85), rgba(44, 122, 76, 0.75)), url('/Hero.jpeg')`,
-          minHeight: "220px", // Minskat från 280px
-          paddingTop: "60px", // Explicit för navbar
+          minHeight: "240px",
         }}
       >
-        <div
-          className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
-          style={{
-            paddingTop: "40px", // Minskat från 48px (pt-12)
-            paddingBottom: "40px", // Minskat från 64px (pb-16)
-          }}
-        >
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 pb-20">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
             Hundpensionat
           </h1>
@@ -349,173 +342,46 @@ export default function HundpensionatPage() {
           </p>
         </div>
       </div>
-
-      {/* Stats Cards - Floating över hero med snygg design */}
-      <div
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20"
-        style={{
-          marginTop: "-60px", // Explicit istället för -mt-12
-          marginBottom: "24px", // Explicit istället för mb-6
-        }}
-      >
-        <div
-          className="grid grid-cols-2 md:grid-cols-5"
-          style={{
-            gap: "12px",
-          }}
-        >
-          <div
-            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-            style={{
-              padding: "12px", // Explicit istället för p-3
-              borderLeft: "4px solid #2c7a4c",
-            }}
-          >
-            <p
-              className="uppercase tracking-wide mb-1"
-              style={{
-                fontSize: "12px",
-                fontWeight: "500",
-                color: "#6b7280",
-                lineHeight: "1",
-              }}
-            >
-              Antal hundar
+      {/* Stats Cards - Enklare 4-kolumns layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-8 relative z-20">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#2c7a4c]">
+            <p className="text-sm font-medium text-gray-600 mb-2">
+              Antal hundar idag
             </p>
-            <p
-              style={{
-                fontSize: "24px",
-                fontWeight: "bold",
-                color: "#2c7a4c",
-                lineHeight: "1",
-              }}
-            >
+            <p className="text-3xl font-bold text-[#2c7a4c]">
               {liveStats.hundarIdag}
             </p>
           </div>
 
-          <div
-            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-            style={{
-              padding: "12px",
-              borderLeft: "4px solid #3b82f6",
-            }}
-          >
-            <p
-              className="uppercase tracking-wide mb-1"
-              style={{
-                fontSize: "12px",
-                fontWeight: "500",
-                color: "#6b7280",
-                lineHeight: "1",
-              }}
-            >
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+            <p className="text-sm font-medium text-gray-600 mb-2">
               Ankomster idag
             </p>
-            <p
-              style={{
-                fontSize: "24px",
-                fontWeight: "bold",
-                color: "#2563eb",
-                lineHeight: "1",
-              }}
-            >
+            <p className="text-3xl font-bold text-blue-600">
               {liveStats.incheckIdag}
             </p>
           </div>
 
-          <div
-            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-            style={{
-              padding: "12px",
-              borderLeft: "4px solid #f97316",
-            }}
-          >
-            <p
-              className="uppercase tracking-wide mb-1"
-              style={{
-                fontSize: "12px",
-                fontWeight: "500",
-                color: "#6b7280",
-                lineHeight: "1",
-              }}
-            >
-              Avresor idag
-            </p>
-            <p
-              style={{
-                fontSize: "24px",
-                fontWeight: "bold",
-                color: "#ea580c",
-                lineHeight: "1",
-              }}
-            >
-              {liveStats.utcheckIdag}
-            </p>
-          </div>
-
-          <div
-            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-            style={{
-              padding: "12px",
-              borderLeft: "4px solid #a855f7",
-            }}
-          >
-            <p
-              className="uppercase tracking-wide mb-1"
-              style={{
-                fontSize: "12px",
-                fontWeight: "500",
-                color: "#6b7280",
-                lineHeight: "1",
-              }}
-            >
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+            <p className="text-sm font-medium text-gray-600 mb-2">
               Ankomster imorgon
             </p>
-            <p
-              style={{
-                fontSize: "24px",
-                fontWeight: "bold",
-                color: "#9333ea",
-                lineHeight: "1",
-              }}
-            >
+            <p className="text-3xl font-bold text-orange-600">
               {liveStats.incheckImorgon}
             </p>
           </div>
 
-          <div
-            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-            style={{
-              padding: "12px",
-              borderLeft: "4px solid #ec4899",
-            }}
-          >
-            <p
-              className="uppercase tracking-wide mb-1"
-              style={{
-                fontSize: "12px",
-                fontWeight: "500",
-                color: "#6b7280",
-                lineHeight: "1",
-              }}
-            >
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+            <p className="text-sm font-medium text-gray-600 mb-2">
               Avresor imorgon
             </p>
-            <p
-              style={{
-                fontSize: "24px",
-                fontWeight: "bold",
-                color: "#db2777",
-                lineHeight: "1",
-              }}
-            >
+            <p className="text-3xl font-bold text-purple-600">
               {liveStats.utcheckImorgon}
             </p>
           </div>
         </div>
-      </div>
-
+      </div>{" "}
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {/* Kontroller - Modernare design */}
@@ -568,19 +434,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/priser"
-                className="inline-flex items-center justify-center gap-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
-                style={{
-                  padding: "10px 16px",
-                  backgroundColor: "#2c7a4c !important",
-                  color: "white !important",
-                  textDecoration: "none",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#236139";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2c7a4c";
-                }}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <DollarSign className="w-4 h-4" />
                 <span>Priser</span>
@@ -588,19 +442,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/tillval"
-                className="inline-flex items-center justify-center gap-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
-                style={{
-                  padding: "10px 16px",
-                  backgroundColor: "#2c7a4c !important",
-                  color: "white !important",
-                  textDecoration: "none",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#236139";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2c7a4c";
-                }}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <Settings className="w-4 h-4" />
                 <span>Tillval</span>
@@ -608,19 +450,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/kalender"
-                className="inline-flex items-center justify-center gap-2 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
-                style={{
-                  padding: "10px 16px",
-                  backgroundColor: "#2c7a4c !important",
-                  color: "white !important",
-                  textDecoration: "none",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "#236139";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "#2c7a4c";
-                }}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <Calendar className="w-4 h-4" />
                 <span>Kalender</span>
