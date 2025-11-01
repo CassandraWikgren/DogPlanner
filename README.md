@@ -616,3 +616,192 @@ Organisationen är navet i DogPlanner.
 Alla entiteter (hunddagis, pensionat, frisör, prislistor, fakturor) ska knytas till företaget via org_id eller branch_id.
 Detta stärker skalbarhet, säkerhet och multi-tenant-isolering.
 All hantering ska ske i enlighet med svensk lag och GDPR.
+
+---
+
+## 🔢 Kundnummer-system och Ägarmatching
+
+### Översikt
+
+DogPlanner använder ett intelligent system för att säkerställa att **en kund = ett kundnummer**, oavsett hur många hundar kunden har.
+
+### Hur det fungerar
+
+#### 1. **Automatisk ägarmatching**
+
+När en ny hund skapas försöker systemet först hitta befintlig ägare genom att matcha:
+
+1. **E-postadress** (mest tillförlitlig)
+   - Kollar om e-posten redan finns i databasen för din organisation
+   - Case-insensitive matching
+
+2. **Telefonnummer** (normaliserat)
+   - Tar bort mellanslag, bindestreck och parenteser
+   - `070-123 45 67` = `0701234567` = `070 123 45 67`
+   - Matchar även om formatet skiljer sig
+
+3. **Namn + Telefon** (fallback)
+   - Om varken e-post eller telefon ger match
+   - Matchar både förnamn/efternamn OCH telefonnummer
+
+#### 2. **Organisation-isolering**
+
+- Alla matchningar filtreras på `org_id`
+- Kundnummer är unika per organisation
+- Organisation A kan ha kundnr 1-100
+- Organisation B kan också ha kundnr 1-100 (olika kunder)
+
+#### 3. **Automatisk kundnummer-generering**
+
+```typescript
+// Om ingen befintlig ägare hittas:
+const maxNum = await getMaxCustomerNumber(org_id); // t.ex. 42
+const newCustomerNumber = maxNum + 1; // blir 43
+```
+
+- Systemet hämtar högsta befintliga kundnummer för organisationen
+- Lägger till 1
+- Sparar ägare med det nya numret
+
+#### 4. **Admin kan sätta manuellt**
+
+- Admin kan skriva över auto-genererat nummer
+- Användbart vid migrering från gamla system
+- T.ex. kund hade nummer 9999 i gamla systemet → behåll det
+
+### Praktiska exempel
+
+#### **Exempel 1: Samma kund, två hundar**
+
+```
+Hund 1: "Bella"
+  Ägare: Anna Andersson
+  E-post: anna@mail.com
+  → Ingen match hittas
+  → Skapar ägare med kundnr 1
+
+Hund 2: "Max"
+  Ägare: Anna Andersson
+  E-post: anna@mail.com
+  → Matchar på e-post!
+  → Återanvänder ägare med kundnr 1
+
+Resultat: Anna får EN faktura med båda hundarna ✅
+```
+
+#### **Exempel 2: Telefon med olika format**
+
+```
+Hund 1: "Bella"
+  Tel: 0701234567
+  → Skapar ägare med kundnr 1
+
+Hund 2: "Max"
+  Tel: 070-123 45 67
+  → Normaliserar till 0701234567
+  → Matchar befintlig ägare!
+  → Återanvänder kundnr 1
+
+Resultat: Samma ägare trots olika format ✅
+```
+
+#### **Exempel 3: Olika e-post (ny ägare)**
+
+```
+Hund 1: "Bella"
+  E-post: anna@gmail.com
+  → Kundnr 1
+
+Hund 2: "Max"
+  E-post: anna@work.com
+  → Ingen match på e-post
+  → Skapar ny ägare med kundnr 2
+
+Resultat: Två olika ägare, två fakturor
+```
+
+### Loggning och debug
+
+Systemet loggar all matchning i browser console (F12):
+
+```javascript
+// När befintlig ägare hittas:
+✅ Återanvänder befintlig ägare: Anna Andersson (Kundnr: 1) - matchad på e-post
+
+// När ny ägare skapas:
+🆕 Skapar ny ägare: Anna Andersson med auto-genererat kundnummer: 1
+
+// När admin sätter manuellt:
+👤 Admin satte manuellt kundnummer: 9999
+
+// När ägare sparas i databasen:
+✅ Ägare skapad i databasen med ID: abc-123, Kundnr: 1
+```
+
+### Teknisk implementation
+
+**Fil:** `components/EditDogModal.tsx`
+
+```typescript
+// 1. Matcha befintlig ägare
+let ownerId = null;
+
+// Försök e-post
+if (ownerEmail) {
+  const hit = await supabase
+    .from("owners")
+    .select("id, customer_number")
+    .eq("org_id", currentOrgId)
+    .ilike("email", ownerEmail)
+    .maybeSingle();
+  if (hit) ownerId = hit.id;
+}
+
+// Försök telefon (normaliserat)
+if (!ownerId && ownerPhone) {
+  const cleanPhone = ownerPhone.replace(/[\s\-\(\)]/g, "");
+  // ... matcha normaliserat telefonnummer
+}
+
+// 2. Auto-generera kundnummer för ny ägare
+if (!ownerId) {
+  const maxNum = await supabase
+    .from("owners")
+    .select("customer_number")
+    .eq("org_id", currentOrgId)
+    .order("customer_number", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const newCustomerNumber = (maxNum?.customer_number || 0) + 1;
+}
+```
+
+### Best practices
+
+✅ **Be kunden fylla i e-post** - mest tillförlitlig matchning  
+✅ **Använd konsekvent format** - telefonnummer normaliseras automatiskt  
+✅ **Kolla console** - se exakt vad systemet gör  
+✅ **En ägare per kund** - även om flera hundar  
+✅ **Manuell rättning** - admin kan ändra kundnummer om fel uppstår
+
+### Felsökning
+
+**Problem:** Samma kund får flera kundnummer
+
+**Lösning:**
+
+1. Kolla om e-post/telefon är olika mellan hundarna
+2. Se console-loggen för att förstå varför ingen match hittades
+3. Admin kan manuellt redigera ägare och sätta rätt kundnummer
+4. Radera dubblettägare och koppla alla hundar till en ägare
+
+**Problem:** Kundnummer börjar om från 1
+
+**Lösning:**
+
+- Kontrollera att `org_id` är korrekt satt på alla ägare
+- Kör `SELECT MAX(customer_number) FROM owners WHERE org_id = 'ditt-org-id'`
+- Om trigger är disabled måste `org_id` sättas manuellt i koden
+
+---
