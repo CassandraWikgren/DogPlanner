@@ -9,8 +9,22 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  // EXPLICIT SAFELIST: Tvinga Tailwind att inkludera grid display property
-  safelist: ["grid", "hidden", "flex", "block", "inline", "inline-block"],
+  // EXPLICIT SAFELIST: Alla klasser som behövs för statistik-kort
+  safelist: [
+    "grid",
+    "grid-cols-1",
+    "grid-cols-2",
+    "grid-cols-4",
+    "sm:grid-cols-2",
+    "lg:grid-cols-4",
+    "gap-6",
+    "mb-8",
+    "hidden",
+    "flex",
+    "block",
+    "inline",
+    "inline-block",
+  ],
   theme: {
     extend: {
       colors: {
