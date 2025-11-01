@@ -397,23 +397,71 @@ export default function EditDogModal({
           .trim() || null;
 
       let ownerId: string | null = null;
+      let existingCustomerNumber: number | null = null;
 
-      if (ownerEmail) {
+      // 1. Försök matcha på e-post (mest tillförlitlig)
+      if (ownerEmail?.trim()) {
         const { data: hit } = await supabase
           .from("owners")
-          .select("id")
-          .ilike("email", ownerEmail)
+          .select("id, customer_number, full_name")
+          .eq("org_id", currentOrgId)
+          .ilike("email", ownerEmail.trim())
           .maybeSingle();
-        if (hit?.id) ownerId = hit.id;
+        if (hit?.id) {
+          ownerId = hit.id;
+          existingCustomerNumber = hit.customer_number;
+          console.log(
+            `✅ Återanvänder befintlig ägare: ${hit.full_name} (Kundnr: ${hit.customer_number}) - matchad på e-post`
+          );
+        }
       }
-      if (!ownerId && full_name && ownerPhone) {
+
+      // 2. Om ingen match på e-post, försök telefon (normaliserat)
+      if (!ownerId && ownerPhone?.trim()) {
+        const cleanPhone = ownerPhone.replace(/[\s\-\(\)]/g, ""); // Ta bort mellanslag, bindestreck, parenteser
         const { data: hit2 } = await supabase
           .from("owners")
-          .select("id")
+          .select("id, customer_number, full_name, phone")
+          .eq("org_id", currentOrgId)
+          .maybeSingle();
+
+        // Manuell sökning i client (eftersom SQL LIKE inte normaliserar)
+        const allOwners = await supabase
+          .from("owners")
+          .select("id, customer_number, full_name, phone")
+          .eq("org_id", currentOrgId);
+
+        const match = allOwners.data?.find((owner) => {
+          if (!owner.phone) return false;
+          const ownerCleanPhone = owner.phone.replace(/[\s\-\(\)]/g, "");
+          return ownerCleanPhone === cleanPhone;
+        });
+
+        if (match?.id) {
+          ownerId = match.id;
+          existingCustomerNumber = match.customer_number;
+          console.log(
+            `✅ Återanvänder befintlig ägare: ${match.full_name} (Kundnr: ${match.customer_number}) - matchad på telefon`
+          );
+        }
+      }
+
+      // 3. Om fortfarande ingen match på e-post eller telefon, försök namn + telefon
+      if (!ownerId && full_name && ownerPhone) {
+        const { data: hit3 } = await supabase
+          .from("owners")
+          .select("id, customer_number, full_name")
+          .eq("org_id", currentOrgId)
           .ilike("full_name", full_name)
           .ilike("phone", ownerPhone)
           .maybeSingle();
-        if (hit2?.id) ownerId = hit2.id;
+        if (hit3?.id) {
+          ownerId = hit3.id;
+          existingCustomerNumber = hit3.customer_number;
+          console.log(
+            `✅ Återanvänder befintlig ägare: ${hit3.full_name} (Kundnr: ${hit3.customer_number}) - matchad på namn + telefon`
+          );
+        }
       }
 
       const baseOwner: OwnerRow = {
@@ -435,14 +483,14 @@ export default function EditDogModal({
         const { data: maxData } = await supabase
           .from("owners")
           .select("customer_number")
+          .eq("org_id", currentOrgId)
           .order("customer_number", { ascending: false })
           .limit(1)
           .maybeSingle();
         const maxNum = maxData?.customer_number || 0;
         baseOwner.customer_number = maxNum + 1;
         console.log(
-          "Auto-generated customer_number:",
-          baseOwner.customer_number
+          `🆕 Skapar ny ägare: ${full_name} med auto-genererat kundnummer: ${baseOwner.customer_number}`
         );
       }
 
@@ -450,6 +498,9 @@ export default function EditDogModal({
         // Admin kan manuellt sätta kundnummer (skriver över auto-genererat)
         if (ownerCustomerNo) {
           baseOwner.customer_number = Number(ownerCustomerNo);
+          console.log(
+            `👤 Admin satte manuellt kundnummer: ${baseOwner.customer_number}`
+          );
         }
         baseOwner.personnummer = ownerPersonnummer || null;
       }
@@ -458,8 +509,14 @@ export default function EditDogModal({
         const { data: created } = await supabase
           .from("owners")
           .insert([baseOwner])
-          .select("id")
+          .select("id, customer_number")
           .single()
+          .throwOnError();
+        ownerId = created.id;
+        console.log(
+          `✅ Ägare skapad i databasen med ID: ${created.id}, Kundnr: ${created.customer_number}`
+        );
+      } else {
           .throwOnError();
         ownerId = created.id;
       } else {
