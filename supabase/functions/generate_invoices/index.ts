@@ -86,6 +86,7 @@ serve(async (req) => {
       const dogsList = info.dogs;
       const orgId = info.org_id ?? null;
       const ownerEmail = dogsList[0]?.owner?.email ?? "";
+      const ownerId = dogsList[0]?.user_id ?? null; // Hämta owner_id från första hunden
       const lines = [];
       let total = 0;
 
@@ -150,23 +151,76 @@ serve(async (req) => {
 
       invoices.push({
         org_id: orgId,
-        owner_name: ownerName,
-        owner_email: ownerEmail,
-        month_id: monthId,
+        owner_id: ownerId,
+        billed_name: ownerName,
+        billed_email: ownerEmail,
+        invoice_date: startOfMonth.toISOString().split("T")[0], // YYYY-MM-DD format
+        due_date: endOfMonth.toISOString().split("T")[0],
         lines,
         total_amount: total,
-        created_at: new Date().toISOString(),
+        status: "draft",
+        invoice_type: "full", // Månadsfaktura är 'full' (inte förskott/efterskott)
       });
     }
 
     // === Spara fakturor ===
     if (invoices.length > 0) {
-      const { error: insertErr } = await supabase
-        .from("invoices")
-        .insert(invoices);
-      if (insertErr) throw new Error(`Insert error: ${insertErr.message}`);
+      console.log(`💾 Inserting ${invoices.length} invoices...`);
 
-      console.log(`✅ Inserted ${invoices.length} invoices.`);
+      for (const inv of invoices) {
+        const lines = inv.lines; // Spara lines separat
+        delete inv.lines; // Ta bort lines från invoice-objektet
+
+        // Insert invoice först
+        const { data: insertedInvoice, error: insertErr } = await supabase
+          .from("invoices")
+          .insert([inv])
+          .select()
+          .single();
+
+        if (insertErr) {
+          console.error(
+            `❌ Failed to insert invoice for ${inv.billed_name}:`,
+            insertErr.message
+          );
+          throw new Error(`Insert invoice error: ${insertErr.message}`);
+        }
+
+        console.log(
+          `✅ Invoice created: ${insertedInvoice.id} for ${inv.billed_name}`
+        );
+
+        // Insert invoice_items
+        if (lines && lines.length > 0) {
+          const items = lines.map((line) => ({
+            invoice_id: insertedInvoice.id,
+            description: line.description,
+            quantity: line.quantity,
+            unit_price: line.unit_price,
+            total_amount: line.total,
+          }));
+
+          const { error: itemsErr } = await supabase
+            .from("invoice_items")
+            .insert(items);
+
+          if (itemsErr) {
+            console.error(
+              `❌ Failed to insert invoice items for invoice ${insertedInvoice.id}:`,
+              itemsErr.message
+            );
+            throw new Error(`Insert invoice_items error: ${itemsErr.message}`);
+          }
+
+          console.log(
+            `✅ Added ${items.length} items to invoice ${insertedInvoice.id}`
+          );
+        }
+      }
+
+      console.log(
+        `✅ Successfully inserted ${invoices.length} invoices with items.`
+      );
 
       await supabase.from("function_logs").insert([
         {

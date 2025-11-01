@@ -307,12 +307,27 @@ export default function PensionatAnsokningarPage() {
         return;
       }
 
+      // Vänta lite så trigger hinner skapa fakturan
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Hämta den skapade förskottsfakturan
+      const { data: updatedBooking } = await (supabase as any)
+        .from("bookings")
+        .select("prepayment_invoice_id")
+        .eq("id", bookingId)
+        .single();
+
+      let invoiceMessage = "";
+      if (updatedBooking?.prepayment_invoice_id) {
+        invoiceMessage = `\n\n📄 Förskottsfaktura skapad!\nFaktura-ID: ${updatedBooking.prepayment_invoice_id}\n\nKunden ska betala förskottet innan ankomst.`;
+      }
+
       alert(
         `✅ Bokning godkänd!\n\nSlutpris: ${finalPrice.toFixed(
           2
         )} kr\nRabatt: ${finalDiscountAmount.toFixed(2)} kr${
           discountDescription ? `\n${discountDescription}` : ""
-        }`
+        }${invoiceMessage}`
       );
 
       // Ta bort från listan
