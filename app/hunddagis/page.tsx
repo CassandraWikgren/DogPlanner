@@ -517,30 +517,7 @@ export default function HunddagisPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Grön header upptill */}
-      <div className="bg-[#2c7a4c] shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              {/* DogPlanner Logo - klickbar för att gå till dashboard */}
-              <Link
-                href="/dashboard"
-                className="flex items-center hover:opacity-80 transition-opacity"
-              >
-                <Image
-                  src="/logo.png"
-                  alt="DogPlanner"
-                  width={50}
-                  height={50}
-                  className="object-contain"
-                />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-white pt-20">
       {/* Header med titel och statistik */}
       <div className="border-b border-gray-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -549,7 +526,7 @@ export default function HunddagisPage() {
               <h1 className="text-2xl font-semibold text-[#2c7a4c]">
                 Hunddagis – Dagens sammanställning
               </h1>
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm text-[#2c7a4c]">
                 Sök, filtrera, exportera och lägg till nya hundar.
               </p>
             </div>
@@ -582,21 +559,21 @@ export default function HunddagisPage() {
               onClick={() => setShowAddDogModal(true)}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 mr-2 text-white" />
               Ny hund
             </button>
             <button
               onClick={exportToPDF}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
             >
-              <Download className="h-4 w-4 mr-2" />
+              <Download className="h-4 w-4 mr-2 text-white" />
               PDF-export
             </button>
             <button
               onClick={() => setShowColumnSettings(!showColumnSettings)}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
             >
-              <Settings2 className="h-4 w-4 mr-2" />
+              <Settings2 className="h-4 w-4 mr-2 text-white" />
               Kolumner
             </button>
             <button
@@ -606,7 +583,7 @@ export default function HunddagisPage() {
               }}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
             >
-              <RefreshCcw className="h-4 w-4 mr-2" />
+              <RefreshCcw className="h-4 w-4 mr-2 text-white" />
               Ladda om
             </button>
           </div>
@@ -614,9 +591,9 @@ export default function HunddagisPage() {
 
         {/* Search and Filter Row */}
         <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-          <div className="flex flex-col lg:flex-row space-y-3 lg:space-y-0 lg:space-x-4">
+          <div className="flex flex-row items-center space-x-4">
             {/* Sökruta - större och tydligare */}
-            <div className="flex-1 lg:min-w-[400px]">
+            <div className="flex-1 min-w-[400px]">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
@@ -634,7 +611,7 @@ export default function HunddagisPage() {
               <select
                 value={filterSubscription}
                 onChange={(e) => setFilterSubscription(e.target.value)}
-                className="px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c] text-sm"
+                className="px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c] text-sm whitespace-nowrap"
               >
                 <option value="all">Våra hundar</option>
                 <option value="services">Tjänster</option>
@@ -645,7 +622,7 @@ export default function HunddagisPage() {
               <select
                 value={filterMonth}
                 onChange={(e) => setFilterMonth(e.target.value)}
-                className="px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c] text-sm"
+                className="px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c] text-sm whitespace-nowrap"
               >
                 <option value="all">Alla månader</option>
                 <option value="0">Januari</option>
