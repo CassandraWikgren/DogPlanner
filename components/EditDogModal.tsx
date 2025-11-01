@@ -111,8 +111,30 @@ export default function EditDogModal({
             .eq("dog_id", initialDog.id)
             .order("created_at", { ascending: false });
           setJournalHistory(journalData || []);
+
+          // Hämta befintliga tilläggsabonnemang
+          const { data: addonsData } = await supabase
+            .from("extra_service")
+            .select("*")
+            .eq("dogs_id", initialDog.id)
+            .neq("service_type", "finance_note")
+            .order("created_at", { ascending: false });
+
+          if (addonsData && addonsData.length > 0) {
+            const loadedAddons: Addon[] = addonsData.map((es) => ({
+              id: es.id || Date.now().toString(),
+              name: es.service_type || "",
+              qty: es.quantity?.toString() || "1",
+              start: es.performed_at || "",
+              end: es.notes?.includes("t.o.m.")
+                ? es.notes.split("t.o.m. ")[1] || ""
+                : "",
+            }));
+            setAddons(loadedAddons);
+          }
         } else {
           setJournalHistory([]);
+          setAddons([]);
         }
       } catch (e) {
         console.error("Init modal error:", e);
@@ -637,10 +659,11 @@ export default function EditDogModal({
       setSubEnd("");
       setRoomId("");
       setDays([]);
-      setAddonName("");
-      setAddonQty("1");
-      setAddonStart("");
-      setAddonEnd("");
+      setAddons([]);
+      setCurrentAddonName("");
+      setCurrentAddonQty("1");
+      setCurrentAddonStart("");
+      setCurrentAddonEnd("");
       setFinanceNote("");
       setError(null);
       setOk(null);
@@ -1291,7 +1314,7 @@ export default function EditDogModal({
           {activeTab === "tillägg" && (
             <div className="rounded-xl border p-4">
               <SectionTitle>Tilläggsabonnemang & Merförsäljning</SectionTitle>
-              
+
               {/* Lista över tillagda addons */}
               {addons.length > 0 && (
                 <div className="mb-4 space-y-2">
