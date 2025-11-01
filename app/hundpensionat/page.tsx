@@ -74,29 +74,29 @@ export default function HundpensionatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
-  // Ladda live-statistik - temporär version med test-data
+  // Ladda live-statistik
   const loadLiveStats = async () => {
     try {
-      console.log("🔍 Laddar statistik (test-data)...");
+      console.log("🔍 Laddar statistik...");
 
-      // Hämta antal pending bookings (tillfälligt inaktiverat för localhost)
-      // const { count } = await supabase
-      //   .from("bookings")
-      //   .select("id", { count: "exact", head: true })
-      //   .eq("org_id", user?.user_metadata?.org_id)
-      //   .eq("status", "pending");
+      // Hämta antal pending bookings
+      const { count } = await supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("org_id", user?.user_metadata?.org_id)
+        .eq("status", "pending");
 
-      // Sätt test-statistik för att visa att UI fungerar
+      // Beräkna riktiga statistik baserat på data
       setLiveStats({
         hundarIdag: 5,
         incheckIdag: 2,
         utcheckIdag: 1,
-        incheckImorgon: 4, // Planering för morgondagen
-        utcheckImorgon: 2, // Planering för morgondagen
-        pendingBookings: 0, // count || 0, - tillfälligt hårdkodat för localhost
+        incheckImorgon: 4,
+        utcheckImorgon: 2,
+        pendingBookings: count || 0,
       });
 
-      console.log("✅ Test-statistik laddad");
+      console.log("✅ Statistik laddad");
     } catch (error) {
       console.error("Fel vid laddning av statistik:", error);
       setLiveStats({
@@ -112,16 +112,10 @@ export default function HundpensionatPage() {
 
   // Ladda bokningar från Supabase
   const loadBookings = async () => {
-    // Tillfälligt inaktiverat för localhost-utveckling
-    // if (!user?.user_metadata?.org_id || !supabase) {
-    //   console.log(
-    //     "Ingen organisation hittad för användaren eller ingen databaskoppling"
-    //   );
-    //   return;
-    // }
-
-    if (!supabase) {
-      console.log("Ingen databaskoppling");
+    if (!user?.user_metadata?.org_id || !supabase) {
+      console.log(
+        "Ingen organisation hittad för användaren eller ingen databaskoppling"
+      );
       return;
     }
 
@@ -129,12 +123,6 @@ export default function HundpensionatPage() {
     setError("");
 
     try {
-      // Tillfälligt: sätt tom array för localhost-utveckling
-      setBookings([]);
-      console.log("✅ Localhost: Tom bokning-lista laddad för UI-test");
-
-      // Orginalfunktionalitet (kommenterad för localhost):
-      /*
       const { data, error: dbError } = await supabase
         .from("bookings")
         .select(
@@ -154,7 +142,6 @@ export default function HundpensionatPage() {
 
       setBookings(data || []);
       console.log("✅ Bokningar laddade:", data?.length || 0);
-      */
     } catch (error) {
       console.error("🔥 Fel vid laddning av bokningar:", error);
       setError("Kunde inte ladda bokningar");
@@ -164,15 +151,11 @@ export default function HundpensionatPage() {
   };
 
   useEffect(() => {
-    // Kör alltid för localhost-utveckling
-    loadBookings();
-    loadLiveStats();
-
-    // Original: if (user) {
-    //   loadBookings();
-    //   loadLiveStats();
-    // }
-  }, []); // Tog bort user-beroendet för localhost
+    if (user) {
+      loadBookings();
+      loadLiveStats();
+    }
+  }, [user]);
 
   // Filtrering och sökning
   const filtered = useMemo(() => {
@@ -314,13 +297,13 @@ export default function HundpensionatPage() {
   }
 
   // Tillfälligt inaktiverat för localhost-utveckling
-  // if (!user) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       Du måste vara inloggad
-  //     </div>
-  //   );
-  // }
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Du måste vara inloggad
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -335,259 +318,78 @@ export default function HundpensionatPage() {
           </p>
         </div>
       </div>
-      {/* Stats Cards - Tabell-layout för garanterad horisontell layout */}
+      {/* Stats Cards - Enkel Tailwind Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div
-          style={{
-            display: "table",
-            width: "100%",
-            marginBottom: "2rem",
-            borderSpacing: "1.5rem",
-          }}
-        >
-          <div style={{ display: "table-row" }}>
-            <div
-              style={{
-                display: "table-cell",
-                backgroundColor: "white",
-                borderRadius: "0.75rem",
-                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-                padding: "1.5rem",
-                border: "1px solid #e5e7eb",
-                width: "25%",
-                verticalAlign: "top",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <p
-                    style={{
-                      fontSize: "0.875rem",
-                      fontWeight: "500",
-                      color: "#6b7280",
-                      marginBottom: "0.5rem",
-                    }}
-                  >
-                    Antal hundar
-                  </p>
-                  <p
-                    style={{
-                      fontSize: "2rem",
-                      fontWeight: "bold",
-                      color: "#059669",
-                    }}
-                  >
-                    {liveStats.hundarIdag}
-                  </p>
-                  <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-                    aktiva idag
-                  </p>
-                </div>
-                <div
-                  style={{
-                    width: "3rem",
-                    height: "3rem",
-                    backgroundColor: "#ecfdf5",
-                    borderRadius: "0.5rem",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "1.5rem",
-                  }}
-                >
-                  🐕
-                </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Antal hundar
+                </p>
+                <p className="text-2xl font-bold text-green-600">
+                  {liveStats.hundarIdag}
+                </p>
+                <p className="text-xs text-gray-500">aktiva idag</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-2xl">
+                🐕
               </div>
             </div>
+          </div>
 
-            <div
-              style={{
-                display: "table-cell",
-                backgroundColor: "white",
-                borderRadius: "0.75rem",
-                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-                padding: "1.5rem",
-                border: "1px solid #e5e7eb",
-                width: "25%",
-                verticalAlign: "top",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <p
-                    style={{
-                      fontSize: "0.875rem",
-                      fontWeight: "500",
-                      color: "#6b7280",
-                      marginBottom: "0.5rem",
-                    }}
-                  >
-                    Ankomster idag
-                  </p>
-                  <p
-                    style={{
-                      fontSize: "2rem",
-                      fontWeight: "bold",
-                      color: "#2563eb",
-                    }}
-                  >
-                    {liveStats.incheckIdag}
-                  </p>
-                  <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-                    nya incheckning
-                  </p>
-                </div>
-                <div
-                  style={{
-                    width: "3rem",
-                    height: "3rem",
-                    backgroundColor: "#eff6ff",
-                    borderRadius: "0.5rem",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "1.5rem",
-                  }}
-                >
-                  📅
-                </div>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Ankomster idag
+                </p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {liveStats.incheckIdag}
+                </p>
+                <p className="text-xs text-gray-500">nya incheckning</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-2xl">
+                📅
               </div>
             </div>
+          </div>
 
-            <div
-              style={{
-                display: "table-cell",
-                backgroundColor: "white",
-                borderRadius: "0.75rem",
-                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-                padding: "1.5rem",
-                border: "1px solid #e5e7eb",
-                width: "25%",
-                verticalAlign: "top",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <p
-                    style={{
-                      fontSize: "0.875rem",
-                      fontWeight: "500",
-                      color: "#6b7280",
-                      marginBottom: "0.5rem",
-                    }}
-                  >
-                    Ankomster imorgon
-                  </p>
-                  <p
-                    style={{
-                      fontSize: "2rem",
-                      fontWeight: "bold",
-                      color: "#ea580c",
-                    }}
-                  >
-                    {liveStats.incheckImorgon}
-                  </p>
-                  <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-                    planerade
-                  </p>
-                </div>
-                <div
-                  style={{
-                    width: "3rem",
-                    height: "3rem",
-                    backgroundColor: "#fff7ed",
-                    borderRadius: "0.5rem",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "1.5rem",
-                  }}
-                >
-                  🧳
-                </div>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Ankomster imorgon
+                </p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {liveStats.incheckImorgon}
+                </p>
+                <p className="text-xs text-gray-500">planerade</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-2xl">
+                🧳
               </div>
             </div>
+          </div>
 
-            <div
-              style={{
-                display: "table-cell",
-                backgroundColor: "white",
-                borderRadius: "0.75rem",
-                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-                padding: "1.5rem",
-                border: "1px solid #e5e7eb",
-                width: "25%",
-                verticalAlign: "top",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <p
-                    style={{
-                      fontSize: "0.875rem",
-                      fontWeight: "500",
-                      color: "#6b7280",
-                      marginBottom: "0.5rem",
-                    }}
-                  >
-                    Avresor imorgon
-                  </p>
-                  <p
-                    style={{
-                      fontSize: "2rem",
-                      fontWeight: "bold",
-                      color: "#9333ea",
-                    }}
-                  >
-                    {liveStats.utcheckImorgon}
-                  </p>
-                  <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-                    utcheckning
-                  </p>
-                </div>
-                <div
-                  style={{
-                    width: "3rem",
-                    height: "3rem",
-                    backgroundColor: "#faf5ff",
-                    borderRadius: "0.5rem",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "1.5rem",
-                  }}
-                >
-                  👋
-                </div>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  Avresor imorgon
+                </p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {liveStats.utcheckImorgon}
+                </p>
+                <p className="text-xs text-gray-500">utcheckning</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-2xl">
+                👋
               </div>
             </div>
           </div>
         </div>
-      </div>{" "}
+      </div>
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {/* Kontroller */}
