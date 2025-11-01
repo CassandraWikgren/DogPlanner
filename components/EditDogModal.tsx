@@ -517,9 +517,6 @@ export default function EditDogModal({
           `✅ Ägare skapad i databasen med ID: ${created.id}, Kundnr: ${created.customer_number}`
         );
       } else {
-          .throwOnError();
-        ownerId = created.id;
-      } else {
         await supabase
           .from("owners")
           .update(baseOwner)
