@@ -9,46 +9,68 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  // EXPLICIT SAFELIST: Alla klasser som behövs för statistik-kort och färger
+  // SAFELIST: Använder patterns för att täcka alla hundpensionat-klasser
   safelist: [
-    // Layout
+    // Specifika klasser som MÅSTE finnas
     "grid",
-    "grid-cols-1",
-    "grid-cols-2",
-    "grid-cols-4",
-    "sm:grid-cols-2",
-    "lg:grid-cols-4",
-    "gap-6",
-    "mb-8",
-    "hidden",
     "flex",
     "flex-1",
     "flex-wrap",
+    "hidden",
     "block",
-    "inline",
-    "inline-block",
-    // Färger för statistik-kort (text)
-    "text-emerald-600",
-    "text-blue-600",
-    "text-orange-600",
-    "text-purple-600",
-    // Färger för statistik-kort (bakgrund)
-    "bg-emerald-50",
-    "bg-blue-50",
-    "bg-orange-50",
-    "bg-purple-50",
-    // Text-storlekar
-    "text-4xl",
-    "text-sm",
-    "text-xs",
-    // Font-weights
-    "font-bold",
-    "font-medium",
-    // Övriga utility-klasser
-    "min-w-[280px]",
-    "max-w-full",
-    "sm:max-w-[calc(50%-12px)]",
-    "lg:max-w-[calc(25%-18px)]",
+    // Patterns för färger (täcker alla varianter)
+    {
+      pattern:
+        /^(text|bg)-(emerald|blue|orange|purple|white|gray)-(50|100|200|300|400|500|600|700|800|900)$/,
+    },
+    // Pattern för text-white med opacity
+    {
+      pattern: /^text-white(\/\d+)?$/,
+    },
+    // Patterns för text-storlekar
+    {
+      pattern: /^text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl)$/,
+    },
+    {
+      pattern: /^(sm|md|lg|xl):text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl)$/,
+    },
+    // Patterns för grid
+    {
+      pattern: /^grid-cols-\d+$/,
+    },
+    {
+      pattern: /^(sm|md|lg|xl):grid-cols-\d+$/,
+    },
+    // Patterns för gap
+    {
+      pattern: /^gap-\d+$/,
+    },
+    // Patterns för margin och padding
+    {
+      pattern: /^(m|p)(t|b|l|r|x|y)?-\d+$/,
+    },
+    // Patterns för font-weight
+    {
+      pattern:
+        /^font-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)$/,
+    },
+    // Patterns för gradients
+    {
+      pattern: /^bg-gradient-to-(r|l|t|b|tr|tl|br|bl)$/,
+    },
+    {
+      pattern: /^(from|via|to)-\[#[0-9a-fA-F]{6}\]$/,
+    },
+    // Patterns för width och max-width
+    {
+      pattern: /^(min-w|max-w|w)-\[.*\]$/,
+    },
+    {
+      pattern: /^(min-w|max-w|w)-(full|screen|\d+)$/,
+    },
+    {
+      pattern: /^(sm|md|lg|xl):max-w-\[.*\]$/,
+    },
   ],
   theme: {
     extend: {
