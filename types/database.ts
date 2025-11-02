@@ -4,32 +4,41 @@
 export interface Database {
   public: {
     Tables: {
-      // === ABONNEMANG ===
-      subscriptions: {
+      // === ORG-ABONNEMANG (organisationens plan/betalning) ===
+      org_subscriptions: {
         Row: {
           id: string;
           org_id: string;
           plan: string;
-          status: string;
-          trial_starts_at?: string | null;
-          trial_ends_at?: string | null;
+          status: "trialing" | "active" | "past_due" | "canceled";
+          trial_starts_at: string | null;
+          trial_ends_at: string | null;
+          current_period_end: string | null;
+          is_active: boolean;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           org_id: string;
-          plan: string;
-          status: string;
+          plan?: string;
+          status?: "trialing" | "active" | "past_due" | "canceled";
           trial_starts_at?: string | null;
           trial_ends_at?: string | null;
+          current_period_end?: string | null;
+          is_active?: boolean;
           created_at?: string;
+          updated_at?: string;
         };
         Update: Partial<{
           org_id: string;
           plan: string;
-          status: string;
-          trial_starts_at?: string | null;
-          trial_ends_at?: string | null;
-          created_at?: string;
+          status: "trialing" | "active" | "past_due" | "canceled";
+          trial_starts_at: string | null;
+          trial_ends_at: string | null;
+          current_period_end: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
         }>;
       };
       // === ORGANISATIONER ===
@@ -93,6 +102,39 @@ export interface Database {
           "id" | "created_at" | "updated_at"
         >;
         Update: Partial<Database["public"]["Tables"]["owners"]["Insert"]>;
+      };
+
+      // === ANVÄNDARPROFILER ===
+      profiles: {
+        Row: {
+          id: string;
+          org_id: string | null;
+          role: "admin" | "staff" | null;
+          full_name: string | null;
+          email: string | null;
+          phone: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          org_id?: string | null;
+          role?: "admin" | "staff" | null;
+          full_name?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          org_id: string | null;
+          role: "admin" | "staff" | null;
+          full_name: string | null;
+          email: string | null;
+          phone: string | null;
+          created_at: string;
+          updated_at: string;
+        }>;
       };
 
       // === RUM ===
@@ -187,6 +229,137 @@ export interface Database {
           "id" | "created_at" | "updated_at"
         >;
         Update: Partial<Database["public"]["Tables"]["bookings"]["Insert"]>;
+      };
+      // === DAGISABONNEMANG (per hund) — motsvarar schema.sql public.subscriptions ===
+      subscriptions: {
+        Row: {
+          id: string;
+          org_id: string;
+          dog_id: string;
+          subscription_type: string;
+          start_date: string;
+          end_date: string | null;
+          price_per_month: number | null;
+          days_included: string[] | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          org_id: string;
+          dog_id: string;
+          subscription_type: string;
+          start_date: string;
+          end_date?: string | null;
+          price_per_month?: number | null;
+          days_included?: string[] | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<{
+          org_id: string;
+          dog_id: string;
+          subscription_type: string;
+          start_date: string;
+          end_date: string | null;
+          price_per_month: number | null;
+          days_included: string[] | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        }>;
+      };
+
+      // === FRISÖR: BOKNINGAR ===
+      grooming_bookings: {
+        Row: {
+          id: string;
+          org_id: string | null;
+          dog_id: string | null;
+          appointment_date: string;
+          appointment_time: string | null;
+          service_type: string;
+          estimated_price: number | null;
+          status: "confirmed" | "completed" | "cancelled" | "no_show";
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          org_id?: string | null;
+          dog_id?: string | null;
+          appointment_date: string;
+          appointment_time?: string | null;
+          service_type: string;
+          estimated_price?: number | null;
+          status?: "confirmed" | "completed" | "cancelled" | "no_show";
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<{
+          org_id: string | null;
+          dog_id: string | null;
+          appointment_date: string;
+          appointment_time: string | null;
+          service_type: string;
+          estimated_price: number | null;
+          status: "confirmed" | "completed" | "cancelled" | "no_show";
+          notes: string | null;
+          created_at: string;
+        }>;
+      };
+
+      // === FRISÖR: JOURNAL ===
+      grooming_journal: {
+        Row: {
+          id: string;
+          org_id: string | null;
+          dog_id: string | null;
+          appointment_date: string;
+          service_type: string;
+          clip_length: string | null;
+          shampoo_type: string | null;
+          special_treatments: string | null;
+          final_price: number;
+          duration_minutes: number | null;
+          notes: string | null;
+          before_photos: string[] | null;
+          after_photos: string[] | null;
+          next_appointment_recommended: string | null;
+          created_at: string;
+        };
+        Insert: {
+          org_id?: string | null;
+          dog_id?: string | null;
+          appointment_date: string;
+          service_type: string;
+          clip_length?: string | null;
+          shampoo_type?: string | null;
+          special_treatments?: string | null;
+          final_price?: number;
+          duration_minutes?: number | null;
+          notes?: string | null;
+          before_photos?: string[] | null;
+          after_photos?: string[] | null;
+          next_appointment_recommended?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<{
+          org_id: string | null;
+          dog_id: string | null;
+          appointment_date: string;
+          service_type: string;
+          clip_length: string | null;
+          shampoo_type: string | null;
+          special_treatments: string | null;
+          final_price: number;
+          duration_minutes: number | null;
+          notes: string | null;
+          before_photos: string[] | null;
+          after_photos: string[] | null;
+          next_appointment_recommended: string | null;
+          created_at: string;
+        }>;
       };
 
       // === EXTRA TJÄNSTER ===

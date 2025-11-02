@@ -3,6 +3,10 @@
  * Används för att testa email-funktionaliteten
  */
 
+// Tvinga dynamisk hantering så Next inte försöker för-rendera under build
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { NextRequest, NextResponse } from "next/server";
 import {
   sendWelcomeEmail,

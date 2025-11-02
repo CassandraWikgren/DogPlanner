@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@supabase/supabase-js";
+import { Database } from "@/types/database";
 
 export async function GET(req: Request) {
   try {
@@ -14,13 +14,19 @@ export async function GET(req: Request) {
       );
     }
 
-    await cookies(); // Await cookies to satisfy Next.js 15
-    const supabase = createRouteHandlerClient({ cookies });
-
-    // 🧩 Hämta användaren från token
-    const { data: userData, error: userErr } = await supabase.auth.getUser(
-      token
+    // Server-side Supabase-klient (service role) för stabila serverfrågor
+    const supabase = createClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: { autoRefreshToken: false, persistSession: false },
+        global: { headers: { Authorization: `Bearer ${token}` } },
+      }
     );
+
+    // Validera token → hämta användaren
+    const { data: userData, error: userErr } =
+      await supabase.auth.getUser(token);
     if (userErr || !userData?.user) {
       return NextResponse.json(
         { error: "Ogiltig användare." },
@@ -30,13 +36,14 @@ export async function GET(req: Request) {
 
     const user = userData.user;
 
-    // 🧩 Hämta organisation (org_id) från profilen
-    const { data: profile, error: profErr } = await supabase
+    // Hämta profil/org_id (typsäker nu när typer finns)
+    const { data: profileRow, error: profErr } = await supabase
       .from("profiles")
       .select("org_id")
       .eq("id", user.id)
       .single();
 
+    const profile = profileRow as { org_id: string | null } | null;
     if (profErr || !profile?.org_id) {
       return NextResponse.json(
         { error: "Ingen organisation kopplad till profilen." },
@@ -44,31 +51,26 @@ export async function GET(req: Request) {
       );
     }
 
-    // 🧩 Hämta abonnemang kopplat till organisationen
-    const { data: sub, error: subErr } = await supabase
-      .from("subscriptions")
+    // Läs organisationens abonnemang från org_subscriptions (inte hundabonnemang)
+    const { data: orgSubRow, error: orgSubErr } = await supabase
+      .from("org_subscriptions")
       .select("status, trial_ends_at")
       .eq("org_id", profile.org_id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-
-    if (subErr || !sub) {
-      // Om inget abonnemang hittas, ge standardvärden
-      return NextResponse.json({
-        status: "trialing",
-        trial_ends_at: null,
-      });
+      .eq("is_active", true)
+      .maybeSingle();
+    if (orgSubErr) {
+      console.warn("/subscription/status: orgSubErr", orgSubErr);
     }
 
-    const now = new Date();
-    const trialEnd = sub.trial_ends_at ? new Date(sub.trial_ends_at) : null;
-    const expired = !!(trialEnd && trialEnd < now && sub.status !== "active");
-
+    const orgSub = orgSubRow as {
+      status?: string;
+      trial_ends_at?: string | null;
+    } | null;
+    const status = orgSub?.status || "trialing";
     return NextResponse.json({
-      status: sub.status,
-      trial_ends_at: sub.trial_ends_at,
-      expired,
+      status,
+      trial_ends_at: orgSub?.trial_ends_at ?? null,
+      expired: status === "canceled" || status === "past_due" ? true : false,
     });
   } catch (e: any) {
     console.error("Fel i /subscription/status:", e);

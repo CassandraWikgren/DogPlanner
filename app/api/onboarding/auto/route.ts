@@ -118,17 +118,18 @@ export async function POST(req: Request) {
 
     console.log("Profil skapad/uppdaterad för användare:", userId);
 
-    // Skapa 3 månader gratis prenumeration
+    // Skapa 3 månader gratis org-prenumeration (separerad från hundabonnemang)
     const trialEnds = new Date();
     trialEnds.setMonth(trialEnds.getMonth() + 3);
 
-    const { error: subErr } = await supabase.from("subscriptions").insert([
+    const { error: subErr } = await supabase.from("org_subscriptions").insert([
       {
         org_id: org.id,
         plan: "basic",
         status: "trialing",
         trial_starts_at: new Date().toISOString(),
         trial_ends_at: trialEnds.toISOString(),
+        is_active: true,
       },
     ]);
 

@@ -76,11 +76,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .split("; ")
           .find((row) => row.startsWith("demoUser="))
           ?.split("=")[1];
+        const demoOrg = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("demoOrg="))
+          ?.split("=")[1];
 
-        // Om demo-cookies finns, hoppa över Supabase session hantering
-        if (demoUser) {
+        // Hoppa endast över Supabase-hantering om BÅDA democookies finns
+        if (demoUser && demoOrg) {
           console.log(
-            "AuthContext: Demo user active, skipping Supabase session handling"
+            "AuthContext: Demo user active (user+org), skipping Supabase session handling"
           );
           return;
         }
@@ -195,16 +199,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const { data }: { data: UserProfile | null } = await supabase
+    // 1) Hämta minsta gemensamma nämnare (id, org_id) för att tåla schema‑skillnader
+    const baseRes: any = await supabase
       .from("profiles")
-      .select("id, org_id, role, full_name, email, phone")
+      .select("id, org_id")
       .eq("id", userId)
       .single();
 
-    if (data) {
-      setProfile(data);
-      setCurrentOrgId(data.org_id);
-      setRole(data.role);
+    let base = baseRes.data as { id: string; org_id: string } | null;
+
+    // 2) Försök läsa extra fält, men fall tillbaka om kolumner saknas i DB
+    let extra: Partial<UserProfile> = {};
+    if (base) {
+      const extraRes: any = await supabase
+        .from("profiles")
+        .select("role, full_name, email, phone")
+        .eq("id", userId)
+        .single();
+
+      // Ignorera fel här – vissa kolumner kan saknas i en äldre databas
+      if (extraRes.data) {
+        extra = extraRes.data as Partial<UserProfile>;
+      }
+    }
+
+    if (base) {
+      const merged: UserProfile = {
+        id: base.id,
+        org_id: base.org_id,
+        role: extra.role || "admin", // defaulta försiktigt till admin om roll saknas
+        full_name: extra.full_name,
+        email: extra.email,
+        phone: extra.phone,
+      };
+
+      setProfile(merged);
+      setCurrentOrgId(merged.org_id);
+      setRole(merged.role);
     } else {
       setProfile(null);
       setCurrentOrgId(null);
