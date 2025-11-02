@@ -255,15 +255,16 @@ export default function HunddagisPage() {
         .eq("org_id", currentOrgId)
         .order("name");
 
+      const firstDog = dogsData?.[0] as any;
       console.log("📊 fetchDogs: Query result:", {
         count: dogsData?.length || 0,
         error: dogsError,
         currentOrgId,
-        sample: dogsData?.[0]
+        sample: firstDog
           ? {
-              id: dogsData[0].id,
-              name: dogsData[0].name,
-              org_id: dogsData[0].org_id,
+              id: firstDog.id,
+              name: firstDog.name,
+              org_id: firstDog.org_id,
             }
           : null,
       });
