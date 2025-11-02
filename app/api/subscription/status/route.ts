@@ -15,16 +15,16 @@ export async function GET(req: Request) {
     }
 
     // Server-side Supabase-klient (service role) för stabila serverfrågor
+    // Använd service role UTAN user token för att bypassa RLS
     const supabase = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       {
         auth: { autoRefreshToken: false, persistSession: false },
-        global: { headers: { Authorization: `Bearer ${token}` } },
       }
     );
 
-    // Validera token → hämta användaren
+    // Validera token → hämta användaren (separat anrop)
     const { data: userData, error: userErr } =
       await supabase.auth.getUser(token);
     if (userErr || !userData?.user) {

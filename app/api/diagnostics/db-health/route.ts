@@ -22,15 +22,16 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Ingen token" }, { status: 401 });
     }
 
+    // Service role client (bypasses RLS for admin checks)
     const supabase = createClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       {
         auth: { autoRefreshToken: false, persistSession: false },
-        global: { headers: { Authorization: `Bearer ${token}` } },
       }
     );
 
+    // Validate user token separately
     const { data: userData, error: userErr } =
       await supabase.auth.getUser(token);
     if (userErr || !userData?.user) {
