@@ -548,10 +548,10 @@ export default function HunddagisPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-16">
+    <div className="min-h-screen bg-white pt-4">
       {/* Header med titel och statistik */}
       <div className="border-b border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold text-[#2c7a4c]">
@@ -1035,8 +1035,8 @@ export default function HunddagisPage() {
                                     alt={dog.name}
                                   />
                                 ) : (
-                                  <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                    <span className="text-[#2c7a4c] font-medium text-xs">
+                                  <div className="h-8 w-8 rounded-full bg-[#2c7a4c] flex items-center justify-center">
+                                    <span className="text-white font-semibold text-sm">
                                       {dog.name.charAt(0).toUpperCase()}
                                     </span>
                                   </div>
