@@ -1047,54 +1047,60 @@ export default function EditDogModal({
               </div>
 
               <SectionTitle>Övrigt hund</SectionTitle>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                <label className="inline-flex items-center gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
+                    className="w-4 h-4 flex-shrink-0"
                     checked={flagCast}
                     onChange={(e) => setFlagCast(e.target.checked)}
                   />
-                  Kastrerad / Steriliserad
+                  <span>Kastrerad / Steriliserad</span>
                 </label>
-                <label className="inline-flex items-center gap-2">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
+                    className="w-4 h-4 flex-shrink-0"
                     checked={flagBiter}
                     onChange={(e) => setFlagBiter(e.target.checked)}
                   />
-                  Hund biter på saker
+                  <span>Hund biter på saker</span>
                 </label>
-                <label className="inline-flex items-center gap-2">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
+                    className="w-4 h-4 flex-shrink-0"
                     checked={flagKiss}
                     onChange={(e) => setFlagKiss(e.target.checked)}
                   />
-                  Kissar inne
+                  <span>Kissar inne</span>
                 </label>
-                <label className="inline-flex items-center gap-2">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
+                    className="w-4 h-4 flex-shrink-0"
                     checked={flagSkallig}
                     onChange={(e) => setFlagSkallig(e.target.checked)}
                   />
-                  Hund skällig
+                  <span>Hund skällig</span>
                 </label>
-                <label className="inline-flex items-center gap-2">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
+                    className="w-4 h-4 flex-shrink-0"
                     checked={flagPersonal}
                     onChange={(e) => setFlagPersonal(e.target.checked)}
                   />
-                  Personalhund
+                  <span>Personalhund</span>
                 </label>
-                <label className="inline-flex items-center gap-2">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
+                    className="w-4 h-4 flex-shrink-0"
                     checked={flagPensionat}
                     onChange={(e) => setFlagPensionat(e.target.checked)}
                   />
-                  Pensionatshund
+                  <span>Pensionatshund</span>
                 </label>
               </div>
             </div>
