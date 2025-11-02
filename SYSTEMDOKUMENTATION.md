@@ -1,13 +1,21 @@
 # 🐾 DogPlanner - Komplett Systemdokumentation
 
-**Uppdaterad: 30 oktober 2025**  
-**Version: 2.0**  
-**Status: Production-Ready (Email-integration återstår)**
+**Uppdaterad: 2 november 2025**  
+**Version: 2.1**  
+**Status: Production-Ready med uppdaterade RLS policies**
 
-> **📌 VIKTIG INFORMATION**  
+> **📌 VIKTIG INFORMATION FÖR NYA UTVECKLARE**  
 > Detta är den centrala källan till sanning för DogPlanner-systemet.  
-> Läs denna dokumentation noggrant innan du gör ändringar i koden.  
-> Om något är oklart - läs igen. Om det fortfarande är oklart - fråga.
+> Läs denna dokumentation noggrant innan du gör ändringar i koden.
+>
+> **SENASTE UPPDATERINGAR (2025-11-02):**
+>
+> - ✅ org_subscriptions tabell tillagd (organisationens plan, INTE hundabonnemang)
+> - ✅ grooming_bookings & grooming_journal tabeller för frisörfunktionalitet
+> - ✅ RLS policies för profiles är NU PRODUKTIONSKLARA (SELECT, INSERT, UPDATE)
+> - ✅ API routes använder pure service role för att bypassa RLS korrekt
+> - ✅ AuthContext laddar profiler via klient-sidan med korrekta policies
+> - ⚠️ VIKTIGT: subscriptions = hundabonnemang, org_subscriptions = organisationens plan
 
 ---
 
@@ -380,7 +388,8 @@ Administratören kan konfigurera email-inställningar via UI:
 <Tabs defaultValue="general">
   <TabsList>
     <TabsTrigger value="general">Allmänt</TabsTrigger>
-    <TabsTrigger value="email">Email-inställningar</TabsTrigger> {/* <-- VIKTIGT! */}
+    <TabsTrigger value="email">Email-inställningar</TabsTrigger>{" "}
+    {/* <-- VIKTIGT! */}
     <TabsTrigger value="billing">Fakturering</TabsTrigger>
     <TabsTrigger value="links">Länkar</TabsTrigger>
   </TabsList>
@@ -1459,7 +1468,6 @@ Detta är det mest kritiska steget!
 
 1. **Gå till `Table Editor`** (📊 ikonen)
 2. **Kontrollera att dessa tabeller finns:**
-
    - ✅ `orgs` (1 rad: Bella Hunddagis)
    - ✅ `owners` (2 rader: Anna, Bengt)
    - ✅ `dogs` (2 rader: Bella, Max)
@@ -2818,7 +2826,6 @@ Error: Inget pris hittat för heltid, 55 cm
 **Lösning:**
 
 1. **Kolla user i Supabase:**
-
    - Dashboard → Authentication → Users
    - Klicka på användaren
    - Verifiera att `organisation_id` finns (custom claim)
@@ -2962,7 +2969,6 @@ Error: Module not found: Can't resolve 'pdfkit'
    ```
 
 2. Verifiera environment variables i Vercel:
-
    - NEXT_PUBLIC_SUPABASE_URL
    - NEXT_PUBLIC_SUPABASE_ANON_KEY
    - SUPABASE_SERVICE_ROLE_KEY

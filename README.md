@@ -1,6 +1,46 @@
 AI får läsa README för att förstå DogPlanners uppbyggnad och syfte och kunna efterfölja det som står. Men AI får inte under några omständigheter ändra eller ta bort text ifrån README.md.
 
-<!-- Last updated: 2025-11-01 -->
+<!-- Last updated: 2025-11-02 -->
+
+---
+
+## 🔄 Senaste Uppdateringar (2 november 2025)
+
+### 🎯 Kritiska Schema & Auth Fixes
+
+**Problem:** Type errors, 404-fel på grooming-tabeller, RLS blockerade profiler
+**Lösning:** Komplett uppdatering av databas-schema, type-system och RLS policies
+
+#### ✨ Nya Tabeller
+
+- **`org_subscriptions`** - Organisationens plan (trialing/active/past_due/canceled)
+  - ⚠️ VIKTIGT: Detta är INTE hundabonnemang! Se `subscriptions` för hundabonnemang
+  - Skapas automatiskt vid registrering via `/api/onboarding/auto`
+  - 3 månaders gratis trial för nya organisationer
+- **`grooming_bookings`** - Frisörbokningar
+- **`grooming_journal`** - Frisörjournal med foton och behandlingsinfo
+
+#### 🔒 RLS Policies (PRODUKTIONSKLARA)
+
+- **profiles** har nu korrekta policies:
+  - SELECT: Användare kan läsa sin egen profil (`auth.uid() = id`)
+  - INSERT: Användare kan skapa sin egen profil (för auto-onboarding)
+  - UPDATE: Användare kan uppdatera sin egen profil
+- Detta är KRITISKT för att `AuthContext` ska kunna ladda profiler på klientsidan
+
+#### 🛠️ API Route Fixes
+
+- `/api/subscription/status` - Nu använder pure service role (bypassa RLS korrekt)
+- `/api/onboarding/auto` - Skapar org + profil + org_subscriptions automatiskt
+- Service role används UTAN user token i headers för att undvika RLS-konflikter
+
+#### 📁 Nya Filer
+
+- `supabase/migrations/2025-11-02_org_subscriptions_grooming.sql`
+- `supabase/migrations/2025-11-02_rls_profiles_policy.sql`
+- `types/database.ts` uppdaterad med alla nya tabeller
+
+**Status:** ✅ Deployed to production, alla nya användare fungerar nu automatiskt
 
 ---
 

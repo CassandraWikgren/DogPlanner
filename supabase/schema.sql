@@ -1,6 +1,6 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-01 (inkl. förskotts-/efterskottssystem + månadsfakturering)
+-- Uppdaterad 2025-11-02 (inkl. org_subscriptions + grooming + RLS policies)
 -- ========================================
 --
 -- === RELATERADE SQL-FILER I PROJEKTET ===
@@ -9,8 +9,16 @@
 --   • fix_registration_triggers.sql         → AUTO-SKAPAR org/profil vid registrering (VIKTIGT!)
 --   • enable_triggers_for_production.sql    → Sätter org_id automatiskt för owners/dogs/rooms (FRIVILLIGT)
 --   • complete_testdata.sql                 → Testdata för development (DISABLAR triggers!)
---   • add_prepayment_system.sql             → Förskotts-/efterskottsfakturering (2025-11-01)
---   • add_due_date_to_invoices.sql          → Lägger till due_date i invoices-tabellen (2025-11-01)
+--   • add_prepayment_system.sql             → Förskotts-/efterskottssystem (2025-11-01)
+--   • add_due_date_to_invoices.sql          → Lägger till due_date i invoices (2025-11-01)
+--
+-- 🆕 NYA TABELLER OCH POLICIES (2025-11-02):
+--   • migrations/2025-11-02_org_subscriptions_grooming.sql → org_subscriptions, grooming_bookings, grooming_journal
+--   • migrations/2025-11-02_rls_profiles_policy.sql        → RLS policies för profiles (SELECT, INSERT, UPDATE)
+--   • VIKTIGT: org_subscriptions = organisationens plan (trialing/active/past_due/canceled)
+--   • VIKTIGT: subscriptions = hundabonnemang (dagis-paket per hund)
+--   • API: /api/subscription/status använder org_subscriptions
+--   • API: /api/onboarding/auto skapar org + profil + org_subscriptions automatiskt
 --
 -- 🛠️ MANUELLA FIXES (används vid behov):
 --   • fix_cassandra_profile_20251101.sql    → Fixade Cassandras profil (körts 2025-11-01)
@@ -502,7 +510,8 @@ CREATE TABLE IF NOT EXISTS services (
   updated_at timestamptz DEFAULT now()
 );
 
--- === ABONNEMANG ===
+-- === ABONNEMANG (HUNDABONNEMANG - dagispaket per hund) ===
+-- OBS: Detta är INTE organisationens plan! Se org_subscriptions nedan.
 CREATE TABLE IF NOT EXISTS subscriptions (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
@@ -516,6 +525,58 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
+
+-- === ORGANISATIONENS PRENUMERATION (plan/billing) ===
+-- Detta är organisationens plan (trialing/active/past_due/canceled), INTE hundabonnemang!
+-- Skapas automatiskt vid registrering via /api/onboarding/auto
+CREATE TABLE IF NOT EXISTS org_subscriptions (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE NOT NULL,
+  plan text NOT NULL DEFAULT 'basic',
+  status text NOT NULL CHECK (status IN ('trialing','active','past_due','canceled')) DEFAULT 'trialing',
+  trial_starts_at timestamptz,
+  trial_ends_at timestamptz,
+  current_period_end timestamptz,
+  is_active boolean NOT NULL DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_org_subscriptions_org_active ON org_subscriptions(org_id) WHERE is_active = true;
+
+-- === GROOMING BOOKINGS (Frisörbokningar) ===
+CREATE TABLE IF NOT EXISTS grooming_bookings (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  dog_id uuid REFERENCES dogs(id) ON DELETE CASCADE,
+  appointment_date date NOT NULL,
+  appointment_time time,
+  service_type text NOT NULL,
+  estimated_price numeric,
+  status text NOT NULL CHECK (status IN ('confirmed','completed','cancelled','no_show')) DEFAULT 'confirmed',
+  notes text,
+  created_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_grooming_bookings_org_date ON grooming_bookings(org_id, appointment_date);
+
+-- === GROOMING JOURNAL (Frisörjournal) ===
+CREATE TABLE IF NOT EXISTS grooming_journal (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  dog_id uuid REFERENCES dogs(id) ON DELETE CASCADE,
+  appointment_date date NOT NULL,
+  service_type text NOT NULL,
+  clip_length text,
+  shampoo_type text,
+  special_treatments text,
+  final_price numeric NOT NULL DEFAULT 0,
+  duration_minutes integer,
+  notes text,
+  before_photos text[],
+  after_photos text[],
+  next_appointment_recommended text,
+  created_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_grooming_journal_org_date ON grooming_journal(org_id, appointment_date);
 
 -- === NÄRVAROLOGGAR ===
 CREATE TABLE IF NOT EXISTS attendence_logs (
@@ -821,6 +882,9 @@ ALTER TABLE attendence_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE staff_notes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE responsibilities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE org_subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE grooming_bookings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE grooming_journal ENABLE ROW LEVEL SECURITY;
 
 -- =======================================
 -- COMPREHENSIVE RLS POLICIES
@@ -833,9 +897,25 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow all for authenticated users" ON orgs
   FOR ALL USING (auth.role() = 'authenticated');
 
--- Profiles policies  
-CREATE POLICY "Allow all for authenticated users" ON profiles
-  FOR ALL USING (auth.role() = 'authenticated');
+-- Profiles policies (KRITISKA för AuthContext!)
+-- Dessa är PRODUKTIONSKLARA och ska ALLTID vara aktiva
+DROP POLICY IF EXISTS "Allow all for authenticated users" ON profiles;
+DROP POLICY IF EXISTS profiles_self_access ON profiles;
+DROP POLICY IF EXISTS profiles_self_insert ON profiles;
+DROP POLICY IF EXISTS profiles_self_update ON profiles;
+
+CREATE POLICY profiles_self_access ON profiles
+  FOR SELECT TO authenticated
+  USING (auth.uid() = id);
+
+CREATE POLICY profiles_self_insert ON profiles
+  FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = id);
+
+CREATE POLICY profiles_self_update ON profiles
+  FOR UPDATE TO authenticated
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id);
 
 -- Owners policies
 CREATE POLICY "Allow all for authenticated users" ON owners
@@ -915,6 +995,18 @@ CREATE POLICY "Allow all for authenticated users" ON responsibilities
 
 -- Error logs policies
 CREATE POLICY "Allow all for authenticated users" ON error_logs
+  FOR ALL USING (auth.role() = 'authenticated');
+
+-- Org subscriptions policies (organisationens plan)
+CREATE POLICY "Allow all for authenticated users" ON org_subscriptions
+  FOR ALL USING (auth.role() = 'authenticated');
+
+-- Grooming bookings policies
+CREATE POLICY "Allow all for authenticated users" ON grooming_bookings
+  FOR ALL USING (auth.role() = 'authenticated');
+
+-- Grooming journal policies
+CREATE POLICY "Allow all for authenticated users" ON grooming_journal
   FOR ALL USING (auth.role() = 'authenticated');
 
 -- =======================================
