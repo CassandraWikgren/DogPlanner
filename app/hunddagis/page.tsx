@@ -223,9 +223,13 @@ export default function HunddagisPage() {
 
   // Fetch data functions
   const fetchDogs = useCallback(async () => {
-    if (!currentOrgId) return;
+    if (!currentOrgId) {
+      console.warn("⚠️ fetchDogs: currentOrgId is null/undefined");
+      return;
+    }
 
     try {
+      console.log("🔍 fetchDogs: Fetching with currentOrgId:", currentOrgId);
       logDebug("info", "Hämtar hundar från Supabase...");
 
       const { data: dogsData, error: dogsError } = await supabase
@@ -250,6 +254,19 @@ export default function HunddagisPage() {
         )
         .eq("org_id", currentOrgId)
         .order("name");
+
+      console.log("📊 fetchDogs: Query result:", {
+        count: dogsData?.length || 0,
+        error: dogsError,
+        currentOrgId,
+        sample: dogsData?.[0]
+          ? {
+              id: dogsData[0].id,
+              name: dogsData[0].name,
+              org_id: dogsData[0].org_id,
+            }
+          : null,
+      });
 
       if (dogsError) {
         logDebug(

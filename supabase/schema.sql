@@ -1167,9 +1167,23 @@ CREATE POLICY "Allow all for authenticated users" ON owners
 CREATE POLICY "Allow all for authenticated users" ON rooms
   FOR ALL USING (auth.role() = 'authenticated');
 
--- Dogs policies
-CREATE POLICY "Allow all for authenticated users" ON dogs
-  FOR ALL USING (auth.role() = 'authenticated');
+-- Dogs policies (updated to filter by org_id)
+CREATE POLICY "dogs_select_own_org" ON dogs
+  FOR SELECT TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+CREATE POLICY "dogs_insert_own_org" ON dogs
+  FOR INSERT TO authenticated
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+CREATE POLICY "dogs_update_own_org" ON dogs
+  FOR UPDATE TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+CREATE POLICY "dogs_delete_own_org" ON dogs
+  FOR DELETE TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
 -- Bookings policies
 CREATE POLICY "Allow all for authenticated users" ON bookings

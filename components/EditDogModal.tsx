@@ -582,6 +582,13 @@ export default function EditDogModal({
         events, // JSONB för övrigt
       };
 
+      console.log("💾 EditDogModal: Saving dog with payload:", {
+        name: dogPayload.name,
+        org_id: dogPayload.org_id,
+        owner_id: dogPayload.owner_id,
+        isUpdate: !!initialDog?.id,
+      });
+
       let dogId: string;
 
       if (initialDog?.id) {
@@ -592,6 +599,7 @@ export default function EditDogModal({
           .eq("id", initialDog.id)
           .throwOnError();
         dogId = initialDog.id;
+        console.log("✅ EditDogModal: Updated dog with id:", dogId);
       } else {
         // INSERT ny hund
         const { data: dogRow } = await supabase
@@ -601,6 +609,7 @@ export default function EditDogModal({
           .single()
           .throwOnError();
         dogId = dogRow.id as string;
+        console.log("✅ EditDogModal: Created new dog with id:", dogId);
       }
 
       // 4) Journal (dog_journal)
