@@ -14,6 +14,12 @@ module.exports = {
     "text-4xl",
     "flex",
     "grid",
+    "text-gray-900",
+    "bg-gray-200",
+    "hover:bg-green-700",
+    "hover:bg-amber-700",
+    "rounded-xl",
+    "shadow-lg",
   ],
   theme: {
     extend: {
