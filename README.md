@@ -97,6 +97,7 @@ Gör ALLT i en fil:
 ### 📅 1 november 2025 - Automatisk månadsfakturering & förskottssystem
 
 #### ✨ Månadsfakturering (Automated Monthly Invoicing)
+
 - **GitHub Actions workflow** för automatisk fakturagenerering 1:a varje månad kl 08:00 UTC
 - **Supabase Edge Function** `generate_invoices` som skapar konsoliderade fakturor per ägare
 - **Fakturastruktur:**
@@ -110,6 +111,7 @@ Gör ALLT i en fil:
 - **Troubleshooting:** Fullständig guide i README (401 errors, schema mismatches, deployment)
 
 #### 💰 Förskotts-/efterskottssystem (Prepayment/Afterpayment)
+
 - **Automatiska triggers** för pensionatsbokningar:
   - Förskottsfaktura (50%) vid godkännande (status='confirmed')
   - Efterskottsfaktura (50%) vid utcheckning (status='completed')
@@ -121,6 +123,7 @@ Gör ALLT i en fil:
 - **UI:** Visar prepayment_invoice_id i ansökningsgränssnittet efter godkännande
 
 #### 📚 Dokumentation
+
 - **schema.sql:** Fullständigt uppdaterad med:
   - Detaljerad beskrivning av månadsfakturering
   - Förskotts-/efterskottssystem
@@ -136,7 +139,6 @@ Gör ALLT i en fil:
 ### 📋 30 oktober 2025
 
 #### ✨ EditDogModal - Skapar & Redigerar Nu
-
 
 - Modal kan nu både lägga till nya hundar OCH redigera befintliga
 - Klicka "Ny hund" → Tom modal
@@ -309,37 +311,37 @@ Gör ALLT i en fil:
    Fakturering vid utcheckning eller samlad per månad.
    3.3 Förskotts-/efterskottssystem (2025-11-01)
    Pensionatsbokningar använder ett automatiserat system för delad betalning:
-   
+
    **FÖRSKOTTSFAKTURA (Prepayment):**
    • Skapas automatiskt när bokning godkänns (status ändras till 'confirmed')
    • Trigger: `trg_create_prepayment_invoice` (BEFORE UPDATE på bookings)
    • Innehåller: 50% av total_price + extra_service med payment_type='prepayment'
    • Sparas i `bookings.prepayment_invoice_id`
    • Invoice_type: 'prepayment'
-   
+
    **EFTERSKOTTSFAKTURA (Afterpayment):**
    • Skapas automatiskt vid utcheckning (status ändras till 'completed')
    • Trigger: `trg_create_invoice_on_checkout` (uppdaterad 2025-11-01)
    • Innehåller: Resterande 50% av total_price + extra_service med payment_type='afterpayment'
    • Sparas i `bookings.afterpayment_invoice_id`
    • Invoice_type: 'afterpayment'
-   
+
    **KOLUMNER:**
    • bookings.prepayment_status: 'pending' / 'invoiced' / 'paid'
    • bookings.prepayment_invoice_id: Länk till förskottsfaktura
    • bookings.afterpayment_invoice_id: Länk till efterskottsfaktura
    • invoices.invoice_type: 'prepayment' / 'afterpayment' / 'full'
    • extra_service.payment_type: 'prepayment' / 'afterpayment'
-   
+
    **UI:**
    • `app/hundpensionat/ansokningar/page.tsx` visar prepayment_invoice_id efter godkännande
    • Systemet väntar på trigger, hämtar uppdaterad booking, visar faktura-ID
-   
+
    **MIGRATION:**
    • Migration: `supabase/migrations/add_prepayment_system.sql` (2025-11-01)
    • Lägger till kolumner, triggers och funktioner
    • Dokumenterad i schema.sql header
-   
+
    3.4 Prislogik
    Priser definieras per organisation och kan delas upp i:
    Vardagspris: standard per natt.
@@ -347,6 +349,7 @@ Gör ALLT i en fil:
    Högtidstillägg: fast eller procentuellt påslag.
    Högsäsongstillägg: styrt av datumintervall.
    Rabatter kan vara procent eller fast belopp, och tillämpas på billigaste hunden.
+
 4. Hundfrisör
    4.1 Syfte
    Frisörmodulen hanterar tidsbokningar för behandlingar och tjänster (bad, klipp, kloklipp m.m.).

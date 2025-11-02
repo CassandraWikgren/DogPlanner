@@ -309,19 +309,19 @@ export default function HundpensionatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Kompakt och genomtänkt */}
+      {/* Hero Section - TYDLIG VIT TEXT */}
       <div
         className="relative bg-cover bg-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.85), rgba(44, 122, 76, 0.75)), url('/Hero.jpeg')`,
-          minHeight: "280px",
+          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.92), rgba(35, 97, 57, 0.88)), url('/Hero.jpeg')`,
+          minHeight: "300px",
         }}
       >
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 pb-24">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-24 pb-28">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-5 drop-shadow-2xl tracking-tight">
             Hundpensionat
           </h1>
-          <p className="text-lg text-white/95 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-white font-medium max-w-3xl mx-auto drop-shadow-xl leading-relaxed">
             Professionell pensionathantering med översikt över bokningar, rum
             och gäster — enkelt att administrera och tryggt för kunder.
           </p>
@@ -329,7 +329,7 @@ export default function HundpensionatPage() {
       </div>
 
       {/* Stats Cards - Floating över hero med snygg design */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 mb-8 relative z-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 mb-8 relative z-20">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-[#2c7a4c] hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">

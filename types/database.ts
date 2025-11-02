@@ -164,11 +164,21 @@ export interface Database {
             | "confirmed"
             | "checked_in"
             | "checked_out"
-            | "cancelled";
+            | "cancelled"
+            | "completed"; // Lägg till completed status
           total_price: number | null;
           discount_amount: number | null;
           extra_service_ids: string[] | null; // JSON array
           notes: string | null;
+          // Förskotts-/efterskottsfakturering (2025-11-01)
+          prepayment_status:
+            | "unpaid"
+            | "paid"
+            | "partially_paid"
+            | "refunded"
+            | null;
+          prepayment_invoice_id: string | null;
+          afterpayment_invoice_id: string | null;
           created_at: string;
           updated_at: string;
         };
