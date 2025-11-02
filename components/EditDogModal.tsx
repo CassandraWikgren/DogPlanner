@@ -631,11 +631,13 @@ export default function EditDogModal({
         const addonInserts = addons.map((addon) => ({
           dogs_id: dogId,
           service_type: addon.name.trim(),
-          quantity:
-            addon.qty.trim() === "" ? 1 : Number(addon.qty.replace(/^0+/, "")),
+          frequency:
+            addon.qty.trim() === "" ? "1" : addon.qty.replace(/^0+/, ""),
           price: null,
-          performed_at: addon.start || null,
-          notes: addon.end ? `Gäller t.o.m. ${addon.end}` : null,
+          start_date: addon.start || new Date().toISOString().split("T")[0],
+          end_date: addon.end || null,
+          is_active: true,
+          org_id: currentOrgId,
         }));
 
         await supabase
