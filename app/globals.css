@@ -17,6 +17,7 @@
   }
   .text-lg {
     font-size: 1.125rem !important;
+    line-height: 1.75rem !important;
   }
   .text-xl {
     font-size: 1.25rem !important;
@@ -24,6 +25,7 @@
   }
   .text-2xl {
     font-size: 1.5rem !important;
+    line-height: 2rem !important;
   }
   .text-3xl {
     font-size: 1.875rem !important;
@@ -169,6 +171,14 @@
   .py-20 {
     padding-top: 5rem !important;
     padding-bottom: 5rem !important;
+  }
+  .px-6 {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+  .py-12 {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
   }
   .gap-6 {
     gap: 1.5rem !important;
