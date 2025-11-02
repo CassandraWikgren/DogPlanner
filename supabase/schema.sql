@@ -124,6 +124,7 @@ CREATE TABLE IF NOT EXISTS owners (
   gdpr_consent boolean DEFAULT false,
   marketing_consent boolean DEFAULT false,
   photo_consent boolean DEFAULT false,
+  is_active boolean DEFAULT true,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
@@ -179,6 +180,7 @@ CREATE TABLE IF NOT EXISTS dogs (
   checkout_date date,
   notes text,
   events jsonb,
+  is_active boolean DEFAULT true,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
@@ -207,6 +209,7 @@ CREATE TABLE IF NOT EXISTS bookings (
   prepayment_status text CHECK (prepayment_status IN ('unpaid', 'paid', 'partially_paid', 'refunded')) DEFAULT 'unpaid',
   prepayment_invoice_id uuid REFERENCES invoices(id) ON DELETE SET NULL,
   afterpayment_invoice_id uuid REFERENCES invoices(id) ON DELETE SET NULL,
+  is_active boolean DEFAULT true,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
@@ -362,6 +365,7 @@ CREATE TABLE IF NOT EXISTS boarding_prices (
   weekend_surcharge numeric DEFAULT 0,
   holiday_surcharge numeric DEFAULT 0,
   season_multiplier numeric DEFAULT 1.0,
+  is_active boolean DEFAULT true,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
