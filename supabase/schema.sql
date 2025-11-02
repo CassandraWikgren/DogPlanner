@@ -214,22 +214,33 @@ CREATE TABLE IF NOT EXISTS bookings (
   updated_at timestamptz DEFAULT now()
 );
 
--- === EXTRA TJÄNSTER ===
-CREATE TABLE IF NOT EXISTS extra_service (
+-- === EXTRA TJÄNSTER - PRISLISTA/KATALOG (extra_services plural) ===
+-- Används i admin-sidor för att definiera tillgängliga tjänster och priser
+CREATE TABLE IF NOT EXISTS extra_services (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  branch_id uuid REFERENCES branches(id) ON DELETE SET NULL,
   label text NOT NULL,
   price numeric NOT NULL,
-  unit text NOT NULL,
-  service_type text CHECK (service_type IN ('boarding', 'daycare', 'grooming', 'all')) DEFAULT 'all',
-  category text,
-  price_small numeric,
-  price_medium numeric,
-  price_large numeric,
-  description text,
+  unit text NOT NULL, -- 'per gång', 'per dag', 'fast pris'
+  service_type text CHECK (service_type IN ('boarding', 'daycare', 'grooming', 'both', 'all')) DEFAULT 'all',
   is_active boolean DEFAULT true,
-  -- BETALNINGSTYP FÖR FÖRSKOTT/EFTERSKOTT (tillagt 2025-11-01)
-  payment_type text CHECK (payment_type IN ('prepayment', 'afterpayment')) DEFAULT 'afterpayment',
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- === EXTRA TJÄNSTER - HUNDSPECIFIK KOPPLING (extra_service singular) ===
+-- Används för att koppla en specifik hund till en tilläggstjänst (t.ex. "Bella har kloklipp 1 ggr/mån")
+CREATE TABLE IF NOT EXISTS extra_service (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  dogs_id uuid REFERENCES dogs(id) ON DELETE CASCADE,
+  service_type text NOT NULL,
+  frequency text DEFAULT '1',
+  price numeric(10, 2),
+  notes text,
+  start_date date NOT NULL DEFAULT CURRENT_DATE,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  branch_id uuid REFERENCES branches(id) ON DELETE SET NULL,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
@@ -860,6 +871,13 @@ CREATE TRIGGER trg_create_invoice_on_checkout AFTER UPDATE ON bookings
 CREATE TRIGGER trg_create_journal_on_new_dog AFTER INSERT ON dogs
   FOR EACH ROW EXECUTE FUNCTION create_dog_journal_on_new_dog();
 
+-- Extra services triggers - sätt org_id automatiskt
+CREATE TRIGGER trg_set_org_id_extra_services BEFORE INSERT ON extra_services
+  FOR EACH ROW EXECUTE FUNCTION set_org_id_for_owners();
+
+CREATE TRIGGER trg_set_org_id_extra_service BEFORE INSERT ON extra_service
+  FOR EACH ROW EXECUTE FUNCTION set_org_id_for_owners();
+
 -- =======================================
 -- ROW LEVEL SECURITY (RLS)
 -- =======================================
@@ -870,6 +888,7 @@ ALTER TABLE owners ENABLE ROW LEVEL SECURITY;
 ALTER TABLE rooms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dogs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE extra_services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE extra_service ENABLE ROW LEVEL SECURITY;
 ALTER TABLE booking_services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dog_journal ENABLE ROW LEVEL SECURITY;
@@ -937,7 +956,11 @@ CREATE POLICY "Allow all for authenticated users" ON dogs
 CREATE POLICY "Allow all for authenticated users" ON bookings
   FOR ALL USING (auth.role() = 'authenticated');
 
--- Extra service policies
+-- Extra services catalog policies
+CREATE POLICY "Allow all for authenticated users" ON extra_services
+  FOR ALL USING (auth.role() = 'authenticated');
+
+-- Extra service (dog-specific) policies
 CREATE POLICY "Allow all for authenticated users" ON extra_service
   FOR ALL USING (auth.role() = 'authenticated');
 
