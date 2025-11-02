@@ -1,4 +1,11 @@
+"use client";
+
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+
 export default function DiagnosticsPage() {
+  const [health, setHealth] = useState<any>(null);
+  const [healthErr, setHealthErr] = useState<string | null>(null);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -52,6 +59,52 @@ export default function DiagnosticsPage() {
             </ul>
           </div>
         )}
+      </div>
+
+      <div className="bg-gray-100 p-6 rounded-lg mt-6">
+        <h2 className="text-xl font-semibold mb-4">🩺 DB Health (read-only)</h2>
+        <p className="text-sm text-gray-600 mb-2">
+          Kräver att servern har ENABLE_DB_HEALTH=true. Resultatet är begränsat
+          till din organisation och läser endast metadata och counts.
+        </p>
+        <button
+          onClick={async () => {
+            setHealthErr(null);
+            setHealth(null);
+            try {
+              const { data: sess } = await supabase?.auth.getSession();
+              const token = sess?.session?.access_token;
+              if (!token) {
+                setHealthErr("Ingen session. Logga in först.");
+                return;
+              }
+              const res = await fetch("/api/diagnostics/db-health", {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              const json = await res.json();
+              if (!res.ok) {
+                setHealthErr(
+                  json?.error || `Kunde inte hämta (status ${res.status})`
+                );
+              }
+              setHealth(json);
+            } catch (e: any) {
+              setHealthErr(e?.message || "okänt fel");
+            }
+          }}
+          className="px-3 py-2 rounded bg-black text-white hover:opacity-90"
+        >
+          Kör DB‑health
+        </button>
+
+        {healthErr && (
+          <div className="text-red-700 bg-red-50 border border-red-200 rounded p-2 text-sm mt-3">
+            {healthErr}
+          </div>
+        )}
+        <pre className="bg-white p-3 rounded mt-3 overflow-auto text-sm min-h-[120px]">
+          {health ? JSON.stringify(health, null, 2) : "<inget resultat ännu>"}
+        </pre>
       </div>
 
       <div className="mt-6 text-sm text-gray-600">
