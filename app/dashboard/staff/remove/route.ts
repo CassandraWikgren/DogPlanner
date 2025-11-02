@@ -3,10 +3,10 @@ import { NextResponse } from "next/server";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-const supabase = createRouteHandlerClient({ cookies });
-
 export async function DELETE(req: Request) {
   try {
+    const supabase = createRouteHandlerClient({ cookies });
+
     const { user_id } = await req.json();
     if (!user_id) {
       return NextResponse.json({ error: "user_id krävs." }, { status: 400 });

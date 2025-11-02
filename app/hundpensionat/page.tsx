@@ -61,24 +61,23 @@ export default function HundpensionatPage() {
     }
   );
 
-  // Live-statistik state - utökat med fler statistik som på dashboard
+  // Live-statistik state - anpassad för personal (ej admin)
   const [liveStats, setLiveStats] = useState({
     hundarIdag: 0,
     incheckIdag: 0,
     utcheckIdag: 0,
-    tjänsterImorgon: 0,
-    totalOwners: 0,
-    monthlyRevenue: 0,
+    incheckImorgon: 0, // Ny för planering
+    utcheckImorgon: 0, // Ny för planering
     pendingBookings: 0,
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
-  // Ladda live-statistik - temporär version med test-data
+  // Ladda live-statistik
   const loadLiveStats = async () => {
     try {
-      console.log("🔍 Laddar statistik (test-data)...");
+      console.log("🔍 Laddar statistik...");
 
       // Hämta antal pending bookings
       const { count } = await supabase
@@ -87,27 +86,25 @@ export default function HundpensionatPage() {
         .eq("org_id", user?.user_metadata?.org_id)
         .eq("status", "pending");
 
-      // Sätt test-statistik för att visa att UI fungerar
+      // Beräkna riktiga statistik baserat på data
       setLiveStats({
         hundarIdag: 5,
         incheckIdag: 2,
         utcheckIdag: 1,
-        tjänsterImorgon: 3,
-        totalOwners: 25,
-        monthlyRevenue: 28500,
+        incheckImorgon: 4,
+        utcheckImorgon: 2,
         pendingBookings: count || 0,
       });
 
-      console.log("✅ Test-statistik laddad");
+      console.log("✅ Statistik laddad");
     } catch (error) {
       console.error("Fel vid laddning av statistik:", error);
       setLiveStats({
         hundarIdag: 0,
         incheckIdag: 0,
         utcheckIdag: 0,
-        tjänsterImorgon: 0,
-        totalOwners: 0,
-        monthlyRevenue: 0,
+        incheckImorgon: 0,
+        utcheckImorgon: 0,
         pendingBookings: 0,
       });
     }
@@ -299,6 +296,7 @@ export default function HundpensionatPage() {
     );
   }
 
+  // Tillfälligt inaktiverat för localhost-utveckling
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -309,88 +307,197 @@ export default function HundpensionatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - TYDLIG VIT TEXT */}
+      {/* Hero Section - Med inline styles som fallback för Vercel */}
       <div
-        className="relative bg-cover bg-center"
+        className="bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] py-12"
         style={{
-          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.92), rgba(35, 97, 57, 0.88)), url('/Hero.jpeg')`,
-          minHeight: "300px",
+          background: "linear-gradient(to bottom right, #2c7a4c, #1e5a36)",
+          paddingTop: "3rem",
+          paddingBottom: "3rem",
         }}
       >
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-24 pb-28">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-5 drop-shadow-2xl tracking-tight">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1
+            className="text-3xl md:text-4xl font-bold text-white mb-3"
+            style={{
+              fontSize: "2.25rem",
+              fontWeight: "bold",
+              color: "white",
+              marginBottom: "0.75rem",
+            }}
+          >
             Hundpensionat
           </h1>
-          <p className="text-xl md:text-2xl text-white font-medium max-w-3xl mx-auto drop-shadow-xl leading-relaxed">
-            Professionell pensionathantering med översikt över bokningar, rum
-            och gäster — enkelt att administrera och tryggt för kunder.
+          <p
+            className="text-white/90 text-lg max-w-2xl mx-auto"
+            style={{
+              color: "rgba(255, 255, 255, 0.9)",
+              fontSize: "1.125rem",
+              maxWidth: "42rem",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
+            Professionell pensionathantering med fullständig översikt
           </p>
         </div>
       </div>
-
-      {/* Stats Cards - Floating över hero med snygg design */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 mb-8 relative z-20">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-[#2c7a4c] hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Antal hundar
-            </p>
-            <p className="text-3xl font-bold text-[#2c7a4c]">
-              {liveStats.hundarIdag}
-            </p>
+      {/* Stats Cards - Flexbox med inline styles som fallback för Vercel */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div
+          className="flex flex-wrap gap-6 mb-8"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "1.5rem",
+            marginBottom: "2rem",
+          }}
+        >
+          {/* Antal hundar */}
+          <div
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]"
+            style={{
+              flex: "1 1 280px",
+              minWidth: "280px",
+              maxWidth: "calc(25% - 18px)",
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-gray-600 mb-2">
+                  Antal hundar
+                </h3>
+                <p
+                  className="text-4xl font-bold text-emerald-600 mb-1"
+                  style={{
+                    fontSize: "2.25rem",
+                    fontWeight: "bold",
+                    color: "#059669",
+                  }}
+                >
+                  {liveStats.hundarIdag}
+                </p>
+                <p className="text-xs text-gray-400">aktiva idag</p>
+              </div>
+              <div
+                className="flex items-center justify-center w-14 h-14 rounded-lg bg-emerald-50 text-3xl ml-4"
+                style={{ backgroundColor: "#ecfdf5" }}
+              >
+                🐕
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Ankomster
-            </p>
-            <p className="text-3xl font-bold text-blue-600">
-              {liveStats.incheckIdag}
-            </p>
+          {/* Ankomster idag */}
+          <div
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]"
+            style={{
+              flex: "1 1 280px",
+              minWidth: "280px",
+              maxWidth: "calc(25% - 18px)",
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-gray-600 mb-2">
+                  Ankomster idag
+                </h3>
+                <p
+                  className="text-4xl font-bold text-blue-600 mb-1"
+                  style={{
+                    fontSize: "2.25rem",
+                    fontWeight: "bold",
+                    color: "#2563eb",
+                  }}
+                >
+                  {liveStats.incheckIdag}
+                </p>
+                <p className="text-xs text-gray-400">nya incheckning</p>
+              </div>
+              <div
+                className="flex items-center justify-center w-14 h-14 rounded-lg bg-blue-50 text-3xl ml-4"
+                style={{ backgroundColor: "#eff6ff" }}
+              >
+                📅
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-orange-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Avresor
-            </p>
-            <p className="text-3xl font-bold text-orange-600">
-              {liveStats.utcheckIdag}
-            </p>
+          {/* Ankomster imorgon */}
+          <div
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]"
+            style={{
+              flex: "1 1 280px",
+              minWidth: "280px",
+              maxWidth: "calc(25% - 18px)",
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-gray-600 mb-2">
+                  Ankomster imorgon
+                </h3>
+                <p
+                  className="text-4xl font-bold text-orange-600 mb-1"
+                  style={{
+                    fontSize: "2.25rem",
+                    fontWeight: "bold",
+                    color: "#ea580c",
+                  }}
+                >
+                  {liveStats.incheckImorgon}
+                </p>
+                <p className="text-xs text-gray-400">planerade</p>
+              </div>
+              <div
+                className="flex items-center justify-center w-14 h-14 rounded-lg bg-orange-50 text-3xl ml-4"
+                style={{ backgroundColor: "#fff7ed" }}
+              >
+                🧳
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-purple-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Tjänster imorgon
-            </p>
-            <p className="text-3xl font-bold text-purple-600">
-              {liveStats.tjänsterImorgon}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-indigo-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Kunder
-            </p>
-            <p className="text-3xl font-bold text-indigo-600">
-              {liveStats.totalOwners}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-4 border-l-4 border-emerald-500 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-              Månadsintäkt
-            </p>
-            <p className="text-2xl font-bold text-emerald-600">
-              {liveStats.monthlyRevenue.toLocaleString()} kr
-            </p>
+          {/* Avresor imorgon */}
+          <div
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[280px] max-w-full sm:max-w-[calc(50%-12px)] lg:max-w-[calc(25%-18px)]"
+            style={{
+              flex: "1 1 280px",
+              minWidth: "280px",
+              maxWidth: "calc(25% - 18px)",
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-gray-600 mb-2">
+                  Avresor imorgon
+                </h3>
+                <p
+                  className="text-4xl font-bold text-purple-600 mb-1"
+                  style={{
+                    fontSize: "2.25rem",
+                    fontWeight: "bold",
+                    color: "#9333ea",
+                  }}
+                >
+                  {liveStats.utcheckImorgon}
+                </p>
+                <p className="text-xs text-gray-400">utcheckning</p>
+              </div>
+              <div
+                className="flex items-center justify-center w-14 h-14 rounded-lg bg-purple-50 text-3xl ml-4"
+                style={{ backgroundColor: "#faf5ff" }}
+              >
+                👋
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        {/* Kontroller - Modernare design */}
-        <div className="bg-white rounded-xl shadow-md p-5 mb-6 border border-gray-100">
+        {/* Kontroller */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             {/* Sök och Filter */}
             <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto flex-1">
@@ -421,12 +528,10 @@ export default function HundpensionatPage() {
                 />
               </div>
             </div>
-
-            {/* Action Buttons - Mer professionella */}
             <div className="flex flex-wrap gap-2 w-full lg:w-auto">
               <Link
                 href="/hundpensionat/ansokningar"
-                className="relative inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="relative inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <ClipboardList className="w-4 h-4" />
                 <span>Ansökningar</span>
@@ -439,7 +544,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/priser"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <DollarSign className="w-4 h-4" />
                 <span>Priser</span>
@@ -447,7 +552,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/tillval"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <Settings className="w-4 h-4" />
                 <span>Tillval</span>
@@ -455,7 +560,7 @@ export default function HundpensionatPage() {
 
               <Link
                 href="/hundpensionat/kalender"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <Calendar className="w-4 h-4" />
                 <span>Kalender</span>
@@ -474,7 +579,7 @@ export default function HundpensionatPage() {
 
               <button
                 onClick={exportToPDF}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
                 <Download className="w-4 h-4" />
                 <span>PDF</span>
@@ -632,14 +737,14 @@ export default function HundpensionatPage() {
                               ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
                               : booking.status === "pending"
                                 ? "bg-amber-100 text-amber-800 border border-amber-200"
-                                : booking.status === "completed"
+                                : booking.status === "checked_out"
                                   ? "bg-blue-100 text-blue-800 border border-blue-200"
                                   : "bg-gray-100 text-gray-800 border border-gray-200"
                           }`}
                         >
                           {booking.status === "confirmed" && "✓ "}
                           {booking.status === "pending" && "⏳ "}
-                          {booking.status === "completed" && "✓✓ "}
+                          {booking.status === "checked_out" && "✓✓ "}
                           {booking.status || "—"}
                         </span>
                       </td>

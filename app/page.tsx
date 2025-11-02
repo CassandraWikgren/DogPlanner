@@ -10,9 +10,15 @@ export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  // Debug: Logga auth-status
+  useEffect(() => {
+    console.log("🏠 Landing Page - Auth status:", { user: !!user, loading });
+  }, [user, loading]);
+
   // Inloggade användare ska INTE se landing page - redirecta till dashboard
   useEffect(() => {
     if (!loading && user) {
+      console.log("🔄 Inloggad användare, redirectar till dashboard...");
       router.replace("/dashboard");
     }
   }, [user, loading, router]);
@@ -72,37 +78,98 @@ export default function HomePage() {
         className="relative bg-cover bg-center"
         style={{
           backgroundImage: "url('/Hero.jpeg')",
+          backgroundColor: "#2c7a4c",
           minHeight: "600px",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          position: "relative",
         }}
       >
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#2c7a4c]/90 to-[#2c7a4c]/70"></div>
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-[#2c7a4c]/90 to-[#2c7a4c]/70"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background:
+              "linear-gradient(to right, rgba(44, 122, 76, 0.9), rgba(44, 122, 76, 0.7))",
+          }}
+        ></div>
 
         {/* Content */}
-        <div className="relative max-w-7xl mx-auto px-6 py-20 md:py-32">
+        <div
+          className="relative max-w-7xl mx-auto px-6 py-20 md:py-32"
+          style={{
+            position: "relative",
+            paddingTop: "5rem",
+            paddingBottom: "5rem",
+          }}
+        >
           <div className="max-w-2xl">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+            <h1
+              className="font-bold text-white mb-6 leading-tight drop-shadow-lg"
+              style={{
+                fontSize: "3rem",
+                fontWeight: "bold",
+                color: "white",
+                marginBottom: "1.5rem",
+                lineHeight: "1.2",
+              }}
+            >
               Hunddagis som hanterar sig självt
             </h1>
-            <p className="text-xl md:text-2xl text-white/95 mb-8 leading-relaxed drop-shadow-md">
+            <p
+              className="text-white mb-8 leading-relaxed drop-shadow-md"
+              style={{
+                fontSize: "1.25rem",
+                color: "rgba(255, 255, 255, 0.95)",
+                marginBottom: "2rem",
+                lineHeight: "1.6",
+              }}
+            >
               Slipp Excel-kaoset. Hantera bokningar, hundregister och
               fakturering på ett ställe. Enklare än någonsin.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <Link
                 href="/register"
-                className="px-8 py-4 bg-white text-[#2c7a4c] rounded-lg hover:bg-gray-50 font-bold text-lg transition-all shadow-lg hover:shadow-xl text-center"
+                className="px-8 py-4 bg-white rounded-lg hover:bg-gray-50 font-bold transition-all shadow-lg hover:shadow-xl text-center"
+                style={{
+                  backgroundColor: "white",
+                  color: "#2c7a4c",
+                  padding: "1rem 2rem",
+                  borderRadius: "0.5rem",
+                  fontWeight: "bold",
+                  fontSize: "1.125rem",
+                }}
               >
                 ✨ Prova gratis i 2 månader
               </Link>
               <a
                 href="#features"
-                className="px-8 py-4 border-2 border-white text-white rounded-lg hover:bg-white/10 font-semibold text-lg transition-all backdrop-blur text-center"
+                className="px-8 py-4 border-2 rounded-lg hover:bg-white/10 font-semibold transition-all backdrop-blur text-center"
+                style={{
+                  border: "2px solid white",
+                  color: "white",
+                  padding: "1rem 2rem",
+                  borderRadius: "0.5rem",
+                  fontWeight: "600",
+                  fontSize: "1.125rem",
+                }}
               >
                 Se hur det fungerar
               </a>
             </div>
-            <div className="flex items-center gap-4 text-white/90 text-sm">
+            <div
+              className="flex items-center gap-4"
+              style={{
+                color: "rgba(255, 255, 255, 0.9)",
+                fontSize: "0.875rem",
+              }}
+            >
               <span className="flex items-center gap-2">
                 <svg
                   className="w-5 h-5 text-green-300"

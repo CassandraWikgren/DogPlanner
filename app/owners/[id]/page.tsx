@@ -1,5 +1,8 @@
 "use client";
 
+// Förhindra prerendering för att undvika build-fel
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -16,8 +19,8 @@ export default function OwnerPage() {
     typeof params.id === "string"
       ? params.id
       : Array.isArray(params.id)
-      ? params.id[0]
-      : undefined;
+        ? params.id[0]
+        : undefined;
   const [owner, setOwner] = useState<any>(null);
   const [dogs, setDogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

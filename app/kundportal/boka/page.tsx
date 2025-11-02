@@ -1,5 +1,8 @@
 "use client";
 
+// Förhindra prerendering för att undvika build-fel
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -412,8 +415,8 @@ function BookingPageContent() {
                             {getDogSizeCategory(dog.heightcm) === "small"
                               ? "Liten"
                               : getDogSizeCategory(dog.heightcm) === "medium"
-                              ? "Medel"
-                              : "Stor"}{" "}
+                                ? "Medel"
+                                : "Stor"}{" "}
                             hund
                           </p>
                         </div>
@@ -470,15 +473,15 @@ function BookingPageContent() {
                                 p.priceCategory === "premium"
                                   ? "bg-purple-100 text-purple-800"
                                   : p.priceCategory === "standard"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-green-100 text-green-800"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : "bg-green-100 text-green-800"
                               }`}
                             >
                               {p.priceCategory === "premium"
                                 ? "Premium"
                                 : p.priceCategory === "standard"
-                                ? "Standard"
-                                : "Budget"}
+                                  ? "Standard"
+                                  : "Budget"}
                             </Badge>
                           </div>
 

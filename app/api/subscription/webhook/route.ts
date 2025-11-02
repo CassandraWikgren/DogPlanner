@@ -3,12 +3,21 @@ import Stripe from "stripe";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-09-30.clover" as any,
-});
-
 export async function POST(req: Request) {
   await cookies(); // Await cookies to satisfy Next.js 15
+
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeKey) {
+    return NextResponse.json(
+      { error: "Stripe miljövariabel saknas" },
+      { status: 500 }
+    );
+  }
+
+  const stripe = new Stripe(stripeKey, {
+    apiVersion: "2025-09-30.clover" as any,
+  });
+
   const supabase = createRouteHandlerClient({ cookies });
 
   const sig = req.headers.get("stripe-signature");

@@ -1,8 +1,12 @@
 "use client";
 
+// Förhindra prerendering för att undvika build-fel
+export const dynamic = "force-dynamic";
+
 import React, { useEffect, useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
+
 import Link from "next/link";
 import { ArrowLeft, Plus, Trash2, Save, AlertCircle } from "lucide-react";
 

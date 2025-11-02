@@ -1,5 +1,8 @@
 "use client";
 
+// Förhindra prerendering för att undvika build-fel
+export const dynamic = "force-dynamic";
+
 import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";

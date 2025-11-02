@@ -1,11 +1,19 @@
 // app/api/onboarding/auto/route.ts
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@supabase/supabase-js";
 
 export async function POST(req: Request) {
-  await cookies(); // Await cookies to satisfy Next.js 15
-  const supabase = createRouteHandlerClient({ cookies });
+  // Använd service role client för att undvika cookies-problem i Next.js 15
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
 
   try {
     console.log("🔵 Auto-onboarding startad...");
