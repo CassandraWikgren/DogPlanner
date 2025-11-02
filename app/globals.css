@@ -7,7 +7,7 @@
 
 /* Grundläggande färger och typsnitt */
 :root {
-  --color-primary: ##2c7a4c;
+  --color-primary: #2c7a4c;
   --color-secondary: #f4f4f4;
   --color-accent: #2c7a4c;
   --color-text: #222;
@@ -200,9 +200,7 @@ textarea:focus {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
