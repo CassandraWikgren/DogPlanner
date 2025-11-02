@@ -8,6 +8,38 @@ Omfattande uppdateringar av Dashboard, Hunddagis och EditDogModal för professio
 
 ## 🆕 SENASTE ÄNDRINGAR (2 november 2025)
 
+### 🐛 BUG FIX: Pensionatsbokningar - capacity_m2 saknas i databas
+
+**Problem:**
+
+- Fel vid försök att skapa ny pensionatbokning: "column rooms.capacity_m2 does not exist"
+- Användare kunde inte lägga till hundar till pensionatsbokningar
+
+**Orsak:**
+
+- Kolumnen `capacity_m2` fanns i schema.sql men saknades i produktionsdatabasen
+- Troligen har rooms-tabellen skapats med en äldre version av schemat
+
+**Lösning:**
+
+- Skapade `fix_rooms_capacity_m2.sql` som säkert lägger till kolumnen om den saknas
+- SQL-scriptet kollar först om kolumnen finns innan det lägger till den
+- Sätter default-värde 15 m² för befintliga rum
+
+**Fil skapad:**
+
+- `fix_rooms_capacity_m2.sql` - Kör i Supabase SQL Editor
+
+**Instruktioner:**
+
+1. Öppna Supabase Dashboard → SQL Editor
+2. Kör SQL-scriptet från `fix_rooms_capacity_m2.sql`
+3. Verifiera att kolumnen finns: `SELECT * FROM rooms LIMIT 5;`
+
+**Status:** 🟡 Väntar på att användaren kör SQL-fix i Supabase
+
+---
+
 ### 🎨 Vercel Deploy Fix - Landing Page & Styling
 
 **Problem som fixades:**
@@ -16,9 +48,13 @@ Omfattande uppdateringar av Dashboard, Hunddagis och EditDogModal för professio
 2. ✅ Hero-sektion på landing page (startsidan) saknades helt på Vercel
 3. ✅ Användare redirectades direkt till dashboard istället för att se landing page
 4. ✅ Logout-knappen i hamburgermenyn fungerade inte korrekt
+5. 🟡 **PÅGÅENDE:** Design-skillnader mellan Vercel och localhost (zoom/spacing/storlekar)
 
 #### Commits:
 
+- `2c44661` - DEPLOY: Force Vercel rebuild with viewport fix
+- `8df3740` - FIX: Lägg till viewport meta-tag för att fixa zoom/scaling-problem på Vercel
+- `7f16938` - DOCS: Uppdatera RECENT_CHANGES.md med Vercel fixes och logout-förbättringar
 - `68de31a` - FIX: Förbättra logout - rensa ALLA cookies och lägg till debug-loggar
 - `a997d74` - FIX: Förstärk hero-sektion med inline styles och fallback-färg
 - `fb0fe67` - FIX: Ta bort duplicerade Tailwind text-klasser som konflikterar med inline styles
