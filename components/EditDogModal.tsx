@@ -478,31 +478,27 @@ export default function EditDogModal({
       // Lägg alltid till org_id (viktigt när triggers är disabled)
       (baseOwner as any).org_id = currentOrgId;
 
-      // Auto-generera customer_number OM det inte redan finns
-      if (!ownerId && !baseOwner.customer_number) {
-        const { data: maxData } = await supabase
-          .from("owners")
-          .select("customer_number")
-          .eq("org_id", currentOrgId)
-          .order("customer_number", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        const maxNum = maxData?.customer_number || 0;
-        baseOwner.customer_number = maxNum + 1;
-        console.log(
-          `🆕 Skapar ny ägare: ${full_name} med auto-genererat kundnummer: ${baseOwner.customer_number}`
-        );
-      }
+      // customer_number hanteras nu av DB-trigger (20250103_unique_customer_numbers.sql)
+      // Triggern auto-genererar nästa lediga nummer om customer_number är NULL/0
+      // Admin kan fortfarande sätta manuellt, triggern validerar att det inte är en dubblett
 
       if (isAdmin) {
-        // Admin kan manuellt sätta kundnummer (skriver över auto-genererat)
+        // Admin kan manuellt sätta kundnummer (DB-trigger validerar att det inte finns dubbletter)
         if (ownerCustomerNo) {
           baseOwner.customer_number = Number(ownerCustomerNo);
           console.log(
-            `👤 Admin satte manuellt kundnummer: ${baseOwner.customer_number}`
+            `👤 Admin satte manuellt kundnummer: ${baseOwner.customer_number} (valideras av DB-trigger)`
           );
         }
         baseOwner.personnummer = ownerPersonnummer || null;
+      } else {
+        // För icke-admin: sätt till NULL så att DB-triggern auto-genererar
+        if (!ownerId) {
+          baseOwner.customer_number = null;
+          console.log(
+            `🆕 Skapar ny ägare: ${full_name} (kundnummer auto-genereras av DB-trigger)`
+          );
+        }
       }
 
       if (!ownerId) {
