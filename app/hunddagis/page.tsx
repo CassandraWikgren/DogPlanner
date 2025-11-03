@@ -195,6 +195,9 @@ const COLUMN_LABELS: Record<string, string> = {
 
 export default function HunddagisPage() {
   const { user, currentOrgId } = useAuth();
+  // Fallback: använd org från user_metadata om AuthContext inte hunnit sätta currentOrgId ännu
+  const effectiveOrgId =
+    currentOrgId || (user as any)?.user_metadata?.org_id || null;
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
@@ -223,13 +226,13 @@ export default function HunddagisPage() {
 
   // Fetch data functions
   const fetchDogs = useCallback(async () => {
-    if (!currentOrgId) {
+    if (!effectiveOrgId) {
       console.warn("⚠️ fetchDogs: currentOrgId is null/undefined");
       return;
     }
 
     try {
-      console.log("🔍 fetchDogs: Fetching with currentOrgId:", currentOrgId);
+      console.log("🔍 fetchDogs: Fetching with orgId:", effectiveOrgId);
       logDebug("info", "Hämtar hundar från Supabase...");
 
       const { data: dogsData, error: dogsError } = await supabase
@@ -252,14 +255,14 @@ export default function HunddagisPage() {
           )
         `
         )
-        .eq("org_id", currentOrgId)
+        .eq("org_id", effectiveOrgId)
         .order("name");
 
       const firstDog = dogsData?.[0] as any;
       console.log("📊 fetchDogs: Query result:", {
         count: dogsData?.length || 0,
         error: dogsError,
-        currentOrgId,
+        currentOrgId: effectiveOrgId,
         sample: firstDog
           ? {
               id: firstDog.id,
@@ -289,16 +292,16 @@ export default function HunddagisPage() {
       );
       setError("Ett oväntat fel inträffade vid hämtning av hundar");
     }
-  }, [currentOrgId, logDebug]);
+  }, [effectiveOrgId, logDebug]);
 
   const fetchRooms = useCallback(async () => {
-    if (!currentOrgId) return;
+    if (!effectiveOrgId) return;
 
     try {
       const { data: roomsData, error: roomsError } = await supabase
         .from("rooms")
         .select("*")
-        .eq("org_id", currentOrgId)
+        .eq("org_id", effectiveOrgId)
         .eq("is_active", true)
         .order("name");
 
@@ -320,7 +323,7 @@ export default function HunddagisPage() {
         err
       );
     }
-  }, [user?.org_id, logDebug]);
+  }, [effectiveOrgId, logDebug]);
 
   // Filter and sort functions
   const filteredAndSortedDogs = useMemo(() => {
@@ -380,12 +383,12 @@ export default function HunddagisPage() {
 
   // Setup subscriptions and fetch data
   useEffect(() => {
-    if (!currentOrgId) {
+    if (!effectiveOrgId) {
       const timer = setTimeout(() => {
         setLoading(false);
         if (!user) {
           setError("Ingen användare inloggad");
-        } else if (!currentOrgId) {
+        } else if (!effectiveOrgId) {
           setError("Ingen organisation tilldelad användaren");
         }
       }, 3000);
@@ -401,11 +404,11 @@ export default function HunddagisPage() {
     };
 
     loadData();
-  }, [currentOrgId, fetchDogs, fetchRooms]);
+  }, [effectiveOrgId, fetchDogs, fetchRooms]);
 
   // Real-time subscriptions
   useEffect(() => {
-    if (!currentOrgId) return;
+    if (!effectiveOrgId) return;
 
     const dogsSubscription = supabase
       .channel("dogs_changes")
@@ -415,7 +418,7 @@ export default function HunddagisPage() {
           event: "*",
           schema: "public",
           table: "dogs",
-          filter: `org_id=eq.${currentOrgId}`,
+          filter: `org_id=eq.${effectiveOrgId}`,
         },
         () => {
           logDebug("info", "Hundar uppdaterade via realtime");
@@ -432,7 +435,7 @@ export default function HunddagisPage() {
           event: "*",
           schema: "public",
           table: "rooms",
-          filter: `org_id=eq.${currentOrgId}`,
+          filter: `org_id=eq.${effectiveOrgId}`,
         },
         () => {
           logDebug("info", "Rum uppdaterade via realtime");
@@ -445,7 +448,7 @@ export default function HunddagisPage() {
       supabase.removeChannel(dogsSubscription);
       supabase.removeChannel(roomsSubscription);
     };
-  }, [currentOrgId, fetchDogs, fetchRooms, logDebug]);
+  }, [effectiveOrgId, fetchDogs, fetchRooms, logDebug]);
 
   // Stäng kolumninställningar när man klickar utanför
   useEffect(() => {

@@ -91,6 +91,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         setUser(u);
 
+        // Snabb fallback: använd org_id från user_metadata direkt om den finns
+        // (profile-uppslag kan vara segt eller saknas temporärt)
+        const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
+        if (metaOrg && !currentOrgId) {
+          setCurrentOrgId(metaOrg);
+        }
+
         if (u && session?.access_token) {
           await safeAutoOnboarding(session.access_token);
           await refreshProfile(u.id);
@@ -180,6 +187,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const u = session?.user || null;
       console.log("AuthContext: Session loaded, user:", u?.id || "none");
       setUser(u);
+      // Snabb fallback innan profile laddas
+      const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
+      if (metaOrg && !currentOrgId) {
+        setCurrentOrgId(metaOrg);
+      }
       setLoading(false);
 
       if (u && session?.access_token) {
