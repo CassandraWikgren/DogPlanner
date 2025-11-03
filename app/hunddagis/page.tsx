@@ -524,28 +524,110 @@ export default function HunddagisPage() {
   };
 
   const formatDays = (days: string | null) => {
-    if (!days) return "-";
+    const allDays = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
+    const dayLabels = ["M", "T", "O", "T", "F"];
 
+    if (!days) {
+      // Visa alla dagar i ljusgrått när inga dagar är valda
+      return (
+        <div className="flex gap-1">
+          {dayLabels.map((label, idx) => (
+            <span key={idx} className="text-gray-300 font-medium">
+              {label}
+            </span>
+          ))}
+        </div>
+      );
+    }
+
+    // Normalisera dagsnamn (hantera både svenska och engelska)
     const dayMap: Record<string, string> = {
-      Måndag: "M",
-      Tisdag: "T",
-      Onsdag: "O",
-      Torsdag: "T",
-      Fredag: "F",
-      Monday: "M",
-      Tuesday: "T",
-      Wednesday: "O",
-      Thursday: "T",
-      Friday: "F",
+      Måndag: "Måndag",
+      Tisdag: "Tisdag",
+      Onsdag: "Onsdag",
+      Torsdag: "Torsdag",
+      Fredag: "Fredag",
+      Monday: "Måndag",
+      Tuesday: "Tisdag",
+      Wednesday: "Onsdag",
+      Thursday: "Torsdag",
+      Friday: "Fredag",
     };
 
-    return days
+    const activeDays = days
       .split(",")
-      .map((day) => {
-        const trimmed = day.trim();
-        return dayMap[trimmed] || trimmed.charAt(0);
-      })
-      .join("");
+      .map((day) => dayMap[day.trim()])
+      .filter(Boolean);
+
+    return (
+      <div className="flex gap-1">
+        {allDays.map((day, idx) => {
+          const isActive = activeDays.includes(day);
+          return (
+            <span
+              key={idx}
+              className={`font-medium ${
+                isActive ? "text-[#2c7a4c]" : "text-gray-300"
+              }`}
+            >
+              {dayLabels[idx]}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // Render all weekdays with active ones highlighted
+  const renderWeekdays = (dogDays: string | null) => {
+    const allDays = ["M", "T", "O", "T", "F"];
+    const activeDays = dogDays
+      ? dogDays.split(",").map((d) => {
+          const trimmed = d.trim();
+          // Map to single letter
+          if (trimmed === "Måndag" || trimmed === "Monday") return "M";
+          if (trimmed === "Tisdag" || trimmed === "Tuesday") return "T";
+          if (trimmed === "Onsdag" || trimmed === "Wednesday") return "O";
+          if (trimmed === "Torsdag" || trimmed === "Thursday") return "T";
+          if (trimmed === "Fredag" || trimmed === "Friday") return "F";
+          return trimmed.charAt(0);
+        })
+      : [];
+
+    return (
+      <div className="flex items-center gap-2">
+        {allDays.map((day, index) => {
+          const isActive = activeDays.includes(day);
+          // For duplicate "T", check both Tuesday and Thursday
+          const isDuplicateT = day === "T";
+          const isTuesday =
+            index === 1 &&
+            activeDays.some(
+              (d, i) => d === "T" && dogDays?.split(",")[i]?.includes("isdag")
+            );
+          const isThursday =
+            index === 3 &&
+            activeDays.some(
+              (d, i) => d === "T" && dogDays?.split(",")[i]?.includes("orsdag")
+            );
+
+          const shouldHighlight = isDuplicateT
+            ? (index === 1 && isTuesday) || (index === 3 && isThursday)
+            : isActive;
+
+          return (
+            <span
+              key={`${day}-${index}`}
+              className={`text-sm font-medium ${
+                shouldHighlight ? "text-[#2c7a4c]" : "text-gray-300"
+              }`}
+            >
+              {day}
+            </span>
+          );
+        })}
+      </div>
+    );
   };
 
   if (loading) {
@@ -1120,8 +1202,8 @@ export default function HunddagisPage() {
                           </td>
                         )}
                         {columns.includes("days") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {formatDays(dog.days)}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {renderWeekdays(dog.days)}
                           </td>
                         )}
                         {columns.includes("startdate") && (
