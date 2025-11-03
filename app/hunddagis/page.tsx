@@ -1044,31 +1044,12 @@ export default function HunddagisPage() {
                       >
                         {columns.includes("name") && (
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="flex-shrink-0 h-8 w-8">
-                                {dog.photo_url ? (
-                                  <img
-                                    className="h-8 w-8 rounded-full object-cover"
-                                    src={dog.photo_url}
-                                    alt={dog.name}
-                                  />
-                                ) : (
-                                  <div className="h-8 w-8 rounded-full bg-[#2c7a4c] flex items-center justify-center">
-                                    <span className="text-white font-semibold text-sm">
-                                      {dog.name.charAt(0).toUpperCase()}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              <div className="ml-3">
-                                <button
-                                  onClick={() => setSelectedDog(dog)}
-                                  className="text-sm font-medium text-[#2c7a4c] hover:text-[#236139] hover:underline"
-                                >
-                                  {dog.name}
-                                </button>
-                              </div>
-                            </div>
+                            <button
+                              onClick={() => setSelectedDog(dog)}
+                              className="text-sm font-medium text-gray-900 hover:text-[#2c7a4c]"
+                            >
+                              {dog.name}
+                            </button>
                           </td>
                         )}
                         {columns.includes("breed") && (
