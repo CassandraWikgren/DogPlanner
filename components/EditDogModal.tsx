@@ -1045,16 +1045,6 @@ export default function EditDogModal({
                     <option value="Hane">Hane</option>
                   </select>
                 </div>
-                <div className="md:col-span-2">
-                  <label className="text-xs text-[#2c7a4c]">
-                    Försäkringsnummer
-                  </label>
-                  <input
-                    className="w-full border rounded-lg px-3 py-2"
-                    value={insuranceNo}
-                    onChange={(e) => setInsuranceNo(e.target.value)}
-                  />
-                </div>
               </div>
 
               <SectionTitle>Övrigt hund</SectionTitle>
@@ -1216,24 +1206,26 @@ export default function EditDogModal({
               <div className="mt-6">
                 <SectionTitle>Status & Flaggor</SectionTitle>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <label className="inline-flex items-center gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
+                    className="w-4 h-4 flex-shrink-0"
                     checked={flagEscapeArtist}
                     onChange={(e) => setFlagEscapeArtist(e.target.checked)}
                   />
-                  Rymmare (Escape Artist)
+                  <span>Rymmare (Escape Artist)</span>
                 </label>
-                <label className="inline-flex items-center gap-2">
+                <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
+                    className="w-4 h-4 flex-shrink-0"
                     checked={flagCanBeWithOtherDogs}
                     onChange={(e) =>
                       setFlagCanBeWithOtherDogs(e.target.checked)
                     }
                   />
-                  Kan vara med andra hundar
+                  <span>Kan vara med andra hundar</span>
                 </label>
               </div>
             </div>
