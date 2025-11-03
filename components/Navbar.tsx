@@ -22,7 +22,7 @@ export default function Navbar() {
 
   return (
     <nav className="bg-[#2c7a4c] text-white shadow-md fixed top-0 left-0 w-full z-50">
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div className="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
         {/* Mobil: hamburgermeny - visas alltid när inloggad - VÄNSTER SIDA */}
         {user && (
           <button

@@ -394,7 +394,7 @@ export default function KalenderPage() {
           backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url('/Hero.jpeg')`,
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             📅 Pensionatkalender
           </h1>
@@ -406,7 +406,7 @@ export default function KalenderPage() {
       </div>
 
       {/* Floating Stats Cards - Moderna kort som överlappar hero */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-8">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <div className="bg-white rounded-xl shadow-lg p-6 border border-green-200 hover:shadow-xl transition-shadow">
             <p className="text-sm text-gray-600 mb-1">Hundar inne</p>
@@ -453,7 +453,7 @@ export default function KalenderPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {/* Kontroller */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

@@ -202,7 +202,7 @@ export default function UsersPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-[1600px] mx-auto px-6 py-6">
           <Link
             href="/admin"
             className="inline-flex items-center text-[#2c7a4c] hover:underline mb-3"
@@ -234,7 +234,7 @@ export default function UsersPage() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-[1600px] mx-auto px-6 py-8">
         {/* Messages */}
         {success && (
           <div className="mb-6 rounded-lg border border-green-300 bg-green-50 px-4 py-3 flex items-center gap-3">

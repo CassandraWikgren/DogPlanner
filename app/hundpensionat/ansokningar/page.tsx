@@ -402,7 +402,7 @@ export default function PensionatAnsokningarPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
+      <div className="max-w-[1600px] mx-auto mb-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -465,7 +465,7 @@ export default function PensionatAnsokningarPage() {
       </div>
 
       {/* Bokningslista */}
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-[1600px] mx-auto space-y-6">
         {bookings.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">

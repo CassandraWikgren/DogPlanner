@@ -42,7 +42,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       {/* Header */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/dashboard"
             className="flex items-center hover:opacity-90 transition-opacity"
@@ -101,7 +101,7 @@ export default function HomePage() {
 
         {/* Content */}
         <div
-          className="relative max-w-7xl mx-auto px-6 py-20 md:py-32"
+          className="relative max-w-[1600px] mx-auto px-6 py-20 md:py-32"
           style={{
             position: "relative",
             paddingTop: "5rem",
@@ -205,7 +205,7 @@ export default function HomePage() {
 
       {/* Problem Section */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-[1600px] mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Känner du igen dig?
@@ -252,7 +252,7 @@ export default function HomePage() {
 
       {/* Solution Features */}
       <section id="features" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-[1600px] mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               En plattform för allt
@@ -575,7 +575,7 @@ export default function HomePage() {
 
       {/* Social Proof */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-[1600px] mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Hundverksamheter sparar 10+ timmar/vecka
@@ -640,7 +640,7 @@ export default function HomePage() {
 
       {/* Pricing */}
       <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-[1600px] mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Enkel prissättning
@@ -778,7 +778,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-[1600px] mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <Link

@@ -92,7 +92,7 @@ export default function Breadcrumbs() {
 
   return (
     <nav className="bg-white border-b border-gray-200" aria-label="Breadcrumb">
-      <div className="max-w-7xl mx-auto px-6 py-3">
+      <div className="max-w-[1600px] mx-auto px-6 py-3">
         <ol className="flex items-center space-x-2 text-sm">
           {/* Home icon för första item */}
           <li className="flex items-center">
