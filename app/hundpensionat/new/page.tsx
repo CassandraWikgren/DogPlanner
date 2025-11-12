@@ -20,7 +20,7 @@ type Room = {
 
 export default function NewBookingPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, currentOrgId } = useAuth();
 
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -40,27 +40,25 @@ export default function NewBookingPage() {
   const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user) {
+    if (currentOrgId) {
       loadData();
     }
-  }, [user]);
+  }, [currentOrgId]);
 
   const loadData = async () => {
-    if (!supabase) return;
+    if (!supabase || !currentOrgId) return;
 
     try {
-      const orgId = user?.user_metadata?.org_id || user?.id;
-
       const [dogsResponse, roomsResponse] = await Promise.all([
         supabase
           .from("dogs")
           .select("id, name, owners(full_name)")
-          .eq("org_id", orgId)
+          .eq("org_id", currentOrgId)
           .order("name"),
         supabase
           .from("rooms")
           .select("id, name, capacity_m2")
-          .eq("org_id", orgId)
+          .eq("org_id", currentOrgId)
           .in("room_type", ["boarding", "both"])
           .order("name"),
       ]);

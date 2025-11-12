@@ -7,5 +7,19 @@
   "workbench.colorTheme": "Visual Studio Dark",
   "editor.formatOnPaste": true,
   "workbench.preferredHighContrastLightColorTheme": "Visual Studio Dark",
-  "workbench.preferredLightColorTheme": "Visual Studio Dark"
+  "workbench.preferredLightColorTheme": "Visual Studio Dark",
+  // 🧠 Huvudmodell – Claude Sonnet 4.5 (snabb, kreativ och duktig på svenska)
+  "github.copilot.chat.model": "claude-3.5-sonnet",
+
+  // 💬 Fallback – GPT-5 (om Claude är upptagen eller otillgänglig)
+  "github.copilot.chat.fallbackModel": "gpt-5",
+
+  // ⚙️ Extra Copilot-inställningar (rekommenderade)
+  "github.copilot.editor.enableAutoCompletions": true,
+  "github.copilot.enable": {
+    "*": true
+  },
+  "github.copilot.inlineSuggest.enable": true,
+  "github.copilot.suggestions.showDescriptions": true,
+  "github.copilot.chat.showWelcome": false
 }

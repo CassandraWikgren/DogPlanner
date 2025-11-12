@@ -29,7 +29,7 @@ const UNIT_OPTIONS = [
 ];
 
 export default function TillvalstjansterPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, currentOrgId, loading: authLoading } = useAuth();
   const [services, setServices] = useState<ExtraService[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,22 +42,22 @@ export default function TillvalstjansterPage() {
   } | null>(null);
 
   useEffect(() => {
-    if (user) {
+    if (currentOrgId) {
       loadServices();
     }
-  }, [user]);
+  }, [currentOrgId]);
 
   async function loadServices() {
+    if (!currentOrgId) return;
+
     setLoading(true);
     setError(null);
 
     try {
-      const orgId = user?.user_metadata?.org_id || user?.id;
-
       const { data, error: dbError } = await (supabase as any)
         .from("extra_services")
         .select("*")
-        .eq("org_id", orgId)
+        .eq("org_id", currentOrgId)
         .order("label");
 
       if (dbError) throw dbError;
@@ -427,15 +427,15 @@ export default function TillvalstjansterPage() {
                             service.service_type === "boarding"
                               ? "bg-purple-100 text-purple-800"
                               : service.service_type === "daycare"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-green-100 text-green-800"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-green-100 text-green-800"
                           }`}
                         >
                           {service.service_type === "boarding"
                             ? "Pensionat"
                             : service.service_type === "daycare"
-                            ? "Dagis"
-                            : "Både dagis & pensionat"}
+                              ? "Dagis"
+                              : "Både dagis & pensionat"}
                         </span>
                       </div>
 

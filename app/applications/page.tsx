@@ -43,7 +43,7 @@ interface Application {
 }
 
 export default function ApplicationsPage() {
-  const { user } = useAuth();
+  const { user, currentOrgId } = useAuth();
   const supabase = createClientComponentClient();
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,15 +52,19 @@ export default function ApplicationsPage() {
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
-    fetchApplications();
-  }, []);
+    if (currentOrgId) {
+      fetchApplications();
+    }
+  }, [currentOrgId]);
 
   const fetchApplications = async () => {
+    if (!currentOrgId) return;
+
     try {
-      // Optionally, use user info for filtering if needed
       const { data, error } = await supabase
         .from("interest_applications")
         .select("*")
+        .eq("org_id", currentOrgId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;

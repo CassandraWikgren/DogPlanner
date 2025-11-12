@@ -43,7 +43,7 @@ const SIZE_RANGES: Record<SizeCategory, string> = {
 };
 
 export default function PriserPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, currentOrgId, loading: authLoading } = useAuth();
   const [prices, setPrices] = useState<BoardingPrice[]>([]);
   const [seasons, setSeasons] = useState<BoardingSeason[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,28 +58,29 @@ export default function PriserPage() {
 
   // === LADDA DATA ===
   useEffect(() => {
-    if (!user || authLoading) return;
-    loadData();
-  }, [user, authLoading]);
+    if (!authLoading && currentOrgId) {
+      loadData();
+    }
+  }, [authLoading, currentOrgId]);
 
   async function loadData() {
+    if (!currentOrgId) return;
+
     setLoading(true);
     setError(null);
 
     try {
-      const orgId = user?.user_metadata?.org_id || user?.id;
-
       const [pricesRes, seasonsRes] = await Promise.all([
         (supabase as any)
           .from("boarding_prices")
           .select("*")
-          .eq("org_id", orgId)
+          .eq("org_id", currentOrgId)
           .order("created_at", { ascending: false }),
 
         (supabase as any)
           .from("boarding_seasons")
           .select("*")
-          .eq("org_id", orgId)
+          .eq("org_id", currentOrgId)
           .order("start_date", { ascending: true }),
       ]);
 
@@ -98,12 +99,12 @@ export default function PriserPage() {
 
   // === SPARA PRIS ===
   async function savePrice(price: Partial<BoardingPrice>) {
+    if (!currentOrgId) return;
+
     setError(null);
     setSuccess(null);
 
     try {
-      const orgId = user?.user_metadata?.org_id || user?.id;
-
       if (price.id) {
         // Uppdatera
         const { error } = await (supabase as any)
@@ -124,7 +125,7 @@ export default function PriserPage() {
         const { error } = await (supabase as any)
           .from("boarding_prices")
           .insert({
-            org_id: orgId,
+            org_id: currentOrgId,
             size_category: price.size_category,
             base_price: price.base_price || 300,
             weekend_multiplier: price.weekend_multiplier || 1.2,
@@ -146,12 +147,12 @@ export default function PriserPage() {
 
   // === SPARA SÄSONG ===
   async function saveSeason(season: Partial<BoardingSeason>) {
+    if (!currentOrgId) return;
+
     setError(null);
     setSuccess(null);
 
     try {
-      const orgId = user?.user_metadata?.org_id || user?.id;
-
       if (season.id) {
         // Uppdatera
         const { error } = await (supabase as any)
@@ -171,7 +172,7 @@ export default function PriserPage() {
         const { error } = await (supabase as any)
           .from("boarding_seasons")
           .insert({
-            org_id: orgId,
+            org_id: currentOrgId,
             name: season.name,
             start_date: season.start_date,
             end_date: season.end_date,
@@ -529,8 +530,8 @@ export default function PriserPage() {
                         season.type === "holiday"
                           ? "border-red-200 bg-red-50"
                           : season.type === "high"
-                          ? "border-yellow-200 bg-yellow-50"
-                          : "border-blue-200 bg-blue-50"
+                            ? "border-yellow-200 bg-yellow-50"
+                            : "border-blue-200 bg-blue-50"
                       }`}
                     >
                       <div className="flex justify-between items-start mb-2">
@@ -568,15 +569,15 @@ export default function PriserPage() {
                           season.type === "holiday"
                             ? "bg-red-200 text-red-800"
                             : season.type === "high"
-                            ? "bg-yellow-200 text-yellow-800"
-                            : "bg-blue-200 text-blue-800"
+                              ? "bg-yellow-200 text-yellow-800"
+                              : "bg-blue-200 text-blue-800"
                         }`}
                       >
                         {season.type === "holiday"
                           ? "🎉 Högtid"
                           : season.type === "high"
-                          ? "☀️ Högsäsong"
-                          : "❄️ Lågsäsong"}
+                            ? "☀️ Högsäsong"
+                            : "❄️ Lågsäsong"}
                       </span>
                     </div>
                   ))}
