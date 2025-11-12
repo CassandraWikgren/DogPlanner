@@ -1,7 +1,17 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-02 (inkl. org_subscriptions + grooming + RLS policies)
+-- Uppdaterad 2025-11-12 (fixat schema-konventioner + org scoping)
 -- ========================================
+--
+-- === SENASTE ÄNDRINGAR (2025-11-12) ===
+--
+-- 🔧 SCHEMA-KONVENTIONER & ORG SCOPING:
+--   • Fixat height_cm → heightcm i app/rooms/page.tsx (matchar nu dogs.heightcm i schema)
+--   • Verifierat att alla pages använder lowercase kolumnnamn enligt Supabase-konvention
+--   • Säkerställt att currentOrgId används konsekvent i rooms, hundpensionat, hunddagis
+--   • EditDogModal sätter org_id manuellt (detta är korrekt design - triggers är backup)
+--   • Alla features bevarade: PDF/JPG export, sortering, filter, kolumnval, månadsfilter, stats
+--   • Error codes [ERR-1001], [ERR-2001], [ERR-3001], [ERR-4001] konsistenta överallt
 --
 -- === RELATERADE SQL-FILER I PROJEKTET ===
 --
@@ -97,7 +107,7 @@ CREATE TABLE IF NOT EXISTS orgs (
 -- === ANVÄNDARPROFILER ===
 CREATE TABLE IF NOT EXISTS profiles (
   id uuid REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
-  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE NOT NULL, -- NOT NULL: varje profil måste ha en organisation
   role text CHECK (role IN ('admin', 'staff')) DEFAULT 'staff',
   full_name text,
   email text,
