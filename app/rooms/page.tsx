@@ -49,7 +49,7 @@ interface Room {
 interface Dog {
   id: string;
   name: string;
-  height_cm?: number;
+  heightcm?: number;
   weight_kg?: number;
   subscription?: string;
   days?: string;
@@ -105,7 +105,7 @@ export default function RoomsPage() {
           `
           id,
           name,
-          height_cm,
+          heightcm,
           weight_kg,
           subscription,
           days,
@@ -545,8 +545,8 @@ export default function RoomsPage() {
                               {dog.owner && ` (${dog.owner.full_name})`}
                             </span>
                             <span className="text-gray-500">
-                              {dog.height_cm
-                                ? `${dog.height_cm}cm`
+                              {dog.heightcm
+                                ? `${dog.heightcm}cm`
                                 : "Okänd höjd"}
                             </span>
                           </div>
