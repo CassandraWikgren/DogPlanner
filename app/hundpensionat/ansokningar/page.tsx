@@ -71,7 +71,7 @@ interface OwnerDiscount {
 // ====================================
 export default function PensionatAnsokningarPage() {
   const supabase = createClientComponentClient();
-  const { user } = useAuth();
+  const { user, currentOrgId, loading: authLoading } = useAuth();
 
   const [bookings, setBookings] = useState<PendingBooking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,13 +101,15 @@ export default function PensionatAnsokningarPage() {
   // LADDA DATA
   // ====================================
   useEffect(() => {
-    if (user?.org_id) {
+    if (currentOrgId && !authLoading) {
       loadPendingBookings();
       loadAllExtraServices();
     }
-  }, [user?.org_id]);
+  }, [currentOrgId, authLoading]);
 
   const loadPendingBookings = async () => {
+    if (!currentOrgId) return;
+
     try {
       setLoading(true);
 
@@ -138,7 +140,7 @@ export default function PensionatAnsokningarPage() {
           )
         `
         )
-        .eq("org_id", user?.org_id)
+        .eq("org_id", currentOrgId)
         .eq("status", "pending")
         .order("created_at", { ascending: false });
 
@@ -192,11 +194,13 @@ export default function PensionatAnsokningarPage() {
   };
 
   const loadAllExtraServices = async () => {
+    if (!currentOrgId) return;
+
     try {
       const { data, error } = await (supabase as any)
         .from("extra_services")
         .select("id, label, price, unit")
-        .eq("org_id", user?.org_id)
+        .eq("org_id", currentOrgId)
         .in("service_type", ["boarding", "both"]);
 
       if (error) {

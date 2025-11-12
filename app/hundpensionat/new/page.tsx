@@ -120,13 +120,16 @@ export default function NewBookingPage() {
       return;
     }
 
+    if (!currentOrgId) {
+      setError("Organisation saknas");
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     setSuccess(null);
 
     try {
-      const orgId = user?.user_metadata?.org_id || user?.id;
-
       // Hämta hundens ägare
       const { data: dogData } = await supabase
         .from("dogs")
@@ -139,7 +142,7 @@ export default function NewBookingPage() {
       const { data: newBooking, error: bookingError } = await supabase
         .from("bookings")
         .insert({
-          org_id: orgId,
+          org_id: currentOrgId,
           dog_id: bookingForm.dog_id,
           owner_id: (dogData as any)?.owner_id,
           room_id: bookingForm.room_id,

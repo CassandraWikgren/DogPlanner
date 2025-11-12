@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,6 +67,7 @@ interface GroomingJournalEntry {
 
 export default function FrisorPage() {
   const supabase = createClientComponentClient();
+  const { currentOrgId, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<"bookings" | "journal">(
     "bookings"
   );
@@ -78,10 +80,14 @@ export default function FrisorPage() {
   const [dateFilter, setDateFilter] = useState("");
 
   useEffect(() => {
-    fetchData();
-  }, [activeTab]);
+    if (currentOrgId && !authLoading) {
+      fetchData();
+    }
+  }, [activeTab, currentOrgId, authLoading]);
 
   const fetchData = async () => {
+    if (!currentOrgId) return;
+
     setLoading(true);
     try {
       if (activeTab === "bookings") {
@@ -101,6 +107,7 @@ export default function FrisorPage() {
             )
           `
           )
+          .eq("org_id", currentOrgId)
           .order("appointment_date", { ascending: true });
 
         if (error) throw error;
@@ -122,6 +129,7 @@ export default function FrisorPage() {
             )
           `
           )
+          .eq("org_id", currentOrgId)
           .order("appointment_date", { ascending: false });
 
         if (error) throw error;

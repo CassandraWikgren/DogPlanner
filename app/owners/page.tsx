@@ -64,7 +64,7 @@ type SortKey = keyof Owner | "dog_count";
 type SortDirection = "asc" | "desc";
 
 export default function OwnersPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, currentOrgId, loading: authLoading } = useAuth();
   const [owners, setOwners] = useState<Owner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,16 +90,16 @@ export default function OwnersPage() {
 
   // Ladda ägare från Supabase
   useEffect(() => {
-    if (!user || authLoading) return;
+    if (!currentOrgId || authLoading) return;
     loadOwners();
-  }, [user, authLoading]);
+  }, [currentOrgId, authLoading]);
 
   const loadOwners = async () => {
+    if (!currentOrgId) return;
+
     try {
       setLoading(true);
       setError(null);
-
-      const orgId = user?.user_metadata?.org_id || user?.id;
 
       const { data, error: fetchError } = await (supabase as any)
         .from("owners")
@@ -114,7 +114,7 @@ export default function OwnersPage() {
           )
         `
         )
-        .eq("org_id", orgId)
+        .eq("org_id", currentOrgId)
         .order("full_name", { ascending: true });
 
       if (fetchError) {
@@ -222,16 +222,20 @@ export default function OwnersPage() {
 
   // Spara ny/uppdaterad ägare
   const saveOwner = async () => {
+    if (!currentOrgId) {
+      setError(`${ERROR_CODES.VALIDATION} Organisation saknas`);
+      return;
+    }
+
     try {
       if (!formData.full_name.trim()) {
         setError(`${ERROR_CODES.VALIDATION} Namn är obligatoriskt`);
         return;
       }
 
-      const orgId = user?.user_metadata?.org_id || user?.id;
       const ownerData = {
         ...formData,
-        org_id: orgId,
+        org_id: currentOrgId,
       };
 
       if (editingOwner) {

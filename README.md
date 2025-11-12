@@ -1,10 +1,100 @@
 AI får läsa README för att förstå DogPlanners uppbyggnad och syfte och kunna efterfölja det som står. Men AI får inte under några omständigheter ändra eller ta bort text ifrån README.md.
 
-<!-- Last updated: 2025-11-02 -->
+<!-- Last updated: 2025-11-13 -->
 
 ---
 
-## 🔄 Senaste Uppdateringar (2 november 2025)
+## 🔄 Senaste Uppdateringar (13 november 2025)
+
+### 🎯 CurrentOrgId Consistency & Scandic-modellen
+
+**Problem:** Inkonsekvent org-hantering, spinning buttons, oklart kundportal-flöde
+**Lösning:** 11 sidor fixade med currentOrgId, tydlig Scandic-modell dokumenterad
+
+#### ✨ CurrentOrgId Consistency (11 sidor fixade)
+
+**Fixade admin-sidor:**
+
+- ✅ `app/rooms/page.tsx` - Rumhantering
+- ✅ `app/applications/page.tsx` - Intresseanmälningar
+- ✅ `app/hundpensionat/page.tsx` - Huvudöversikt pensionat
+- ✅ `app/hundpensionat/tillval/page.tsx` - Extra tjänster
+- ✅ `app/hundpensionat/new/page.tsx` - Ny bokning
+- ✅ `app/hundpensionat/priser/page.tsx` - Prislista
+- ✅ `app/hundpensionat/ansokningar/page.tsx` - Ansökningar (pending bookings)
+- ✅ `app/hundpensionat/kalender/page.tsx` - Kalendervy
+- ✅ `app/owners/page.tsx` - Ägarhantering
+- ✅ `app/frisor/page.tsx` - Frisöröversikt
+- ✅ `app/frisor/ny-bokning/page.tsx` - Ny frisörbokning
+
+**Vad fixades:**
+
+```typescript
+// ❌ INNAN (osäkert fallback-mönster):
+const { user } = useAuth();
+const orgId = user?.user_metadata?.org_id || user?.id;
+useEffect(() => {
+  if (user?.org_id) loadData();
+}, [user]);
+
+// ✅ NU (konsekvent och säkert):
+const { currentOrgId, loading: authLoading } = useAuth();
+useEffect(() => {
+  if (currentOrgId && !authLoading) loadData();
+}, [currentOrgId, authLoading]);
+```
+
+**Resultat:** Inga fler "spinning buttons" - alla sidor laddar data korrekt!
+
+#### 🏨 Kundportal = Scandic-modellen (TYDLIGGJORD)
+
+**Design-beslut:** Kundportalen följer "Scandic hotell"-modellen:
+
+- 📱 **Ett kundkonto = fungerar hos ALLA pensionat**
+  - Precis som ett Scandic-medlemskap fungerar på alla Scandic-hotell
+- 🎫 **Samma kundnummer överallt**
+  - `customer_number` är unikt per owner (ej per org)
+  - Följer med till varje pensionat kunden besöker
+- 🐕 **Hunddata följer med**
+  - `owner_id` kopplar hundar till ägare (org-oberoende)
+  - Samma hundprofil används hos alla pensionat
+- 🏢 **Org-koppling via bokningar**
+  - `org_id` på `bookings` visar vilket pensionat bokningen gäller
+  - En ägare kan ha aktiva bokningar hos flera pensionat samtidigt
+
+**Implementation (KORREKT som den är):**
+
+```typescript
+// app/kundportal/* använder user?.id som owner_id
+const ownerId = user?.id; // RÄTT!
+
+// Bokningar får org_id från pensionatet de bokar hos
+booking = {
+  owner_id: ownerId, // Samma ägare överallt
+  org_id: selectedPensionat, // Vilket pensionat
+  dog_id: dogId, // Hundens unika ID
+};
+```
+
+**Status:** ✅ Kundportal behöver INGEN ändring - designen är korrekt!
+
+#### 🎨 Frisörmodul tillagd
+
+Ny professionell modul för hundfrisering:
+
+- **app/frisor/page.tsx** - Översikt bokningar & journal
+- **app/frisor/ny-bokning/page.tsx** - Bokningsformulär med:
+  - ✅ 7 fördefinierade behandlingar (bad, trimning, klippning, klor, öron, tänder, anpassad)
+  - ✅ Tidslots 9:00-17:00 i 30-min intervaller
+  - ✅ Auto-priskalkylering baserat på behandling
+  - ✅ Stegvis guide (hund → datum/tid → behandling → anteckningar)
+  - ✅ Org-scopad från början (använder currentOrgId konsekvent)
+
+**Tabeller:** `grooming_bookings`, `grooming_journal`
+
+---
+
+## 🔄 Tidigare Uppdateringar (2 november 2025)
 
 ### 🎯 Kritiska Schema & Auth Fixes
 

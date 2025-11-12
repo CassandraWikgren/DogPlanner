@@ -46,7 +46,7 @@ interface DayData {
 }
 
 export default function KalenderPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, currentOrgId, loading: authLoading } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,17 +67,17 @@ export default function KalenderPage() {
 
   // === LADDA DATA ===
   useEffect(() => {
-    if (!user || authLoading) return;
+    if (!currentOrgId || authLoading) return;
     loadCalendarData();
-  }, [user, authLoading, currentMonth]);
+  }, [currentOrgId, authLoading, currentMonth]);
 
   async function loadCalendarData() {
+    if (!currentOrgId) return;
+
     setLoading(true);
     setError(null);
 
     try {
-      const orgId = user?.user_metadata?.org_id || user?.id;
-
       // Datum-range för månaden +/- 1 vecka
       const startOfMonth = new Date(currentMonth);
       startOfMonth.setDate(startOfMonth.getDate() - 7);
@@ -96,7 +96,7 @@ export default function KalenderPage() {
         (supabase as any)
           .from("rooms")
           .select("id, name, capacity_m2, room_type")
-          .eq("org_id", orgId)
+          .eq("org_id", currentOrgId)
           .in("room_type", ["boarding", "both"])
           .order("name"),
 
@@ -109,7 +109,7 @@ export default function KalenderPage() {
             rooms(id, name, capacity_m2)
           `
           )
-          .eq("org_id", orgId)
+          .eq("org_id", currentOrgId)
           .gte("start_date", startOfMonth.toISOString())
           .lte("end_date", endOfMonth.toISOString())
           .order("start_date"),
@@ -665,10 +665,10 @@ export default function KalenderPage() {
                           day.checkIns.length > 0
                             ? "bg-yellow-50 border-yellow-400"
                             : day.checkOuts.length > 0
-                            ? "bg-red-50 border-red-400"
-                            : day.bookings.length > 0
-                            ? "bg-green-50 border-green-400"
-                            : "bg-white border-gray-300"
+                              ? "bg-red-50 border-red-400"
+                              : day.bookings.length > 0
+                                ? "bg-green-50 border-green-400"
+                                : "bg-white border-gray-300"
                         }
                       `}
                     >

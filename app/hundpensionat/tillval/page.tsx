@@ -100,14 +100,17 @@ export default function TillvalstjansterPage() {
   }
 
   async function handleSave() {
-    try {
-      const orgId = user?.user_metadata?.org_id || user?.id;
+    if (!currentOrgId) {
+      showNotification("⚠️ Organisation saknas", "error");
+      return;
+    }
 
+    try {
       if (isAddingNew) {
         const { error: insertError } = await (supabase as any)
           .from("extra_services")
           .insert({
-            org_id: orgId,
+            org_id: currentOrgId,
             label: formData.label,
             price: formData.price,
             unit: formData.unit,

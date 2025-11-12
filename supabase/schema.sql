@@ -1,14 +1,41 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-12 (fixat schema-konventioner + org scoping)
+-- Uppdaterad 2025-11-13 (currentOrgId consistency + Scandic-modell)
 -- ========================================
 --
--- === SENASTE ÄNDRINGAR (2025-11-12) ===
+-- === SENASTE ÄNDRINGAR (2025-11-13) ===
+--
+-- 🔧 CURRENTORGID CONSISTENCY (11 SIDOR FIXADE):
+--   • Alla admin-sidor använder nu currentOrgId från AuthContext (inte user?.user_metadata?.org_id)
+--   • Fixade sidor: rooms, applications, hundpensionat (main/tillval/new/priser/ansokningar/kalender)
+--   • Fixade sidor: owners, frisor (main/ny-bokning)
+--   • Alla useEffect dependencies uppdaterade: [currentOrgId, authLoading]
+--   • Alla queries filtrerar: .eq("org_id", currentOrgId)
+--   • Early returns om !currentOrgId innan data-hämtning
+--   • Eliminerat fallback-logik: user?.user_metadata?.org_id || user?.id (OSÄKERT)
+--
+-- 🏨 KUNDPORTAL = SCANDIC-MODELLEN:
+--   • Ett kundkonto (owner) fungerar hos ALLA pensionat i systemet
+--   • Samma customer_number följer med överallt (unik per owner, ej per org)
+--   • owner_id kopplar hundar till ägare (org-oberoende)
+--   • org_id på bookings visar vilket pensionat/företag bokningen gäller
+--   • En ägare kan ha hundar hos olika företag simultant
+--   • Kundportal använder user?.id som owner_id (KORREKT - ingen ändring behövs)
+--
+-- 🆕 FRISÖRMODUL TILLAGD (2025-11-13):
+--   • app/frisor/page.tsx - Översikt över bokningar och journal
+--   • app/frisor/ny-bokning/page.tsx - Professionell bokningsformulär
+--   • 7 fördefinierade behandlingar (bad, trimning, klippning, klor, öron, tänder, anpassad)
+--   • Tidslots 9:00-17:00 i 30-min intervaller
+--   • Auto-priskalkylering baserat på behandling + hundstorlek
+--   • Stegvis guide (välj hund → datum/tid → behandling → anteckningar)
+--   • Org-scopad från början (använder currentOrgId konsekvent)
+--
+-- === TIDIGARE ÄNDRINGAR (2025-11-12) ===
 --
 -- 🔧 SCHEMA-KONVENTIONER & ORG SCOPING:
 --   • Fixat height_cm → heightcm i app/rooms/page.tsx (matchar nu dogs.heightcm i schema)
 --   • Verifierat att alla pages använder lowercase kolumnnamn enligt Supabase-konvention
---   • Säkerställt att currentOrgId används konsekvent i rooms, hundpensionat, hunddagis
 --   • EditDogModal sätter org_id manuellt (detta är korrekt design - triggers är backup)
 --   • Alla features bevarade: PDF/JPG export, sortering, filter, kolumnval, månadsfilter, stats
 --   • Error codes [ERR-1001], [ERR-2001], [ERR-3001], [ERR-4001] konsistenta överallt
