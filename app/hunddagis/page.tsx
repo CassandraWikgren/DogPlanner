@@ -194,7 +194,7 @@ const COLUMN_LABELS: Record<string, string> = {
 };
 
 export default function HunddagisPage() {
-  const { user, currentOrgId } = useAuth();
+  const { user, currentOrgId, ensureOrg } = useAuth();
   // Fallback: använd org från user_metadata om AuthContext inte hunnit sätta currentOrgId ännu
   const effectiveOrgId =
     currentOrgId || (user as any)?.user_metadata?.org_id || null;
@@ -645,6 +645,35 @@ export default function HunddagisPage() {
           {user && !currentOrgId && (
             <p className="text-red-600 mt-2">Ingen organisation tilldelad</p>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  // Om användaren saknar organisation efter att loading är klart
+  if (user && !effectiveOrgId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center max-w-md">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#2c7a4c] mx-auto mb-4"></div>
+          <p className="text-gray-700 font-medium">
+            Ingen organisation kopplad till ditt konto än.
+          </p>
+          <p className="text-gray-500 text-sm mt-1">
+            Klicka nedan för att skapa/fästa en organisation till ditt konto.
+            Detta sker automatiskt nästa gång också.
+          </p>
+          <button
+            onClick={async () => {
+              try {
+                await ensureOrg();
+                window.location.reload();
+              } catch {}
+            }}
+            className="mt-4 inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139]"
+          >
+            Skapa organisation nu
+          </button>
         </div>
       </div>
     );

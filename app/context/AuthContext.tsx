@@ -26,6 +26,7 @@ type AuthCtx = {
   loading: boolean;
   subscription: SubscriptionState | null;
   signOut: () => Promise<void>;
+  ensureOrg: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthCtx>({
@@ -36,6 +37,7 @@ export const AuthContext = createContext<AuthCtx>({
   loading: true,
   subscription: null,
   signOut: async () => {},
+  ensureOrg: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -99,8 +101,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (u && session?.access_token) {
+          // Försök auto-onboarding först, läs sedan profil
           await safeAutoOnboarding(session.access_token);
           await refreshProfile(u.id);
+          // Om profilen fortfarande saknar org, gör en sista retry
+          if (!currentOrgId) {
+            console.warn(
+              "AuthContext: Ingen org efter första onboarding, försöker igen..."
+            );
+            await safeAutoOnboarding(session.access_token);
+            await refreshProfile(u.id);
+          }
           await refreshSubscription(session.access_token);
         } else {
           setProfile(null);
@@ -255,14 +266,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function safeAutoOnboarding(accessToken: string) {
+  async function safeAutoOnboarding(accessToken: string): Promise<boolean> {
     try {
       await fetch("/api/onboarding/auto", {
         method: "POST",
         headers: { Authorization: `Bearer ${accessToken}` },
       });
+      return true;
     } catch (e) {
       console.warn("Auto-onboarding skip/fail:", e);
+      return false;
     }
   }
 
@@ -323,6 +336,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.href = "/";
   }
 
+  // 🛠 Public funktion för att säkerställa att en org/profil skapas nu
+  async function ensureOrg() {
+    try {
+      if (!supabase) return;
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      const uid = data.session?.user?.id;
+
+      if (!token || !uid) return;
+
+      const ok = await safeAutoOnboarding(token);
+      if (ok) {
+        await refreshProfile(uid);
+      }
+    } catch (e) {
+      console.warn("ensureOrg failed", e);
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -333,6 +365,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loading,
         subscription,
         signOut,
+        ensureOrg,
       }}
     >
       {children}
