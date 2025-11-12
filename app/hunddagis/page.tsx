@@ -282,8 +282,14 @@ export default function HunddagisPage() {
         return;
       }
 
-      setDogs(dogsData || []);
-      logDebug("success", `Hämtade ${dogsData?.length || 0} hundar`);
+      // ✅ FIX: Djup kopia av owners för att undvika delad referens mellan hundar
+      const dogsWithUniqueOwners = (dogsData || []).map((dog: any) => ({
+        ...dog,
+        owners: dog.owners ? { ...dog.owners } : null, // Skapa ny owner-referens för varje hund
+      }));
+
+      setDogs(dogsWithUniqueOwners);
+      logDebug("success", `Hämtade ${dogsWithUniqueOwners.length} hundar`);
     } catch (err: any) {
       logDebug(
         "error",
