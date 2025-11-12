@@ -3,5 +3,9 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.preferences.importModuleSpecifierEnding": "auto",
-  "typescript.preferences.includePackageJsonAutoImports": "on"
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "workbench.colorTheme": "Default Light+",
+  "editor.formatOnPaste": true,
+  "workbench.preferredHighContrastLightColorTheme": "Visual Studio Dark",
+  "workbench.preferredLightColorTheme": "Visual Studio Dark"
 }
