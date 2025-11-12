@@ -72,10 +72,10 @@ export default function RoomsPage() {
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
 
   useEffect(() => {
-    if (!user || authLoading) return;
+    if (!user || authLoading || !currentOrgId) return;
     fetchData();
     setupRealtimeListeners();
-  }, [user, authLoading]);
+  }, [user, authLoading, currentOrgId]);
 
   useEffect(() => {
     if (rooms.length > 0 && dogs.length > 0) {
@@ -85,9 +85,8 @@ export default function RoomsPage() {
 
   const fetchData = async () => {
     try {
-      if (!user) return;
-
-      const orgId = user?.user_metadata?.org_id || user?.id;
+      if (!user || !currentOrgId) return;
+      const orgId = currentOrgId as string;
 
       // Hämta rum
       const { data: roomsData, error: roomsError } = await (supabase as any)
