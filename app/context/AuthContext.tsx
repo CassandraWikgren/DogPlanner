@@ -320,8 +320,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Logga ut från Supabase
     if (supabase) {
-      await supabase.auth.signOut();
+      try {
+        // Försök global sign-out (v2 API)
+        // @ts-ignore – tolerera olika SDK-versioner
+        await supabase.auth.signOut({ scope: "global" });
+      } catch (e) {
+        console.warn("signOut global scope unsupported, falling back", e);
+        await supabase.auth.signOut();
+      }
     }
+
+    // Extra säkerhet: rensa Supabase tokens i localStorage (sb-<ref>-auth-token)
+    try {
+      const toRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        if (key.startsWith("sb-") || key.includes("supabase")) {
+          toRemove.push(key);
+        }
+      }
+      toRemove.forEach((k) => localStorage.removeItem(k));
+    } catch {}
+
+    try {
+      sessionStorage.clear();
+    } catch {}
 
     // Nollställ state
     setUser(null);
@@ -333,7 +357,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log("✅ Utloggning klar, redirectar till startsidan...");
 
     // Redirecta till startsidan efter utloggning
-    window.location.href = "/";
+    window.location.assign("/");
   }
 
   // 🛠 Public funktion för att säkerställa att en org/profil skapas nu
