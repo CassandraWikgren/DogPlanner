@@ -61,7 +61,7 @@ interface Dog {
 }
 
 export default function RoomsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, currentOrgId, loading: authLoading } = useAuth();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [occupancies, setOccupancies] = useState<RoomOccupancy[]>([]);
@@ -208,7 +208,7 @@ export default function RoomsPage() {
 
   const handleSaveRoom = async (roomData: Partial<Room>) => {
     try {
-      const orgId = user?.user_metadata?.org_id || user?.id;
+      const orgId = currentOrgId || (user as any)?.user_metadata?.org_id;
 
       if (editingRoom) {
         const { error } = await (supabase as any)
@@ -434,8 +434,8 @@ export default function RoomsPage() {
                             occupancy.compliance_status === "violation"
                               ? "bg-red-500"
                               : occupancy.compliance_status === "warning"
-                              ? "bg-yellow-500"
-                              : "bg-green-500"
+                                ? "bg-yellow-500"
+                                : "bg-green-500"
                           }`}
                           style={{
                             width: `${Math.min(

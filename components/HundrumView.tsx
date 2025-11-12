@@ -43,7 +43,7 @@ interface RoomOccupancy {
 const WEEKDAYS = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
 
 export default function HundrumView() {
-  const { user } = useAuth();
+  const { currentOrgId } = useAuth();
   const [selectedDay, setSelectedDay] = useState("Måndag");
   const [rooms, setRooms] = useState<Room[]>([]);
   const [dogs, setDogs] = useState<Dog[]>([]);
@@ -51,10 +51,10 @@ export default function HundrumView() {
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    if (user?.org_id) {
+    if (currentOrgId) {
       fetchData();
     }
-  }, [user?.org_id]);
+  }, [currentOrgId]);
 
   const fetchData = async () => {
     try {
@@ -64,7 +64,7 @@ export default function HundrumView() {
       const { data: roomsData, error: roomsError } = await supabase
         .from("rooms")
         .select("*")
-        .eq("org_id", user.org_id)
+        .eq("org_id", currentOrgId as string)
         .eq("is_active", true)
         .order("name");
 
@@ -93,7 +93,7 @@ export default function HundrumView() {
           )
         `
         )
-        .eq("org_id", user.org_id)
+        .eq("org_id", currentOrgId as string)
         .not("room_id", "is", null);
 
       if (dogsError) throw dogsError;

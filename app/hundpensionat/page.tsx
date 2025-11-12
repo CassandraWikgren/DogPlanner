@@ -42,7 +42,7 @@ type Dog = Database["public"]["Tables"]["dogs"]["Row"];
 type Owner = Database["public"]["Tables"]["owners"]["Row"];
 
 export default function HundpensionatPage() {
-  const { user, loading } = useAuth();
+  const { user, currentOrgId, loading } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<string>("start_date");
@@ -83,7 +83,7 @@ export default function HundpensionatPage() {
       const { count } = await supabase
         .from("bookings")
         .select("id", { count: "exact", head: true })
-        .eq("org_id", user?.user_metadata?.org_id)
+        .eq("org_id", currentOrgId as string)
         .eq("status", "pending");
 
       // Beräkna riktiga statistik baserat på data
@@ -112,7 +112,7 @@ export default function HundpensionatPage() {
 
   // Ladda bokningar från Supabase
   const loadBookings = async () => {
-    if (!user?.user_metadata?.org_id || !supabase) {
+    if (!currentOrgId || !supabase) {
       console.log(
         "Ingen organisation hittad för användaren eller ingen databaskoppling"
       );
@@ -135,7 +135,7 @@ export default function HundpensionatPage() {
           rooms (*)
         `
         )
-        .eq("org_id", user.user_metadata.org_id)
+        .eq("org_id", currentOrgId as string)
         .order("start_date", { ascending: false });
 
       if (dbError) throw dbError;
@@ -151,11 +151,11 @@ export default function HundpensionatPage() {
   };
 
   useEffect(() => {
-    if (user) {
+    if (currentOrgId) {
       loadBookings();
       loadLiveStats();
     }
-  }, [user]);
+  }, [currentOrgId]);
 
   // Filtrering och sökning
   const filtered = useMemo(() => {
