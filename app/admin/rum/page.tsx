@@ -234,8 +234,10 @@ export default function AdminRumPage() {
 
     setSaving(true);
     try {
-      // Map UI fields to database schema
-      const updateData: any = {};
+      // Map UI fields to database schema, matching /rooms/page.tsx
+      const updateData: any = {
+        updated_at: new Date().toISOString(),
+      };
 
       if (editForm.room_number !== undefined)
         updateData.name = editForm.room_number;
@@ -253,7 +255,7 @@ export default function AdminRumPage() {
         .eq("id", editingId);
 
       if (error) {
-        throw new Error(`[ERR-4001] Uppdatering: ${error.message}`);
+        throw new Error(`Fel vid uppdatering: ${error.message}`);
       }
 
       await loadData();
@@ -300,23 +302,27 @@ export default function AdminRumPage() {
       return;
     }
 
+    if (!newRoom.size_sqm || newRoom.size_sqm <= 0) {
+      setError("Storlek (kvm) måste vara större än 0");
+      return;
+    }
+
     setSaving(true);
     try {
-      // Map UI fields to database schema
-      const roomData = {
-        org_id: currentOrgId,
+      // Use same structure as working /rooms/page.tsx
+      const { error } = await supabase.from("rooms").insert({
         name: newRoom.room_number,
-        capacity_m2: newRoom.size_sqm || 0,
-        room_type: "both" as const, // Default to 'both' for new rooms
-        max_dogs: newRoom.capacity || 1,
+        capacity_m2: newRoom.size_sqm,
+        room_type: "both",
+        max_dogs: newRoom.capacity || null,
         notes: newRoom.description || null,
-        is_active: newRoom.active ?? true,
-      };
-
-      const { error } = await supabase.from("rooms").insert([roomData]);
+        is_active: true,
+        org_id: currentOrgId,
+      });
 
       if (error) {
-        throw new Error(`[ERR-4001] Uppdatering: ${error.message}`);
+        console.error("Supabase error:", error);
+        throw new Error(`Fel vid sparning: ${error.message}`);
       }
 
       await loadData();
@@ -332,7 +338,7 @@ export default function AdminRumPage() {
         floor: 1,
         size_sqm: 0,
       });
-      setError(null); // Clear any previous errors
+      setError(null);
     } catch (err: any) {
       console.error("Error adding room:", err);
       setError(err.message || "[ERR-5001] Okänt fel vid tillägg");
@@ -374,7 +380,7 @@ export default function AdminRumPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-[1600px] mx-auto px-[200px] py-6">
+      <div className="max-w-6xl mx-auto px-6 py-6">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
