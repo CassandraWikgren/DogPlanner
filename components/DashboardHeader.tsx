@@ -42,9 +42,13 @@ export default function DashboardHeader() {
     if (!supabase) return;
 
     setLoading(true);
-    const { data, error } = await supabase.from("dogs").select("*");
+    const { data, error } = await supabase
+      .from("dogs")
+      .select(
+        "id, name, checked_in, checkin_date, checkout_date, special_note"
+      );
 
-    if (!error && data) setDogs(data);
+    if (!error && data) setDogs(data as Dog[]);
     setLoading(false);
   }
 
