@@ -18,7 +18,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     <div className="flex flex-col min-h-screen bg-[#f9fafb] text-gray-900">
       {user && <Navbar />}
       {user && <Breadcrumbs />}
-      <main className={`flex-1 ${user ? "pt-32" : ""}`}>{children}</main>
+      <main className={`flex-1 ${user ? "pt-20" : ""}`}>{children}</main>
     </div>
   );
 }

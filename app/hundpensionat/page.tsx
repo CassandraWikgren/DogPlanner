@@ -309,10 +309,10 @@ export default function HundpensionatPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section - Med inline styles som fallback för Vercel */}
       <div
-        className="bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] py-12"
+        className="bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] pt-8 pb-12"
         style={{
           background: "linear-gradient(to bottom right, #2c7a4c, #1e5a36)",
-          paddingTop: "3rem",
+          paddingTop: "2rem",
           paddingBottom: "3rem",
         }}
       >
