@@ -458,21 +458,49 @@ CREATE TABLE IF NOT EXISTS price_lists (
 );
 
 -- === PENSIONATPRISER ===
+-- === GRUNDPRISER PER HUNDSTORLEK ===
+-- Uppdaterat 2025-11-13: Borttaget holiday_surcharge och season_multiplier (ersätts av special_dates och boarding_seasons)
 CREATE TABLE IF NOT EXISTS boarding_prices (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
-  price_list_id uuid REFERENCES price_lists(id) ON DELETE CASCADE,
-  dog_size text CHECK (dog_size IN ('small', 'medium', 'large')),
+  dog_size text CHECK (dog_size IN ('small', 'medium', 'large')) NOT NULL,
   base_price numeric NOT NULL,
   weekend_surcharge numeric DEFAULT 0,
-  holiday_surcharge numeric DEFAULT 0,
-  season_multiplier numeric DEFAULT 1.0,
   is_active boolean DEFAULT true,
   created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE(org_id, dog_size)
 );
 
--- === SÄSONGER ===
+COMMENT ON TABLE boarding_prices IS 'Grundpriser per hundstorlek. Small (<35cm), Medium (35-54cm), Large (>54cm). Pris per påbörjad kalenderdag inkl 25% moms.';
+COMMENT ON COLUMN boarding_prices.base_price IS 'Grundpris per natt för vardag (måndag-torsdag), inkl 25% moms';
+COMMENT ON COLUMN boarding_prices.weekend_surcharge IS 'Fast påslag för helg (fredag-söndag), inkl 25% moms. Ersätts av special_dates om datum finns där.';
+
+-- === SPECIALDATUM (RÖDA DAGAR, EVENT, HÖGTIDER) ===
+-- Skapad 2025-11-13: Flexibla specialdatum med individuella påslag
+CREATE TABLE IF NOT EXISTS special_dates (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE NOT NULL,
+  date date NOT NULL,
+  name text NOT NULL,
+  category text CHECK (category IN ('red_day', 'holiday', 'event', 'custom')) DEFAULT 'custom',
+  price_surcharge numeric NOT NULL DEFAULT 0,
+  notes text,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE(org_id, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_special_dates_org_date ON special_dates(org_id, date);
+CREATE INDEX IF NOT EXISTS idx_special_dates_org_active ON special_dates(org_id) WHERE is_active = true;
+
+COMMENT ON TABLE special_dates IS 'Specialdatum med individuella påslag - röda dagar, lokala event, högtider. Ersätter weekend_surcharge om datum finns.';
+COMMENT ON COLUMN special_dates.category IS 'red_day=svenska röda dagar, holiday=lov/semester, event=lokala event, custom=anpassat';
+COMMENT ON COLUMN special_dates.price_surcharge IS 'Fast påslag i kronor för detta datum (t.ex. 400 kr för midsommar, 75 kr för mindre röd dag)';
+
+-- === SÄSONGER (SOMMAR, VINTER, SPORTLOV) ===
+-- Uppdaterat 2025-11-13: Tillagt priority för överlappande säsonger
 CREATE TABLE IF NOT EXISTS boarding_seasons (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
@@ -480,10 +508,17 @@ CREATE TABLE IF NOT EXISTS boarding_seasons (
   start_date date NOT NULL,
   end_date date NOT NULL,
   price_multiplier numeric DEFAULT 1.0,
+  priority integer DEFAULT 50,
   is_active boolean DEFAULT true,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
+
+CREATE INDEX IF NOT EXISTS idx_boarding_seasons_org_dates ON boarding_seasons(org_id, start_date, end_date);
+
+COMMENT ON TABLE boarding_seasons IS 'Säsonger med prismultiplikatorer. Appliceras EFTER base_price och surcharges. Vid överlapp används högsta priority.';
+COMMENT ON COLUMN boarding_seasons.price_multiplier IS 'Multiplikator (1.3 = +30%, 0.9 = -10%). Appliceras på (base_price + surcharge).';
+COMMENT ON COLUMN boarding_seasons.priority IS 'Högre värde = högre prioritet vid överlappande säsonger (50 = default, 100 = hög)';
 
 -- === ÄGARRABATTER ===
 CREATE TABLE IF NOT EXISTS position_share (
