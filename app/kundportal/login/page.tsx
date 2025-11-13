@@ -10,7 +10,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, PawPrint, Mail, Lock } from "lucide-react";
+import { PawPrint, Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
 
 // Felkoder enligt systemet
 const ERROR_CODES = {
@@ -110,14 +110,13 @@ function LoginPageContent() {
         <div className="text-center mb-8">
           <Link href="/kundportal">
             <Button variant="ghost" className="mb-4">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Tillbaka till startsidan
+              ← Tillbaka till startsidan
             </Button>
           </Link>
 
           <div className="flex items-center justify-center mb-4">
-            <PawPrint className="h-8 w-8 text-[#2c7a4c] mr-3" />
-            <h1 className="text-3xl font-bold text-gray-800">Logga in</h1>
+            <PawPrint className="h-10 w-10 text-[#2c7a4c] mr-3" />
+            <h1 className="text-4xl font-bold text-gray-800">Logga in</h1>
           </div>
 
           <p className="text-gray-600">
@@ -131,14 +130,15 @@ function LoginPageContent() {
           </CardHeader>
           <CardContent>
             {message && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
-                {message}
+              <div className="bg-green-50 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-lg mb-4 flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                <p className="text-sm">{message}</p>
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium mb-2">
                   <Mail className="inline h-4 w-4 mr-1" />
                   E-postadress
                 </label>
@@ -146,14 +146,14 @@ function LoginPageContent() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                  className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                   placeholder="din@epost.se"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium mb-2">
                   <Lock className="inline h-4 w-4 mr-1" />
                   Lösenord
                 </label>
@@ -161,24 +161,32 @@ function LoginPageContent() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                  className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                   placeholder="Ditt lösenord"
                   required
                 />
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
-                  {error}
+                <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm">{error}</p>
                 </div>
               )}
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#2c7a4c] hover:bg-[#245a3e]"
+                className="w-full bg-[#2c7a4c] hover:bg-[#245a3e] h-12 text-base font-medium"
               >
-                {loading ? "Loggar in..." : "Logga in"}
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Loggar in...
+                  </span>
+                ) : (
+                  "Logga in"
+                )}
               </Button>
             </form>
 

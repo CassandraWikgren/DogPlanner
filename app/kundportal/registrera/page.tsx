@@ -10,7 +10,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, PawPrint, User, Users } from "lucide-react";
+import { PawPrint, User, Users, AlertCircle, CheckCircle } from "lucide-react";
 
 // Felkoder enligt systemet
 const ERROR_CODES = {
@@ -95,6 +95,13 @@ export default function CustomerRegisterPage() {
     if (!ownerData.lastName) return "Efternamn krävs";
     if (!ownerData.personalNumber) return "Personnummer krävs";
     if (!ownerData.email) return "E-postadress krävs";
+
+    // Email validation med regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(ownerData.email)) {
+      return "E-postadressen måste vara giltig (t.ex. namn@example.com)";
+    }
+
     if (!ownerData.phone) return "Telefonnummer krävs";
     if (!ownerData.password) return "Lösenord krävs";
     if (ownerData.password !== ownerData.confirmPassword)
@@ -311,8 +318,7 @@ export default function CustomerRegisterPage() {
         <div className="flex items-center mb-8">
           <Link href="/kundportal">
             <Button variant="ghost" className="mr-4">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Tillbaka
+              ← Tillbaka
             </Button>
           </Link>
           <PawPrint className="h-8 w-8 text-[#2c7a4c] mr-3" />
@@ -320,39 +326,44 @@ export default function CustomerRegisterPage() {
         </div>
 
         {/* Progress */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <div className="flex items-center justify-between">
+        <div className="max-w-3xl mx-auto mb-8">
+          <div className="flex items-center justify-center">
             {[1, 2, 3].map((step) => (
               <div key={step} className="flex items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    currentStep >= step
-                      ? "bg-[#2c7a4c] text-white"
-                      : "bg-gray-200 text-gray-600"
-                  }`}
-                >
-                  {step}
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                      currentStep > step
+                        ? "bg-green-600 text-white"
+                        : currentStep === step
+                          ? "bg-[#2c7a4c] text-white ring-4 ring-[#2c7a4c]/20 scale-110"
+                          : "bg-gray-200 text-gray-500"
+                    }`}
+                  >
+                    {currentStep > step ? "✓" : step}
+                  </div>
+                  <span
+                    className={`mt-2 text-xs font-medium transition-colors ${
+                      currentStep >= step ? "text-[#2c7a4c]" : "text-gray-400"
+                    }`}
+                  >
+                    {step === 1 && "Ägaruppgifter"}
+                    {step === 2 && "Kontaktperson"}
+                    {step === 3 && "Hunduppgifter"}
+                  </span>
                 </div>
-                <span
-                  className={`ml-2 text-sm ${
-                    currentStep >= step
-                      ? "text-[#2c7a4c] font-medium"
-                      : "text-gray-500"
-                  }`}
-                >
-                  {step === 1 && "Ägaruppgifter"}
-                  {step === 2 && "Kontaktperson"}
-                  {step === 3 && "Hunduppgifter"}
-                </span>
                 {step < 3 && (
                   <div
-                    className={`flex-1 h-0.5 mx-4 ${
-                      currentStep > step ? "bg-[#2c7a4c]" : "bg-gray-200"
+                    className={`w-20 h-1 mx-2 rounded transition-colors duration-300 ${
+                      currentStep > step ? "bg-green-600" : "bg-gray-200"
                     }`}
                   />
                 )}
               </div>
             ))}
+          </div>
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">Steg {currentStep} av 3</p>
           </div>
         </div>
 
@@ -383,7 +394,7 @@ export default function CustomerRegisterPage() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      Förnamn *
+                      Förnamn <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -391,14 +402,15 @@ export default function CustomerRegisterPage() {
                       onChange={(e) =>
                         handleOwnerChange("firstName", e.target.value)
                       }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                       placeholder="Anna"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      Efternamn *
+                      Efternamn <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -406,14 +418,15 @@ export default function CustomerRegisterPage() {
                       onChange={(e) =>
                         handleOwnerChange("lastName", e.target.value)
                       }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                       placeholder="Andersson"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      Personnummer *
+                      Personnummer <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -421,14 +434,15 @@ export default function CustomerRegisterPage() {
                       onChange={(e) =>
                         handleOwnerChange("personalNumber", e.target.value)
                       }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                       placeholder="YYYYMMDD-XXXX"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      E-postadress *
+                      E-postadress <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
@@ -436,14 +450,18 @@ export default function CustomerRegisterPage() {
                       onChange={(e) =>
                         handleOwnerChange("email", e.target.value)
                       }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                       placeholder="anna@exempel.se"
+                      required
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Ange en giltig e-postadress (t.ex. namn@example.com)
+                    </p>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      Telefonnummer *
+                      Telefonnummer <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="tel"
@@ -451,8 +469,9 @@ export default function CustomerRegisterPage() {
                       onChange={(e) =>
                         handleOwnerChange("phone", e.target.value)
                       }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                       placeholder="070-123 45 67"
+                      required
                     />
                   </div>
 
@@ -466,7 +485,7 @@ export default function CustomerRegisterPage() {
                       onChange={(e) =>
                         handleOwnerChange("address", e.target.value)
                       }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                       placeholder="Exempelgatan 123"
                     />
                   </div>
@@ -481,7 +500,7 @@ export default function CustomerRegisterPage() {
                       onChange={(e) =>
                         handleOwnerChange("zipCode", e.target.value)
                       }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                       placeholder="123 45"
                     />
                   </div>
@@ -496,14 +515,14 @@ export default function CustomerRegisterPage() {
                       onChange={(e) =>
                         handleOwnerChange("city", e.target.value)
                       }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                       placeholder="Stockholm"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      Lösenord *
+                      Lösenord <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="password"
@@ -511,14 +530,19 @@ export default function CustomerRegisterPage() {
                       onChange={(e) =>
                         handleOwnerChange("password", e.target.value)
                       }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                       placeholder="Minst 6 tecken"
+                      minLength={6}
+                      required
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Minst 6 tecken långt
+                    </p>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      Bekräfta lösenord *
+                      Bekräfta lösenord <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="password"
@@ -526,8 +550,10 @@ export default function CustomerRegisterPage() {
                       onChange={(e) =>
                         handleOwnerChange("confirmPassword", e.target.value)
                       }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                       placeholder="Samma som ovan"
+                      minLength={6}
+                      required
                     />
                   </div>
 
@@ -829,24 +855,34 @@ export default function CustomerRegisterPage() {
               )}
 
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                  {error}
+                <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg shadow-sm flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="font-medium">
+                      Det gick inte att slutföra registreringen
+                    </p>
+                    <p className="text-sm mt-1">{error}</p>
+                  </div>
                 </div>
               )}
 
               {success && (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-                  {success}
+                <div className="bg-green-50 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-lg shadow-sm flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="whitespace-pre-line">{success}</p>
+                  </div>
                 </div>
               )}
 
-              <div className="flex justify-between pt-6">
+              <div className="flex justify-between pt-6 border-t">
                 <Button
                   variant="outline"
                   onClick={() =>
                     currentStep > 1 && setCurrentStep(currentStep - 1)
                   }
-                  disabled={currentStep === 1}
+                  disabled={currentStep === 1 || loading}
+                  className="px-6"
                 >
                   Föregående
                 </Button>
@@ -864,17 +900,24 @@ export default function CustomerRegisterPage() {
                       setError(null);
                       setCurrentStep(currentStep + 1);
                     }}
-                    className="bg-[#2c7a4c] hover:bg-[#245a3e]"
+                    className="bg-[#2c7a4c] hover:bg-[#245a3e] px-8"
                   >
-                    Nästa
+                    Nästa →
                   </Button>
                 ) : (
                   <Button
                     onClick={handleSubmit}
                     disabled={loading}
-                    className="bg-[#2c7a4c] hover:bg-[#245a3e]"
+                    className="bg-[#2c7a4c] hover:bg-[#245a3e] px-8 min-w-[160px]"
                   >
-                    {loading ? "Skapar konto..." : "Skapa konto"}
+                    {loading ? (
+                      <span className="flex items-center gap-2">
+                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Skapar...
+                      </span>
+                    ) : (
+                      "Skapa konto"
+                    )}
                   </Button>
                 )}
               </div>

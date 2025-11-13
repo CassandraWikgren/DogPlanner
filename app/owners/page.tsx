@@ -106,7 +106,7 @@ export default function OwnersPage() {
         .select(
           `
           *,
-          dogs (
+          dogs!dogs_owner_id_fkey (
             id,
             name,
             breed,

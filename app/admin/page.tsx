@@ -6,18 +6,7 @@ import Link from "next/link";
 import DashboardWidgets from "@/components/DashboardWidgets";
 
 export default function AdminPage() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600">Laddar...</div>
-      </div>
-    );
-  }
-
-  // TODO: Lägg till rollkontroll här senare - endast admin ska se denna sida
-  // if (user?.role !== 'admin') { ... }
+  const { currentOrgId } = useAuth();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -36,13 +25,15 @@ export default function AdminPage() {
       {/* Main Content */}
       <main className="max-w-[1600px] mx-auto px-6 py-10">
         {/* Statistik-sektion */}
-        <div className="mb-10">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="w-1 h-6 bg-[#2c7a4c] rounded-full"></div>
-            <h2 className="text-xl font-semibold text-gray-900">Översikt</h2>
+        {currentOrgId && (
+          <div className="mb-10">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-1 h-6 bg-[#2c7a4c] rounded-full"></div>
+              <h2 className="text-xl font-semibold text-gray-900">Översikt</h2>
+            </div>
+            <DashboardWidgets />
           </div>
-          <DashboardWidgets />
-        </div>
+        )}
 
         {/* Åtgärder */}
         <div>
