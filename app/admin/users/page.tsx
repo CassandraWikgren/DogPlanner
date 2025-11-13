@@ -69,6 +69,8 @@ export default function UsersPage() {
   useEffect(() => {
     if (currentOrgId) {
       loadUsers();
+    } else {
+      setLoading(false);
     }
   }, [currentOrgId]);
 

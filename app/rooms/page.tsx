@@ -72,9 +72,13 @@ export default function RoomsPage() {
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
 
   useEffect(() => {
-    if (!user || authLoading || !currentOrgId) return;
-    fetchData();
-    setupRealtimeListeners();
+    if (authLoading) return;
+    if (user && currentOrgId) {
+      fetchData();
+      setupRealtimeListeners();
+    } else {
+      setLoading(false);
+    }
   }, [user, authLoading, currentOrgId]);
 
   useEffect(() => {

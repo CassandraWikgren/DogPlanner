@@ -173,26 +173,34 @@ export default function DagisPriserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - Kompakt och luftig */}
+      {/* Header - Symmetrisk layout */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-8 py-5">
-          <Link
-            href="/admin"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-[#2c7a4c] mb-4 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1.5" />
-            Tillbaka till Admin
-          </Link>
-          <div className="flex items-center gap-3">
-            <div className="text-2xl">🐕</div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Priser - Hunddagis
-              </h1>
-              <p className="text-sm text-gray-600 mt-0.5">
-                Hantera priser för dagisabonnemang och enstaka dagar
-              </p>
+        <div className="max-w-7xl mx-auto px-8 py-4">
+          <div className="flex items-center justify-between">
+            {/* Vänster: Tillbaka-länk */}
+            <Link
+              href="/admin"
+              className="inline-flex items-center text-sm text-gray-600 hover:text-[#2c7a4c] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1.5" />
+              Tillbaka till Admin
+            </Link>
+
+            {/* Center: Rubrik */}
+            <div className="flex items-center gap-3 absolute left-1/2 transform -translate-x-1/2">
+              <div className="text-2xl">🐕</div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">
+                  Priser - Hunddagis
+                </h1>
+                <p className="text-xs text-gray-600">
+                  Hantera priser för dagisabonnemang och enstaka dagar
+                </p>
+              </div>
             </div>
+
+            {/* Höger: Tom för symmetri */}
+            <div className="w-32"></div>
           </div>
         </div>
       </div>

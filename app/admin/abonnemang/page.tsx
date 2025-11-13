@@ -76,6 +76,8 @@ export default function AdminAbonnemangPage() {
   useEffect(() => {
     if (currentOrgId) {
       loadSubscription();
+    } else {
+      setLoading(false);
     }
   }, [currentOrgId]);
 

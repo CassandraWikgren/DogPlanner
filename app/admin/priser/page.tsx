@@ -61,6 +61,8 @@ export default function AdminPriserPage() {
   useEffect(() => {
     if (currentOrgId) {
       loadPrices();
+    } else {
+      setLoading(false);
     }
   }, [currentOrgId]);
 
@@ -183,13 +185,16 @@ export default function AdminPriserPage() {
     }
   };
 
-  const groupedPrices = prices.reduce((acc, price) => {
-    if (!acc[price.service_type]) {
-      acc[price.service_type] = [];
-    }
-    acc[price.service_type].push(price);
-    return acc;
-  }, {} as Record<string, PriceData[]>);
+  const groupedPrices = prices.reduce(
+    (acc, price) => {
+      if (!acc[price.service_type]) {
+        acc[price.service_type] = [];
+      }
+      acc[price.service_type].push(price);
+      return acc;
+    },
+    {} as Record<string, PriceData[]>
+  );
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("sv-SE", {

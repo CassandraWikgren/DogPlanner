@@ -88,6 +88,8 @@ export default function FrisorPriserPage() {
   useEffect(() => {
     if (currentOrgId) {
       loadServices();
+    } else {
+      setLoading(false);
     }
   }, [currentOrgId]);
 

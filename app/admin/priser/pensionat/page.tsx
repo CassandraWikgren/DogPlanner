@@ -547,28 +547,33 @@ export default function PensionatPriserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - Kompakt och luftig */}
+      {/* Header - Symmetrisk layout */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-8 py-5">
-          <Link
-            href="/admin"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-[#2c7a4c] mb-4 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1.5" />
-            Tillbaka till Admin
-          </Link>
+        <div className="max-w-7xl mx-auto px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            {/* Vänster: Tillbaka-länk */}
+            <Link
+              href="/admin"
+              className="inline-flex items-center text-sm text-gray-600 hover:text-[#2c7a4c] transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1.5" />
+              Tillbaka till Admin
+            </Link>
+
+            {/* Center: Rubrik */}
+            <div className="flex items-center gap-3 absolute left-1/2 transform -translate-x-1/2">
               <div className="text-2xl">🏨</div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-xl font-bold text-gray-900">
                   Priser - Hundpensionat
                 </h1>
-                <p className="text-sm text-gray-600 mt-0.5">
+                <p className="text-xs text-gray-600">
                   3-lagers prissystem: Grundpriser → Specialdatum → Säsonger
                 </p>
               </div>
             </div>
+
+            {/* Höger: Hjälp-knapp */}
             <Button
               variant="outline"
               size="sm"
@@ -576,7 +581,7 @@ export default function PensionatPriserPage() {
               className="text-sm text-[#2c7a4c] border-[#2c7a4c] hover:bg-[#2c7a4c]/5 transition-colors"
             >
               <HelpCircle className="w-4 h-4 mr-1.5" />
-              Hur fungerar prissystemet?
+              Hur fungerar?
             </Button>
           </div>
         </div>
@@ -588,10 +593,10 @@ export default function PensionatPriserPage() {
           <div className="flex gap-1">
             <button
               onClick={() => setActiveTab("grundpriser")}
-              className={`px-4 py-3 text-sm font-medium transition-all ${
+              className={`px-4 py-2.5 text-sm font-medium transition-all ${
                 activeTab === "grundpriser"
-                  ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c]"
-                  : "text-gray-600 hover:text-gray-900 border-b-2 border-transparent"
+                  ? "text-white bg-[#2c7a4c] rounded-t"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               <Dog className="w-4 h-4 inline mr-1.5" />
@@ -599,43 +604,61 @@ export default function PensionatPriserPage() {
             </button>
             <button
               onClick={() => setActiveTab("specialdatum")}
-              className={`px-4 py-3 text-sm font-medium transition-all ${
+              className={`px-4 py-2.5 text-sm font-medium transition-all ${
                 activeTab === "specialdatum"
-                  ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c]"
-                  : "text-gray-600 hover:text-gray-900 border-b-2 border-transparent"
+                  ? "text-white bg-[#2c7a4c] rounded-t"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               <Calendar className="w-4 h-4 inline mr-1.5" />
               Specialdatum
-              <span className="ml-1.5 px-1.5 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+              <span
+                className={`ml-1.5 px-1.5 py-0.5 text-xs rounded ${
+                  activeTab === "specialdatum"
+                    ? "bg-white/20 text-white"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
                 {specialDates.length}
               </span>
             </button>
             <button
               onClick={() => setActiveTab("säsonger")}
-              className={`px-4 py-3 text-sm font-medium transition-all ${
+              className={`px-4 py-2.5 text-sm font-medium transition-all ${
                 activeTab === "säsonger"
-                  ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c]"
-                  : "text-gray-600 hover:text-gray-900 border-b-2 border-transparent"
+                  ? "text-white bg-[#2c7a4c] rounded-t"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               <TrendingUp className="w-4 h-4 inline mr-1.5" />
               Säsonger
-              <span className="ml-1.5 px-1.5 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+              <span
+                className={`ml-1.5 px-1.5 py-0.5 text-xs rounded ${
+                  activeTab === "säsonger"
+                    ? "bg-white/20 text-white"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
                 {seasons.length}
               </span>
             </button>
             <button
               onClick={() => setActiveTab("tillval")}
-              className={`px-4 py-3 text-sm font-medium transition-all ${
+              className={`px-4 py-2.5 text-sm font-medium transition-all ${
                 activeTab === "tillval"
-                  ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c]"
-                  : "text-gray-600 hover:text-gray-900 border-b-2 border-transparent"
+                  ? "text-white bg-[#2c7a4c] rounded-t"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               <Sparkles className="w-4 h-4 inline mr-1.5" />
               Tillval
-              <span className="ml-1.5 px-1.5 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+              <span
+                className={`ml-1.5 px-1.5 py-0.5 text-xs rounded ${
+                  activeTab === "tillval"
+                    ? "bg-white/20 text-white"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
                 {extraServices.length}
               </span>
             </button>
@@ -662,7 +685,7 @@ export default function PensionatPriserPage() {
         {/* TAB 1: GRUNDPRISER */}
         {activeTab === "grundpriser" && (
           <Card className="shadow-sm">
-            <CardHeader className="pb-4">
+            <CardHeader className="pb-3">
               <CardTitle className="text-lg font-semibold text-gray-900">
                 Grundpriser per hundstorlek
               </CardTitle>
@@ -676,16 +699,16 @@ export default function PensionatPriserPage() {
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50">
                     <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                      <th className="text-left py-2 px-3 font-semibold text-gray-700">
                         Hundstorlek
                       </th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                      <th className="text-left py-2 px-3 font-semibold text-gray-700">
                         Höjd (mankhöjd)
                       </th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                      <th className="text-left py-2 px-3 font-semibold text-gray-700">
                         Grundpris/natt
                       </th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                      <th className="text-left py-2 px-3 font-semibold text-gray-700">
                         Helgtillägg
                       </th>
                     </tr>
@@ -696,19 +719,19 @@ export default function PensionatPriserPage() {
                         key={price.dog_size}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="py-3 px-4">
+                        <td className="py-2 px-3">
                           <span className="font-medium text-gray-900">
                             {price.dog_size === "small" && "🐕 Liten"}
                             {price.dog_size === "medium" && "🐕 Mellan"}
                             {price.dog_size === "large" && "🐕 Stor"}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-gray-600">
+                        <td className="py-2 px-3 text-gray-600">
                           {price.dog_size === "small" && "< 35 cm"}
                           {price.dog_size === "medium" && "35-54 cm"}
                           {price.dog_size === "large" && "> 54 cm"}
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-2 px-3">
                           <div className="flex items-center gap-2">
                             <Input
                               type="number"
@@ -736,7 +759,7 @@ export default function PensionatPriserPage() {
                             <span className="text-sm text-gray-600">kr</span>
                           </div>
                         </td>
-                        <td className="py-3 px-4">
+                        <td className="py-2 px-3">
                           <div className="flex items-center gap-2">
                             <Input
                               type="number"

@@ -53,7 +53,11 @@ export default function AdminRumPage() {
   ];
 
   useEffect(() => {
-    if (currentOrgId) fetchRooms();
+    if (currentOrgId) {
+      fetchRooms();
+    } else {
+      setLoading(false);
+    }
   }, [currentOrgId]);
 
   const fetchRooms = async () => {

@@ -54,6 +54,8 @@ export default function ApplicationsPage() {
   useEffect(() => {
     if (currentOrgId) {
       fetchApplications();
+    } else {
+      setLoading(false);
     }
   }, [currentOrgId]);
 

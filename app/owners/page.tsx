@@ -90,8 +90,12 @@ export default function OwnersPage() {
 
   // Ladda ägare från Supabase
   useEffect(() => {
-    if (!currentOrgId || authLoading) return;
-    loadOwners();
+    if (authLoading) return;
+    if (currentOrgId) {
+      loadOwners();
+    } else {
+      setLoading(false);
+    }
   }, [currentOrgId, authLoading]);
 
   const loadOwners = async () => {
