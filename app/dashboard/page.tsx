@@ -32,10 +32,11 @@ export default function Dashboard() {
         }}
       >
         {/* Mörkare overlay för bättre läsbarhet */}
-        <div 
+        <div
           className="absolute inset-0 bg-gradient-to-br from-[#2c7a4c]/70 to-[#1e5a36]/70"
           style={{
-            background: "linear-gradient(to bottom right, rgba(44, 122, 76, 0.7), rgba(30, 90, 54, 0.7))",
+            background:
+              "linear-gradient(to bottom right, rgba(44, 122, 76, 0.7), rgba(30, 90, 54, 0.7))",
           }}
         />
         <div className="relative z-10 max-w-7xl mx-auto px-16 sm:px-24 lg:px-32">
