@@ -1,68 +1,48 @@
-// /types/database.ts
-// Standardiserade TypeScript-typer för Supabase-databasen
+// /types/database.ts (reparerad)
+// Standardiserade TypeScript-typer för Supabase-databasen – synkade mot schema.sql
 
 export interface Database {
   public: {
     Tables: {
-      // === ORG-ABONNEMANG (organisationens plan/betalning) ===
-      org_subscriptions: {
-        Row: {
-          id: string;
-          org_id: string;
-          plan: string;
-          status: "trialing" | "active" | "past_due" | "canceled";
-          trial_starts_at: string | null;
-          trial_ends_at: string | null;
-          current_period_end: string | null;
-          is_active: boolean;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          org_id: string;
-          plan?: string;
-          status?: "trialing" | "active" | "past_due" | "canceled";
-          trial_starts_at?: string | null;
-          trial_ends_at?: string | null;
-          current_period_end?: string | null;
-          is_active?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: Partial<{
-          org_id: string;
-          plan: string;
-          status: "trialing" | "active" | "past_due" | "canceled";
-          trial_starts_at: string | null;
-          trial_ends_at: string | null;
-          current_period_end: string | null;
-          is_active: boolean;
-          created_at: string;
-          updated_at: string;
-        }>;
-      };
-      // === ORGANISATIONER ===
       orgs: {
         Row: {
           id: string;
-          name: string;
-          org_number: string | null;
-          email: string | null;
+          name: string | null;
           phone: string | null;
           address: string | null;
-          vat_included: boolean;
-          vat_rate: number;
-          created_at: string;
-          updated_at: string;
+          email: string | null;
+          org_number: string | null;
+          vat_included: boolean | null;
+          vat_rate: number | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["orgs"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<Database["public"]["Tables"]["orgs"]["Insert"]>;
+        Insert: {
+          id?: string;
+          name?: string | null;
+          phone?: string | null;
+          address?: string | null;
+          email?: string | null;
+          org_number?: string | null;
+          vat_included?: boolean | null;
+          vat_rate?: number | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          name?: string | null;
+          phone?: string | null;
+          address?: string | null;
+          email?: string | null;
+          org_number?: string | null;
+          vat_included?: boolean | null;
+          vat_rate?: number | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
       };
-
-      // === AVDELNINGAR/FILIALER ===
       branches: {
         Row: {
           id: string;
@@ -71,17 +51,38 @@ export interface Database {
           address: string | null;
           phone: string | null;
           email: string | null;
-          created_at: string;
-          updated_at: string;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["branches"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<Database["public"]["Tables"]["branches"]["Insert"]>;
+        Insert: {
+          id?: string;
+          org_id: string;
+          name: string;
+          address?: string | null;
+          phone?: string | null;
+          email?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          name?: string;
+          address?: string | null;
+          phone?: string | null;
+          email?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "branches_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
       };
-
-      // === ÄGARE ===
       owners: {
         Row: {
           id: string;
@@ -94,70 +95,132 @@ export interface Database {
           contact_person_2: string | null;
           contact_phone_2: string | null;
           notes: string | null;
-          created_at: string;
-          updated_at: string;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["owners"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<Database["public"]["Tables"]["owners"]["Insert"]>;
+        Insert: {
+          id?: string;
+          org_id: string;
+          full_name: string;
+          phone?: string | null;
+          email?: string | null;
+          address?: string | null;
+          customer_number?: number | null;
+          contact_person_2?: string | null;
+          contact_phone_2?: string | null;
+          notes?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          full_name?: string;
+          phone?: string | null;
+          email?: string | null;
+          address?: string | null;
+          customer_number?: number | null;
+          contact_person_2?: string | null;
+          contact_phone_2?: string | null;
+          notes?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "owners_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
       };
-
-      // === ANVÄNDARPROFILER ===
       profiles: {
         Row: {
           id: string;
           org_id: string | null;
-          role: "admin" | "staff" | null;
+          role: string | null;
           full_name: string | null;
           email: string | null;
           phone: string | null;
-          created_at: string;
-          updated_at: string;
+          created_at: string | null;
+          updated_at: string | null;
         };
         Insert: {
           id: string;
           org_id?: string | null;
-          role?: "admin" | "staff" | null;
+          role?: string | null;
           full_name?: string | null;
           email?: string | null;
           phone?: string | null;
-          created_at?: string;
-          updated_at?: string;
+          created_at?: string | null;
+          updated_at?: string | null;
         };
-        Update: Partial<{
-          org_id: string | null;
-          role: "admin" | "staff" | null;
-          full_name: string | null;
-          email: string | null;
-          phone: string | null;
-          created_at: string;
-          updated_at: string;
-        }>;
+        Update: {
+          id?: string;
+          org_id?: string | null;
+          role?: string | null;
+          full_name?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profiles_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
       };
-
-      // === RUM ===
       rooms: {
         Row: {
           id: string;
           org_id: string;
-          branch_id: string | null;
           name: string;
-          capacity_m2: number;
-          room_type: "daycare" | "boarding" | "both";
+          capacity_m2: number | null;
+          room_type: string | null;
+          max_dogs: number | null;
           notes: string | null;
-          created_at: string;
-          updated_at: string;
+          is_active: boolean | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["rooms"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<Database["public"]["Tables"]["rooms"]["Insert"]>;
+        Insert: {
+          id?: string;
+          org_id: string;
+          name: string;
+          capacity_m2?: number | null;
+          room_type?: string | null;
+          max_dogs?: number | null;
+          notes?: string | null;
+          is_active?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          name?: string;
+          capacity_m2?: number | null;
+          room_type?: string | null;
+          max_dogs?: number | null;
+          notes?: string | null;
+          is_active?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "rooms_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
       };
-
-      // === HUNDAR ===
       dogs: {
         Row: {
           id: string;
@@ -169,200 +232,150 @@ export interface Database {
           birth: string | null;
           heightcm: number | null;
           subscription: string | null;
-          days: string | null; // "Måndag,Tisdag,Onsdag"
+          days: string | null;
           startdate: string | null;
           enddate: string | null;
           vaccdhp: string | null;
           vaccpi: string | null;
           photo_url: string | null;
           notes: string | null;
-          events: any | null; // JSON
+          events: any | null;
           checked_in: boolean | null;
           checkin_date: string | null;
           checkout_date: string | null;
-          created_at: string;
-          updated_at: string;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["dogs"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<Database["public"]["Tables"]["dogs"]["Insert"]>;
+        Insert: {
+          id?: string;
+          org_id: string;
+          owner_id: string;
+          room_id?: string | null;
+          name: string;
+          breed?: string | null;
+          birth?: string | null;
+          heightcm?: number | null;
+          subscription?: string | null;
+          days?: string | null;
+          startdate?: string | null;
+          enddate?: string | null;
+          vaccdhp?: string | null;
+          vaccpi?: string | null;
+          photo_url?: string | null;
+          notes?: string | null;
+          events?: any | null;
+          checked_in?: boolean | null;
+          checkin_date?: string | null;
+          checkout_date?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          owner_id?: string;
+          room_id?: string | null;
+          name?: string;
+          breed?: string | null;
+          birth?: string | null;
+          heightcm?: number | null;
+          subscription?: string | null;
+          days?: string | null;
+          startdate?: string | null;
+          enddate?: string | null;
+          vaccdhp?: string | null;
+          vaccpi?: string | null;
+          photo_url?: string | null;
+          notes?: string | null;
+          events?: any | null;
+          checked_in?: boolean | null;
+          checkin_date?: string | null;
+          checkout_date?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "dogs_owner_id_fkey";
+            columns: ["owner_id"];
+            referencedRelation: "owners";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "dogs_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
       };
-
-      // === BOKNINGAR (Pensionat) ===
       bookings: {
         Row: {
           id: string;
           org_id: string;
-          branch_id: string | null;
           dog_id: string;
           owner_id: string;
-          room_id: string;
+          room_id: string | null;
           start_date: string;
           end_date: string;
-          status:
-            | "pending"
-            | "confirmed"
-            | "checked_in"
-            | "checked_out"
-            | "cancelled"
-            | "completed"; // Lägg till completed status
+          status: string | null;
           total_price: number | null;
           discount_amount: number | null;
-          extra_service_ids: string[] | null; // JSON array
           notes: string | null;
-          // Förskotts-/efterskottsfakturering (2025-11-01)
-          prepayment_status:
-            | "unpaid"
-            | "paid"
-            | "partially_paid"
-            | "refunded"
-            | null;
-          prepayment_invoice_id: string | null;
-          afterpayment_invoice_id: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: Omit<
-          Database["public"]["Tables"]["bookings"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<Database["public"]["Tables"]["bookings"]["Insert"]>;
-      };
-      // === DAGISABONNEMANG (per hund) — motsvarar schema.sql public.subscriptions ===
-      subscriptions: {
-        Row: {
-          id: string;
-          org_id: string;
-          dog_id: string;
-          subscription_type: string;
-          start_date: string;
-          end_date: string | null;
-          price_per_month: number | null;
-          days_included: string[] | null;
-          is_active: boolean;
-          created_at: string;
-          updated_at: string;
+          created_at: string | null;
+          updated_at: string | null;
         };
         Insert: {
+          id?: string;
           org_id: string;
           dog_id: string;
-          subscription_type: string;
+          owner_id: string;
+          room_id?: string | null;
           start_date: string;
-          end_date?: string | null;
-          price_per_month?: number | null;
-          days_included?: string[] | null;
-          is_active?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: Partial<{
-          org_id: string;
-          dog_id: string;
-          subscription_type: string;
-          start_date: string;
-          end_date: string | null;
-          price_per_month: number | null;
-          days_included: string[] | null;
-          is_active: boolean;
-          created_at: string;
-          updated_at: string;
-        }>;
-      };
-
-      // === FRISÖR: BOKNINGAR ===
-      grooming_bookings: {
-        Row: {
-          id: string;
-          org_id: string | null;
-          dog_id: string | null;
-          appointment_date: string;
-          appointment_time: string | null;
-          service_type: string;
-          estimated_price: number | null;
-          status: "confirmed" | "completed" | "cancelled" | "no_show";
-          notes: string | null;
-          created_at: string;
-        };
-        Insert: {
-          org_id?: string | null;
-          dog_id?: string | null;
-          appointment_date: string;
-          appointment_time?: string | null;
-          service_type: string;
-          estimated_price?: number | null;
-          status?: "confirmed" | "completed" | "cancelled" | "no_show";
+          end_date: string;
+          status?: string | null;
+          total_price?: number | null;
+          discount_amount?: number | null;
           notes?: string | null;
-          created_at?: string;
+          created_at?: string | null;
+          updated_at?: string | null;
         };
-        Update: Partial<{
-          org_id: string | null;
-          dog_id: string | null;
-          appointment_date: string;
-          appointment_time: string | null;
-          service_type: string;
-          estimated_price: number | null;
-          status: "confirmed" | "completed" | "cancelled" | "no_show";
-          notes: string | null;
-          created_at: string;
-        }>;
-      };
-
-      // === FRISÖR: JOURNAL ===
-      grooming_journal: {
-        Row: {
-          id: string;
-          org_id: string | null;
-          dog_id: string | null;
-          appointment_date: string;
-          service_type: string;
-          clip_length: string | null;
-          shampoo_type: string | null;
-          special_treatments: string | null;
-          final_price: number;
-          duration_minutes: number | null;
-          notes: string | null;
-          before_photos: string[] | null;
-          after_photos: string[] | null;
-          next_appointment_recommended: string | null;
-          created_at: string;
-        };
-        Insert: {
-          org_id?: string | null;
-          dog_id?: string | null;
-          appointment_date: string;
-          service_type: string;
-          clip_length?: string | null;
-          shampoo_type?: string | null;
-          special_treatments?: string | null;
-          final_price?: number;
-          duration_minutes?: number | null;
+        Update: {
+          id?: string;
+          org_id?: string;
+          dog_id?: string;
+          owner_id?: string;
+          room_id?: string | null;
+          start_date?: string;
+          end_date?: string;
+          status?: string | null;
+          total_price?: number | null;
+          discount_amount?: number | null;
           notes?: string | null;
-          before_photos?: string[] | null;
-          after_photos?: string[] | null;
-          next_appointment_recommended?: string | null;
-          created_at?: string;
+          created_at?: string | null;
+          updated_at?: string | null;
         };
-        Update: Partial<{
-          org_id: string | null;
-          dog_id: string | null;
-          appointment_date: string;
-          service_type: string;
-          clip_length: string | null;
-          shampoo_type: string | null;
-          special_treatments: string | null;
-          final_price: number;
-          duration_minutes: number | null;
-          notes: string | null;
-          before_photos: string[] | null;
-          after_photos: string[] | null;
-          next_appointment_recommended: string | null;
-          created_at: string;
-        }>;
+        Relationships: [
+          {
+            foreignKeyName: "bookings_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bookings_dog_id_fkey";
+            columns: ["dog_id"];
+            referencedRelation: "dogs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bookings_owner_id_fkey";
+            columns: ["owner_id"];
+            referencedRelation: "owners";
+            referencedColumns: ["id"];
+          },
+        ];
       };
-
-      // === EXTRA TJÄNSTER ===
       extra_services: {
         Row: {
           id: string;
@@ -370,229 +383,52 @@ export interface Database {
           branch_id: string | null;
           label: string;
           price: number;
-          unit: string; // "per gång", "per dag", "fast pris"
-          service_type: "boarding" | "daycare" | "both";
-          created_at: string;
-          updated_at: string;
+          unit: string;
+          service_type: string | null;
+          is_active: boolean | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["extra_services"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<
-          Database["public"]["Tables"]["extra_services"]["Insert"]
-        >;
-      };
-
-      // === UTFÖRDA EXTRA TJÄNSTER ===
-      extra_service_performed: {
-        Row: {
-          id: string;
+        Insert: {
+          id?: string;
           org_id: string;
-          dog_id: string;
-          extra_service_id: string;
-          booking_id: string | null; // Kan kopplas till bokning
-          quantity: number;
-          performed_at: string;
-          notes: string | null;
-          created_at: string;
+          branch_id?: string | null;
+          label: string;
+          price: number;
+          unit: string;
+          service_type?: string | null;
+          is_active?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["extra_service_performed"]["Row"],
-          "id" | "created_at"
-        >;
-        Update: Partial<
-          Database["public"]["Tables"]["extra_service_performed"]["Insert"]
-        >;
-      };
-
-      // === HUNDJOURNAL ===
-      dog_journal: {
-        Row: {
-          id: string;
-          org_id: string;
-          dog_id: string;
-          text: string;
-          journal_type: "general" | "medical" | "behavior" | "feeding";
-          created_by: string | null;
-          created_at: string;
+        Update: {
+          id?: string;
+          org_id?: string;
+          branch_id?: string | null;
+          label?: string;
+          price?: number;
+          unit?: string;
+          service_type?: string | null;
+          is_active?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
         };
-        Insert: Omit<
-          Database["public"]["Tables"]["dog_journal"]["Row"],
-          "id" | "created_at"
-        >;
-        Update: Partial<Database["public"]["Tables"]["dog_journal"]["Insert"]>;
-      };
-
-      // === PRISLISTOR ===
-      price_lists: {
-        Row: {
-          id: string;
-          org_id: string;
-          effective_from: string;
-          items: any; // JSON
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: Omit<
-          Database["public"]["Tables"]["price_lists"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<Database["public"]["Tables"]["price_lists"]["Insert"]>;
-      };
-
-      // === PENSIONATSPRISER ===
-      boarding_prices: {
-        Row: {
-          id: string;
-          org_id: string;
-          size_category: string; // "small", "medium", "large", "xlarge"
-          base_price: number;
-          weekend_multiplier: number;
-          holiday_multiplier: number;
-          high_season_multiplier: number;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: Omit<
-          Database["public"]["Tables"]["boarding_prices"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<
-          Database["public"]["Tables"]["boarding_prices"]["Insert"]
-        >;
-      };
-
-      // === SÄSONGER ===
-      boarding_seasons: {
-        Row: {
-          id: string;
-          org_id: string;
-          name: string;
-          start_date: string;
-          end_date: string;
-          type: "high" | "low" | "holiday";
-          created_at: string;
-        };
-        Insert: Omit<
-          Database["public"]["Tables"]["boarding_seasons"]["Row"],
-          "id" | "created_at"
-        >;
-        Update: Partial<
-          Database["public"]["Tables"]["boarding_seasons"]["Insert"]
-        >;
-      };
-
-      // === ÄGARRABATTER ===
-      owner_discounts: {
-        Row: {
-          id: string;
-          org_id: string;
-          owner_id: string;
-          discount_name: string;
-          discount_percent: number;
-          valid_from: string | null;
-          valid_to: string | null;
-          created_at: string;
-        };
-        Insert: Omit<
-          Database["public"]["Tables"]["owner_discounts"]["Row"],
-          "id" | "created_at"
-        >;
-        Update: Partial<
-          Database["public"]["Tables"]["owner_discounts"]["Insert"]
-        >;
-      };
-
-      // === FAKTUROR ===
-      invoices: {
-        Row: {
-          id: string;
-          org_id: string;
-          owner_id: string;
-          dog_id: string | null;
-          invoice_number: string;
-          month: string; // "2024-10"
-          total_amount: number;
-          vat_amount: number;
-          status: "draft" | "sent" | "paid" | "overdue";
-          due_date: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: Omit<
-          Database["public"]["Tables"]["invoices"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<Database["public"]["Tables"]["invoices"]["Insert"]>;
-      };
-
-      // === INTRESSEANMÄLNINGAR ===
-      interest_applications: {
-        Row: {
-          id: string;
-          org_id: string;
-          parent_name: string;
-          parent_email: string;
-          parent_phone: string;
-          dog_name: string;
-          dog_breed: string | null;
-          dog_age: number | null;
-          dog_size: "small" | "medium" | "large";
-          preferred_start_date: string | null;
-          preferred_days: string[] | null;
-          special_needs: string | null;
-          previous_daycare_experience: boolean | null;
-          status: "pending" | "contacted" | "accepted" | "declined";
-          notes: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: Omit<
-          Database["public"]["Tables"]["interest_applications"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<
-          Database["public"]["Tables"]["interest_applications"]["Insert"]
-        >;
-      };
-
-      // === DAGISTJÄNSTER (Kloklipp, tassklipp, bad) ===
-      daycare_service_completions: {
-        Row: {
-          id: string;
-          org_id: string | null;
-          dog_id: string | null;
-          service_type: "kloklipp" | "tassklipp" | "bad";
-          scheduled_date: string;
-          completed_at: string | null;
-          completed_by: string | null;
-          notes: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: Omit<
-          Database["public"]["Tables"]["daycare_service_completions"]["Row"],
-          "id" | "created_at" | "updated_at"
-        >;
-        Update: Partial<
-          Database["public"]["Tables"]["daycare_service_completions"]["Insert"]
-        >;
+        Relationships: [
+          {
+            foreignKeyName: "extra_services_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      [_ in never]: never;
-    };
-    Enums: {
-      [_ in never]: never;
-    };
+    Views: { [key: string]: never };
+    Functions: { [key: string]: never };
+    Enums: { [key: string]: never };
   };
 }
 
-// === HELPER TYPER ===
 export type Tables<T extends keyof Database["public"]["Tables"]> =
   Database["public"]["Tables"][T]["Row"];
 export type Inserts<T extends keyof Database["public"]["Tables"]> =
@@ -600,22 +436,8 @@ export type Inserts<T extends keyof Database["public"]["Tables"]> =
 export type Updates<T extends keyof Database["public"]["Tables"]> =
   Database["public"]["Tables"][T]["Update"];
 
-// === UTÖKADE TYPER MED RELATIONER ===
 export interface DogWithRelations extends Tables<"dogs"> {
   owners?: Tables<"owners"> | null;
   rooms?: Tables<"rooms"> | null;
   orgs?: Tables<"orgs"> | null;
-  extra_service_performed?: Tables<"extra_service_performed">[];
-  dog_journal?: Tables<"dog_journal">[];
-}
-
-export interface BookingWithRelations extends Tables<"bookings"> {
-  dogs?: Tables<"dogs"> | null;
-  owners?: Tables<"owners"> | null;
-  rooms?: Tables<"rooms"> | null;
-}
-
-export interface OwnerWithRelations extends Tables<"owners"> {
-  dogs?: Tables<"dogs">[];
-  owner_discounts?: Tables<"owner_discounts">[];
 }

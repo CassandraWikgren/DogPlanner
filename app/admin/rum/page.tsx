@@ -114,7 +114,7 @@ export default function AdminRumPage() {
         .from("rooms")
         .select("*")
         .eq("org_id", currentOrgId)
-        .order("room_number", { ascending: true });
+        .order("name", { ascending: true });
 
       if (roomsError) {
         throw new Error(
@@ -141,7 +141,24 @@ export default function AdminRumPage() {
         console.warn("Error loading bookings:", bookingsError);
       }
 
-      setRooms(roomsData || []);
+      const transformedRooms: RoomData[] = (roomsData || []).map((r: any) => ({
+        id: r.id,
+        room_number: r.name || "",
+        // Map existing room_type domains to local UI types (fallback to standard)
+        room_type:
+          r.room_type === "boarding" || r.room_type === "daycare"
+            ? "standard"
+            : "standard",
+        capacity: r.max_dogs ?? 0,
+        price_per_night: 0, // Not in schema – placeholder
+        description: r.notes || "",
+        amenities: [],
+        active: r.is_active ?? true,
+        floor: 1,
+        size_sqm: r.capacity_m2 ?? 0,
+      }));
+
+      setRooms(transformedRooms);
 
       // Transform bookings data
       const transformedBookings = (bookingsData || []).map((booking: any) => ({

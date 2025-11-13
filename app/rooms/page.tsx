@@ -85,7 +85,9 @@ export default function RoomsPage() {
 
   const fetchData = async () => {
     try {
-      if (!user || !currentOrgId) return;
+      if (!user || !currentOrgId) {
+        return;
+      }
       const orgId = currentOrgId as string;
 
       // Hämta rum
@@ -127,15 +129,18 @@ export default function RoomsPage() {
         })) || [];
       setDogs(processedDogs);
     } catch (error) {
+      // Mer detaljerad loggning för felsökning
       console.error(
         `${ERROR_CODES.DATABASE_CONNECTION} ROOMS_FETCH_ERROR:`,
-        error
+        error,
+        typeof error === "object" ? JSON.stringify(error) : null
       );
-      setError(
-        `Fel vid hämtning av data (ROOMS_FETCH_ERROR): ${
-          error instanceof Error ? error.message : "Okänt fel"
-        }`
-      );
+      const message =
+        (error as any)?.message ||
+        (error as any)?.details ||
+        (error as any)?.hint ||
+        "Okänt fel";
+      setError(`Fel vid hämtning av data (ROOMS_FETCH_ERROR): ${message}`);
     } finally {
       setLoading(false);
     }
@@ -207,7 +212,13 @@ export default function RoomsPage() {
 
   const handleSaveRoom = async (roomData: Partial<Room>) => {
     try {
-      const orgId = currentOrgId || (user as any)?.user_metadata?.org_id;
+      if (!currentOrgId) {
+        setError(
+          `${ERROR_CODES.VALIDATION} Organisation saknas – kan inte spara rum`
+        );
+        return;
+      }
+      const orgId = currentOrgId;
 
       if (editingRoom) {
         const { error } = await (supabase as any)
@@ -243,13 +254,15 @@ export default function RoomsPage() {
     } catch (error) {
       console.error(
         `${ERROR_CODES.DATABASE_CONNECTION} ROOMS_SAVE_ERROR:`,
-        error
+        error,
+        typeof error === "object" ? JSON.stringify(error) : null
       );
-      setError(
-        `Fel vid sparande av rum (ROOMS_SAVE_ERROR): ${
-          error instanceof Error ? error.message : "Okänt fel"
-        }`
-      );
+      const message =
+        (error as any)?.message ||
+        (error as any)?.details ||
+        (error as any)?.hint ||
+        "Okänt fel";
+      setError(`Fel vid sparande av rum (ROOMS_SAVE_ERROR): ${message}`);
     }
   };
 

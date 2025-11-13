@@ -253,7 +253,7 @@ export default function KalenderPage() {
       // Beräkna beläggning (approximation)
       const totalCapacity =
         roomFilter === "all"
-          ? rooms.reduce((sum, r) => sum + r.capacity_m2, 0)
+          ? rooms.reduce((sum, r) => sum + (r.capacity_m2 || 0), 0)
           : rooms.find((r) => r.id === roomFilter)?.capacity_m2 || 1;
 
       const usedCapacity = filteredBookings.reduce((sum, b) => {

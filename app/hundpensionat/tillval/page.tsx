@@ -12,7 +12,7 @@ interface ServiceFormData {
   label: string;
   price: number;
   unit: string;
-  service_type: "boarding" | "daycare" | "both";
+  service_type: "boarding" | "daycare" | "both" | "grooming" | "all";
 }
 
 const INITIAL_FORM: ServiceFormData = {
@@ -82,7 +82,8 @@ export default function TillvalstjansterPage() {
       label: service.label,
       price: service.price,
       unit: service.unit,
-      service_type: service.service_type,
+      service_type: (service.service_type ||
+        "all") as ServiceFormData["service_type"],
     });
     setIsAddingNew(false);
   }

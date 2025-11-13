@@ -320,7 +320,7 @@ export default function HunddagisPage() {
         return;
       }
 
-      setRooms(roomsData || []);
+      setRooms((roomsData as any as Room[]) || []);
       logDebug("success", `Hämtade ${roomsData?.length || 0} rum`);
     } catch (err: any) {
       logDebug(
