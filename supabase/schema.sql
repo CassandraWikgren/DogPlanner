@@ -460,10 +460,14 @@ CREATE TABLE IF NOT EXISTS price_lists (
 -- === PENSIONATPRISER ===
 -- === GRUNDPRISER PER HUNDSTORLEK ===
 -- Uppdaterat 2025-11-13: Borttaget holiday_surcharge och season_multiplier (ersätts av special_dates och boarding_seasons)
+-- === BOARDING PRICES (GRUNDPRISER PENSIONAT) ===
+-- Uppdaterad: 2025-11-13
+-- Enkel 2-nivå struktur: Grundpris + Helgtillägg
+-- Använd special_dates för specifika datum (högtider, event)
 CREATE TABLE IF NOT EXISTS boarding_prices (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
-  dog_size text CHECK (dog_size IN ('small', 'medium', 'large')) NOT NULL,
+  org_id uuid NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
+  dog_size text NOT NULL CHECK (dog_size IN ('small', 'medium', 'large')),
   base_price numeric NOT NULL,
   weekend_surcharge numeric DEFAULT 0,
   is_active boolean DEFAULT true,
@@ -473,8 +477,13 @@ CREATE TABLE IF NOT EXISTS boarding_prices (
 );
 
 COMMENT ON TABLE boarding_prices IS 'Grundpriser per hundstorlek. Small (<35cm), Medium (35-54cm), Large (>54cm). Pris per påbörjad kalenderdag inkl 25% moms.';
+COMMENT ON COLUMN boarding_prices.dog_size IS 'Hundstorlek: small (<35cm), medium (35-54cm), large (>54cm)';
 COMMENT ON COLUMN boarding_prices.base_price IS 'Grundpris per natt för vardag (måndag-torsdag), inkl 25% moms';
 COMMENT ON COLUMN boarding_prices.weekend_surcharge IS 'Fast påslag för helg (fredag-söndag), inkl 25% moms. Ersätts av special_dates om datum finns där.';
+
+CREATE INDEX IF NOT EXISTS idx_boarding_prices_org_id ON boarding_prices(org_id);
+CREATE INDEX IF NOT EXISTS idx_boarding_prices_dog_size ON boarding_prices(dog_size);
+CREATE INDEX IF NOT EXISTS idx_boarding_prices_active ON boarding_prices(is_active) WHERE is_active = true;
 
 -- === SPECIALDATUM (RÖDA DAGAR, EVENT, HÖGTIDER) ===
 -- Skapad 2025-11-13: Flexibla specialdatum med individuella påslag

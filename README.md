@@ -1,10 +1,108 @@
 AI får läsa README för att förstå DogPlanners uppbyggnad och syfte och kunna efterfölja det som står. Men AI får inte under några omständigheter ändra eller ta bort text ifrån README.md.
 
-<!-- Last updated: 2025-11-13 kväll (trigger cleanup) -->
+<!-- Last updated: 2025-11-13 kväll (boarding_prices fix + UI redesign) -->
 
 ---
 
 ## 🔄 Senaste Uppdateringar (13 november 2025)
+
+### 🎨 Admin Pricing Pages Redesign (13 november kl 22:00)
+
+**Problem:** Prissidor såg oprofessionella ut - text för stor, full bredd, dålig hierarki
+**Lösning:** Komplett redesign av hundpensionat + hunddagis prissidor för proffsigt intryck
+
+#### ✅ Design Improvements
+
+**Uppdaterade sidor:**
+
+- ✅ `app/admin/priser/pensionat/page.tsx` - Pensionat pricing
+- ✅ `app/admin/priser/dagis/page.tsx` - Dagis pricing
+
+**Designändringar:**
+
+```tsx
+// Layout: Luftig design istället för full bredd
+max-w-[1600px] → max-w-5xl  // ~896px istället av 1600px
+px-6 → px-8                  // Mer side padding
+
+// Typography: Mindre och mer professionellt
+h1: text-3xl → text-2xl      // Kompaktare headers
+emoji: text-4xl → text-2xl   // Mindre emojis
+labels: text-sm font-medium text-gray-700
+
+// Spacing: Tätare men inte trångt
+py-6 → py-5                  // Headers
+gap-6 → gap-5                // Grid spacing
+mt-6 → mt-5                  // Card margins
+
+// Input fields: Mer raffinerade
+h-10/h-11 → h-9             // Mindre höjd
+w-32 → w-24                 // Smalare price inputs
+text-base → text-sm         // Mindre text
+
+// Colors: Subtilare kontraster
+bg-blue-50 → bg-blue-50/50  // Mer transparent
+border-blue-200 → border-blue-100
+
+// Cards: Cleanare look
+Added: shadow-sm            // Subtle shadow
+pb-5 → pb-4                 // Kompaktare headers
+```
+
+**Resultat:**
+
+- ✅ Professionellt och genomtänkt utseende
+- ✅ Bättre visuell hierarki - lätt att se vad som är viktigt
+- ✅ Luftig layout med fokuserat innehåll
+- ✅ Konsekvent design mellan pensionat och dagis
+
+---
+
+### � Boarding Prices Database Fix (13 november kl 21:30)
+
+**Problem:** `boarding_prices` tabellen hade fel struktur - kolumn `size_category` istället av `dog_size`
+**Lösning:** Droppade och återskapade tabellen med korrekt schema
+
+#### ✅ Database Schema Fixed
+
+**Körda migrations:**
+
+- ✅ `2025-11-13_init_boarding_prices.sql` - Återskapa boarding_prices med rätt struktur
+
+**Vad fixades:**
+
+```sql
+-- ❌ GAMMAL STRUKTUR (fel kolumnnamn):
+size_category text           -- Fel namn!
+weekend_multiplier numeric   -- Onödiga multipliers
+holiday_multiplier numeric
+high_season_multiplier numeric
+
+-- ✅ NY STRUKTUR (korrekt):
+dog_size text CHECK (dog_size IN ('small', 'medium', 'large'))  -- Rätt namn
+base_price numeric           -- Grundpris vardag
+weekend_surcharge numeric    -- Fast helgtillägg (inte multiplier)
+
+-- Indexes tillagda:
+idx_boarding_prices_org_id
+idx_boarding_prices_dog_size
+idx_boarding_prices_active
+```
+
+**Testdata:**
+
+- Alla 62 organisationer fick automatiskt 3 grundpriser (small/medium/large)
+- 185 rader skapades (3 × 62 orgs)
+- Default priser: 400/450/500 kr + 100 kr helgtillägg
+
+**Resultat:**
+
+- ✅ Admin-sidan kan nu ladda grundpriser utan fel
+- ✅ Tabellen matchar kod-förväntningar (dog_size kolumn)
+- ✅ RLS disabled för development
+- ✅ Schema.sql uppdaterad med index och kommentarer
+
+---
 
 ### 🧹 Trigger Cleanup (13 november kl 20:30)
 

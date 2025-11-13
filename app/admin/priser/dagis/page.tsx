@@ -148,23 +148,23 @@ export default function DagisPriserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header - Kompakt och luftig */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-[1600px] mx-auto px-6 py-6">
+        <div className="max-w-5xl mx-auto px-8 py-5">
           <Link
             href="/admin"
-            className="inline-flex items-center text-[#2c7a4c] hover:underline mb-3"
+            className="inline-flex items-center text-sm text-gray-600 hover:text-[#2c7a4c] mb-4 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4 mr-1.5" />
             Tillbaka till Admin
           </Link>
           <div className="flex items-center gap-3">
-            <div className="text-4xl">🐕</div>
+            <div className="text-2xl">🐕</div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900">
                 Priser - Hunddagis
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-sm text-gray-600 mt-0.5">
                 Hantera priser för dagisabonnemang och enstaka dagar
               </p>
             </div>
@@ -172,35 +172,40 @@ export default function DagisPriserPage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="max-w-[1600px] mx-auto px-6 py-8">
-        {/* Messages */}
+      {/* Main Content - Luftig layout med max-w-5xl */}
+      <main className="max-w-5xl mx-auto px-8 py-6">
+        {/* Messages - Kompakta */}
         {success && (
-          <div className="mb-6 rounded-lg border border-green-300 bg-green-50 px-4 py-3 flex items-center gap-3">
-            <CheckCircle className="w-5 h-5 text-green-600" />
-            <span className="text-green-800">{success}</span>
+          <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-2.5 flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-green-700 flex-shrink-0" />
+            <span className="text-sm text-green-800">{success}</span>
           </div>
         )}
         {error && (
-          <div className="mb-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600" />
-            <span className="text-red-700">{error}</span>
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-700 flex-shrink-0" />
+            <span className="text-sm text-red-800">{error}</span>
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Abonnemangspriser */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <Card className="shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-[#2c7a4c]" />
                 Abonnemangspriser (per månad)
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-0">
               <div>
-                <Label htmlFor="parttime2">Deltid 2 (2 dagar/vecka)</Label>
-                <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="parttime2"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Deltid 2 (2 dagar/vecka)
+                </Label>
+                <div className="flex items-center gap-2 mt-1.5">
                   <Input
                     id="parttime2"
                     type="number"
@@ -211,9 +216,11 @@ export default function DagisPriserPage() {
                         parseFloat(e.target.value)
                       )
                     }
-                    className="flex-1"
+                    className="flex-1 h-9 text-sm"
                   />
-                  <span className="text-gray-600">kr/mån</span>
+                  <span className="text-sm text-gray-600 whitespace-nowrap">
+                    kr/mån
+                  </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Två fasta veckodagar
@@ -221,8 +228,13 @@ export default function DagisPriserPage() {
               </div>
 
               <div>
-                <Label htmlFor="parttime3">Deltid 3 (3 dagar/vecka)</Label>
-                <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="parttime3"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Deltid 3 (3 dagar/vecka)
+                </Label>
+                <div className="flex items-center gap-2 mt-1.5">
                   <Input
                     id="parttime3"
                     type="number"
@@ -233,9 +245,11 @@ export default function DagisPriserPage() {
                         parseFloat(e.target.value)
                       )
                     }
-                    className="flex-1"
+                    className="flex-1 h-9 text-sm"
                   />
-                  <span className="text-gray-600">kr/mån</span>
+                  <span className="text-sm text-gray-600 whitespace-nowrap">
+                    kr/mån
+                  </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Tre fasta veckodagar
@@ -243,8 +257,13 @@ export default function DagisPriserPage() {
               </div>
 
               <div>
-                <Label htmlFor="fulltime">Heltid (5 dagar/vecka)</Label>
-                <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="fulltime"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Heltid (5 dagar/vecka)
+                </Label>
+                <div className="flex items-center gap-2 mt-1.5">
                   <Input
                     id="fulltime"
                     type="number"
@@ -255,9 +274,11 @@ export default function DagisPriserPage() {
                         parseFloat(e.target.value)
                       )
                     }
-                    className="flex-1"
+                    className="flex-1 h-9 text-sm"
                   />
-                  <span className="text-gray-600">kr/mån</span>
+                  <span className="text-sm text-gray-600 whitespace-nowrap">
+                    kr/mån
+                  </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Måndag till fredag, alla veckodagar
@@ -267,17 +288,22 @@ export default function DagisPriserPage() {
           </Card>
 
           {/* Övriga priser */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <Card className="shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-[#2c7a4c]" />
                 Övriga priser
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-0">
               <div>
-                <Label htmlFor="single">Dagshund (enstaka dag)</Label>
-                <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="single"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Dagshund (enstaka dag)
+                </Label>
+                <div className="flex items-center gap-2 mt-1.5">
                   <Input
                     id="single"
                     type="number"
@@ -288,9 +314,11 @@ export default function DagisPriserPage() {
                         parseFloat(e.target.value)
                       )
                     }
-                    className="flex-1"
+                    className="flex-1 h-9 text-sm"
                   />
-                  <span className="text-gray-600">kr/dag</span>
+                  <span className="text-sm text-gray-600 whitespace-nowrap">
+                    kr/dag
+                  </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   För kunder utan abonnemang (drop-in)
@@ -298,8 +326,13 @@ export default function DagisPriserPage() {
               </div>
 
               <div>
-                <Label htmlFor="additional">Tilläggsdagar för dagishund</Label>
-                <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="additional"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Tilläggsdagar för dagishund
+                </Label>
+                <div className="flex items-center gap-2 mt-1.5">
                   <Input
                     id="additional"
                     type="number"
@@ -310,9 +343,11 @@ export default function DagisPriserPage() {
                         parseFloat(e.target.value)
                       )
                     }
-                    className="flex-1"
+                    className="flex-1 h-9 text-sm"
                   />
-                  <span className="text-gray-600">kr/dag</span>
+                  <span className="text-sm text-gray-600 whitespace-nowrap">
+                    kr/dag
+                  </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Extra dagar utöver abonnemang
@@ -320,8 +355,13 @@ export default function DagisPriserPage() {
               </div>
 
               <div>
-                <Label htmlFor="trial">Provdag</Label>
-                <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="trial"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Provdag
+                </Label>
+                <div className="flex items-center gap-2 mt-1.5">
                   <Input
                     id="trial"
                     type="number"
@@ -332,9 +372,11 @@ export default function DagisPriserPage() {
                         parseFloat(e.target.value)
                       )
                     }
-                    className="flex-1"
+                    className="flex-1 h-9 text-sm"
                   />
-                  <span className="text-gray-600">kr/dag</span>
+                  <span className="text-sm text-gray-600 whitespace-nowrap">
+                    kr/dag
+                  </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Första gången en hund testar dagiset
@@ -342,8 +384,13 @@ export default function DagisPriserPage() {
               </div>
 
               <div>
-                <Label htmlFor="sibling">Syskonrabatt</Label>
-                <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="sibling"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Syskonrabatt
+                </Label>
+                <div className="flex items-center gap-2 mt-1.5">
                   <Input
                     id="sibling"
                     type="number"
@@ -354,9 +401,9 @@ export default function DagisPriserPage() {
                         parseFloat(e.target.value)
                       )
                     }
-                    className="flex-1"
+                    className="flex-1 h-9 text-sm"
                   />
-                  <span className="text-gray-600">%</span>
+                  <span className="text-sm text-gray-600">%</span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Rabatt på andra hunden från samma ägare
@@ -367,15 +414,15 @@ export default function DagisPriserPage() {
         </div>
 
         {/* Info Box */}
-        <Card className="mt-6 bg-blue-50 border-blue-200">
-          <CardContent className="pt-6">
+        <Card className="mt-5 bg-blue-50/50 border-blue-100 shadow-sm">
+          <CardContent className="pt-5">
             <div className="flex items-start gap-3">
-              <TrendingUp className="w-5 h-5 text-blue-600 mt-0.5" />
+              <TrendingUp className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold text-blue-900 mb-2">
+                <h3 className="text-sm font-semibold text-blue-900 mb-2">
                   💡 Tips för prissättning
                 </h3>
-                <ul className="text-sm text-blue-800 space-y-1.5">
+                <ul className="text-sm text-blue-800 space-y-1 leading-relaxed">
                   <li>
                     • <strong>Deltid 2:</strong> Två fasta veckodagar (t.ex.
                     måndag & onsdag)
