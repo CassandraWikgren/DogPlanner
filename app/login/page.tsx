@@ -117,25 +117,6 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-10 border border-gray-100">
-        {/* Logo/Icon */}
-        <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-[#2c7a4c] rounded-2xl flex items-center justify-center shadow-md">
-            <svg
-              className="w-10 h-10 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
-          </div>
-        </div>
-
         <h1 className="text-3xl font-bold text-[#2c7a4c] text-center mb-8">
           {resetMode ? "Återställ lösenord" : "Logga in till DogPlanner"}
         </h1>
