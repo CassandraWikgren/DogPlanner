@@ -20,17 +20,20 @@ import {
   TrendingUp,
   Dog,
   Sparkles,
+  HelpCircle,
+  Info,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 
 /**
  * PRISSYSTEM FÖR HUNDPENSIONAT
- * 
+ *
  * 3-LAGERS ARKITEKTUR:
  * 1. Grundpriser (boarding_prices) - base_price + weekend_surcharge per hundstorlek
  * 2. Specialdatum (special_dates) - röda dagar, högtider, event med individual price_surcharge
  * 3. Säsonger (boarding_seasons) - sommar, vinter, sportlov med price_multiplier
- * 
+ *
  * PRISBERÄKNING:
  * final_price = (base_price + (special_date_surcharge || weekend_surcharge)) × season_multiplier
  */
@@ -99,6 +102,7 @@ export default function PensionatPriserPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   // Data state
   const [boardingPrices, setBoardingPrices] = useState<BoardingPrice[]>([]);
@@ -163,9 +167,13 @@ export default function PensionatPriserPage() {
       if (error) throw error;
 
       // Ensure all 3 sizes exist
-      const sizes: ("small" | "medium" | "large")[] = ["small", "medium", "large"];
+      const sizes: ("small" | "medium" | "large")[] = [
+        "small",
+        "medium",
+        "large",
+      ];
       const existingSizes = new Set(data?.map((p) => p.dog_size) || []);
-      
+
       const missingPrices = sizes
         .filter((size) => !existingSizes.has(size))
         .map((size) => ({
@@ -268,8 +276,14 @@ export default function PensionatPriserPage() {
             {
               org_id: currentOrgId,
               dog_size: size,
-              base_price: field === "base_price" ? value : existingPrice?.base_price || 400,
-              weekend_surcharge: field === "weekend_surcharge" ? value : existingPrice?.weekend_surcharge || 100,
+              base_price:
+                field === "base_price"
+                  ? value
+                  : existingPrice?.base_price || 400,
+              weekend_surcharge:
+                field === "weekend_surcharge"
+                  ? value
+                  : existingPrice?.weekend_surcharge || 100,
               is_active: true,
             },
           ])
@@ -284,7 +298,9 @@ export default function PensionatPriserPage() {
         );
       }
 
-      setSuccess(`✅ ${field === "base_price" ? "Grundpris" : "Helgtillägg"} uppdaterat!`);
+      setSuccess(
+        `✅ ${field === "base_price" ? "Grundpris" : "Helgtillägg"} uppdaterat!`
+      );
       setTimeout(() => setSuccess(null), 2000);
     } catch (err: any) {
       console.error("Error updating price:", err);
@@ -317,7 +333,12 @@ export default function PensionatPriserPage() {
       if (error) throw error;
 
       setSpecialDates([...specialDates, data]);
-      setNewSpecialDate({ date: "", name: "", category: "custom", price_surcharge: 0 });
+      setNewSpecialDate({
+        date: "",
+        name: "",
+        category: "custom",
+        price_surcharge: 0,
+      });
       setSuccess("✅ Specialdatum tillagt!");
       setTimeout(() => setSuccess(null), 2000);
     } catch (err: any) {
@@ -349,7 +370,12 @@ export default function PensionatPriserPage() {
   // ===========================
 
   const handleAddSeason = async () => {
-    if (!currentOrgId || !newSeason.name || !newSeason.start_date || !newSeason.end_date) {
+    if (
+      !currentOrgId ||
+      !newSeason.name ||
+      !newSeason.start_date ||
+      !newSeason.end_date
+    ) {
       setError("Fyll i namn, start- och slutdatum");
       return;
     }
@@ -369,7 +395,13 @@ export default function PensionatPriserPage() {
       if (error) throw error;
 
       setSeasons([...seasons, data]);
-      setNewSeason({ name: "", start_date: "", end_date: "", price_multiplier: 1.0, priority: 50 });
+      setNewSeason({
+        name: "",
+        start_date: "",
+        end_date: "",
+        price_multiplier: 1.0,
+        priority: 50,
+      });
       setSuccess("✅ Säsong tillagd!");
       setTimeout(() => setSuccess(null), 2000);
     } catch (err: any) {
@@ -500,16 +532,27 @@ export default function PensionatPriserPage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Tillbaka till Admin
           </Link>
-          <div className="flex items-center gap-3">
-            <div className="text-4xl">🏨</div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Priser - Hundpensionat
-              </h1>
-              <p className="text-gray-600 mt-1">
-                3-lagers prissystem: Grundpriser → Specialdatum → Säsonger
-              </p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="text-4xl">🏨</div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Priser - Hundpensionat
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  3-lagers prissystem: Grundpriser → Specialdatum → Säsonger
+                </p>
+              </div>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowHelpModal(true)}
+              className="text-[#2c7a4c] border-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white"
+            >
+              <HelpCircle className="w-4 h-4 mr-2" />
+              Hur fungerar prissystemet?
+            </Button>
           </div>
         </div>
       </div>
@@ -588,7 +631,8 @@ export default function PensionatPriserPage() {
             <CardHeader>
               <CardTitle>Grundpriser per hundstorlek</CardTitle>
               <p className="text-sm text-gray-600 mt-2">
-                Pris per natt baserat på hundens mankhöjd. Helgtillägg gäller fredag, lördag, söndag.
+                Pris per natt baserat på hundens mankhöjd. Helgtillägg gäller
+                fredag, lördag, söndag.
               </p>
             </CardHeader>
             <CardContent>
@@ -596,15 +640,26 @@ export default function PensionatPriserPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-semibold">Hundstorlek</th>
-                      <th className="text-left py-3 px-4 font-semibold">Höjd (mankhöjd)</th>
-                      <th className="text-left py-3 px-4 font-semibold">Grundpris/natt</th>
-                      <th className="text-left py-3 px-4 font-semibold">Helgtillägg</th>
+                      <th className="text-left py-3 px-4 font-semibold">
+                        Hundstorlek
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold">
+                        Höjd (mankhöjd)
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold">
+                        Grundpris/natt
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold">
+                        Helgtillägg
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {boardingPrices.map((price) => (
-                      <tr key={price.dog_size} className="border-b hover:bg-gray-50">
+                      <tr
+                        key={price.dog_size}
+                        className="border-b hover:bg-gray-50"
+                      >
                         <td className="py-4 px-4 font-medium">
                           {price.dog_size === "small" && "🐕 Liten"}
                           {price.dog_size === "medium" && "🐕 Mellan"}
@@ -632,7 +687,11 @@ export default function PensionatPriserPage() {
                               }}
                               onBlur={(e) => {
                                 const val = parseFloat(e.target.value) || 0;
-                                handleUpdateBasePrice(price.dog_size, "base_price", val);
+                                handleUpdateBasePrice(
+                                  price.dog_size,
+                                  "base_price",
+                                  val
+                                );
                               }}
                               className="w-32"
                             />
@@ -656,7 +715,11 @@ export default function PensionatPriserPage() {
                               }}
                               onBlur={(e) => {
                                 const val = parseFloat(e.target.value) || 0;
-                                handleUpdateBasePrice(price.dog_size, "weekend_surcharge", val);
+                                handleUpdateBasePrice(
+                                  price.dog_size,
+                                  "weekend_surcharge",
+                                  val
+                                );
                               }}
                               className="w-32"
                             />
@@ -670,12 +733,26 @@ export default function PensionatPriserPage() {
               </div>
 
               <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h4 className="font-semibold text-blue-900 mb-2">💡 Så fungerar prisberäkningen</h4>
+                <h4 className="font-semibold text-blue-900 mb-2">
+                  💡 Så fungerar prisberäkningen
+                </h4>
                 <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• Grundpris appliceras per påbörjad kalenderdag (incheckning tors → utcheckning fre = 2 dagar)</li>
-                  <li>• Specialdatum (se flik 2) har högsta prioritet och ersätter helgtillägg</li>
-                  <li>• Säsonger (se flik 3) multiplicerar slutpriset (t.ex. ×1.3 för sommar)</li>
-                  <li>• Exempel: 450 kr + 100 kr (helg) = 550 kr × 1.3 (sommar) = 715 kr/natt</li>
+                  <li>
+                    • Grundpris appliceras per påbörjad kalenderdag (incheckning
+                    tors → utcheckning fre = 2 dagar)
+                  </li>
+                  <li>
+                    • Specialdatum (se flik 2) har högsta prioritet och ersätter
+                    helgtillägg
+                  </li>
+                  <li>
+                    • Säsonger (se flik 3) multiplicerar slutpriset (t.ex. ×1.3
+                    för sommar)
+                  </li>
+                  <li>
+                    • Exempel: 450 kr + 100 kr (helg) = 550 kr × 1.3 (sommar) =
+                    715 kr/natt
+                  </li>
                 </ul>
               </div>
             </CardContent>
@@ -690,22 +767,35 @@ export default function PensionatPriserPage() {
               <CardHeader>
                 <CardTitle>Specialdatum & Röda dagar</CardTitle>
                 <p className="text-sm text-gray-600 mt-2">
-                  Enskilda datum med eget pristillägg. Ersätter helgtillägg om datum matchar.
+                  Enskilda datum med eget pristillägg. Ersätter helgtillägg om
+                  datum matchar.
                 </p>
               </CardHeader>
               <CardContent>
                 {specialDates.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">Inga specialdatum ännu. Lägg till nedan!</p>
+                  <p className="text-gray-500 text-center py-8">
+                    Inga specialdatum ännu. Lägg till nedan!
+                  </p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-semibold">Datum</th>
-                          <th className="text-left py-3 px-4 font-semibold">Namn</th>
-                          <th className="text-left py-3 px-4 font-semibold">Kategori</th>
-                          <th className="text-left py-3 px-4 font-semibold">Pristillägg</th>
-                          <th className="text-right py-3 px-4 font-semibold">Åtgärd</th>
+                          <th className="text-left py-3 px-4 font-semibold">
+                            Datum
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold">
+                            Namn
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold">
+                            Kategori
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold">
+                            Pristillägg
+                          </th>
+                          <th className="text-right py-3 px-4 font-semibold">
+                            Åtgärd
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -761,7 +851,10 @@ export default function PensionatPriserPage() {
                       type="date"
                       value={newSpecialDate.date}
                       onChange={(e) =>
-                        setNewSpecialDate({ ...newSpecialDate, date: e.target.value })
+                        setNewSpecialDate({
+                          ...newSpecialDate,
+                          date: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -772,7 +865,10 @@ export default function PensionatPriserPage() {
                       placeholder="t.ex. Midsommarafton"
                       value={newSpecialDate.name}
                       onChange={(e) =>
-                        setNewSpecialDate({ ...newSpecialDate, name: e.target.value })
+                        setNewSpecialDate({
+                          ...newSpecialDate,
+                          name: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -785,7 +881,11 @@ export default function PensionatPriserPage() {
                       onChange={(e) =>
                         setNewSpecialDate({
                           ...newSpecialDate,
-                          category: e.target.value as "red_day" | "holiday" | "event" | "custom",
+                          category: e.target.value as
+                            | "red_day"
+                            | "holiday"
+                            | "event"
+                            | "custom",
                         })
                       }
                     >
@@ -833,29 +933,49 @@ export default function PensionatPriserPage() {
               <CardHeader>
                 <CardTitle>Säsonger & Prisperioder</CardTitle>
                 <p className="text-sm text-gray-600 mt-2">
-                  Säsonger multiplicerar slutpriset. Vid överlapp används säsongen med högst prioritet.
+                  Säsonger multiplicerar slutpriset. Vid överlapp används
+                  säsongen med högst prioritet.
                 </p>
               </CardHeader>
               <CardContent>
                 {seasons.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">Inga säsonger ännu. Lägg till nedan!</p>
+                  <p className="text-gray-500 text-center py-8">
+                    Inga säsonger ännu. Lägg till nedan!
+                  </p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-semibold">Namn</th>
-                          <th className="text-left py-3 px-4 font-semibold">Startdatum</th>
-                          <th className="text-left py-3 px-4 font-semibold">Slutdatum</th>
-                          <th className="text-left py-3 px-4 font-semibold">Multiplikator</th>
-                          <th className="text-left py-3 px-4 font-semibold">Prioritet</th>
-                          <th className="text-right py-3 px-4 font-semibold">Åtgärd</th>
+                          <th className="text-left py-3 px-4 font-semibold">
+                            Namn
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold">
+                            Startdatum
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold">
+                            Slutdatum
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold">
+                            Multiplikator
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold">
+                            Prioritet
+                          </th>
+                          <th className="text-right py-3 px-4 font-semibold">
+                            Åtgärd
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         {seasons.map((season) => (
-                          <tr key={season.id} className="border-b hover:bg-gray-50">
-                            <td className="py-3 px-4 font-medium">{season.name}</td>
+                          <tr
+                            key={season.id}
+                            className="border-b hover:bg-gray-50"
+                          >
+                            <td className="py-3 px-4 font-medium">
+                              {season.name}
+                            </td>
                             <td className="py-3 px-4">{season.start_date}</td>
                             <td className="py-3 px-4">{season.end_date}</td>
                             <td className="py-3 px-4 font-semibold text-orange-700">
@@ -909,7 +1029,10 @@ export default function PensionatPriserPage() {
                       type="date"
                       value={newSeason.start_date}
                       onChange={(e) =>
-                        setNewSeason({ ...newSeason, start_date: e.target.value })
+                        setNewSeason({
+                          ...newSeason,
+                          start_date: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -983,7 +1106,9 @@ export default function PensionatPriserPage() {
               </CardHeader>
               <CardContent>
                 {extraServices.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">Inga tillvalstjänster ännu. Lägg till nedan!</p>
+                  <p className="text-gray-500 text-center py-8">
+                    Inga tillvalstjänster ännu. Lägg till nedan!
+                  </p>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {extraServices.map((service) => (
@@ -992,7 +1117,9 @@ export default function PensionatPriserPage() {
                         className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                       >
                         <div className="flex items-start justify-between mb-2">
-                          <h4 className="font-semibold text-gray-900">{service.label}</h4>
+                          <h4 className="font-semibold text-gray-900">
+                            {service.label}
+                          </h4>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -1005,7 +1132,9 @@ export default function PensionatPriserPage() {
                         <div className="text-lg font-bold text-green-700">
                           {service.price} kr
                         </div>
-                        <div className="text-sm text-gray-600">{service.unit}</div>
+                        <div className="text-sm text-gray-600">
+                          {service.unit}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1058,7 +1187,10 @@ export default function PensionatPriserPage() {
                       onChange={(e) =>
                         setNewService({
                           ...newService,
-                          unit: e.target.value as "per dag" | "per gång" | "fast pris",
+                          unit: e.target.value as
+                            | "per dag"
+                            | "per gång"
+                            | "fast pris",
                         })
                       }
                     >
@@ -1080,6 +1212,287 @@ export default function PensionatPriserPage() {
           </div>
         )}
       </main>
+
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Info className="w-6 h-6 text-[#2c7a4c]" />
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Så fungerar prissystemet
+                </h2>
+              </div>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="px-6 py-6 space-y-6">
+              {/* Overview */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                  <span className="text-2xl">🎯</span>
+                  Översikt: 3-lagers prissystem
+                </h3>
+                <p className="text-blue-800 text-sm mb-3">
+                  Prissystemet bygger på tre lager som staplas på varandra för
+                  att skapa det slutgiltiga priset:
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-start gap-2">
+                    <span className="font-bold text-blue-900">1.</span>
+                    <div>
+                      <span className="font-semibold text-blue-900">
+                        Grundpris
+                      </span>{" "}
+                      - Baserat på hundstorlek (liten, mellan, stor)
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="font-bold text-blue-900">2.</span>
+                    <div>
+                      <span className="font-semibold text-blue-900">
+                        Tillägg
+                      </span>{" "}
+                      - Antingen specialdatum (högsta prio) eller helgtillägg
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="font-bold text-blue-900">3.</span>
+                    <div>
+                      <span className="font-semibold text-blue-900">
+                        Säsong
+                      </span>{" "}
+                      - Multiplicerar slutpriset (t.ex. ×1.3 för sommar)
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tab 1: Grundpriser */}
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <Dog className="w-5 h-5 text-[#2c7a4c]" />
+                  Flik 1: Grundpriser
+                </h3>
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <p className="text-sm text-gray-700">
+                    <strong>Vad är det?</strong> Grundpriset per natt baserat på
+                    hundens storlek (mankhöjd).
+                  </p>
+                  <div className="space-y-1 text-sm text-gray-700">
+                    <p>
+                      • <strong>Liten</strong> (&lt; 35 cm): Chihuahua, Tax,
+                      Yorkshire Terrier
+                    </p>
+                    <p>
+                      • <strong>Mellan</strong> (35-54 cm): Cocker Spaniel,
+                      Beagle, Border Collie
+                    </p>
+                    <p>
+                      • <strong>Stor</strong> (&gt; 54 cm): Golden Retriever,
+                      Schäfer, Bernhardiner
+                    </p>
+                  </div>
+                  <p className="text-sm text-gray-700">
+                    <strong>Helgtillägg:</strong> Extra belopp som läggs till
+                    fredag, lördag, söndag (om inget specialdatum finns).
+                  </p>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-2 text-sm text-yellow-800">
+                    💡 <strong>Tips:</strong> Sätt grundpriset till vad du vill
+                    ha för en "normal" vardag. Helgtillägg brukar vara 50-150
+                    kr.
+                  </div>
+                </div>
+              </div>
+
+              {/* Tab 2: Specialdatum */}
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-[#2c7a4c]" />
+                  Flik 2: Specialdatum
+                </h3>
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <p className="text-sm text-gray-700">
+                    <strong>Vad är det?</strong> Enskilda datum där du vill ha
+                    ett specifikt pristillägg (ersätter helgtillägg).
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    <strong>När används det?</strong> Röda dagar, midsommar,
+                    jul, påsk, lokala event, eller när du vill ha högre pris.
+                  </p>
+                  <div className="space-y-1 text-sm text-gray-700">
+                    <p>
+                      • <strong>Röd dag:</strong> Trettondedag jul, Kristi
+                      himmelsfärd (+75-100 kr)
+                    </p>
+                    <p>
+                      • <strong>Högtid:</strong> Påskdagen, Juldagen, Nyårsdagen
+                      (+150-200 kr)
+                    </p>
+                    <p>
+                      • <strong>Peak:</strong> Midsommarafton, Julafton,
+                      Nyårsafton (+300-400 kr)
+                    </p>
+                  </div>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-2 text-sm text-yellow-800">
+                    💡 <strong>Tips:</strong> Du har redan 38 svenska helgdagar
+                    förifyllda (2025-2026). Redigera priserna efter dina behov!
+                  </div>
+                </div>
+              </div>
+
+              {/* Tab 3: Säsonger */}
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-[#2c7a4c]" />
+                  Flik 3: Säsonger
+                </h3>
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <p className="text-sm text-gray-700">
+                    <strong>Vad är det?</strong> Perioder där du vill
+                    multiplicera priset (t.ex. sommar, vinter, sportlov).
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    <strong>Hur fungerar det?</strong> Säsongen multiplicerar
+                    (grundpris + tillägg). Exempel: 500 kr × 1.3 = 650 kr.
+                  </p>
+                  <div className="space-y-1 text-sm text-gray-700">
+                    <p>
+                      • <strong>Multiplikator 1.0</strong> = Inget påslag
+                      (normalpris)
+                    </p>
+                    <p>
+                      • <strong>Multiplikator 1.2</strong> = +20% (t.ex.
+                      sportlov)
+                    </p>
+                    <p>
+                      • <strong>Multiplikator 1.3</strong> = +30% (t.ex.
+                      sommarsäsong)
+                    </p>
+                  </div>
+                  <p className="text-sm text-gray-700">
+                    <strong>Prioritet:</strong> Om två säsonger överlappar,
+                    används den med högst prioritet (högre siffra = högre prio).
+                  </p>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-2 text-sm text-yellow-800">
+                    💡 <strong>Tips:</strong> Använd säsonger för längre
+                    perioder (veckor/månader), inte enskilda dagar.
+                  </div>
+                </div>
+              </div>
+
+              {/* Tab 4: Tillval */}
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-[#2c7a4c]" />
+                  Flik 4: Tillvalstjänster
+                </h3>
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <p className="text-sm text-gray-700">
+                    <strong>Vad är det?</strong> Extra tjänster som kunder kan
+                    välja till (påverkar inte grundpriset).
+                  </p>
+                  <div className="space-y-1 text-sm text-gray-700">
+                    <p>
+                      • <strong>Per dag:</strong> Matning av egen mat, medicin
+                      (t.ex. 50 kr/dag)
+                    </p>
+                    <p>
+                      • <strong>Per gång:</strong> Promenad, dusch, klippning
+                      (t.ex. 200 kr/gång)
+                    </p>
+                    <p>
+                      • <strong>Fast pris:</strong> Transportavgift, startpaket
+                      (t.ex. 300 kr totalt)
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Exempel */}
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <span className="text-2xl">🧮</span>
+                  Exempel: Komplett prisberäkning
+                </h3>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-2">
+                  <p className="text-sm text-green-900 font-semibold">
+                    Mellan hund, 2 nätter (fredag-lördag), midsommarafton +
+                    midsommardagen, sommar:
+                  </p>
+                  <div className="space-y-1 text-sm text-green-800 ml-4">
+                    <p>
+                      <strong>Natt 1 (Midsommarafton fredag):</strong>
+                    </p>
+                    <p className="ml-4">• Grundpris: 450 kr</p>
+                    <p className="ml-4">• Specialdatum (midsommar): +400 kr</p>
+                    <p className="ml-4">• Summa: 850 kr</p>
+                    <p className="ml-4">
+                      • Sommar (×1.3): <strong>1105 kr</strong>
+                    </p>
+
+                    <p className="mt-2">
+                      <strong>Natt 2 (Midsommardagen lördag):</strong>
+                    </p>
+                    <p className="ml-4">• Grundpris: 450 kr</p>
+                    <p className="ml-4">• Specialdatum (midsommar): +300 kr</p>
+                    <p className="ml-4">• Summa: 750 kr</p>
+                    <p className="ml-4">
+                      • Sommar (×1.3): <strong>975 kr</strong>
+                    </p>
+
+                    <p className="mt-2 font-bold">
+                      = Totalpris: 2080 kr för 2 nätter
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Viktigt att veta */}
+              <div>
+                <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-orange-600" />
+                  Viktigt att veta
+                </h3>
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 space-y-2 text-sm text-orange-900">
+                  <p>
+                    • <strong>Per påbörjad kalenderdag:</strong> Incheckning
+                    torsdag + utcheckning fredag = 2 dagar (torsdag + fredag).
+                  </p>
+                  <p>
+                    • <strong>Prioritet för tillägg:</strong> Specialdatum
+                    ALLTID före helgtillägg. Om fredag är midsommarafton används
+                    specialdatum, inte helgtillägg.
+                  </p>
+                  <p>
+                    • <strong>Säsonger stackar inte:</strong> Endast EN säsong
+                    appliceras (den med högst prioritet vid överlapp).
+                  </p>
+                  <p>
+                    • <strong>Alla priser inkl. moms 25%.</strong>
+                  </p>
+                </div>
+              </div>
+
+              {/* Close button */}
+              <div className="flex justify-end pt-4 border-t">
+                <Button
+                  onClick={() => setShowHelpModal(false)}
+                  className="bg-[#2c7a4c] hover:bg-[#236139]"
+                >
+                  Stäng och börja sätt priser
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
