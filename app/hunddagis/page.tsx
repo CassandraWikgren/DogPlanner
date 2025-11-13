@@ -450,9 +450,29 @@ export default function HunddagisPage() {
       )
       .subscribe();
 
+    // ✅ KRITISK FIX: Lyssna också på owners-tabellen
+    // När ägarinfo ändras måste hundlistan uppdateras för att visa rätt owner
+    const ownersSubscription = supabase
+      .channel("owners_changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "owners",
+          filter: `org_id=eq.${effectiveOrgId}`,
+        },
+        () => {
+          logDebug("info", "Ägare uppdaterade via realtime - refreshar hundar");
+          fetchDogs(); // Hämta hundar igen för att få nya owner-relationer
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(dogsSubscription);
       supabase.removeChannel(roomsSubscription);
+      supabase.removeChannel(ownersSubscription);
     };
   }, [effectiveOrgId, fetchDogs, fetchRooms, logDebug]);
 
@@ -1335,6 +1355,7 @@ export default function HunddagisPage() {
       {/* Edit Dog Modal */}
       {selectedDog && (
         <EditDogModal
+          key={selectedDog.id} // ✅ Unik key per hund - tvingar React att skapa ny instans vid hundebyte
           initialDog={selectedDog}
           open={!!selectedDog}
           onCloseAction={() => setSelectedDog(null)}
