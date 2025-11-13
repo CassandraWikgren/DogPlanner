@@ -3,7 +3,6 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
-import Image from "next/image";
 import DashboardWidgets from "@/components/DashboardWidgets";
 
 export default function AdminPage() {
@@ -22,27 +21,6 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Grön navbar upptill */}
-      <div className="bg-[#2c7a4c] shadow-lg">
-        <div className="max-w-[1600px] mx-auto px-6">
-          <div className="flex items-center h-20">
-            <Link
-              href="/dashboard"
-              className="flex items-center hover:opacity-90 transition-opacity"
-            >
-              <Image
-                src="/logo.png"
-                alt="DogPlanner"
-                width={70}
-                height={70}
-                priority
-                className="object-contain"
-              />
-            </Link>
-          </div>
-        </div>
-      </div>
-
       {/* Header med titel */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-[1600px] mx-auto px-6 py-8">
@@ -171,7 +149,7 @@ export default function AdminPage() {
 
             {/* Rum-hantering */}
             <Link
-              href="/rooms"
+              href="/admin/rum"
               className="group bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all border border-gray-200 hover:border-[#2c7a4c]"
             >
               <div className="flex items-center gap-4 mb-3">
