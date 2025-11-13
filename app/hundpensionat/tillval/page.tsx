@@ -195,33 +195,41 @@ export default function TillvalstjansterPage() {
         </div>
       )}
 
-      {/* Hero Section */}
+      {/* Hero Section - FIXAD */}
       <div
-        className="relative bg-cover bg-center pt-20 pb-28"
+        className="relative bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] py-12 overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url('/Hero.jpeg')`,
+          background: "linear-gradient(to bottom right, #2c7a4c, #1e5a36)",
         }}
       >
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+        {/* Bakgrundsmönster */}
+        <div
+          className="absolute inset-0 opacity-20 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')',
+          }}
+        />
+        <div className="relative z-10 max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
             🛎️ Tillvalstjänster
           </h1>
-          <p className="text-xl text-white/90">
+          <p className="text-lg text-white/90">
             Hantera extra tjänster för pensionat och dagis
           </p>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-16">
+      {/* Main Content - FIXAD STRUKTUR */}
+      <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 py-8">
         {error && (
           <div className="mb-6 bg-red-50 border border-red-300 rounded-lg p-4">
             <p className="text-red-800">{error}</p>
           </div>
         )}
 
-        {/* Info Box */}
-        <div className="bg-blue-50 border border-blue-300 rounded-lg p-4 mb-6">
+        {/* Info Box - KOMPAKT */}
+        <div className="bg-blue-50 border border-blue-300 rounded-lg p-3 mb-6">
           <p className="text-sm text-blue-800">
             <strong>💡 Tips:</strong> Vanliga tillvalstjänster inkluderar
             kloklipp, bad, trimning, tasstrim, hämtning/lämning, valptillägg
@@ -229,12 +237,12 @@ export default function TillvalstjansterPage() {
           </p>
         </div>
 
-        {/* Add New Button */}
+        {/* Add New Button - SYMMETRISK */}
         {!isAddingNew && !editingService && (
           <div className="mb-6 flex justify-end">
             <button
               onClick={handleAddNew}
-              className="flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium shadow-sm"
             >
               <Plus className="w-5 h-5" />
               Lägg till tjänst
@@ -242,11 +250,11 @@ export default function TillvalstjansterPage() {
           </div>
         )}
 
-        {/* Add/Edit Form */}
+        {/* Add/Edit Form - KOMPAKT */}
         {(isAddingNew || editingService) && (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-5 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">
                 {isAddingNew ? "Lägg till ny tjänst" : "Redigera tjänst"}
               </h2>
               <button

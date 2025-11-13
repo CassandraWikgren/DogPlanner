@@ -307,16 +307,24 @@ export default function HundpensionatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Med inline styles som fallback för Vercel */}
+      {/* Hero Section med bakgrundsbild */}
       <div
-        className="bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] pt-8 pb-12"
+        className="relative bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] py-12 overflow-hidden"
         style={{
           background: "linear-gradient(to bottom right, #2c7a4c, #1e5a36)",
-          paddingTop: "2rem",
+          paddingTop: "3rem",
           paddingBottom: "3rem",
         }}
       >
-        <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16 text-center">
+        {/* Bakgrundsbild med overlay */}
+        <div
+          className="absolute inset-0 opacity-20 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')',
+          }}
+        />
+        <div className="relative z-10 max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 text-center">
           <h1
             className="text-3xl md:text-4xl font-bold text-white mb-3"
             style={{
@@ -326,7 +334,7 @@ export default function HundpensionatPage() {
               marginBottom: "0.75rem",
             }}
           >
-            Hundpensionat
+            🏨 Hundpensionat
           </h1>
           <p
             className="text-white/90 text-lg max-w-2xl mx-auto"
@@ -343,7 +351,7 @@ export default function HundpensionatPage() {
         </div>
       </div>
       {/* Stats Cards - Flexbox med inline styles som fallback för Vercel */}
-      <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16 py-8">
+      <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 py-8">
         <div
           className="flex flex-wrap gap-6 mb-8"
           style={{
@@ -495,7 +503,7 @@ export default function HundpensionatPage() {
         </div>
       </div>
       {/* Main Content */}
-      <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16 pb-12">
+      <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 pb-12">
         {/* Kontroller */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">

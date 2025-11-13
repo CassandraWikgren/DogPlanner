@@ -361,7 +361,7 @@ export default function OwnersPage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16">
+        <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32">
           <Card>
             <CardContent className="p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
@@ -375,7 +375,7 @@ export default function OwnersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16">
+      <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">

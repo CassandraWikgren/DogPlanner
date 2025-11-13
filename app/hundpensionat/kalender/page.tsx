@@ -387,15 +387,23 @@ export default function KalenderPage() {
         </div>
       )}
 
-      {/* Hero Section - Samma som Dashboard, Hunddagis, Ekonomi, Hundpensionat */}
+      {/* Hero Section - FIXAD med bakgrundsbild */}
       <div
-        className="relative bg-cover bg-center pt-20 pb-28"
+        className="relative bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] py-12 overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url('/Hero.jpeg')`,
+          background: "linear-gradient(to bottom right, #2c7a4c, #1e5a36)",
         }}
       >
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+        {/* Bakgrundsmönster */}
+        <div
+          className="absolute inset-0 opacity-20 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')',
+          }}
+        />
+        <div className="relative z-10 max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
             📅 Pensionatkalender
           </h1>
           <p className="text-lg text-white/90 max-w-2xl mx-auto">
@@ -405,47 +413,47 @@ export default function KalenderPage() {
         </div>
       </div>
 
-      {/* Floating Stats Cards - Moderna kort som överlappar hero */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 -mt-12 mb-8">
+      {/* Stats Cards - SYMMETRISK GRID */}
+      <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 py-6">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-green-200 hover:shadow-xl transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Hundar inne</p>
-            <p className="text-3xl font-bold text-green-600">
+          <div className="bg-white rounded-lg shadow-sm p-4 border border-green-200 text-center">
+            <p className="text-xs text-gray-600 mb-1">Hundar inne</p>
+            <p className="text-2xl font-bold text-green-600">
               {stats.hundarInne}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-yellow-200 hover:shadow-xl transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Ankomster idag</p>
-            <p className="text-3xl font-bold text-yellow-600">
+          <div className="bg-white rounded-lg shadow-sm p-4 border border-yellow-200 text-center">
+            <p className="text-xs text-gray-600 mb-1">Ankomster idag</p>
+            <p className="text-2xl font-bold text-yellow-600">
               {stats.ankomsterIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-red-200 hover:shadow-xl transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Avresor idag</p>
-            <p className="text-3xl font-bold text-red-600">
+          <div className="bg-white rounded-lg shadow-sm p-4 border border-red-200 text-center">
+            <p className="text-xs text-gray-600 mb-1">Avresor idag</p>
+            <p className="text-2xl font-bold text-red-600">
               {stats.avresorIdag}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-200 hover:shadow-xl transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Totala bokningar</p>
-            <p className="text-3xl font-bold text-blue-600">
+          <div className="bg-white rounded-lg shadow-sm p-4 border border-blue-200 text-center">
+            <p className="text-xs text-gray-600 mb-1">Totala bokningar</p>
+            <p className="text-2xl font-bold text-blue-600">
               {stats.totalaBokningar}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-purple-200 hover:shadow-xl transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Aktiva rum</p>
-            <p className="text-3xl font-bold text-purple-600">
+          <div className="bg-white rounded-lg shadow-sm p-4 border border-purple-200 text-center">
+            <p className="text-xs text-gray-600 mb-1">Aktiva rum</p>
+            <p className="text-2xl font-bold text-purple-600">
               {stats.aktuellaRum}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow">
-            <p className="text-sm text-gray-600 mb-1">Ø Beläggning</p>
-            <p className="text-3xl font-bold text-[#2c7a4c]">
+          <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200 text-center">
+            <p className="text-xs text-gray-600 mb-1">Ø Beläggning</p>
+            <p className="text-2xl font-bold text-[#2c7a4c]">
               {stats.genomsnittBelaggning}%
             </p>
           </div>
