@@ -139,6 +139,9 @@ export default function PensionatPriserPage() {
   useEffect(() => {
     if (currentOrgId) {
       loadAllData();
+    } else {
+      // If no org ID, stop loading to prevent infinite spinner
+      setLoading(false);
     }
   }, [currentOrgId]);
 
@@ -515,6 +518,28 @@ export default function PensionatPriserPage() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c] mx-auto mb-4"></div>
           <p className="text-gray-600">Laddar priser...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentOrgId) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
+          <p className="text-gray-900 font-semibold mb-2">
+            Ingen organisation hittades
+          </p>
+          <p className="text-gray-600">
+            Du måste vara inloggad och tillhöra en organisation.
+          </p>
+          <Link
+            href="/login"
+            className="mt-4 inline-block text-[#2c7a4c] hover:underline"
+          >
+            Gå till inloggning →
+          </Link>
         </div>
       </div>
     );
