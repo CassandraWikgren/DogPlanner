@@ -22,14 +22,13 @@ interface DagisPricing {
   id?: string;
   org_id: string;
   // Abonnemangspriser (per månad)
-  subscription_1day: number;
-  subscription_2days: number;
-  subscription_3days: number;
-  subscription_4days: number;
-  subscription_5days: number;
+  subscription_parttime_2days: number; // Deltid 2 (2 dagar/vecka)
+  subscription_parttime_3days: number; // Deltid 3 (3 dagar/vecka)
+  subscription_fulltime: number; // Heltid (5 dagar/vecka)
   // Enstaka dagar
-  single_day_price: number;
-  // Rabatter
+  single_day_price: number; // Dagshund (drop-in)
+  additional_day_price: number; // Tilläggsdagar för dagishund
+  // Rabatter och övrigt
   sibling_discount_percent: number;
   trial_day_price: number;
   updated_at?: string;
@@ -46,12 +45,11 @@ export default function DagisPriserPage() {
 
   const [pricing, setPricing] = useState<DagisPricing>({
     org_id: currentOrgId || "",
-    subscription_1day: 1500,
-    subscription_2days: 2500,
-    subscription_3days: 3300,
-    subscription_4days: 4000,
-    subscription_5days: 4500,
+    subscription_parttime_2days: 2500,
+    subscription_parttime_3days: 3300,
+    subscription_fulltime: 4500,
     single_day_price: 350,
+    additional_day_price: 300,
     sibling_discount_percent: 10,
     trial_day_price: 200,
   });
@@ -101,12 +99,11 @@ export default function DagisPriserPage() {
 
       const dataToSave = {
         org_id: currentOrgId,
-        subscription_1day: pricing.subscription_1day,
-        subscription_2days: pricing.subscription_2days,
-        subscription_3days: pricing.subscription_3days,
-        subscription_4days: pricing.subscription_4days,
-        subscription_5days: pricing.subscription_5days,
+        subscription_parttime_2days: pricing.subscription_parttime_2days,
+        subscription_parttime_3days: pricing.subscription_parttime_3days,
+        subscription_fulltime: pricing.subscription_fulltime,
         single_day_price: pricing.single_day_price,
+        additional_day_price: pricing.additional_day_price,
         sibling_discount_percent: pricing.sibling_discount_percent,
         trial_day_price: pricing.trial_day_price,
         updated_at: new Date().toISOString(),
@@ -202,15 +199,15 @@ export default function DagisPriserPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="sub1">1 dag/vecka</Label>
+                <Label htmlFor="parttime2">Deltid 2 (2 dagar/vecka)</Label>
                 <div className="flex items-center gap-2">
                   <Input
-                    id="sub1"
+                    id="parttime2"
                     type="number"
-                    value={pricing.subscription_1day}
+                    value={pricing.subscription_parttime_2days}
                     onChange={(e) =>
                       handleChange(
-                        "subscription_1day",
+                        "subscription_parttime_2days",
                         parseFloat(e.target.value)
                       )
                     }
@@ -218,18 +215,21 @@ export default function DagisPriserPage() {
                   />
                   <span className="text-gray-600">kr/mån</span>
                 </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Två fasta veckodagar
+                </p>
               </div>
 
               <div>
-                <Label htmlFor="sub2">2 dagar/vecka</Label>
+                <Label htmlFor="parttime3">Deltid 3 (3 dagar/vecka)</Label>
                 <div className="flex items-center gap-2">
                   <Input
-                    id="sub2"
+                    id="parttime3"
                     type="number"
-                    value={pricing.subscription_2days}
+                    value={pricing.subscription_parttime_3days}
                     onChange={(e) =>
                       handleChange(
-                        "subscription_2days",
+                        "subscription_parttime_3days",
                         parseFloat(e.target.value)
                       )
                     }
@@ -237,18 +237,21 @@ export default function DagisPriserPage() {
                   />
                   <span className="text-gray-600">kr/mån</span>
                 </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Tre fasta veckodagar
+                </p>
               </div>
 
               <div>
-                <Label htmlFor="sub3">3 dagar/vecka</Label>
+                <Label htmlFor="fulltime">Heltid (5 dagar/vecka)</Label>
                 <div className="flex items-center gap-2">
                   <Input
-                    id="sub3"
+                    id="fulltime"
                     type="number"
-                    value={pricing.subscription_3days}
+                    value={pricing.subscription_fulltime}
                     onChange={(e) =>
                       handleChange(
-                        "subscription_3days",
+                        "subscription_fulltime",
                         parseFloat(e.target.value)
                       )
                     }
@@ -256,44 +259,9 @@ export default function DagisPriserPage() {
                   />
                   <span className="text-gray-600">kr/mån</span>
                 </div>
-              </div>
-
-              <div>
-                <Label htmlFor="sub4">4 dagar/vecka</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="sub4"
-                    type="number"
-                    value={pricing.subscription_4days}
-                    onChange={(e) =>
-                      handleChange(
-                        "subscription_4days",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="flex-1"
-                  />
-                  <span className="text-gray-600">kr/mån</span>
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="sub5">5 dagar/vecka (heltid)</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="sub5"
-                    type="number"
-                    value={pricing.subscription_5days}
-                    onChange={(e) =>
-                      handleChange(
-                        "subscription_5days",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="flex-1"
-                  />
-                  <span className="text-gray-600">kr/mån</span>
-                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Måndag till fredag, alla veckodagar
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -308,7 +276,7 @@ export default function DagisPriserPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="single">Enstaka dag (drop-in)</Label>
+                <Label htmlFor="single">Dagshund (enstaka dag)</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     id="single"
@@ -325,7 +293,29 @@ export default function DagisPriserPage() {
                   <span className="text-gray-600">kr/dag</span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  För kunder utan abonnemang
+                  För kunder utan abonnemang (drop-in)
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="additional">Tilläggsdagar för dagishund</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="additional"
+                    type="number"
+                    value={pricing.additional_day_price}
+                    onChange={(e) =>
+                      handleChange(
+                        "additional_day_price",
+                        parseFloat(e.target.value)
+                      )
+                    }
+                    className="flex-1"
+                  />
+                  <span className="text-gray-600">kr/dag</span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Extra dagar utöver abonnemang
                 </p>
               </div>
 
@@ -387,15 +377,31 @@ export default function DagisPriserPage() {
                 </h3>
                 <ul className="text-sm text-blue-800 space-y-1.5">
                   <li>
-                    • Helabonnemang (5 dagar) ger bäst pris per dag för kunden
+                    • <strong>Deltid 2:</strong> Två fasta veckodagar (t.ex.
+                    måndag & onsdag)
                   </li>
                   <li>
-                    • Enstaka dagar bör kosta mer än abonnemang för att motivera
-                    fast plats
+                    • <strong>Deltid 3:</strong> Tre fasta veckodagar (t.ex.
+                    måndag, onsdag, fredag)
                   </li>
-                  <li>• Provdagar kan sättas lägre för att locka nya kunder</li>
                   <li>
-                    • Syskonrabatt uppmuntrar till fler hundar från samma familj
+                    • <strong>Heltid:</strong> Alla veckodagar (måndag-fredag) -
+                    bäst pris per dag
+                  </li>
+                  <li>
+                    • <strong>Dagshund:</strong> Enstaka dagar utan abonnemang
+                    (drop-in)
+                  </li>
+                  <li>
+                    • <strong>Tilläggsdagar:</strong> Extra dagar för befintliga
+                    dagishundar
+                  </li>
+                  <li>
+                    • <strong>Provdag:</strong> Rabatterat pris för nya kunder
+                  </li>
+                  <li>
+                    • <strong>Syskonrabatt:</strong> Uppmuntrar fler hundar från
+                    samma familj
                   </li>
                 </ul>
               </div>
