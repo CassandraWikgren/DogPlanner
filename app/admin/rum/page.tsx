@@ -1,531 +1,284 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import {
   ArrowLeft,
   Home,
+  Plus,
   Edit,
+  Trash2,
   Save,
   X,
-  Plus,
-  Trash2,
   AlertTriangle,
-  Bed,
-  Users,
-  Calendar,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/AuthContext";
 
-interface RoomData {
+interface Room {
   id: string;
-  room_number: string;
-  room_type: "standard" | "premium" | "suite";
-  capacity: number;
-  price_per_night: number;
-  description?: string;
-  amenities?: string[];
-  active: boolean;
-  floor?: number;
-  size_sqm?: number;
+  name: string;
+  capacity_m2: number;
+  room_type: "daycare" | "boarding" | "both";
+  max_dogs?: number | null;
+  notes?: string | null;
+  is_active: boolean;
 }
 
-interface BookingData {
-  id: string;
-  room_id: string;
-  dog_name: string;
-  owner_name: string;
-  checkin_date: string;
-  checkout_date: string;
-  status: string;
-}
-
-/**
- * Admin Rum - Hantera rum och överblick
- * [ERR-1001] Databaskoppling, [ERR-4001] Uppdatering, [ERR-5001] Okänt fel
- */
 export default function AdminRumPage() {
   const { currentOrgId } = useAuth();
-  const [rooms, setRooms] = useState<RoomData[]>([]);
-  const [bookings, setBookings] = useState<BookingData[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<Partial<RoomData>>({});
-  const [saving, setSaving] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newRoom, setNewRoom] = useState<Partial<RoomData>>({
-    room_number: "",
-    room_type: "standard",
-    capacity: 1,
-    price_per_night: 0,
-    description: "",
-    amenities: [],
-    active: true,
-    floor: 1,
-    size_sqm: 0,
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Room>>({});
+  const [saving, setSaving] = useState(false);
+  const [newRoom, setNewRoom] = useState({
+    name: "",
+    capacity_m2: 0,
+    room_type: "both" as "daycare" | "boarding" | "both",
+    notes: "",
   });
 
   const roomTypes = [
-    {
-      value: "standard",
-      label: "Standard",
-      color: "bg-blue-100 text-blue-800",
-    },
-    {
-      value: "premium",
-      label: "Premium",
-      color: "bg-purple-100 text-purple-800",
-    },
-    { value: "suite", label: "Suite", color: "bg-yellow-100 text-yellow-800" },
-  ];
-
-  const amenitiesOptions = [
-    "Uteområde",
-    "Värme",
-    "Kyla",
-    "Leksaker",
-    "Extra säng",
-    "Fönster",
-    "Ljudisolering",
-    "Kamera",
+    { value: "daycare", label: "Dagis" },
+    { value: "boarding", label: "Pensionat" },
+    { value: "both", label: "Både dagis & pensionat" },
   ];
 
   useEffect(() => {
-    if (currentOrgId) {
-      loadData();
-    }
+    if (currentOrgId) fetchRooms();
   }, [currentOrgId]);
 
-  const loadData = async () => {
-    if (!currentOrgId) return;
-
-    setLoading(true);
-    setError(null);
-
+  const fetchRooms = async () => {
     try {
-      // Load rooms
-      const { data: roomsData, error: roomsError } = await supabase
+      setLoading(true);
+      setError(null);
+      if (!currentOrgId) return;
+
+      const { data, error: fetchError } = await supabase
         .from("rooms")
         .select("*")
         .eq("org_id", currentOrgId)
-        .order("name", { ascending: true });
+        .order("name");
 
-      if (roomsError) {
-        throw new Error(
-          `[ERR-1001] Databaskoppling rum: ${roomsError.message}`
-        );
-      }
-
-      // Load current bookings
-      const today = new Date().toISOString().split("T")[0];
-      const { data: bookingsData, error: bookingsError } = await supabase
-        .from("bookings")
-        .select(
-          `
-          id, room_id, checkin_date, checkout_date, status,
-          dogs(name),
-          owners(first_name, last_name)
-        `
-        )
-        .eq("org_id", currentOrgId)
-        .gte("checkout_date", today)
-        .eq("status", "confirmed");
-
-      if (bookingsError) {
-        console.warn("Error loading bookings:", bookingsError);
-      }
-
-      const transformedRooms: RoomData[] = (roomsData || []).map((r: any) => ({
-        id: r.id,
-        room_number: r.name || "",
-        // Map existing room_type domains to local UI types (fallback to standard)
-        room_type:
-          r.room_type === "boarding" || r.room_type === "daycare"
-            ? "standard"
-            : "standard",
-        capacity: r.max_dogs ?? 0,
-        price_per_night: 0, // Not in schema – placeholder
-        description: r.notes || "",
-        amenities: [],
-        active: r.is_active ?? true,
-        floor: 1,
-        size_sqm: r.capacity_m2 ?? 0,
-      }));
-
-      setRooms(transformedRooms);
-
-      // Transform bookings data
-      const transformedBookings = (bookingsData || []).map((booking: any) => ({
-        id: booking.id,
-        room_id: booking.room_id,
-        dog_name: booking.dogs?.name || "Okänd hund",
-        owner_name:
-          `${booking.owners?.first_name || ""} ${
-            booking.owners?.last_name || ""
-          }`.trim() || "Okänd ägare",
-        checkin_date: booking.checkin_date,
-        checkout_date: booking.checkout_date,
-        status: booking.status,
-      }));
-
-      setBookings(transformedBookings);
+      if (fetchError) throw fetchError;
+      setRooms((data as Room[]) || []);
     } catch (err: any) {
-      console.error("Error loading data:", err);
-      setError(err.message || "[ERR-5001] Okänt fel vid laddning av rum");
+      setError(err.message || "Kunde inte hämta rum");
     } finally {
       setLoading(false);
     }
   };
 
-  const getRoomStatus = (room: RoomData) => {
-    const today = new Date().toISOString().split("T")[0];
-    const activeBooking = bookings.find(
-      (booking) =>
-        booking.room_id === room.id &&
-        booking.checkin_date <= today &&
-        booking.checkout_date >= today
-    );
-
-    if (activeBooking) {
-      return {
-        status: "occupied",
-        booking: activeBooking,
-        color: "bg-red-100 text-red-800",
-      };
-    }
-
-    const upcomingBooking = bookings.find(
-      (booking) => booking.room_id === room.id && booking.checkin_date > today
-    );
-
-    if (upcomingBooking) {
-      return {
-        status: "reserved",
-        booking: upcomingBooking,
-        color: "bg-yellow-100 text-yellow-800",
-      };
-    }
-
-    return {
-      status: "available",
-      booking: null,
-      color: "bg-green-100 text-green-800",
-    };
-  };
-
-  const startEdit = (room: RoomData) => {
-    setEditingId(room.id);
-    setEditForm({ ...room });
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditForm({});
-  };
-
-  const saveEdit = async () => {
-    if (!editingId || !editForm) return;
-
-    setSaving(true);
-    try {
-      // Map UI fields to database schema, matching /rooms/page.tsx
-      const updateData: any = {
-        updated_at: new Date().toISOString(),
-      };
-
-      if (editForm.room_number !== undefined)
-        updateData.name = editForm.room_number;
-      if (editForm.size_sqm !== undefined)
-        updateData.capacity_m2 = editForm.size_sqm;
-      if (editForm.capacity !== undefined)
-        updateData.max_dogs = editForm.capacity;
-      if (editForm.description !== undefined)
-        updateData.notes = editForm.description;
-      if (editForm.active !== undefined) updateData.is_active = editForm.active;
-
-      const { error } = await supabase
-        .from("rooms")
-        .update(updateData)
-        .eq("id", editingId);
-
-      if (error) {
-        throw new Error(`Fel vid uppdatering: ${error.message}`);
-      }
-
-      await loadData();
-      setEditingId(null);
-      setEditForm({});
-      setError(null);
-    } catch (err: any) {
-      console.error("Error saving room:", err);
-      setError(err.message || "[ERR-5001] Okänt fel vid sparning");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const deleteRoom = async (id: string) => {
-    if (
-      !confirm(
-        "Är du säker på att du vill ta bort detta rum? Detta kan påverka befintliga bokningar."
-      )
-    )
-      return;
-
-    setSaving(true);
-    try {
-      const { error } = await supabase.from("rooms").delete().eq("id", id);
-
-      if (error) {
-        throw new Error(`[ERR-4001] Uppdatering: ${error.message}`);
-      }
-
-      await loadData();
-      setError(null);
-    } catch (err: any) {
-      console.error("Error deleting room:", err);
-      setError(err.message || "[ERR-5001] Okänt fel vid borttagning");
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const addNewRoom = async () => {
-    if (!currentOrgId || !newRoom.room_number) {
-      setError("Rumsnummer måste fyllas i");
-      return;
-    }
-
-    if (!newRoom.size_sqm || newRoom.size_sqm <= 0) {
-      setError("Storlek (kvm) måste vara större än 0");
-      return;
-    }
-
-    setSaving(true);
     try {
-      // Use same structure as working /rooms/page.tsx
-      const { error } = await supabase.from("rooms").insert({
-        name: newRoom.room_number,
-        capacity_m2: newRoom.size_sqm,
-        room_type: "both",
-        max_dogs: newRoom.capacity || null,
-        notes: newRoom.description || null,
+      setSaving(true);
+      setError(null);
+      if (!currentOrgId) return;
+      if (!newRoom.name || !newRoom.capacity_m2) {
+        setError("Namn och kapacitet krävs");
+        return;
+      }
+
+      const { error: insertError } = await supabase.from("rooms").insert({
+        name: newRoom.name,
+        capacity_m2: newRoom.capacity_m2,
+        room_type: newRoom.room_type,
+        notes: newRoom.notes || null,
         is_active: true,
         org_id: currentOrgId,
       });
 
-      if (error) {
-        console.error("Supabase error:", error);
-        throw new Error(`Fel vid sparning: ${error.message}`);
-      }
+      if (insertError) throw insertError;
 
-      await loadData();
       setShowAddForm(false);
-      setNewRoom({
-        room_number: "",
-        room_type: "standard",
-        capacity: 1,
-        price_per_night: 0,
-        description: "",
-        amenities: [],
-        active: true,
-        floor: 1,
-        size_sqm: 0,
-      });
-      setError(null);
+      setNewRoom({ name: "", capacity_m2: 0, room_type: "both", notes: "" });
+      fetchRooms();
     } catch (err: any) {
-      console.error("Error adding room:", err);
-      setError(err.message || "[ERR-5001] Okänt fel vid tillägg");
+      setError(err.message || "Kunde inte skapa rum");
     } finally {
       setSaving(false);
     }
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("sv-SE", {
-      style: "currency",
-      currency: "SEK",
-    }).format(price);
+  const saveEdit = async () => {
+    try {
+      setSaving(true);
+      setError(null);
+      if (!editingId) return;
+      if (!editForm.name || !editForm.capacity_m2) {
+        setError("Namn och kapacitet krävs");
+        return;
+      }
+
+      const { error: updateError } = await supabase
+        .from("rooms")
+        .update({
+          name: editForm.name,
+          capacity_m2: editForm.capacity_m2,
+          room_type: editForm.room_type,
+          notes: editForm.notes || null,
+          is_active: editForm.is_active,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", editingId);
+
+      if (updateError) throw updateError;
+
+      setEditingId(null);
+      setEditForm({});
+      fetchRooms();
+    } catch (err: any) {
+      setError(err.message || "Kunde inte uppdatera rum");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "occupied":
-        return "Upptaget";
-      case "reserved":
-        return "Reserverat";
-      case "available":
-        return "Ledigt";
-      default:
-        return "Okänt";
+  const deleteRoom = async (roomId: string) => {
+    if (!confirm("Är du säker på att du vill ta bort detta rum?")) return;
+    try {
+      const { error: deleteError } = await supabase
+        .from("rooms")
+        .delete()
+        .eq("id", roomId);
+      if (deleteError) throw deleteError;
+      fetchRooms();
+    } catch (err: any) {
+      setError(err.message || "Kunde inte ta bort rum");
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-          <p>Laddar rum...</p>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-[1600px] mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-64 mb-6"></div>
+            <div className="grid grid-cols-1 gap-6">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-6 py-6">
-        {/* Header */}
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-[1600px] mx-auto">
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-4">
-              <Link href="/admin" className="text-gray-600 hover:text-gray-900">
-                <ArrowLeft className="h-6 w-6" />
-              </Link>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">🏠 Rum</h1>
-                <p className="text-gray-600 mt-1">Hantera rum och överblick</p>
-              </div>
-            </div>
-
-            <div className="flex space-x-4">
-              <Link href="/rooms/overview">
-                <Button variant="outline">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Rumskalender
-                </Button>
-              </Link>
-              <Button
-                onClick={() => setShowAddForm(true)}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Lägg till rum
+          <div className="flex items-center gap-4 mb-6">
+            <Link href="/admin">
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Tillbaka till Admin
               </Button>
+            </Link>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+                <Home className="h-8 w-8 text-blue-600" />
+                Rum & Platser
+              </h1>
+              <p className="text-gray-600 mt-2">
+                Hantera hundrum - ange kvadratmeter, systemet räknar ut
+                kapacitet
+              </p>
             </div>
+            <Button
+              onClick={() => setShowAddForm(true)}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Lägg till rum
+            </Button>
           </div>
         </div>
 
         {error && (
-          <Card className="mb-6 border-red-200 bg-red-50">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2 text-red-700">
-                <AlertTriangle className="h-5 w-5" />
-                <span>{error}</span>
+          <Card className="border-red-200 bg-red-50 mb-6">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-red-800 font-medium mb-1">Fel uppstod</p>
+                  <p className="text-red-700 text-sm">{error}</p>
+                </div>
+                <Button
+                  onClick={() => setError(null)}
+                  variant="ghost"
+                  size="sm"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Home className="h-8 w-8 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">{rooms.length}</p>
-                  <p className="text-gray-600">Totalt rum</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Bed className="h-8 w-8 text-red-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">
-                    {
-                      rooms.filter(
-                        (room) => getRoomStatus(room).status === "occupied"
-                      ).length
-                    }
-                  </p>
-                  <p className="text-gray-600">Upptagna</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Calendar className="h-8 w-8 text-yellow-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">
-                    {
-                      rooms.filter(
-                        (room) => getRoomStatus(room).status === "reserved"
-                      ).length
-                    }
-                  </p>
-                  <p className="text-gray-600">Reserverade</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Users className="h-8 w-8 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">
-                    {
-                      rooms.filter(
-                        (room) => getRoomStatus(room).status === "available"
-                      ).length
-                    }
-                  </p>
-                  <p className="text-gray-600">Lediga</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Add New Room Form */}
         {showAddForm && (
-          <Card className="mb-6 border-green-200 bg-green-50">
-            <CardHeader>
-              <CardTitle className="text-green-800">
+          <Card className="mb-6 border-blue-200">
+            <CardHeader className="bg-blue-50">
+              <CardTitle className="text-lg font-semibold text-blue-900">
                 Lägg till nytt rum
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="new-room-number">Rumsnummer</Label>
+                  <Label htmlFor="new-name">Namn *</Label>
                   <Input
-                    id="new-room-number"
-                    value={newRoom.room_number || ""}
+                    id="new-name"
+                    value={newRoom.name}
                     onChange={(e) =>
-                      setNewRoom({ ...newRoom, room_number: e.target.value })
+                      setNewRoom({ ...newRoom, name: e.target.value })
                     }
-                    placeholder="101, A1, etc."
+                    placeholder="T.ex. Rum 1, Box A"
                   />
                 </div>
-
                 <div>
-                  <Label htmlFor="new-room-type">Rumstyp</Label>
-                  <select
-                    id="new-room-type"
-                    value={newRoom.room_type || "standard"}
+                  <Label htmlFor="new-capacity">Kapacitet (m²) *</Label>
+                  <Input
+                    id="new-capacity"
+                    type="number"
+                    step="0.1"
+                    value={newRoom.capacity_m2 || ""}
                     onChange={(e) =>
                       setNewRoom({
                         ...newRoom,
-                        room_type: e.target.value as any,
+                        capacity_m2: parseFloat(e.target.value) || 0,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="T.ex. 12.5"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="new-type">Typ</Label>
+                  <select
+                    id="new-type"
+                    value={newRoom.room_type}
+                    onChange={(e) =>
+                      setNewRoom({
+                        ...newRoom,
+                        room_type: e.target.value as
+                          | "daycare"
+                          | "boarding"
+                          | "both",
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     {roomTypes.map((type) => (
                       <option key={type.value} value={type.value}>
@@ -534,93 +287,40 @@ export default function AdminRumPage() {
                     ))}
                   </select>
                 </div>
-
-                <div>
-                  <Label htmlFor="new-capacity">Kapacitet</Label>
-                  <Input
-                    id="new-capacity"
-                    type="number"
-                    value={newRoom.capacity || ""}
+                <div className="md:col-span-2">
+                  <Label htmlFor="new-notes">Anteckningar</Label>
+                  <Textarea
+                    id="new-notes"
+                    value={newRoom.notes}
                     onChange={(e) =>
-                      setNewRoom({
-                        ...newRoom,
-                        capacity: Number(e.target.value),
-                      })
+                      setNewRoom({ ...newRoom, notes: e.target.value })
                     }
-                    placeholder="1"
-                    min="1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="new-price">Pris per natt (SEK)</Label>
-                  <Input
-                    id="new-price"
-                    type="number"
-                    value={newRoom.price_per_night || ""}
-                    onChange={(e) =>
-                      setNewRoom({
-                        ...newRoom,
-                        price_per_night: Number(e.target.value),
-                      })
-                    }
-                    placeholder="0"
+                    placeholder="Valfri information om rummet"
+                    rows={2}
                   />
                 </div>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="new-floor">Våning</Label>
-                  <Input
-                    id="new-floor"
-                    type="number"
-                    value={newRoom.floor || ""}
-                    onChange={(e) =>
-                      setNewRoom({ ...newRoom, floor: Number(e.target.value) })
-                    }
-                    placeholder="1"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="new-size">Storlek (kvm)</Label>
-                  <Input
-                    id="new-size"
-                    type="number"
-                    value={newRoom.size_sqm || ""}
-                    onChange={(e) =>
-                      setNewRoom({
-                        ...newRoom,
-                        size_sqm: Number(e.target.value),
-                      })
-                    }
-                    placeholder="0"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="new-description">Beskrivning</Label>
-                  <Input
-                    id="new-description"
-                    value={newRoom.description || ""}
-                    onChange={(e) =>
-                      setNewRoom({ ...newRoom, description: e.target.value })
-                    }
-                    placeholder="Kort beskrivning"
-                  />
-                </div>
-              </div>
-
-              <div className="flex space-x-2">
+              <div className="flex gap-2 mt-6">
                 <Button
                   onClick={addNewRoom}
                   disabled={saving}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-blue-600 hover:bg-blue-700"
                 >
                   {saving ? "Sparar..." : "Spara rum"}
                 </Button>
-                <Button onClick={() => setShowAddForm(false)} variant="outline">
+                <Button
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setNewRoom({
+                      name: "",
+                      capacity_m2: 0,
+                      room_type: "both",
+                      notes: "",
+                    });
+                  }}
+                  variant="outline"
+                  disabled={saving}
+                >
                   Avbryt
                 </Button>
               </div>
@@ -628,132 +328,197 @@ export default function AdminRumPage() {
           </Card>
         )}
 
-        {/* Rooms Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rooms.map((room) => {
-            const roomStatus = getRoomStatus(room);
-            const roomTypeInfo = roomTypes.find(
-              (type) => type.value === room.room_type
-            );
-
-            return (
+        <div className="space-y-4">
+          {rooms.length === 0 ? (
+            <Card>
+              <CardContent className="pt-6 text-center py-12">
+                <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 mb-4">Inga rum registrerade ännu</p>
+                <Button
+                  onClick={() => setShowAddForm(true)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Lägg till första rummet
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            rooms.map((room) => (
               <Card
                 key={room.id}
-                className={`${room.active ? "" : "opacity-60"}`}
+                className={!room.is_active ? "opacity-60 bg-gray-50" : ""}
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">
-                      Rum {room.room_number}
-                    </CardTitle>
-                    <div className="flex space-x-2">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${roomTypeInfo?.color}`}
-                      >
-                        {roomTypeInfo?.label}
-                      </span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${roomStatus.color}`}
-                      >
-                        {getStatusText(roomStatus.status)}
-                      </span>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-gray-600">Kapacitet:</span>
-                      <span className="ml-1 font-medium">
-                        {room.capacity} hund{room.capacity !== 1 ? "ar" : ""}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Pris:</span>
-                      <span className="ml-1 font-medium">
-                        {formatPrice(room.price_per_night)}/natt
-                      </span>
-                    </div>
-                    {room.floor && (
-                      <div>
-                        <span className="text-gray-600">Våning:</span>
-                        <span className="ml-1 font-medium">{room.floor}</span>
+                <CardContent className="pt-6">
+                  {editingId === room.id ? (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Namn *</Label>
+                          <Input
+                            value={editForm.name || ""}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, name: e.target.value })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>Kapacitet (m²) *</Label>
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={editForm.capacity_m2 || 0}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                capacity_m2: parseFloat(e.target.value) || 0,
+                              })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <Label>Typ</Label>
+                          <select
+                            value={editForm.room_type || "both"}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                room_type: e.target.value as
+                                  | "daycare"
+                                  | "boarding"
+                                  | "both",
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            {roomTypes.map((type) => (
+                              <option key={type.value} value={type.value}>
+                                {type.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <Label>Status</Label>
+                          <select
+                            value={editForm.is_active ? "true" : "false"}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                is_active: e.target.value === "true",
+                              })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="true">Aktiv</option>
+                            <option value="false">Inaktiv</option>
+                          </select>
+                        </div>
+                        <div className="md:col-span-2">
+                          <Label>Anteckningar</Label>
+                          <Textarea
+                            value={editForm.notes || ""}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                notes: e.target.value,
+                              })
+                            }
+                            rows={2}
+                          />
+                        </div>
                       </div>
-                    )}
-                    {room.size_sqm && (
-                      <div>
-                        <span className="text-gray-600">Storlek:</span>
-                        <span className="ml-1 font-medium">
-                          {room.size_sqm} kvm
-                        </span>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={saveEdit}
+                          disabled={saving}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          {saving ? "Sparar..." : "Spara"}
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setEditingId(null);
+                            setEditForm({});
+                          }}
+                          variant="outline"
+                          disabled={saving}
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Avbryt
+                        </Button>
                       </div>
-                    )}
-                  </div>
-
-                  {room.description && (
-                    <p className="text-sm text-gray-600">{room.description}</p>
-                  )}
-
-                  {roomStatus.booking && (
-                    <div className="bg-gray-50 rounded-lg p-3 text-sm">
-                      <p className="font-medium">
-                        {roomStatus.booking.dog_name}
-                      </p>
-                      <p className="text-gray-600">
-                        {roomStatus.booking.owner_name}
-                      </p>
-                      <p className="text-gray-600">
-                        {new Date(
-                          roomStatus.booking.checkin_date
-                        ).toLocaleDateString("sv-SE")}{" "}
-                        -
-                        {new Date(
-                          roomStatus.booking.checkout_date
-                        ).toLocaleDateString("sv-SE")}
-                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {room.name}
+                          </h3>
+                          {!room.is_active && (
+                            <span className="px-2 py-1 text-xs bg-gray-200 text-gray-700 rounded">
+                              Inaktiv
+                            </span>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-gray-600">Kapacitet</p>
+                            <p className="font-medium text-gray-900">
+                              {room.capacity_m2} m²
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600">Typ</p>
+                            <p className="font-medium text-gray-900">
+                              {roomTypes.find((t) => t.value === room.room_type)
+                                ?.label || room.room_type}
+                            </p>
+                          </div>
+                          {room.max_dogs && (
+                            <div>
+                              <p className="text-gray-600">Max hundar</p>
+                              <p className="font-medium text-gray-900">
+                                {room.max_dogs} st
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                        {room.notes && (
+                          <p className="text-gray-600 text-sm mt-3">
+                            {room.notes}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex gap-2 ml-4">
+                        <Button
+                          onClick={() => {
+                            setEditingId(room.id);
+                            setEditForm(room);
+                          }}
+                          variant="outline"
+                          size="sm"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          onClick={() => deleteRoom(room.id)}
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   )}
-
-                  <div className="flex space-x-2 pt-2">
-                    <Button
-                      onClick={() => startEdit(room)}
-                      size="sm"
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      <Edit className="h-4 w-4 mr-1" />
-                      Redigera
-                    </Button>
-                    <Button
-                      onClick={() => deleteRoom(room.id)}
-                      size="sm"
-                      variant="outline"
-                      className="border-red-500 text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
                 </CardContent>
               </Card>
-            );
-          })}
+            ))
+          )}
         </div>
-
-        {rooms.length === 0 && (
-          <Card>
-            <CardContent className="text-center py-12">
-              <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 mb-4">Inga rum har lagts till ännu</p>
-              <Button
-                onClick={() => setShowAddForm(true)}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Lägg till första rummet
-              </Button>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
