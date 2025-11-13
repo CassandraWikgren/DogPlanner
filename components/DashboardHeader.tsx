@@ -7,10 +7,10 @@ import { AlertTriangle, CheckCircle2, Clock } from "lucide-react";
 interface Dog {
   id: string;
   name: string;
-  checked_in: boolean;
+  checked_in: boolean | null;
   checkin_date: string | null;
   checkout_date: string | null;
-  special_note?: string | null;
+  notes?: string | null;
 }
 
 export default function DashboardHeader() {
@@ -44,9 +44,7 @@ export default function DashboardHeader() {
     setLoading(true);
     const { data, error } = await supabase
       .from("dogs")
-      .select(
-        "id, name, checked_in, checkin_date, checkout_date, special_note"
-      );
+      .select("id, name, checked_in, checkin_date, checkout_date, notes");
 
     if (!error && data) setDogs(data as Dog[]);
     setLoading(false);
@@ -57,7 +55,7 @@ export default function DashboardHeader() {
   const comingToday = dogs.filter((d) => d.checkin_date === today).length;
   const leavingToday = dogs.filter((d) => d.checkout_date === today).length;
   const dogsWithNotes = dogs.filter(
-    (d) => d.special_note && d.special_note.trim() !== ""
+    (d) => d.notes && d.notes.trim() !== ""
   ).length;
 
   return (
