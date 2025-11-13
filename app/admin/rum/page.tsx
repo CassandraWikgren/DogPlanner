@@ -234,9 +234,22 @@ export default function AdminRumPage() {
 
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
+      // Map UI fields to database schema
+      const updateData: any = {};
+
+      if (editForm.room_number !== undefined)
+        updateData.name = editForm.room_number;
+      if (editForm.size_sqm !== undefined)
+        updateData.capacity_m2 = editForm.size_sqm;
+      if (editForm.capacity !== undefined)
+        updateData.max_dogs = editForm.capacity;
+      if (editForm.description !== undefined)
+        updateData.notes = editForm.description;
+      if (editForm.active !== undefined) updateData.is_active = editForm.active;
+
+      const { error } = await supabase
         .from("rooms")
-        .update(editForm)
+        .update(updateData)
         .eq("id", editingId);
 
       if (error) {
@@ -246,6 +259,7 @@ export default function AdminRumPage() {
       await loadData();
       setEditingId(null);
       setEditForm({});
+      setError(null);
     } catch (err: any) {
       console.error("Error saving room:", err);
       setError(err.message || "[ERR-5001] Okänt fel vid sparning");
@@ -264,16 +278,14 @@ export default function AdminRumPage() {
 
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
-        .from("rooms")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("rooms").delete().eq("id", id);
 
       if (error) {
         throw new Error(`[ERR-4001] Uppdatering: ${error.message}`);
       }
 
       await loadData();
+      setError(null);
     } catch (err: any) {
       console.error("Error deleting room:", err);
       setError(err.message || "[ERR-5001] Okänt fel vid borttagning");
@@ -290,9 +302,18 @@ export default function AdminRumPage() {
 
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
-        .from("rooms")
-        .insert([{ ...newRoom, org_id: currentOrgId }]);
+      // Map UI fields to database schema
+      const roomData = {
+        org_id: currentOrgId,
+        name: newRoom.room_number,
+        capacity_m2: newRoom.size_sqm || 0,
+        room_type: "both" as const, // Default to 'both' for new rooms
+        max_dogs: newRoom.capacity || 1,
+        notes: newRoom.description || null,
+        is_active: newRoom.active ?? true,
+      };
+
+      const { error } = await supabase.from("rooms").insert([roomData]);
 
       if (error) {
         throw new Error(`[ERR-4001] Uppdatering: ${error.message}`);
@@ -311,6 +332,7 @@ export default function AdminRumPage() {
         floor: 1,
         size_sqm: 0,
       });
+      setError(null); // Clear any previous errors
     } catch (err: any) {
       console.error("Error adding room:", err);
       setError(err.message || "[ERR-5001] Okänt fel vid tillägg");
@@ -352,7 +374,7 @@ export default function AdminRumPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-[1600px] mx-auto p-6">
+      <div className="max-w-[1600px] mx-auto px-[200px] py-6">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
