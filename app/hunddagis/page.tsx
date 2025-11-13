@@ -709,7 +709,7 @@ export default function HunddagisPage() {
     <div className="min-h-screen bg-white pt-4">
       {/* Header med titel och statistik */}
       <div className="border-b border-gray-200 bg-white">
-        <div className="max-w-[1600px] mx-auto px-6 py-3">
+        <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16 py-3">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold text-[#2c7a4c]">
@@ -740,7 +740,7 @@ export default function HunddagisPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-[1600px] mx-auto px-6 pb-6">
+      <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16 pb-6">
         {/* Action Buttons Row - standard DogPlanner styling */}
         <div className="flex justify-between items-center mb-4 mt-4">
           <div className="flex items-center space-x-3">

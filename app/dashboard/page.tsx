@@ -32,7 +32,7 @@ export default function Dashboard() {
           backgroundPosition: "center 35%",
         }}
       >
-        <div className="relative z-10 max-w-4xl mx-auto px-6">
+        <div className="relative z-10 max-w-4xl mx-auto px-8 sm:px-12 lg:px-16">
           <h1 className="text-5xl font-extrabold mb-4 drop-shadow-lg">
             Välkommen till ditt Dashboard
           </h1>
@@ -43,7 +43,7 @@ export default function Dashboard() {
       </section>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-12">
+      <main className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16 py-12">
         {/* Feature Cards Grid - 4 huvudflikar (TVINGAD DESKTOP-LAYOUT) */}
         <div
           className="grid gap-4"

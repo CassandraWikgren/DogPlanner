@@ -12,7 +12,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header med titel */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-[1600px] mx-auto px-6 py-8">
+        <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16 py-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Administration
           </h1>
@@ -23,7 +23,7 @@ export default function AdminPage() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-[1600px] mx-auto px-6 py-10">
+      <main className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16 py-10">
         {/* Statistik-sektion */}
         {currentOrgId && (
           <div className="mb-10">

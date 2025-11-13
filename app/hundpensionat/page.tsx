@@ -316,7 +316,7 @@ export default function HundpensionatPage() {
           paddingBottom: "3rem",
         }}
       >
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16 text-center">
           <h1
             className="text-3xl md:text-4xl font-bold text-white mb-3"
             style={{
@@ -343,7 +343,7 @@ export default function HundpensionatPage() {
         </div>
       </div>
       {/* Stats Cards - Flexbox med inline styles som fallback för Vercel */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16 py-8">
         <div
           className="flex flex-wrap gap-6 mb-8"
           style={{
@@ -495,7 +495,7 @@ export default function HundpensionatPage() {
         </div>
       </div>
       {/* Main Content */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+      <div className="max-w-[1600px] mx-auto px-8 sm:px-12 lg:px-16 pb-12">
         {/* Kontroller */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
