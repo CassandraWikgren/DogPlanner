@@ -1,9 +1,37 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-13 (RLS policies + Trigger cleanup + currentOrgId consistency)
+-- Uppdaterad 2025-11-13 (Städning + Databas-fixar + Admin-sida)
 -- ========================================
 --
--- === SENASTE ÄNDRINGAR (2025-11-13 kväll) ===
+-- === SENASTE ÄNDRINGAR (2025-11-13 eftermiddag/kväll) ===
+--
+-- 🧹 PROJEKT-STÄDNING (kördes 2025-11-13):
+--   • Tog bort 6 .bak-filer från app/admin/ (backup-filer)
+--   • Tog bort 8 test/debug-mappar (test/, test-simple/, test-supabase/, test-vercel/, 
+--     test-working/, debug-cookies/, debug-design/, viewport-test/)
+--   • Behöll auth-debug/ och diagnostik/ (används för onboarding/system-diagnostik)
+--   • Resultat: -4,685 rader kod, renare projekt
+--
+-- 💾 NYA PRICING-TABELLER (2025-11-13):
+--   • daycare_pricing - Dagis-priser per organisation (subscription_1day, subscription_2days, etc.)
+--   • grooming_services - Frisörtjänster per organisation (service_name, base_price, size_multiplier)
+--   • profiles.last_sign_in_at - Kolumn tillagd för senaste inloggning
+--   • Migration: supabase/migrations/2025-11-13_add_missing_pricing_tables.sql
+--   • RLS policies: authenticated_full_access för båda tabellerna
+--   • Fixar fel: "Could not find table 'public.daycare_pricing/grooming_services'"
+--
+-- 🔧 ADMIN-SIDA FIXAD (2025-11-13):
+--   • app/admin/page.tsx - Tog bort blocking loading state
+--   • Sidan renderar nu direkt istället för att hänga sig
+--   • DashboardWidgets visas endast om currentOrgId finns
+--   • Alla länkar i admin-sidan fungerar (priser/dagis, priser/pensionat, priser/frisor, users)
+--
+-- 👥 HUNDÄGARE-FIX (2025-11-13):
+--   • app/owners/page.tsx - Explicit foreign key relation: dogs!dogs_owner_id_fkey
+--   • Fixar problem där alla hundar visades under samma ägare
+--   • Varje ägare får nu sina egna hundar korrekt kopplade via owner_id
+--
+-- === TIDIGARE ÄNDRINGAR (2025-11-13 kväll) ===
 --
 -- 🧹 TRIGGER CLEANUP (kördes 2025-11-13 kl 20:30):
 --   • Rensade ~40 duplicerade triggers → nu ~20 välnamngivna triggers
@@ -156,9 +184,11 @@ CREATE TABLE IF NOT EXISTS profiles (
   full_name text,
   email text,
   phone text,
+  last_sign_in_at timestamptz, -- Tillagd 2025-11-13 för senaste inloggning
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
+COMMENT ON COLUMN profiles.last_sign_in_at IS 'Senaste inloggning för användaren (tillagd 2025-11-13)';
 
 -- === ÄGARE ===
 CREATE TABLE IF NOT EXISTS owners (
@@ -653,6 +683,39 @@ CREATE TABLE IF NOT EXISTS grooming_journal (
   created_at timestamptz DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_grooming_journal_org_date ON grooming_journal(org_id, appointment_date);
+
+-- === DAGIS-PRISER (per organisation) ===
+-- Skapade 2025-11-13 för att fixa "Could not find table daycare_pricing" fel
+CREATE TABLE IF NOT EXISTS daycare_pricing (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE NOT NULL UNIQUE,
+  subscription_1day integer NOT NULL DEFAULT 1500,
+  subscription_2days integer NOT NULL DEFAULT 2500,
+  subscription_3days integer NOT NULL DEFAULT 3300,
+  subscription_4days integer NOT NULL DEFAULT 4000,
+  subscription_5days integer NOT NULL DEFAULT 4500,
+  single_day_price integer NOT NULL DEFAULT 350,
+  sibling_discount_percent integer NOT NULL DEFAULT 10,
+  trial_day_price integer NOT NULL DEFAULT 200,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+COMMENT ON TABLE daycare_pricing IS 'Priser för hunddagis per organisation';
+
+-- === FRISÖR-TJÄNSTER (per organisation) ===
+-- Skapade 2025-11-13 för att fixa "Could not find table grooming_services" fel
+CREATE TABLE IF NOT EXISTS grooming_services (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE NOT NULL,
+  service_name text NOT NULL,
+  base_price integer NOT NULL DEFAULT 0,
+  size_multiplier_enabled boolean NOT NULL DEFAULT true,
+  description text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+COMMENT ON TABLE grooming_services IS 'Frisörtjänster och priser per organisation';
+CREATE INDEX IF NOT EXISTS idx_grooming_services_org ON grooming_services(org_id);
 
 -- === NÄRVAROLOGGAR ===
 CREATE TABLE IF NOT EXISTS attendence_logs (
