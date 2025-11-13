@@ -282,11 +282,11 @@ export default function HunddagisPage() {
         return;
       }
 
-      // ✅ FIX: Djup kopia av owners för att undvika delad referens mellan hundar
-      const dogsWithUniqueOwners = (dogsData || []).map((dog: any) => ({
-        ...dog,
-        owners: dog.owners ? { ...dog.owners } : null, // Skapa ny owner-referens för varje hund
-      }));
+      // ✅ KRITISK FIX: Djup kopia av hela objektet för att förhindra delad referens
+      // När flera hundar har samma owner_id skulle de dela owner-objektet i minnet
+      const dogsWithUniqueOwners = (dogsData || []).map((dog: any) =>
+        JSON.parse(JSON.stringify(dog))
+      );
 
       setDogs(dogsWithUniqueOwners);
       logDebug("success", `Hämtade ${dogsWithUniqueOwners.length} hundar`);
@@ -1165,7 +1165,11 @@ export default function HunddagisPage() {
                         {columns.includes("name") && (
                           <td className="px-6 py-4 whitespace-nowrap">
                             <button
-                              onClick={() => setSelectedDog(dog)}
+                              onClick={() => {
+                                // ✅ KRITISK FIX: Skapa djup kopia för att förhindra mutation av shared owner objects
+                                const dogCopy = JSON.parse(JSON.stringify(dog));
+                                setSelectedDog(dogCopy);
+                              }}
                               className="text-sm font-medium text-gray-900 hover:text-[#2c7a4c]"
                             >
                               {dog.name}
@@ -1334,9 +1338,13 @@ export default function HunddagisPage() {
           initialDog={selectedDog}
           open={!!selectedDog}
           onCloseAction={() => setSelectedDog(null)}
-          onSavedAction={() => {
+          onSavedAction={async () => {
+            // ✅ Stäng modalen FÖRST för att cleara state
             setSelectedDog(null);
-            fetchDogs();
+            // Vänta lite för att säkerställa state är clearad
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            // Hämta fresh data från databasen
+            await fetchDogs();
           }}
         />
       )}
