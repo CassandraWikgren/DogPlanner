@@ -13,7 +13,7 @@
 --   • Resultat: -4,685 rader kod, renare projekt
 --
 -- 💾 NYA PRICING-TABELLER (2025-11-13):
---   • daycare_pricing - Dagis-priser per organisation (subscription_1day, subscription_2days, etc.)
+--   • daycare_pricing - Dagis-priser per organisation (deltid 2, deltid 3, heltid, tilläggsdagar)
 --   • grooming_services - Frisörtjänster per organisation (service_name, base_price, size_multiplier)
 --   • profiles.last_sign_in_at - Kolumn tillagd för senaste inloggning
 --   • Migration: supabase/migrations/2025-11-13_add_missing_pricing_tables.sql
@@ -686,21 +686,26 @@ CREATE INDEX IF NOT EXISTS idx_grooming_journal_org_date ON grooming_journal(org
 
 -- === DAGIS-PRISER (per organisation) ===
 -- Skapade 2025-11-13 för att fixa "Could not find table daycare_pricing" fel
+-- Uppdaterad 2025-11-13: Ändrat från 5 nivåer till 3 (Deltid 2, Deltid 3, Heltid)
 CREATE TABLE IF NOT EXISTS daycare_pricing (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   org_id uuid REFERENCES orgs(id) ON DELETE CASCADE NOT NULL UNIQUE,
-  subscription_1day integer NOT NULL DEFAULT 1500,
-  subscription_2days integer NOT NULL DEFAULT 2500,
-  subscription_3days integer NOT NULL DEFAULT 3300,
-  subscription_4days integer NOT NULL DEFAULT 4000,
-  subscription_5days integer NOT NULL DEFAULT 4500,
-  single_day_price integer NOT NULL DEFAULT 350,
+  subscription_parttime_2days integer NOT NULL DEFAULT 2500, -- Deltid 2: 2 dagar/vecka
+  subscription_parttime_3days integer NOT NULL DEFAULT 3300, -- Deltid 3: 3 dagar/vecka
+  subscription_fulltime integer NOT NULL DEFAULT 4500, -- Heltid: 5 dagar/vecka
+  single_day_price integer NOT NULL DEFAULT 350, -- Dagshund (drop-in)
+  additional_day_price integer NOT NULL DEFAULT 300, -- Tilläggsdagar för dagishund
   sibling_discount_percent integer NOT NULL DEFAULT 10,
   trial_day_price integer NOT NULL DEFAULT 200,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
 COMMENT ON TABLE daycare_pricing IS 'Priser för hunddagis per organisation';
+COMMENT ON COLUMN daycare_pricing.subscription_parttime_2days IS 'Deltid 2: Pris per månad för 2 fasta veckodagar';
+COMMENT ON COLUMN daycare_pricing.subscription_parttime_3days IS 'Deltid 3: Pris per månad för 3 fasta veckodagar';
+COMMENT ON COLUMN daycare_pricing.subscription_fulltime IS 'Heltid: Pris per månad för 5 dagar/vecka (måndag-fredag)';
+COMMENT ON COLUMN daycare_pricing.single_day_price IS 'Dagshund: Pris för enstaka dag utan abonnemang';
+COMMENT ON COLUMN daycare_pricing.additional_day_price IS 'Tilläggsdagar: Pris för extra dagar utöver abonnemang';
 
 -- === FRISÖR-TJÄNSTER (per organisation) ===
 -- Skapade 2025-11-13 för att fixa "Could not find table grooming_services" fel
