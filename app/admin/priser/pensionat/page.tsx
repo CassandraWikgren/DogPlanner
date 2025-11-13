@@ -522,24 +522,24 @@ export default function PensionatPriserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header - Kompakt och luftig */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-[1600px] mx-auto px-6 py-6">
+        <div className="max-w-5xl mx-auto px-8 py-5">
           <Link
             href="/admin"
-            className="inline-flex items-center text-[#2c7a4c] hover:underline mb-3"
+            className="inline-flex items-center text-sm text-gray-600 hover:text-[#2c7a4c] mb-4 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4 mr-1.5" />
             Tillbaka till Admin
           </Link>
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="text-4xl">🏨</div>
+              <div className="text-2xl">🏨</div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-gray-900">
                   Priser - Hundpensionat
                 </h1>
-                <p className="text-gray-600 mt-1">
+                <p className="text-sm text-gray-600 mt-0.5">
                   3-lagers prissystem: Grundpriser → Specialdatum → Säsonger
                 </p>
               </div>
@@ -548,129 +548,142 @@ export default function PensionatPriserPage() {
               variant="outline"
               size="sm"
               onClick={() => setShowHelpModal(true)}
-              className="text-[#2c7a4c] border-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white"
+              className="text-sm text-[#2c7a4c] border-[#2c7a4c] hover:bg-[#2c7a4c]/5 transition-colors"
             >
-              <HelpCircle className="w-4 h-4 mr-2" />
+              <HelpCircle className="w-4 h-4 mr-1.5" />
               Hur fungerar prissystemet?
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-[1600px] mx-auto px-6">
-          <div className="flex gap-6">
+      {/* Tabs - Clean och tydlig */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-5xl mx-auto px-8">
+          <div className="flex gap-1">
             <button
               onClick={() => setActiveTab("grundpriser")}
-              className={`pb-4 pt-2 border-b-2 font-medium transition-colors ${
+              className={`px-4 py-3 text-sm font-medium transition-all ${
                 activeTab === "grundpriser"
-                  ? "border-[#2c7a4c] text-[#2c7a4c]"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                  ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c]"
+                  : "text-gray-600 hover:text-gray-900 border-b-2 border-transparent"
               }`}
             >
-              <Dog className="w-4 h-4 inline mr-2" />
+              <Dog className="w-4 h-4 inline mr-1.5" />
               Grundpriser
             </button>
             <button
               onClick={() => setActiveTab("specialdatum")}
-              className={`pb-4 pt-2 border-b-2 font-medium transition-colors ${
+              className={`px-4 py-3 text-sm font-medium transition-all ${
                 activeTab === "specialdatum"
-                  ? "border-[#2c7a4c] text-[#2c7a4c]"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                  ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c]"
+                  : "text-gray-600 hover:text-gray-900 border-b-2 border-transparent"
               }`}
             >
-              <Calendar className="w-4 h-4 inline mr-2" />
-              Specialdatum ({specialDates.length})
+              <Calendar className="w-4 h-4 inline mr-1.5" />
+              Specialdatum
+              <span className="ml-1.5 px-1.5 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                {specialDates.length}
+              </span>
             </button>
             <button
               onClick={() => setActiveTab("säsonger")}
-              className={`pb-4 pt-2 border-b-2 font-medium transition-colors ${
+              className={`px-4 py-3 text-sm font-medium transition-all ${
                 activeTab === "säsonger"
-                  ? "border-[#2c7a4c] text-[#2c7a4c]"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                  ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c]"
+                  : "text-gray-600 hover:text-gray-900 border-b-2 border-transparent"
               }`}
             >
-              <TrendingUp className="w-4 h-4 inline mr-2" />
-              Säsonger ({seasons.length})
+              <TrendingUp className="w-4 h-4 inline mr-1.5" />
+              Säsonger
+              <span className="ml-1.5 px-1.5 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                {seasons.length}
+              </span>
             </button>
             <button
               onClick={() => setActiveTab("tillval")}
-              className={`pb-4 pt-2 border-b-2 font-medium transition-colors ${
+              className={`px-4 py-3 text-sm font-medium transition-all ${
                 activeTab === "tillval"
-                  ? "border-[#2c7a4c] text-[#2c7a4c]"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
+                  ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c]"
+                  : "text-gray-600 hover:text-gray-900 border-b-2 border-transparent"
               }`}
             >
-              <Sparkles className="w-4 h-4 inline mr-2" />
-              Tillval ({extraServices.length})
+              <Sparkles className="w-4 h-4 inline mr-1.5" />
+              Tillval
+              <span className="ml-1.5 px-1.5 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                {extraServices.length}
+              </span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="max-w-[1600px] mx-auto px-6 py-8">
-        {/* Messages */}
+      {/* Main Content - Luftig layout med max-w-5xl */}
+      <main className="max-w-5xl mx-auto px-8 py-6">
+        {/* Messages - Kompakta */}
         {success && (
-          <div className="mb-6 rounded-lg border border-green-300 bg-green-50 px-4 py-3 flex items-center gap-3">
-            <CheckCircle className="w-5 h-5 text-green-600" />
-            <span className="text-green-800">{success}</span>
+          <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-2.5 flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-green-700 flex-shrink-0" />
+            <span className="text-sm text-green-800">{success}</span>
           </div>
         )}
         {error && (
-          <div className="mb-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600" />
-            <span className="text-red-700">{error}</span>
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-700 flex-shrink-0" />
+            <span className="text-sm text-red-800">{error}</span>
           </div>
         )}
 
         {/* TAB 1: GRUNDPRISER */}
         {activeTab === "grundpriser" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Grundpriser per hundstorlek</CardTitle>
-              <p className="text-sm text-gray-600 mt-2">
+          <Card className="shadow-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold text-gray-900">
+                Grundpriser per hundstorlek
+              </CardTitle>
+              <p className="text-sm text-gray-600 mt-1">
                 Pris per natt baserat på hundens mankhöjd. Helgtillägg gäller
                 fredag, lördag, söndag.
               </p>
             </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4 font-semibold">
+            <CardContent className="pt-0">
+              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">
                         Hundstorlek
                       </th>
-                      <th className="text-left py-3 px-4 font-semibold">
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">
                         Höjd (mankhöjd)
                       </th>
-                      <th className="text-left py-3 px-4 font-semibold">
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">
                         Grundpris/natt
                       </th>
-                      <th className="text-left py-3 px-4 font-semibold">
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">
                         Helgtillägg
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-gray-100">
                     {boardingPrices.map((price) => (
                       <tr
                         key={price.dog_size}
-                        className="border-b hover:bg-gray-50"
+                        className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="py-4 px-4 font-medium">
-                          {price.dog_size === "small" && "🐕 Liten"}
-                          {price.dog_size === "medium" && "🐕 Mellan"}
-                          {price.dog_size === "large" && "🐕 Stor"}
+                        <td className="py-3 px-4">
+                          <span className="font-medium text-gray-900">
+                            {price.dog_size === "small" && "🐕 Liten"}
+                            {price.dog_size === "medium" && "🐕 Mellan"}
+                            {price.dog_size === "large" && "🐕 Stor"}
+                          </span>
                         </td>
-                        <td className="py-4 px-4 text-gray-600">
+                        <td className="py-3 px-4 text-gray-600">
                           {price.dog_size === "small" && "< 35 cm"}
                           {price.dog_size === "medium" && "35-54 cm"}
                           {price.dog_size === "large" && "> 54 cm"}
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
                             <Input
                               type="number"
@@ -693,12 +706,12 @@ export default function PensionatPriserPage() {
                                   val
                                 );
                               }}
-                              className="w-32"
+                              className="w-24 h-9 text-sm"
                             />
-                            <span className="text-gray-600">kr</span>
+                            <span className="text-sm text-gray-600">kr</span>
                           </div>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
                             <Input
                               type="number"
@@ -721,9 +734,9 @@ export default function PensionatPriserPage() {
                                   val
                                 );
                               }}
-                              className="w-32"
+                              className="w-24 h-9 text-sm"
                             />
-                            <span className="text-gray-600">kr</span>
+                            <span className="text-sm text-gray-600">kr</span>
                           </div>
                         </td>
                       </tr>
@@ -732,11 +745,11 @@ export default function PensionatPriserPage() {
                 </table>
               </div>
 
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h4 className="font-semibold text-blue-900 mb-2">
+              <div className="mt-5 p-3.5 bg-blue-50/50 rounded-lg border border-blue-100">
+                <h4 className="text-sm font-semibold text-blue-900 mb-2">
                   💡 Så fungerar prisberäkningen
                 </h4>
-                <ul className="text-sm text-blue-800 space-y-1">
+                <ul className="text-sm text-blue-800 space-y-1 leading-relaxed">
                   <li>
                     • Grundpris appliceras per påbörjad kalenderdag (incheckning
                     tors → utcheckning fre = 2 dagar)
