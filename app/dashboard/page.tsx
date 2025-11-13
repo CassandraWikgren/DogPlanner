@@ -19,19 +19,25 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
-      {/* Hero Section - ingen gap */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section - ingen gap, ingen overlay */}
       <section
         className="relative text-center text-white overflow-hidden"
         style={{
           paddingTop: "100px",
           paddingBottom: "100px",
-          background:
-            'linear-gradient(rgba(44, 122, 76, 0.7), rgba(44, 122, 76, 0.7)), url("/Hero.jpeg")',
+          backgroundImage: 'url("/Hero.jpeg")',
           backgroundSize: "cover",
           backgroundPosition: "center 35%",
         }}
       >
+        {/* Mörkare overlay för bättre läsbarhet */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-[#2c7a4c]/70 to-[#1e5a36]/70"
+          style={{
+            background: "linear-gradient(to bottom right, rgba(44, 122, 76, 0.7), rgba(30, 90, 54, 0.7))",
+          }}
+        />
         <div className="relative z-10 max-w-7xl mx-auto px-16 sm:px-24 lg:px-32">
           <h1 className="text-5xl font-extrabold mb-4 drop-shadow-lg">
             Välkommen till ditt Dashboard
