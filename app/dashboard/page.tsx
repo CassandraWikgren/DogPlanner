@@ -46,20 +46,20 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-12">
         {/* Feature Cards Grid - 4 huvudflikar (TVINGAD DESKTOP-LAYOUT) */}
         <div
-          className="grid gap-4"
+          className="grid gap-6"
           style={{
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
             display: "grid",
           }}
         >
           {/* Hunddagis */}
           <Link
             href="/hunddagis"
-            className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-green-300"
+            className="group bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-green-300"
           >
-            <div className="text-4xl mb-3">🐕</div>
-            <h2 className="text-lg font-bold text-[#2c7a4c] mb-2">Hunddagis</h2>
-            <p className="text-gray-600 text-xs leading-relaxed">
+            <div className="text-5xl mb-4">🐕</div>
+            <h2 className="text-xl font-bold text-[#2c7a4c] mb-3">Hunddagis</h2>
+            <p className="text-gray-600 text-sm leading-relaxed">
               Hantera dagishundar, schema och daglig verksamhet.
             </p>
           </Link>
@@ -67,13 +67,13 @@ export default function Dashboard() {
           {/* Hundpensionat */}
           <Link
             href="/hundpensionat"
-            className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-green-300"
+            className="group bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-green-300"
           >
-            <div className="text-4xl mb-3">🏨</div>
-            <h2 className="text-lg font-bold text-[#2c7a4c] mb-2">
+            <div className="text-5xl mb-4">🏨</div>
+            <h2 className="text-xl font-bold text-[#2c7a4c] mb-3">
               Hundpensionat
             </h2>
-            <p className="text-gray-600 text-xs leading-relaxed">
+            <p className="text-gray-600 text-sm leading-relaxed">
               Hantera pensionshundar, bokningar och in-/utcheckning.
             </p>
           </Link>
@@ -81,13 +81,13 @@ export default function Dashboard() {
           {/* Hundfrisör */}
           <Link
             href="/frisor"
-            className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-green-300"
+            className="group bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-green-300"
           >
-            <div className="text-4xl mb-3">✂️</div>
-            <h2 className="text-lg font-bold text-[#2c7a4c] mb-2">
+            <div className="text-5xl mb-4">✂️</div>
+            <h2 className="text-xl font-bold text-[#2c7a4c] mb-3">
               Hundfrisör
             </h2>
-            <p className="text-gray-600 text-xs leading-relaxed">
+            <p className="text-gray-600 text-sm leading-relaxed">
               Hantera bokningar och behandlingar för hundtrimning.
             </p>
           </Link>
@@ -95,11 +95,11 @@ export default function Dashboard() {
           {/* Admin */}
           <Link
             href="/admin"
-            className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-green-300"
+            className="group bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 hover:border-green-300"
           >
-            <div className="text-4xl mb-3">⚙️</div>
-            <h2 className="text-lg font-bold text-[#2c7a4c] mb-2">Admin</h2>
-            <p className="text-gray-600 text-xs leading-relaxed">
+            <div className="text-5xl mb-4">⚙️</div>
+            <h2 className="text-xl font-bold text-[#2c7a4c] mb-3">Admin</h2>
+            <p className="text-gray-600 text-sm leading-relaxed">
               Ekonomi, priser, företagsinformation och användarhantering.
             </p>
           </Link>
