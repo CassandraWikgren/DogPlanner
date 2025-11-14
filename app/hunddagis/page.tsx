@@ -1180,20 +1180,16 @@ export default function HunddagisPage() {
                     {filteredAndSortedDogs.map((dog, index) => (
                       <tr
                         key={dog.id}
-                        className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                        className={`cursor-pointer ${index % 2 === 0 ? "bg-white hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-200"}`}
+                        onClick={() => {
+                          // ✅ KRITISK FIX: Skapa djup kopia för att förhindra mutation av shared owner objects
+                          const dogCopy = JSON.parse(JSON.stringify(dog));
+                          setSelectedDog(dogCopy);
+                        }}
                       >
                         {columns.includes("name") && (
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <button
-                              onClick={() => {
-                                // ✅ KRITISK FIX: Skapa djup kopia för att förhindra mutation av shared owner objects
-                                const dogCopy = JSON.parse(JSON.stringify(dog));
-                                setSelectedDog(dogCopy);
-                              }}
-                              className="text-sm font-medium text-gray-900 hover:text-[#2c7a4c]"
-                            >
-                              {dog.name}
-                            </button>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {dog.name}
                           </td>
                         )}
                         {columns.includes("breed") && (

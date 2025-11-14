@@ -89,6 +89,8 @@ export default function EditDogModal({
         const { data: roomsData, error: roomsErr } = await supabase
           .from("rooms")
           .select("id, name")
+          .eq("org_id", currentOrgId)
+          .eq("is_active", true)
           .order("name");
         if (roomsErr) console.warn("⚠️ rooms error", roomsErr);
         setRooms(roomsData ?? []);
