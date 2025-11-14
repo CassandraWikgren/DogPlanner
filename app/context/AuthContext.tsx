@@ -246,7 +246,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    if (base) {
+    // 🔧 LAGER 3: Automatisk healing om org_id saknas
+    if (base && !base.org_id) {
+      console.warn(
+        "⚠️ AuthContext: Användare saknar org_id, försöker heala..."
+      );
+      const healed = await healMissingOrg(userId);
+      if (healed) {
+        // Läs om profilen efter healing
+        const healedRes: any = await supabase
+          .from("profiles")
+          .select("id, org_id, role, full_name, email, phone")
+          .eq("id", userId)
+          .single();
+
+        if (healedRes.data) {
+          base = { id: healedRes.data.id, org_id: healedRes.data.org_id };
+          extra = healedRes.data;
+          console.log(
+            "✅ AuthContext: Användare healad med org_id:",
+            base.org_id
+          );
+        }
+      }
+    }
+
+    if (base && base.org_id) {
       const merged: UserProfile = {
         id: base.id,
         org_id: base.org_id,
@@ -260,12 +285,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setCurrentOrgId(merged.org_id);
       setRole(merged.role);
     } else {
+      console.error(
+        "❌ AuthContext: Kunde inte ladda profil med org_id för användare:",
+        userId
+      );
       setProfile(null);
       setCurrentOrgId(null);
       setRole(null);
     }
   }
 
+  async function healMissingOrg(userId: string): Promise<boolean> {
+    if (!supabase) return false;
+
+    try {
+      console.log("🔧 Försöker heala användare med saknad org_id...");
+
+      // Anropa healing-funktionen i databasen
+      const { data, error } = await supabase.rpc("heal_user_missing_org", {
+        user_id: userId,
+      });
+
+      if (error) {
+        console.error("❌ Healing misslyckades:", error);
+        return false;
+      }
+
+      if (data?.success) {
+        console.log("✅ Healing lyckades:", data);
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      console.error("❌ Oväntat fel vid healing:", e);
+      return false;
+    }
+  }
   async function safeAutoOnboarding(accessToken: string): Promise<boolean> {
     try {
       await fetch("/api/onboarding/auto", {

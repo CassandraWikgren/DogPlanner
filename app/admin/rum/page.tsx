@@ -19,6 +19,10 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/AuthContext";
+import type { Database } from "@/types/database";
+
+type RoomInsert = Database["public"]["Tables"]["rooms"]["Insert"];
+type RoomUpdate = Database["public"]["Tables"]["rooms"]["Update"];
 
 interface Room {
   id: string;
@@ -91,14 +95,18 @@ export default function AdminRumPage() {
         return;
       }
 
-      const { error: insertError } = await supabase.from("rooms").insert({
+      const roomData: RoomInsert = {
         name: newRoom.name,
         capacity_m2: newRoom.capacity_m2,
         room_type: newRoom.room_type,
         notes: newRoom.notes || null,
         is_active: true,
         org_id: currentOrgId,
-      });
+      };
+
+      const { error: insertError } = await supabase
+        .from("rooms")
+        .insert(roomData);
 
       if (insertError) throw insertError;
 
@@ -122,16 +130,18 @@ export default function AdminRumPage() {
         return;
       }
 
+      const roomUpdate: RoomUpdate = {
+        name: editForm.name,
+        capacity_m2: editForm.capacity_m2,
+        room_type: editForm.room_type,
+        notes: editForm.notes || null,
+        is_active: editForm.is_active,
+        updated_at: new Date().toISOString(),
+      };
+
       const { error: updateError } = await supabase
         .from("rooms")
-        .update({
-          name: editForm.name,
-          capacity_m2: editForm.capacity_m2,
-          room_type: editForm.room_type,
-          notes: editForm.notes || null,
-          is_active: editForm.is_active,
-          updated_at: new Date().toISOString(),
-        })
+        .update(roomUpdate)
         .eq("id", editingId);
 
       if (updateError) throw updateError;

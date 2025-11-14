@@ -424,7 +424,18 @@ export interface Database {
       };
     };
     Views: { [key: string]: never };
-    Functions: { [key: string]: never };
+    Functions: {
+      heal_user_missing_org: {
+        Args: { user_id: string };
+        Returns: {
+          success: boolean;
+          message: string;
+          org_id?: string;
+          created_new_org?: boolean;
+          error?: string;
+        };
+      };
+    };
     Enums: { [key: string]: never };
   };
 }

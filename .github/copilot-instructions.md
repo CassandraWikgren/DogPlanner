@@ -25,6 +25,13 @@ Follow these concise, actionable rules when editing or extending this repo.
 - Conventions & patterns specific to this repo:
   - UI: Tailwind + Radix components living in `components/` and global styles in `app/globals.css`.
   - Auth: New registered users are auto-assigned to an organisation (triggered server-side). See `app/context/AuthContext` for client-side auth flows.
+  - **🔒 CRITICAL: org_id Assignment System** (DO NOT MODIFY without understanding all 3 layers):
+    - **Layer 1 (Primary)**: Database trigger `on_auth_user_created` → `handle_new_user()` creates org + profile with org_id from user_metadata (org_name, org_number, phone, full_name)
+    - **Layer 2 (Fallback)**: `/api/onboarding/auto` creates org if trigger fails (called from AuthContext)
+    - **Layer 3 (Healing)**: AuthContext's `refreshProfile()` calls `heal_user_missing_org()` RPC if org_id is NULL
+    - **Why 3 layers?**: Past bugs caused "Ingen organisation tilldelad" errors. This triple-redundancy ensures users ALWAYS get org_id.
+    - **Migration file**: `supabase/migrations/PERMANENT_FIX_org_assignment.sql` contains complete implementation and documentation
+    - **Testing**: After ANY changes to auth/registration, verify: new user → check profiles.org_id is NOT NULL
   - Types: Strongly typed Supabase DB types live in `types/` (use `Database` generic when creating Supabase client).
   - Room calculations: Business rules for room sizing (Jordbruksverket) are implemented in `lib/roomCalculator.ts` — reference this when touching capacity logic.
 
@@ -41,7 +48,9 @@ Follow these concise, actionable rules when editing or extending this repo.
 
 - Small safety rules for automated edits:
   - Never alter `complete_testdata.sql` automatically without human review — it intentionally disables triggers/RLS.
+  - **Never modify `handle_new_user()` trigger or `heal_user_missing_org()` function** — they are part of critical 3-layer org_id assignment system. See migration file for details.
   - Preserve import aliases and `next.config.ts` webpack alias entries.
   - When adding server-side dependencies, update `next.config.ts`'s `serverExternalPackages`/`outputFileTracingIncludes` if they are used in API routes.
+  - **Pages requiring org_id**: If adding new page that uses `currentOrgId` from AuthContext, ALWAYS add else-case: `if (currentOrgId) { loadData(); } else { setLoading(false); }` to prevent infinite loading spinner.
 
 If anything in these instructions is unclear or you want more coverage for a subsystem (PDFs, billing, or room rules), tell me which area and I will expand this file.

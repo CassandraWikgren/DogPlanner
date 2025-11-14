@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
 
 /**
@@ -9,19 +9,25 @@ import { Database } from "@/types/database";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-let supabaseClient: ReturnType<typeof createClient<Database>> | null = null;
-
-if (supabaseUrl && supabaseAnonKey) {
-  supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
-} else {
-  // 🛑 Hindra att build kraschar
-  if (process.env.NODE_ENV === "production") {
-    console.warn(
-      "[WARN] Supabase-nycklar saknas under build-tid (t.ex. vid prerendering av /not-found). Skapar ingen klient."
+function createSupabaseClient(): SupabaseClient<Database> {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    // 🛑 Hindra att build kraschar
+    if (typeof window === "undefined") {
+      console.warn(
+        "[WARN] Supabase-nycklar saknas under build-tid. Returnerar mock client."
+      );
+      // Mock client för build-time som aldrig används
+      return createClient<Database>(
+        "https://placeholder.supabase.co",
+        "placeholder-key"
+      );
+    }
+    throw new Error(
+      "Supabase URL och anon key måste vara konfigurerade i miljövariabler"
     );
   }
+
+  return createClient<Database>(supabaseUrl, supabaseAnonKey);
 }
 
-export const supabase = supabaseClient as ReturnType<
-  typeof createClient<Database>
->;
+export const supabase = createSupabaseClient();

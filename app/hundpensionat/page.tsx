@@ -130,9 +130,9 @@ export default function HundpensionatPage() {
           *,
           dogs (
             *,
-            owners (*)
-          ),
-          rooms (*)
+            owners (*),
+            rooms (*)
+          )
         `
         )
         .eq("org_id", currentOrgId as string)
@@ -140,7 +140,7 @@ export default function HundpensionatPage() {
 
       if (dbError) throw dbError;
 
-      setBookings(data || []);
+      setBookings((data as any) || []);
       console.log("✅ Bokningar laddade:", data?.length || 0);
     } catch (error) {
       console.error("🔥 Fel vid laddning av bokningar:", error);
