@@ -4,7 +4,14 @@ import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
 import { calculateRequiredArea } from "@/lib/roomCalculator";
-import { Printer, Download, AlertTriangle, CheckCircle } from "lucide-react";
+import {
+  Printer,
+  Download,
+  AlertTriangle,
+  CheckCircle,
+  Home,
+  Plus,
+} from "lucide-react";
 
 interface Dog {
   id: string;
@@ -60,17 +67,26 @@ export default function HundrumView() {
     try {
       setLoading(true);
 
-      // Hämta rum
+      console.log("🔍 HundrumView: Hämtar rum för org:", currentOrgId);
+
+      // Hämta rum (dagis och kombinerade rum)
       const { data: roomsData, error: roomsError } = await supabase
         .from("rooms")
         .select("*")
         .eq("org_id", currentOrgId as string)
         .eq("is_active", true)
+        .in("room_type", ["daycare", "both"])
         .order("name");
 
-      if (roomsError) throw roomsError;
+      if (roomsError) {
+        console.error("[ERR-1001] Error fetching rooms:", roomsError);
+        throw roomsError;
+      }
 
-      // Hämta hundar med rum tilldelade
+      console.log(`✅ HundrumView: Hämtade ${roomsData?.length || 0} rum`);
+
+      // Hämta ALLA hundar med room_id (både null och faktiska rum)
+      // Vi filtrerar sedan i frontend baserat på vilket rum de tillhör
       const { data: dogsData, error: dogsError } = await supabase
         .from("dogs")
         .select(
@@ -94,9 +110,16 @@ export default function HundrumView() {
         `
         )
         .eq("org_id", currentOrgId as string)
-        .not("room_id", "is", null);
+        .not("room_id", "is", null); // Bara hundar MED rum
 
-      if (dogsError) throw dogsError;
+      if (dogsError) {
+        console.error("[ERR-1002] Error fetching dogs:", dogsError);
+        throw dogsError;
+      }
+
+      console.log(
+        `✅ HundrumView: Hämtade ${dogsData?.length || 0} hundar med tilldelade rum`
+      );
 
       setRooms(roomsData || []);
       // Fix owners type - Supabase returns array but we expect single object
@@ -407,12 +430,20 @@ export default function HundrumView() {
   if (rooms.length === 0) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+        <Home className="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-gray-900 mb-2">
-          Inga rum konfigurerade
+          Inga hundrum konfigurerade
         </h3>
         <p className="text-gray-600 mb-4">
-          Gå till Admin → Rum för att lägga till hundrum.
+          Skapa hundrum först för att se rumsbeläggning och fördela hundar.
         </p>
+        <a
+          href="/admin/rum"
+          className="inline-flex items-center px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Skapa hundrum
+        </a>
       </div>
     );
   }
