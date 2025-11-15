@@ -4,37 +4,36 @@ import React from "react";
 import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
 import DashboardWidgets from "@/components/DashboardWidgets";
-import {
-  H1,
-  H2,
-  StandardCard,
-  StandardContainer,
-  StandardPage,
-} from "@/components/ui/standard";
 
 export default function AdminPage() {
   const { currentOrgId } = useAuth();
 
   return (
-    <StandardPage>
-      {/* Header - Enligt stilguide: vit bakgrund, padding 24px */}
-      <div className="bg-white border-b border-gray-200">
-        <StandardContainer size="xl" padding="md">
-          <H1 className="mb-2">Administration</H1>
-          <p className="text-base text-gray-600">
-            Hantera ekonomi, priser, företagsinformation och användare
-          </p>
-        </StandardContainer>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header med titel och statistik - EXAKT som Hunddagis */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                Administration
+              </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Hantera ekonomi, priser, företagsinformation och användare
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Main Content - Stilguide: maxbredd 1200px, sidmarginal 24px */}
-      <StandardContainer size="xl" padding="md">
+      {/* Main Content Area - EXAKT som Hunddagis: max-w-7xl mx-auto px-6 py-6 */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Statistik-sektion */}
         {currentOrgId && (
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-6 bg-[#2c7a4c] rounded-full"></div>
-              <H2>Översikt</H2>
+              <h2 className="text-xl font-bold text-[#333333]">Översikt</h2>
             </div>
             <DashboardWidgets />
           </div>
@@ -44,183 +43,147 @@ export default function AdminPage() {
         <div>
           <div className="flex items-center gap-2 mb-4">
             <div className="w-1 h-6 bg-[#2c7a4c] rounded-full"></div>
-            <H2>Hantera</H2>
+            <h2 className="text-xl font-bold text-[#333333]">Hantera</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Ekonomi & Fakturor */}
             <Link href="/ekonomi">
-              <StandardCard
-                padding="md"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] transition-all group"
-              >
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">💰</div>
                   <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
                     Ekonomi & Fakturor
                   </h3>
                 </div>
-                <p className="text-base text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Hantera fakturor, betalningar och ekonomirapporter.
                 </p>
-              </StandardCard>
+              </div>
             </Link>
 
             {/* Priser - Hunddagis */}
             <Link href="/admin/priser/dagis">
-              <StandardCard
-                padding="md"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] transition-all group"
-              >
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">🐕</div>
                   <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
                     Priser - Hunddagis
                   </h3>
                 </div>
-                <p className="text-base text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Ändra priser för dagisabonnemang och enstaka dagar.
                 </p>
-              </StandardCard>
+              </div>
             </Link>
 
             {/* Priser - Hundpensionat */}
             <Link href="/admin/priser/pensionat">
-              <StandardCard
-                padding="md"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] transition-all group"
-              >
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">🏨</div>
                   <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
                     Priser - Pensionat
                   </h3>
                 </div>
-                <p className="text-base text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Ändra priser för pensionatsbokningar och tilläggstjänster.
                 </p>
-              </StandardCard>
+              </div>
             </Link>
 
             {/* Priser - Hundfrisör */}
             <Link href="/admin/priser/frisor">
-              <StandardCard
-                padding="md"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] transition-all group"
-              >
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">✂️</div>
                   <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
                     Priser - Frisör
                   </h3>
                 </div>
-                <p className="text-base text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Ändra priser för klippning, bad och pälsvård.
                 </p>
-              </StandardCard>
+              </div>
             </Link>
 
             {/* Företagsinformation */}
             <Link href="/foretagsinformation">
-              <StandardCard
-                padding="md"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] transition-all group"
-              >
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">🏢</div>
                   <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
                     Företagsinformation
                   </h3>
                 </div>
-                <p className="text-base text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Hantera företagsuppgifter, kontaktinfo och adress.
                 </p>
-              </StandardCard>
+              </div>
             </Link>
 
             {/* Kunder & Hundägare */}
             <Link href="/owners">
-              <StandardCard
-                padding="md"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] transition-all group"
-              >
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">👥</div>
                   <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
                     Kunder & Hundägare
                   </h3>
                 </div>
-                <p className="text-base text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Hantera kundregister och kontaktuppgifter.
                 </p>
-              </StandardCard>
+              </div>
             </Link>
 
             {/* Rum-hantering */}
             <Link href="/admin/rum">
-              <StandardCard
-                padding="md"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] transition-all group"
-              >
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">🚪</div>
                   <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
                     Rum & Platser
                   </h3>
                 </div>
-                <p className="text-base text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Hantera rum för dagis och pensionat.
                 </p>
-              </StandardCard>
+              </div>
             </Link>
 
             {/* Användarhantering */}
             <Link href="/admin/users">
-              <StandardCard
-                padding="md"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] transition-all group"
-              >
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">🔐</div>
                   <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
                     Användarhantering
                   </h3>
                 </div>
-                <p className="text-base text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Skapa inlogg för kollegor och hantera behörigheter.
                 </p>
-              </StandardCard>
+              </div>
             </Link>
 
             {/* Abonnemang DogPlanner */}
             <Link href="/subscription">
-              <StandardCard
-                padding="md"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] transition-all group"
-              >
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">💳</div>
                   <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
                     Ditt Abonnemang
                   </h3>
                 </div>
-                <p className="text-base text-gray-600 leading-relaxed">
+                <p className="text-sm text-gray-600 leading-relaxed">
                   Hantera ditt DogPlanner-abonnemang och betalning.
                 </p>
-              </StandardCard>
+              </div>
             </Link>
           </div>
         </div>
-      </StandardContainer>
-    </StandardPage>
+      </div>
+    </div>
   );
 }
