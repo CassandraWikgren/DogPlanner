@@ -706,75 +706,75 @@ export default function HunddagisPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-4">
-      {/* Header med titel och statistik */}
-      <div className="border-b border-gray-200 bg-white">
-        <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 py-3">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header med titel och statistik - ENLIGT STILGUIDE */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-[#2c7a4c]">
-                Hunddagis – Dagens sammanställning
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-relaxed">
+                Hunddagis
               </h1>
-              <p className="mt-1 text-sm text-[#2c7a4c]">
-                Sök, filtrera, exportera och lägg till nya hundar.
+              <p className="mt-2 text-base text-gray-600">
+                Dagens sammanställning – Sök, filtrera och hantera dina hundar
               </p>
             </div>
 
-            {/* Statistik i högra hörnet */}
+            {/* Statistik i högra hörnet - Kompakta kort */}
             <div className="flex items-center space-x-6">
-              <div className="text-center">
-                <p className="text-3xl font-bold text-[#2c7a4c]">
+              <div className="text-center bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
                   {dogs.filter((d) => d.subscription).length}
                 </p>
-                <p className="text-sm text-gray-600">Antagna hundar</p>
+                <p className="text-sm text-gray-600 mt-1">Antagna hundar</p>
               </div>
-              <div className="text-center">
-                <p className="text-3xl font-bold text-orange-600">
+              <div className="text-center bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-orange-600">
                   {dogs.filter((d) => !d.subscription).length}
                 </p>
-                <p className="text-sm text-gray-600">Väntelista</p>
+                <p className="text-sm text-gray-600 mt-1">Väntelista</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 pb-6">
-        {/* Action Buttons Row - standard DogPlanner styling */}
-        <div className="flex justify-between items-center mb-4 mt-4">
+      {/* Main Content Area - ENLIGT STILGUIDE: maxbredd 1200px, padding 24px */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Action Buttons Row - ENLIGT STILGUIDE: rounded-md, shadow-sm */}
+        <div className="flex justify-between items-center mb-6">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setShowAddDogModal(true)}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
             >
-              <Plus className="h-4 w-4 mr-2 text-white" />
-              <span className="text-white">Ny hund</span>
+              <Plus className="h-4 w-4 mr-2" />
+              Ny hund
             </button>
             <button
               onClick={exportToPDF}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-gray-500 hover:bg-gray-600 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
-              <Download className="h-4 w-4 mr-2 text-white" />
-              <span className="text-white">PDF-export</span>
+              <Download className="h-4 w-4 mr-2" />
+              PDF-export
             </button>
             <button
               onClick={() => {
                 fetchDogs();
                 fetchRooms();
               }}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
             >
-              <RefreshCcw className="h-4 w-4 mr-2 text-white" />
-              <span className="text-white">Ladda om</span>
+              <RefreshCcw className="h-4 w-4 mr-2" />
+              Ladda om
             </button>
           </div>
         </div>
 
-        {/* Search and Filter Row */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+        {/* Search and Filter Row - ENLIGT STILGUIDE */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-6">
           <div className="flex flex-row items-center space-x-4">
-            {/* Sökruta - större och tydligare */}
+            {/* Sökruta - stilguide: h-10, rounded-md */}
             <div className="flex-1 min-w-[400px]">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -783,17 +783,17 @@ export default function HunddagisPage() {
                   placeholder="Sök på hundnamn, ägarnamn, telefon, ras..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
+                  className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                 />
               </div>
             </div>
 
-            {/* Filter dropdowns */}
+            {/* Filter dropdowns - stilguide: h-10, rounded-md */}
             <div className="flex space-x-3 items-center">
               <select
                 value={filterSubscription}
                 onChange={(e) => setFilterSubscription(e.target.value)}
-                className="px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c] text-sm whitespace-nowrap"
+                className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base whitespace-nowrap"
               >
                 <option value="all">Våra hundar</option>
                 <option value="services">Tjänster</option>
@@ -804,7 +804,7 @@ export default function HunddagisPage() {
               <select
                 value={filterMonth}
                 onChange={(e) => setFilterMonth(e.target.value)}
-                className="px-3 py-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c] text-sm whitespace-nowrap"
+                className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base whitespace-nowrap"
               >
                 <option value="all">Alla månader</option>
                 <option value="0">Januari</option>
@@ -821,11 +821,11 @@ export default function HunddagisPage() {
                 <option value="11">December</option>
               </select>
 
-              {/* Kolumner dropdown - istället för kolumner-knapp */}
+              {/* Kolumner knapp - stilguide: outline variant */}
               <div className="relative" ref={columnSettingsRef}>
                 <button
                   onClick={() => setShowColumnSettings(!showColumnSettings)}
-                  className="inline-flex items-center px-4 py-2.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                  className="inline-flex items-center h-10 px-4 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                 >
                   <Settings2 className="h-4 w-4 mr-2" />
                   Kolumner
@@ -914,8 +914,8 @@ export default function HunddagisPage() {
         ) : filterSubscription === "hundrum" ? (
           <HundrumView />
         ) : (
-          /* Dogs Table */
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          /* Dogs Table - ENLIGT STILGUIDE: rounded-lg, shadow-sm */
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             {filteredAndSortedDogs.length === 0 ? (
               <div className="text-center py-12">
                 <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -930,10 +930,10 @@ export default function HunddagisPage() {
                 {dogs.length === 0 && (
                   <button
                     onClick={() => setShowAddDogModal(true)}
-                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-[#2c7a4c] hover:bg-[#236139]"
+                    className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                   >
-                    <Plus className="h-4 w-4 mr-2 text-white" />
-                    <span className="text-white">Lägg till hund</span>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Lägg till hund
                   </button>
                 )}
               </div>
@@ -945,7 +945,7 @@ export default function HunddagisPage() {
                       {columns.includes("name") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
+                          className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139]"
                           onClick={() => handleSort("name")}
                         >
                           <div className="flex items-center space-x-1">
@@ -960,7 +960,7 @@ export default function HunddagisPage() {
                       {columns.includes("breed") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
+                          className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139]"
                           onClick={() => handleSort("breed")}
                         >
                           Ras{" "}
@@ -971,7 +971,7 @@ export default function HunddagisPage() {
                       {columns.includes("gender") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Kön
                         </th>
@@ -979,7 +979,7 @@ export default function HunddagisPage() {
                       {columns.includes("heightcm") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Mankhöjd
                         </th>
@@ -987,7 +987,7 @@ export default function HunddagisPage() {
                       {columns.includes("birth") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Födelsedatum
                         </th>
@@ -995,7 +995,7 @@ export default function HunddagisPage() {
                       {columns.includes("owner") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
+                          className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139]"
                           onClick={() => handleSort("owner")}
                         >
                           Ägare{" "}
@@ -1006,7 +1006,7 @@ export default function HunddagisPage() {
                       {columns.includes("customer_number") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Kundnr
                         </th>
@@ -1014,7 +1014,7 @@ export default function HunddagisPage() {
                       {columns.includes("personnummer") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Personnr
                         </th>
@@ -1022,7 +1022,7 @@ export default function HunddagisPage() {
                       {columns.includes("phone") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Telefon
                         </th>
@@ -1030,7 +1030,7 @@ export default function HunddagisPage() {
                       {columns.includes("email") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           E-post
                         </th>
@@ -1038,7 +1038,7 @@ export default function HunddagisPage() {
                       {columns.includes("address") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Adress
                         </th>
@@ -1046,7 +1046,7 @@ export default function HunddagisPage() {
                       {columns.includes("contact_person_2") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Kontaktperson 2
                         </th>
@@ -1054,7 +1054,7 @@ export default function HunddagisPage() {
                       {columns.includes("contact_phone_2") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Tel. kontakt 2
                         </th>
@@ -1062,7 +1062,7 @@ export default function HunddagisPage() {
                       {columns.includes("subscription") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-green-700"
+                          className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139]"
                           onClick={() => handleSort("subscription")}
                         >
                           Abonnemang{" "}
@@ -1073,7 +1073,7 @@ export default function HunddagisPage() {
                       {columns.includes("days") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Veckodagar
                         </th>
@@ -1081,7 +1081,7 @@ export default function HunddagisPage() {
                       {columns.includes("startdate") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Startdatum
                         </th>
@@ -1089,7 +1089,7 @@ export default function HunddagisPage() {
                       {columns.includes("enddate") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Slutdatum
                         </th>
@@ -1097,7 +1097,7 @@ export default function HunddagisPage() {
                       {columns.includes("room_id") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Rum
                         </th>
@@ -1105,7 +1105,7 @@ export default function HunddagisPage() {
                       {columns.includes("insurance_company") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Försäkringsbolag
                         </th>
@@ -1113,7 +1113,7 @@ export default function HunddagisPage() {
                       {columns.includes("insurance_number") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Försäkringsnr
                         </th>
@@ -1121,7 +1121,7 @@ export default function HunddagisPage() {
                       {columns.includes("vaccdhp") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Vacc. DHP
                         </th>
@@ -1129,7 +1129,7 @@ export default function HunddagisPage() {
                       {columns.includes("vaccpi") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Vacc. Pi
                         </th>
@@ -1137,7 +1137,7 @@ export default function HunddagisPage() {
                       {columns.includes("is_castrated") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Kasterad
                         </th>
@@ -1145,15 +1145,13 @@ export default function HunddagisPage() {
                       {columns.includes("destroys_things") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                        >
-                          Biter sönder
-                        </th>
+                          className="px-4 py-3 text-left text-sm font-semibold"
+                        ></th>
                       )}
                       {columns.includes("is_house_trained") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Rumsren
                         </th>
@@ -1161,7 +1159,7 @@ export default function HunddagisPage() {
                       {columns.includes("food_info") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Foder
                         </th>
@@ -1169,7 +1167,7 @@ export default function HunddagisPage() {
                       {columns.includes("notes") && (
                         <th
                           scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                          className="px-4 py-3 text-left text-sm font-semibold"
                         >
                           Anteckningar
                         </th>
@@ -1180,7 +1178,7 @@ export default function HunddagisPage() {
                     {filteredAndSortedDogs.map((dog, index) => (
                       <tr
                         key={dog.id}
-                        className={`cursor-pointer ${index % 2 === 0 ? "bg-white hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-200"}`}
+                        className={`cursor-pointer transition-colors ${index % 2 === 0 ? "bg-white hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-100"}`}
                         onClick={() => {
                           // ✅ KRITISK FIX: Skapa djup kopia för att förhindra mutation av shared owner objects
                           const dogCopy = JSON.parse(JSON.stringify(dog));
@@ -1188,84 +1186,84 @@ export default function HunddagisPage() {
                         }}
                       >
                         {columns.includes("name") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.name}
                           </td>
                         )}
                         {columns.includes("breed") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.breed || "-"}
                           </td>
                         )}
                         {columns.includes("gender") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.gender || "-"}
                           </td>
                         )}
                         {columns.includes("heightcm") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.heightcm ? `${dog.heightcm} cm` : "-"}
                           </td>
                         )}
                         {columns.includes("birth") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.birth
                               ? new Date(dog.birth).toLocaleDateString("sv-SE")
                               : "-"}
                           </td>
                         )}
                         {columns.includes("owner") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.owners?.full_name || "-"}
                           </td>
                         )}
                         {columns.includes("customer_number") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.owners?.customer_number || "-"}
                           </td>
                         )}
                         {columns.includes("personnummer") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.owners?.personnummer || "-"}
                           </td>
                         )}
                         {columns.includes("phone") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.owners?.phone || "-"}
                           </td>
                         )}
                         {columns.includes("email") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.owners?.email || "-"}
                           </td>
                         )}
                         {columns.includes("address") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.owners?.address || "-"}
                           </td>
                         )}
                         {columns.includes("contact_person_2") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.owners?.contact_person_2 || "-"}
                           </td>
                         )}
                         {columns.includes("contact_phone_2") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.owners?.contact_phone_2 || "-"}
                           </td>
                         )}
                         {columns.includes("subscription") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.subscription || "Ej valt"}
                           </td>
                         )}
                         {columns.includes("days") && (
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-4 py-3 whitespace-nowrap">
                             {renderWeekdays(dog.days)}
                           </td>
                         )}
                         {columns.includes("startdate") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.startdate
                               ? new Date(dog.startdate).toLocaleDateString(
                                   "sv-SE"
@@ -1274,7 +1272,7 @@ export default function HunddagisPage() {
                           </td>
                         )}
                         {columns.includes("enddate") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.enddate
                               ? new Date(dog.enddate).toLocaleDateString(
                                   "sv-SE"
@@ -1283,22 +1281,22 @@ export default function HunddagisPage() {
                           </td>
                         )}
                         {columns.includes("room_id") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {getRoomName(dog.room_id)}
                           </td>
                         )}
                         {columns.includes("insurance_company") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.insurance_company || "-"}
                           </td>
                         )}
                         {columns.includes("insurance_number") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.insurance_number || "-"}
                           </td>
                         )}
                         {columns.includes("vaccdhp") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.vaccdhp
                               ? new Date(dog.vaccdhp).toLocaleDateString(
                                   "sv-SE"
@@ -1307,34 +1305,34 @@ export default function HunddagisPage() {
                           </td>
                         )}
                         {columns.includes("vaccpi") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.vaccpi
                               ? new Date(dog.vaccpi).toLocaleDateString("sv-SE")
                               : "-"}
                           </td>
                         )}
                         {columns.includes("is_castrated") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.is_castrated ? "Ja" : "Nej"}
                           </td>
                         )}
                         {columns.includes("destroys_things") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.destroys_things ? "Ja" : "Nej"}
                           </td>
                         )}
                         {columns.includes("is_house_trained") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.is_house_trained ? "Ja" : "Nej"}
                           </td>
                         )}
                         {columns.includes("food_info") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.food_info || "-"}
                           </td>
                         )}
                         {columns.includes("notes") && (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
                             {dog.notes || "-"}
                           </td>
                         )}
