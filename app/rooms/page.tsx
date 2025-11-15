@@ -3,10 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import {
   Home,
   Plus,
@@ -272,131 +271,138 @@ export default function RoomsPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-[1600px] mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-64 mb-6"></div>
-            <div className="grid grid-cols-1 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
-              ))}
+      <div className="min-h-screen bg-gray-50">
+        <div className="border-b border-gray-200 bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded w-48 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-96"></div>
             </div>
           </div>
         </div>
+        <main className="max-w-7xl mx-auto px-6 py-6">
+          <div className="animate-pulse space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-[1600px] mx-auto">
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-              <Home className="h-8 w-8 text-blue-600" />
-              Hundrum
-            </h1>
-            <Button
-              onClick={() => setShowAddRoom(true)}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Lägg till rum
-            </Button>
-          </div>
-          <p className="text-gray-600">
-            Hantera hundrum och övervaka beläggning enligt Jordbruksverkets
-            inomhuskrav (SJVFS 2019:2 § 7-8).
-          </p>
-        </div>
-
-        {/* Felmeddelande */}
-        {error && (
-          <Card className="border-red-200 bg-red-50 mb-6">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-red-800 font-medium mb-1">Systemfel</p>
-                  <p className="text-red-700 text-sm mb-3">{error}</p>
-                  <Button
-                    onClick={() => {
-                      setError(null);
-                      fetchData();
-                    }}
-                    variant="outline"
-                    size="sm"
-                    className="border-red-300 text-red-700 hover:bg-red-100"
-                  >
-                    Försök igen
-                  </Button>
+    <div className="min-h-screen bg-gray-50">
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-start">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
+                <Home className="h-8 w-8" />
+                Hundrum
+              </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Hantera hundrum och övervaka beläggning enligt Jordbruksverkets
+                inomhuskrav (SJVFS 2019:2 § 7-8).
+              </p>
+            </div>
+            <div className="flex gap-3 ml-4">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-600">Aktiva rum</div>
+                <div className="text-xl font-bold text-[#2c7a4c]">
+                  {rooms.filter((r) => r.is_active).length}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              <button
+                onClick={() => setShowAddRoom(true)}
+                className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Lägg till rum
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main className="max-w-7xl mx-auto px-6 py-6">
+        {/* Felmeddelande */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-red-800 font-semibold mb-1 text-sm">
+                  Systemfel
+                </p>
+                <p className="text-red-700 text-sm mb-3">{error}</p>
+                <button
+                  onClick={() => {
+                    setError(null);
+                    fetchData();
+                  }}
+                  className="px-3 py-1.5 border border-red-300 text-red-700 hover:bg-red-100 rounded-md font-semibold text-sm"
+                >
+                  Försök igen
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Statistik */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Antal rum</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {stats.totalRooms}
-                  </p>
-                </div>
-                <Home className="h-8 w-8 text-blue-600" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-600">Antal rum</p>
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {stats.totalRooms}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <Home className="h-8 w-8 text-[#2c7a4c]" />
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total yta</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {stats.totalCapacity} m²
-                  </p>
-                </div>
-                <Square className="h-8 w-8 text-green-600" />
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-600">Total yta</p>
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {stats.totalCapacity} m²
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <Square className="h-8 w-8 text-[#2c7a4c]" />
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Hundar i rum
-                  </p>
-                  <p className="text-2xl font-bold text-purple-600">
-                    {stats.totalDogs}
-                  </p>
-                </div>
-                <Users className="h-8 w-8 text-purple-600" />
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-600">
+                  Hundar i rum
+                </p>
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {stats.totalDogs}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <Users className="h-8 w-8 text-[#2c7a4c]" />
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Överbelagda
-                  </p>
-                  <p className="text-2xl font-bold text-red-600">
-                    {stats.violationRooms}
-                  </p>
-                </div>
-                <AlertTriangle className="h-8 w-8 text-red-600" />
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-600">
+                  Överbelagda
+                </p>
+                <p className="text-2xl font-bold text-red-600">
+                  {stats.violationRooms}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <AlertTriangle className="h-8 w-8 text-red-600" />
+            </div>
+          </div>
         </div>
 
         {/* Rumlista */}
@@ -406,41 +412,38 @@ export default function RoomsPage() {
             if (!room) return null;
 
             return (
-              <Card
+              <div
                 key={room.id}
-                className={`border-2 ${getComplianceColor(
+                className={`bg-white rounded-lg border-2 shadow-sm ${getComplianceColor(
                   occupancy.compliance_status
                 )}`}
               >
-                <CardHeader>
+                <div className="p-6 border-b border-gray-200">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Home className="h-5 w-5 text-blue-600" />
+                      <h3 className="text-lg font-semibold text-[#333333] flex items-center gap-2">
+                        <Home className="h-5 w-5 text-[#2c7a4c]" />
                         {room.name}
-                      </CardTitle>
-                      <p className="text-gray-600">
+                      </h3>
+                      <p className="text-gray-600 text-sm">
                         {room.capacity_m2} m² • {room.room_type}
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
+                      <button
                         onClick={() => setEditingRoom(room)}
+                        className="px-3 py-1.5 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
                       >
                         <Edit className="h-4 w-4" />
-                      </Button>
+                      </button>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                </div>
+                <div className="p-6 space-y-4 text-sm">
                   {/* Beläggningsinfo */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">
-                        Beläggning
-                      </p>
+                      <p className="font-semibold text-gray-600">Beläggning</p>
                       <p className="text-lg font-bold">
                         {occupancy.occupancy_percentage}%
                       </p>
@@ -463,13 +466,11 @@ export default function RoomsPage() {
                       </div>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-600">
-                        Hundar
-                      </p>
+                      <p className="font-semibold text-gray-600">Hundar</p>
                       <p className="text-lg font-bold">
                         {occupancy.dogs_count}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-gray-500">
                         +{occupancy.max_additional_dogs} max till
                       </p>
                     </div>
@@ -483,7 +484,7 @@ export default function RoomsPage() {
                   >
                     <div className="flex items-center gap-2 mb-1">
                       {getComplianceIcon(occupancy.compliance_status)}
-                      <span className="font-medium">
+                      <span className="font-semibold">
                         {occupancy.compliance_status === "compliant" &&
                           "Godkänt"}
                         {occupancy.compliance_status === "warning" && "Varning"}
@@ -499,7 +500,7 @@ export default function RoomsPage() {
                     const capacity = calculateMaxDogsCapacity(room.capacity_m2);
                     return (
                       <div className="bg-gray-50 p-3 rounded-lg">
-                        <p className="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                        <p className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
                           <Info className="h-4 w-4" />
                           Max kapacitet per hundkategori
                         </p>
@@ -548,14 +549,14 @@ export default function RoomsPage() {
                   {/* Hundar i rummet */}
                   {occupancy.dogs_present.length > 0 && (
                     <div>
-                      <p className="font-medium text-gray-900 mb-2">
+                      <p className="font-semibold text-gray-900 mb-2">
                         Hundar i rummet:
                       </p>
                       <div className="space-y-1">
                         {occupancy.dogs_present.map((dog: any) => (
                           <div
                             key={dog.id}
-                            className="flex justify-between items-center text-sm bg-gray-50 p-2 rounded"
+                            className="flex justify-between items-center bg-gray-50 p-2 rounded"
                           >
                             <span>
                               <strong>{dog.name}</strong>
@@ -574,37 +575,37 @@ export default function RoomsPage() {
 
                   {room.notes && (
                     <div>
-                      <p className="font-medium text-gray-900 mb-1">
+                      <p className="font-semibold text-gray-900 mb-1">
                         Anteckningar:
                       </p>
-                      <p className="text-sm text-gray-600">{room.notes}</p>
+                      <p className="text-gray-600">{room.notes}</p>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>
 
         {/* Tom lista */}
         {rooms.length === 0 && (
-          <Card className="text-center py-12">
-            <CardContent>
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm text-center py-12">
+            <div className="p-6">
               <Home className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Inga rum registrerade
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 text-sm mb-4">
                 Skapa ditt första rum för att komma igång med rumshantering.
               </p>
-              <Button
+              <button
                 onClick={() => setShowAddRoom(true)}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
               >
                 Skapa första rummet
-              </Button>
-            </CardContent>
-          </Card>
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Modal för att lägga till/redigera rum */}
@@ -618,7 +619,7 @@ export default function RoomsPage() {
             }}
           />
         )}
-      </div>
+      </main>
     </div>
   );
 }
@@ -650,14 +651,16 @@ function RoomModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>{room ? "Redigera rum" : "Lägg till nytt rum"}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 shadow-lg">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-[#333333]">
+            {room ? "Redigera rum" : "Lägg till nytt rum"}
+          </h3>
+        </div>
+        <div className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 text-sm">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block font-semibold text-gray-700 mb-1">
                 Rumsnamn *
               </label>
               <Input
@@ -667,11 +670,12 @@ function RoomModal({
                 }
                 placeholder="t.ex. Rum 1, Stora rummet"
                 required
+                className="text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block font-semibold text-gray-700 mb-1">
                 Yta (m²) *
               </label>
               <Input
@@ -687,6 +691,7 @@ function RoomModal({
                 }
                 placeholder="t.ex. 25.5"
                 required
+                className="text-sm"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Enligt Jordbruksverket (SJVFS 2019:2): <br />
@@ -699,7 +704,7 @@ function RoomModal({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block font-semibold text-gray-700 mb-1">
                 Rumstyp
               </label>
               <select
@@ -710,7 +715,7 @@ function RoomModal({
                     room_type: e.target.value as any,
                   }))
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
               >
                 <option value="daycare">Endast dagis</option>
                 <option value="boarding">Endast pensionat</option>
@@ -719,7 +724,7 @@ function RoomModal({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block font-semibold text-gray-700 mb-1">
                 Max antal hundar (valfritt)
               </label>
               <Input
@@ -730,11 +735,12 @@ function RoomModal({
                   setFormData((prev) => ({ ...prev, max_dogs: e.target.value }))
                 }
                 placeholder="Lämna tomt för automatisk beräkning"
+                className="text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block font-semibold text-gray-700 mb-1">
                 Anteckningar
               </label>
               <Textarea
@@ -744,28 +750,28 @@ function RoomModal({
                 }
                 placeholder="Ytterligare information om rummet..."
                 rows={3}
+                className="text-sm"
               />
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button
+              <button
                 type="submit"
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
               >
                 {room ? "Uppdatera" : "Skapa"} rum
-              </Button>
-              <Button
+              </button>
+              <button
                 type="button"
-                variant="outline"
                 onClick={onCancel}
-                className="flex-1"
+                className="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
               >
                 Avbryt
-              </Button>
+              </button>
             </div>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
