@@ -210,8 +210,8 @@ export default function SubscriptionPage() {
           selectedPlan === "basic"
             ? "Basic"
             : selectedPlan === "kombi"
-            ? "Kombi"
-            : "Full"
+              ? "Kombi"
+              : "Full"
         }!`
       );
       if (subInfo) {
@@ -306,21 +306,26 @@ export default function SubscriptionPage() {
     subInfo?.customer_number || `KD-${user?.id?.slice(0, 8).toUpperCase()}`;
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <Link
-            href="/dashboard"
-            className="text-[#2c7a4c] hover:underline text-sm"
-          >
-            ← Tillbaka
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mt-3">
-            Mitt Abonnemang
-          </h1>
+    <main className="min-h-screen bg-gray-50">
+      {/* Kompakt header */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-5xl mx-auto px-6 py-4">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/dashboard"
+              className="text-gray-600 hover:text-[#2C7A4C] transition-colors"
+            >
+              ← Tillbaka
+            </Link>
+            <h1 className="text-2xl font-bold text-[#2C7A4C] leading-tight">
+              Mitt Abonnemang
+            </h1>
+          </div>
         </div>
+      </div>
 
+      {/* Main content */}
+      <div className="max-w-5xl mx-auto px-6 py-6">
         {/* Messages */}
         {message && (
           <div className="mb-4 rounded-md border border-green-300 bg-green-50 px-4 py-3 text-green-800 text-sm">
@@ -372,12 +377,12 @@ export default function SubscriptionPage() {
           {/* Left Side - Overview */}
           <div className="space-y-5">
             {/* Company & Subscription Info */}
-            <div className="bg-white rounded-md shadow-sm border border-gray-200 p-5">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
                 Företagsuppgifter
               </h2>
 
-              <div className="space-y-3 text-sm">
+              <div className="space-y-2 text-sm">
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Företag</span>
                   <span className="font-medium text-gray-900">
@@ -394,7 +399,7 @@ export default function SubscriptionPage() {
 
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Nuvarande plan</span>
-                  <span className="font-semibold text-[#2c7a4c]">
+                  <span className="font-semibold text-[#2C7A4C]">
                     {planNames[currentPlan]} ({planPrices[currentPlan]} kr/mån)
                   </span>
                 </div>
@@ -406,8 +411,8 @@ export default function SubscriptionPage() {
                       active
                         ? "text-green-600"
                         : canceled
-                        ? "text-gray-600"
-                        : "text-orange-600"
+                          ? "text-gray-600"
+                          : "text-orange-600"
                     }`}
                   >
                     {active ? "✓ Aktiv" : canceled ? "Avslutad" : "Låst"}
@@ -426,7 +431,7 @@ export default function SubscriptionPage() {
                 <button
                   onClick={() => setShowChangePlanModal(true)}
                   disabled={locked}
-                  className="mt-4 w-full py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-medium transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="mt-4 w-full py-2 bg-[#2C7A4C] text-white rounded-md hover:bg-[#236139] font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   Byt abonnemang
                 </button>
@@ -434,7 +439,7 @@ export default function SubscriptionPage() {
             </div>
 
             {/* Contact Info */}
-            <div className="bg-white rounded-md shadow-sm border border-gray-200 p-5">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">
                   Kontaktuppgifter
@@ -442,13 +447,12 @@ export default function SubscriptionPage() {
                 {!editing && !locked && (
                   <button
                     onClick={() => setEditing(true)}
-                    className="text-[#2c7a4c] hover:underline font-medium text-sm"
+                    className="text-[#2C7A4C] hover:underline font-semibold text-sm"
                   >
                     Ändra
                   </button>
                 )}
-              </div>
-
+              </div>{" "}
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -554,15 +558,15 @@ export default function SubscriptionPage() {
                             inv.status === "paid"
                               ? "text-green-600"
                               : inv.status === "overdue"
-                              ? "text-red-600"
-                              : "text-orange-600"
+                                ? "text-red-600"
+                                : "text-orange-600"
                           }`}
                         >
                           {inv.status === "paid"
                             ? "✓ Betald"
                             : inv.status === "overdue"
-                            ? "Förfallen"
-                            : "Väntar"}
+                              ? "Förfallen"
+                              : "Väntar"}
                         </div>
                       </div>
                     </div>

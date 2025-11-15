@@ -110,137 +110,155 @@ export default function MinaPriserPage() {
   }
 
   return (
-    <PageContainer maxWidth="4xl">
-      <h1 className="text-3xl font-bold mb-4" style={{ color: PRIMARY_GREEN }}>
-        💰 Mina priser
-      </h1>
-
-      {message && (
-        <div className="rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 text-sm">
-          {message}
-        </div>
-      )}
-
-      <p className="text-sm text-gray-600">
-        Här kan du ange vilka priser som gäller för ditt företag. Dessa används
-        automatiskt vid fakturering och tilläggstjänster.
-      </p>
-
-      {/* --- Dagispriser --- */}
-      <div className="rounded-xl border bg-white p-5 shadow-sm space-y-3">
-        <h2 className="font-medium text-lg mb-2">Dagisabonnemang</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <PriceField
-            label="Heltid (kr/mån)"
-            value={prices.heltid}
-            onChange={(v) => setPrices({ ...prices, heltid: v })}
-          />
-          <PriceField
-            label="Deltid 2 (kr/mån)"
-            value={prices.deltid2}
-            onChange={(v) => setPrices({ ...prices, deltid2: v })}
-          />
-          <PriceField
-            label="Deltid 3 (kr/mån)"
-            value={prices.deltid3}
-            onChange={(v) => setPrices({ ...prices, deltid3: v })}
-          />
+    <div className="min-h-screen bg-gray-50">
+      {/* Kompakt header */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-3xl mx-auto px-6 py-4">
+          <div className="flex items-center gap-4">
+            <a
+              href="/dashboard"
+              className="text-gray-600 hover:text-[#2C7A4C] transition-colors"
+            >
+              ← Tillbaka
+            </a>
+            <h1 className="text-2xl font-bold text-[#2C7A4C] leading-tight">
+              Mina priser
+            </h1>
+          </div>
         </div>
       </div>
 
-      {/* --- Tilläggstjänster --- */}
-      <div className="rounded-xl border bg-white p-5 shadow-sm space-y-3">
-        <h2 className="font-medium text-lg mb-2">Tilläggstjänster</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <PriceField
-            label="Kloklipp (kr)"
-            value={prices.kloklipp}
-            onChange={(v) => setPrices({ ...prices, kloklipp: v })}
-          />
-          <PriceField
-            label="Tasstrim (kr)"
-            value={prices.tasstrim}
-            onChange={(v) => setPrices({ ...prices, tasstrim: v })}
-          />
-          <PriceField
-            label="Hundbad (kr)"
-            value={prices.hundbad}
-            onChange={(v) => setPrices({ ...prices, hundbad: v })}
-          />
-          <PriceField
-            label="Tandvård (kr)"
-            value={prices.tandvard}
-            onChange={(v) => setPrices({ ...prices, tandvard: v })}
-          />
-          <PriceField
-            label="Öronrengöring (kr)"
-            value={prices.oronrengoring}
-            onChange={(v) => setPrices({ ...prices, oronrengoring: v })}
-          />
-          <PriceField
-            label="Valptillägg (kr)"
-            value={prices.valptillagg}
-            onChange={(v) => setPrices({ ...prices, valptillagg: v })}
-          />
-          <PriceField
-            label="Extra (kr)"
-            value={prices.extra}
-            onChange={(v) => setPrices({ ...prices, extra: v })}
-          />
+      {/* Main content */}
+      <div className="max-w-3xl mx-auto px-6 py-6">
+        {message && (
+          <div className="mb-4 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 text-sm">
+            {message}
+          </div>
+        )}
+
+        <p className="text-sm text-gray-600 mb-6">
+          Här kan du ange vilka priser som gäller för ditt företag. Dessa används
+          automatiskt vid fakturering och tilläggstjänster.
+        </p>
+
+        {/* Dagispriser */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Dagisabonnemang</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <PriceField
+              label="Heltid (kr/mån)"
+              value={prices.heltid}
+              onChange={(v) => setPrices({ ...prices, heltid: v })}
+            />
+            <PriceField
+              label="Deltid 2 (kr/mån)"
+              value={prices.deltid2}
+              onChange={(v) => setPrices({ ...prices, deltid2: v })}
+            />
+            <PriceField
+              label="Deltid 3 (kr/mån)"
+              value={prices.deltid3}
+              onChange={(v) => setPrices({ ...prices, deltid3: v })}
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="flex justify-between items-center mt-6">
-        <Button
-          onClick={savePrices}
-          disabled={saving}
-          className="bg-[#2c7a4c] hover:bg-green-700 text-white px-6 py-2"
-        >
-          {saving ? "💾 Sparar…" : "Spara priser"}
-        </Button>
+        {/* Tilläggstjänster */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Tilläggstjänster</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <PriceField
+              label="Kloklipp (kr)"
+              value={prices.kloklipp}
+              onChange={(v) => setPrices({ ...prices, kloklipp: v })}
+            />
+            <PriceField
+              label="Tasstrim (kr)"
+              value={prices.tasstrim}
+              onChange={(v) => setPrices({ ...prices, tasstrim: v })}
+            />
+            <PriceField
+              label="Hundbad (kr)"
+              value={prices.hundbad}
+              onChange={(v) => setPrices({ ...prices, hundbad: v })}
+            />
+            <PriceField
+              label="Tandvård (kr)"
+              value={prices.tandvard}
+              onChange={(v) => setPrices({ ...prices, tandvard: v })}
+            />
+            <PriceField
+              label="Öronrengöring (kr)"
+              value={prices.oronrengoring}
+              onChange={(v) => setPrices({ ...prices, oronrengoring: v })}
+            />
+            <PriceField
+              label="Valptillägg (kr)"
+              value={prices.valptillagg}
+              onChange={(v) => setPrices({ ...prices, valptillagg: v })}
+            />
+            <PriceField
+              label="Extra (kr)"
+              value={prices.extra}
+              onChange={(v) => setPrices({ ...prices, extra: v })}
+            />
+          </div>
+        </div>
 
-        {lastUpdated && (
-          <p className="text-xs text-gray-500">Senast ändrad: {lastUpdated}</p>
+        <div className="flex justify-between items-center mb-6">
+          <button
+            onClick={savePrices}
+            disabled={saving}
+            className="px-6 py-2 bg-[#2C7A4C] text-white rounded-md hover:bg-[#236139] font-semibold transition disabled:opacity-50 text-sm"
+          >
+            {saving ? "💾 Sparar…" : "Spara priser"}
+          </button>
+
+          {lastUpdated && (
+            <p className="text-xs text-gray-500">Senast ändrad: {lastUpdated}</p>
+          )}
+        </div>
+
+        </div>
+
+        {/* Historikvy */}
+        {history.length > 1 && (
+          <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              📜 Tidigare prisändringar
+            </h2>
+            <div className="divide-y">
+              {history.map((h, i) => (
+                <div
+                  key={h.id}
+                  className="flex justify-between items-center py-3 text-sm"
+                >
+                  <span className="text-gray-900">
+                    <b>{i === 0 ? "Aktuell prislista" : "Tidigare prislista"}</b>{" "}
+                    från{" "}
+                    {new Date(h.effective_from).toLocaleDateString("sv-SE", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </span>
+                  <span className="text-gray-500 text-xs">
+                    Uppdaterad:{" "}
+                    {h.updated_at
+                      ? new Date(h.updated_at).toLocaleDateString("sv-SE")
+                      : "–"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
         )}
       </div>
-
-      {/* --- Historikvy --- */}
-      {history.length > 1 && (
-        <section className="mt-10">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">
-            📜 Tidigare prisändringar
-          </h2>
-          <div className="border rounded-lg bg-white shadow-sm divide-y">
-            {history.map((h, i) => (
-              <div
-                key={h.id}
-                className="flex justify-between items-center p-3 text-sm"
-              >
-                <span>
-                  <b>{i === 0 ? "Aktuell prislista" : "Tidigare prislista"}</b>{" "}
-                  från{" "}
-                  {new Date(h.effective_from).toLocaleDateString("sv-SE", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                  })}
-                </span>
-                <span className="text-gray-500">
-                  Uppdaterad:{" "}
-                  {h.updated_at
-                    ? new Date(h.updated_at).toLocaleDateString("sv-SE")
-                    : "–"}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-    </PageContainer>
+    </div>
   );
 }
 
-/* --- Komponent för varje prisfält --- */
+/* Komponent för varje prisfält */
 function PriceField({
   label,
   value,
@@ -252,11 +270,12 @@ function PriceField({
 }) {
   return (
     <div>
-      <label className="text-xs text-gray-500">{label}</label>
+      <label className="block text-sm font-semibold text-[#2C7A4C] mb-2">{label}</label>
       <Input
         type="number"
         value={value ?? ""}
         onChange={(e) => onChange(Number(e.target.value))}
+        className="h-10"
       />
     </div>
   );
