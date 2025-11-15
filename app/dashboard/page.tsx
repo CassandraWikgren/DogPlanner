@@ -3,63 +3,46 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
-import {
-  HeroH1,
-  HeroH2,
-  StandardCard,
-  StandardContainer,
-  StandardPage,
-} from "@/components/ui/standard";
+import { StandardCard } from "@/components/ui/standard";
+import DashboardWidgets from "@/components/DashboardWidgets";
 
 export default function Dashboard() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, currentOrgId } = useAuth();
 
   if (authLoading) {
     return (
-      <StandardPage>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c] mx-auto mb-4"></div>
-            <p className="text-gray-600">Laddar dashboard...</p>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c] mx-auto mb-4"></div>
+          <p className="text-gray-600">Laddar dashboard...</p>
         </div>
-      </StandardPage>
+      </div>
     );
   }
 
   return (
-    <StandardPage>
-      {/* Hero Section - Exakt enligt stilguide */}
-      <section
-        className="relative text-center text-white overflow-hidden"
-        style={{
-          paddingTop: "64px",
-          paddingBottom: "64px",
-          backgroundImage: 'url("/Hero.jpeg")',
-          backgroundSize: "cover",
-          backgroundPosition: "center 35%",
-        }}
-      >
-        {/* Grön gradient med opacitet 0.85-0.9 enligt stilguide */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(44,122,76,0.9), rgba(44,122,76,0.8))",
-          }}
-        />
-
-        {/* Container med rätt padding: 32px horisontellt enligt stilguide */}
-        <div className="relative z-10 max-w-7xl mx-auto px-8">
-          <HeroH1 className="mb-4">Välkommen till ditt Dashboard</HeroH1>
-          <HeroH2 className="max-w-2xl mx-auto">
-            Här får du snabb tillgång till dina hundar, abonnemang och fakturor.
-          </HeroH2>
+    <div className="min-h-screen bg-gray-50">
+      {/* Kompakt header - INGEN HERO */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-relaxed">
+            Dashboard
+          </h1>
+          <p className="text-base text-gray-600 mt-1">
+            Välkommen tillbaka! Här är en snabb överblick över din verksamhet
+          </p>
         </div>
-      </section>
+      </div>
 
-      {/* Main Content - Kompakta modulkort */}
-      <StandardContainer size="xl" padding="md">
+      {/* Stats overview - om org finns */}
+      {currentOrgId && (
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <DashboardWidgets />
+        </div>
+      )}
+
+      {/* Modulkort - Kompakta och professionella */}
+      <div className="max-w-7xl mx-auto px-6 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Hunddagis */}
           <Link href="/hunddagis" className="group">
@@ -74,7 +57,7 @@ export default function Dashboard() {
                   Hunddagis
                 </h2>
                 <p className="text-sm text-gray-600 leading-normal">
-                  Hantera dagishundar, schema och daglig verksamhet.
+                  Dagishundar, schema och verksamhet
                 </p>
               </div>
             </StandardCard>
@@ -93,7 +76,7 @@ export default function Dashboard() {
                   Hundpensionat
                 </h2>
                 <p className="text-sm text-gray-600 leading-normal">
-                  Hantera pensionshundar, bokningar och in-/utcheckning.
+                  Bokningar och in-/utcheckning
                 </p>
               </div>
             </StandardCard>
@@ -112,7 +95,7 @@ export default function Dashboard() {
                   Hundfrisör
                 </h2>
                 <p className="text-sm text-gray-600 leading-normal">
-                  Hantera bokningar och behandlingar för hundtrimning.
+                  Bokningar och hundtrimning
                 </p>
               </div>
             </StandardCard>
@@ -131,13 +114,13 @@ export default function Dashboard() {
                   Admin
                 </h2>
                 <p className="text-sm text-gray-600 leading-normal">
-                  Ekonomi, priser, företagsinformation och användarhantering.
+                  Ekonomi, priser och hantering
                 </p>
               </div>
             </StandardCard>
           </Link>
         </div>
-      </StandardContainer>
-    </StandardPage>
+      </div>
+    </div>
   );
 }

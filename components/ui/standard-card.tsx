@@ -1,6 +1,6 @@
 /**
  * StandardCard - Följer DogPlanner stilguide exakt
- * 
+ *
  * STILGUIDE:
  * - Vit bakgrund (#FFFFFF)
  * - Rundning: 8-12px (rounded-lg till rounded-xl)
@@ -30,18 +30,18 @@ export function StandardCard({
   ...props
 }: StandardCardProps) {
   const baseStyles = "bg-white";
-  
+
   const paddingStyles = {
     none: "",
     sm: "p-4",
     md: "p-6",
-    lg: "p-8"
+    lg: "p-8",
   };
-  
+
   const roundedStyles = {
     md: "rounded-md",
     lg: "rounded-lg",
-    xl: "rounded-xl"
+    xl: "rounded-xl",
   };
 
   return (
@@ -66,7 +66,11 @@ interface StandardCardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export function StandardCardHeader({ className, children, ...props }: StandardCardHeaderProps) {
+export function StandardCardHeader({
+  className,
+  children,
+  ...props
+}: StandardCardHeaderProps) {
   return (
     <div className={cn("mb-4", className)} {...props}>
       {children}
@@ -74,23 +78,36 @@ export function StandardCardHeader({ className, children, ...props }: StandardCa
   );
 }
 
-interface StandardCardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
+interface StandardCardTitleProps
+  extends React.HTMLAttributes<HTMLHeadingElement> {
   children: React.ReactNode;
 }
 
-export function StandardCardTitle({ className, children, ...props }: StandardCardTitleProps) {
+export function StandardCardTitle({
+  className,
+  children,
+  ...props
+}: StandardCardTitleProps) {
   return (
-    <h3 className={cn("text-lg font-semibold text-[#2c7a4c]", className)} {...props}>
+    <h3
+      className={cn("text-lg font-semibold text-[#2c7a4c]", className)}
+      {...props}
+    >
       {children}
     </h3>
   );
 }
 
-interface StandardCardContentProps extends React.HTMLAttributes<HTMLDivElement> {
+interface StandardCardContentProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-export function StandardCardContent({ className, children, ...props }: StandardCardContentProps) {
+export function StandardCardContent({
+  className,
+  children,
+  ...props
+}: StandardCardContentProps) {
   return (
     <div className={cn("", className)} {...props}>
       {children}

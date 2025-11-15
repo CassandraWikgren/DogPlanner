@@ -1,6 +1,6 @@
 /**
  * StandardTable - Följer DogPlanner stilguide exakt
- * 
+ *
  * STILGUIDE:
  * - Vit bakgrund, rundade hörn 8px
  * - Rubrikrad: #2C7A4C, vit text, höjd 44px
@@ -18,45 +18,47 @@ interface StandardTableProps extends React.HTMLAttributes<HTMLTableElement> {
   children: React.ReactNode;
 }
 
-export function StandardTable({ className, children, ...props }: StandardTableProps) {
+export function StandardTable({
+  className,
+  children,
+  ...props
+}: StandardTableProps) {
   return (
     <div className="w-full overflow-x-auto rounded-lg shadow-sm">
-      <table
-        className={cn(
-          "w-full bg-white",
-          className
-        )}
-        {...props}
-      >
+      <table className={cn("w-full bg-white", className)} {...props}>
         {children}
       </table>
     </div>
   );
 }
 
-interface StandardTableHeaderProps extends React.HTMLAttributes<HTMLTableSectionElement> {
+interface StandardTableHeaderProps
+  extends React.HTMLAttributes<HTMLTableSectionElement> {
   children: React.ReactNode;
 }
 
-export function StandardTableHeader({ className, children, ...props }: StandardTableHeaderProps) {
+export function StandardTableHeader({
+  className,
+  children,
+  ...props
+}: StandardTableHeaderProps) {
   return (
-    <thead
-      className={cn(
-        "bg-[#2c7a4c] text-white",
-        className
-      )}
-      {...props}
-    >
+    <thead className={cn("bg-[#2c7a4c] text-white", className)} {...props}>
       {children}
     </thead>
   );
 }
 
-interface StandardTableBodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {
+interface StandardTableBodyProps
+  extends React.HTMLAttributes<HTMLTableSectionElement> {
   children: React.ReactNode;
 }
 
-export function StandardTableBody({ className, children, ...props }: StandardTableBodyProps) {
+export function StandardTableBody({
+  className,
+  children,
+  ...props
+}: StandardTableBodyProps) {
   return (
     <tbody className={cn("divide-y-0", className)} {...props}>
       {children}
@@ -64,21 +66,22 @@ export function StandardTableBody({ className, children, ...props }: StandardTab
   );
 }
 
-interface StandardTableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+interface StandardTableRowProps
+  extends React.HTMLAttributes<HTMLTableRowElement> {
   children: React.ReactNode;
   striped?: boolean;
   index?: number;
 }
 
-export function StandardTableRow({ 
-  className, 
-  children, 
+export function StandardTableRow({
+  className,
+  children,
   striped = true,
   index,
-  ...props 
+  ...props
 }: StandardTableRowProps) {
   const isEven = index !== undefined ? index % 2 === 0 : false;
-  
+
   return (
     <tr
       className={cn(
@@ -94,11 +97,16 @@ export function StandardTableRow({
   );
 }
 
-interface StandardTableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
+interface StandardTableHeadProps
+  extends React.ThHTMLAttributes<HTMLTableCellElement> {
   children: React.ReactNode;
 }
 
-export function StandardTableHead({ className, children, ...props }: StandardTableHeadProps) {
+export function StandardTableHead({
+  className,
+  children,
+  ...props
+}: StandardTableHeadProps) {
   return (
     <th
       className={cn(
@@ -113,11 +121,16 @@ export function StandardTableHead({ className, children, ...props }: StandardTab
   );
 }
 
-interface StandardTableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+interface StandardTableCellProps
+  extends React.TdHTMLAttributes<HTMLTableCellElement> {
   children: React.ReactNode;
 }
 
-export function StandardTableCell({ className, children, ...props }: StandardTableCellProps) {
+export function StandardTableCell({
+  className,
+  children,
+  ...props
+}: StandardTableCellProps) {
   return (
     <td
       className={cn(
@@ -138,9 +151,9 @@ interface StandardTableEmptyProps {
   colSpan?: number;
 }
 
-export function StandardTableEmpty({ 
-  message = "Inga resultat hittades", 
-  colSpan = 1 
+export function StandardTableEmpty({
+  message = "Inga resultat hittades",
+  colSpan = 1,
 }: StandardTableEmptyProps) {
   return (
     <tr>

@@ -1,33 +1,33 @@
 /**
  * Standard UI Components - DogPlanner Design System
- * 
+ *
  * Alla komponenter följer stilguiden från README.md exakt
  */
 
 export { StandardButton } from "./standard-button";
-export { 
-  StandardCard, 
-  StandardCardHeader, 
-  StandardCardTitle, 
-  StandardCardContent 
+export {
+  StandardCard,
+  StandardCardHeader,
+  StandardCardTitle,
+  StandardCardContent,
 } from "./standard-card";
-export { 
-  StandardInput, 
-  StandardTextarea, 
-  StandardSelect 
+export {
+  StandardInput,
+  StandardTextarea,
+  StandardSelect,
 } from "./standard-input";
-export { 
-  StandardHeading, 
-  H1, 
-  H2, 
-  H3, 
-  HeroH1, 
-  HeroH2 
+export {
+  StandardHeading,
+  H1,
+  H2,
+  H3,
+  HeroH1,
+  HeroH2,
 } from "./standard-heading";
-export { 
-  StandardContainer, 
-  StandardPage, 
-  StandardContent 
+export {
+  StandardContainer,
+  StandardPage,
+  StandardContent,
 } from "./standard-container";
 export {
   StandardTable,
@@ -36,5 +36,5 @@ export {
   StandardTableRow,
   StandardTableHead,
   StandardTableCell,
-  StandardTableEmpty
+  StandardTableEmpty,
 } from "./standard-table";
