@@ -6,54 +6,56 @@ import { useAuth } from "@/app/context/AuthContext";
 import {
   Users,
   Calendar,
-  DollarSign,
+  Home,
   CheckCircle,
   AlertCircle,
-  TrendingUp,
+  LogIn,
+  LogOut,
+  Clock,
 } from "lucide-react";
 
 interface DashboardStats {
-  totalDogs: number;
-  todayCheckedIn: number;
-  pendingApplications: number;
-  monthlyRevenue: number;
-  overdueInvoices: number;
-  activeSubscriptions: number;
+  // Hunddagis
+  dagisTotal: number;
+  dagisCheckedIn: number;
+
+  // Hundpensionat
+  pensionatTotalRooms: number;
+  pensionatOccupiedRooms: number;
+  pensionatCheckInsToday: number;
+  pensionatCheckOutsToday: number;
+  pensionatPendingBookings: number;
+
+  // Viktiga notiser
+  allergiesCount: number;
+  medicationsCount: number;
 }
 
 export default function DashboardWidgets() {
   const { currentOrgId } = useAuth();
   const [stats, setStats] = useState<DashboardStats>({
-    totalDogs: 0,
-    todayCheckedIn: 0,
-    pendingApplications: 0,
-    monthlyRevenue: 0,
-    overdueInvoices: 0,
-    activeSubscriptions: 0,
+    dagisTotal: 0,
+    dagisCheckedIn: 0,
+    pensionatTotalRooms: 0,
+    pensionatOccupiedRooms: 0,
+    pensionatCheckInsToday: 0,
+    pensionatCheckOutsToday: 0,
+    pensionatPendingBookings: 0,
+    allergiesCount: 0,
+    medicationsCount: 0,
   });
   const [loading, setLoading] = useState(true);
 
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    // Vänta lite för att AuthContext ska ladda
     const timer = setTimeout(() => {
       if (currentOrgId) {
         fetchStats();
       } else {
-        // Visa demo-data om ingen org_id finns efter timeout
-        console.log("Ingen org_id tillgänglig, visar demo-data");
-        setStats({
-          totalDogs: 47,
-          todayCheckedIn: 23,
-          pendingApplications: 8,
-          monthlyRevenue: 45000,
-          overdueInvoices: 3,
-          activeSubscriptions: 4,
-        });
         setLoading(false);
       }
-    }, 500); // Vänta 500ms på att AuthContext ska ladda
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [currentOrgId]);
@@ -62,73 +64,95 @@ export default function DashboardWidgets() {
     try {
       setLoading(true);
 
-      // Kontrollera att vi har org_id
       if (!currentOrgId) {
-        console.log("Ingen org_id tillgänglig, visar demo-data");
+        console.log("Ingen org_id tillgänglig");
         return;
       }
 
-      // Hämta grundstatistik parallellt
-      const [dogsResult, applicationsResult, subscriptionsResult] =
-        await Promise.all([
-          // Totalt antal hundar
-          supabase
-            .from("dogs")
-            .select("id, checked_in")
-            .eq("org_id", currentOrgId),
+      const today = new Date().toISOString().split("T")[0];
 
-          // Väntande ansökningar
-          supabase
-            .from("interest_applications")
-            .select("id")
-            .eq("org_id", currentOrgId)
-            .eq("status", "pending"),
+      // Hämta data parallellt
+      const [
+        dogsResult,
+        roomsResult,
+        bookingsResult,
+        checkInsResult,
+        checkOutsResult,
+        pendingBookingsResult,
+      ] = await Promise.all([
+        // Hunddagis - totalt och incheckade
+        supabase
+          .from("dogs")
+          .select("id, checked_in")
+          .eq("org_id", currentOrgId),
 
-          // Aktiva abonnemang
-          supabase
-            .from("subscription_types")
-            .select("id")
-            .eq("org_id", currentOrgId)
-            .eq("is_active", true),
-        ]);
+        // Pensionat - totalt antal rum
+        supabase.from("rooms").select("id").eq("org_id", currentOrgId),
 
-      // Kontrollera för fel
-      if (dogsResult.error)
-        console.error("Fel vid hämtning av hundar:", dogsResult.error);
-      if (applicationsResult.error)
-        console.error(
-          "Fel vid hämtning av ansökningar:",
-          applicationsResult.error
-        );
-      if (subscriptionsResult.error)
-        console.error(
-          "Fel vid hämtning av abonnemang:",
-          subscriptionsResult.error
-        );
+        // Pensionat - aktiva bokningar (idag)
+        supabase
+          .from("bookings")
+          .select("id, room_id")
+          .eq("org_id", currentOrgId)
+          .lte("check_in", today)
+          .gte("check_out", today)
+          .eq("status", "confirmed"),
+
+        // Incheckningar idag (Pensionat)
+        supabase
+          .from("bookings")
+          .select("id")
+          .eq("org_id", currentOrgId)
+          .eq("check_in", today)
+          .eq("status", "confirmed"),
+
+        // Utcheckningar idag (Pensionat)
+        supabase
+          .from("bookings")
+          .select("id")
+          .eq("org_id", currentOrgId)
+          .eq("check_out", today)
+          .eq("status", "confirmed"),
+
+        // Väntande bokningar (Pensionat)
+        supabase
+          .from("bookings")
+          .select("id")
+          .eq("org_id", currentOrgId)
+          .eq("status", "pending"),
+      ]);
+
+      // Hämta hundar med allergier/mediciner
+      const dogsWithHealthInfo = await supabase
+        .from("dogs")
+        .select("id, allergies, medications")
+        .eq("org_id", currentOrgId)
+        .or("allergies.neq.null,medications.neq.null");
 
       const dogs = dogsResult.data || [];
-      const applications = applicationsResult.data || [];
-      const subscriptions = subscriptionsResult.data || [];
+      const rooms = roomsResult.data || [];
+      const bookings = bookingsResult.data || [];
+      const checkIns = checkInsResult.data || [];
+      const checkOuts = checkOutsResult.data || [];
+      const pendingBookings = pendingBookingsResult.data || [];
+      const healthInfo = dogsWithHealthInfo.data || [];
+
+      // Räkna unika rum som är bokade
+      const occupiedRooms = new Set(bookings.map((b) => b.room_id)).size;
 
       setStats({
-        totalDogs: dogs.length,
-        todayCheckedIn: dogs.filter((dog) => dog.checked_in).length,
-        pendingApplications: applications.length,
-        monthlyRevenue: 45000, // Mock data - kunde hämtas från invoice_logs
-        overdueInvoices: 3, // Mock data
-        activeSubscriptions: subscriptions.length,
+        dagisTotal: dogs.length,
+        dagisCheckedIn: dogs.filter((dog) => dog.checked_in).length,
+        pensionatTotalRooms: rooms.length,
+        pensionatOccupiedRooms: occupiedRooms,
+        pensionatCheckInsToday: checkIns.length,
+        pensionatCheckOutsToday: checkOuts.length,
+        pensionatPendingBookings: pendingBookings.length,
+        allergiesCount: healthInfo.filter((d) => d.allergies).length,
+        medicationsCount: healthInfo.filter((d) => d.medications).length,
       });
     } catch (error) {
       console.error("Error fetching dashboard stats:", error);
-      // Fallback till demo-data vid fel
-      setStats({
-        totalDogs: 47,
-        todayCheckedIn: 23,
-        pendingApplications: 8,
-        monthlyRevenue: 45000,
-        overdueInvoices: 3,
-        activeSubscriptions: 4,
-      });
     } finally {
       setLoading(false);
     }
@@ -136,52 +160,52 @@ export default function DashboardWidgets() {
 
   const widgets = [
     {
-      title: "Registrerade hundar",
-      value: stats.totalDogs,
-      icon: Users,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-      change: "+3 denna vecka",
-    },
-    {
-      title: "Incheckade idag",
-      value: stats.todayCheckedIn,
+      title: "Dagis - Incheckade",
+      value: stats.dagisCheckedIn,
       icon: CheckCircle,
       color: "text-green-600",
       bgColor: "bg-green-50",
-      change: `av ${stats.totalDogs} totalt`,
+      change: `av ${stats.dagisTotal} totalt`,
     },
     {
-      title: "Dagis-väntelista",
-      value: stats.pendingApplications,
-      icon: Calendar,
+      title: "Pensionat - Beläggning",
+      value: `${stats.pensionatOccupiedRooms}/${stats.pensionatTotalRooms}`,
+      icon: Home,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      change: `${Math.round((stats.pensionatOccupiedRooms / (stats.pensionatTotalRooms || 1)) * 100)}% belagda rum`,
+    },
+    {
+      title: "Incheckningar idag",
+      value: stats.pensionatCheckInsToday,
+      icon: LogIn,
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+      change: "Pensionat",
+    },
+    {
+      title: "Utcheckningar idag",
+      value: stats.pensionatCheckOutsToday,
+      icon: LogOut,
       color: "text-orange-600",
       bgColor: "bg-orange-50",
-      change: "Intresseanmälningar",
+      change: "Pensionat",
     },
     {
-      title: "Månadsintäkt",
-      value: `${stats.monthlyRevenue.toLocaleString()} kr`,
-      icon: DollarSign,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      change: "+12% från förra månaden",
+      title: "Väntande bokningar",
+      value: stats.pensionatPendingBookings,
+      icon: Clock,
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-50",
+      change: "Behöver bekräftas",
     },
     {
-      title: "Förfallna fakturor",
-      value: stats.overdueInvoices,
+      title: "Viktiga notiser",
+      value: stats.allergiesCount + stats.medicationsCount,
       icon: AlertCircle,
       color: "text-red-600",
       bgColor: "bg-red-50",
-      change: "Kräver uppföljning",
-    },
-    {
-      title: "Aktiva prislistor",
-      value: stats.activeSubscriptions,
-      icon: TrendingUp,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-      change: "Konfigurerade",
+      change: `${stats.allergiesCount} allergier, ${stats.medicationsCount} mediciner`,
     },
   ];
 
