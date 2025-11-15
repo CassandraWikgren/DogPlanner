@@ -378,125 +378,96 @@ export default function OwnersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                <Users className="h-8 w-8 text-green-600" />
+    <div className="min-h-screen bg-gray-50">
+      {/* Kompakt header med inline stats */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                 Ägare
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="mt-1 text-base text-gray-600">
                 Hantera alla hundägare och deras kontaktinformation
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={exportToPDF}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                PDF-export
-              </Button>
-              <Button
-                onClick={() => {
-                  resetForm();
-                  setShowAddModal(true);
-                }}
-                className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-              >
-                <Plus className="h-4 w-4" />
-                Ny ägare
-              </Button>
+
+            {/* Statistik inline höger */}
+            <div className="flex items-center gap-4 ml-8">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {owners.length}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Totalt</p>
+              </div>
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-green-600">
+                  {owners.filter((o) => o.dogs && o.dogs.length > 0).length}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Med hundar</p>
+              </div>
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-blue-600">
+                  {owners.reduce((sum, o) => sum + (o.dogs?.length || 0), 0)}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Hundar</p>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Statistik */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Totalt</p>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {owners.length}
-                    </p>
-                  </div>
-                  <User className="h-8 w-8 text-gray-400" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Med hundar</p>
-                    <p className="text-2xl font-bold text-green-600">
-                      {owners.filter((o) => o.dogs && o.dogs.length > 0).length}
-                    </p>
-                  </div>
-                  <PawPrint className="h-8 w-8 text-green-400" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Totalt hundar</p>
-                    <p className="text-2xl font-bold text-blue-600">
-                      {owners.reduce(
-                        (sum, o) => sum + (o.dogs?.length || 0),
-                        0
-                      )}
-                    </p>
-                  </div>
-                  <PawPrint className="h-8 w-8 text-blue-400" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Visas</p>
-                    <p className="text-2xl font-bold text-purple-600">
-                      {filteredAndSortedOwners.length}
-                    </p>
-                  </div>
-                  <Filter className="h-8 w-8 text-purple-400" />
-                </div>
-              </CardContent>
-            </Card>
+      {/* Main content */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* Action buttons */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3"></div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={exportToPDF}
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              PDF-export
+            </button>
+            <button
+              onClick={() => {
+                resetForm();
+                setShowAddModal(true);
+              }}
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Ny ägare
+            </button>
           </div>
+        </div>
 
-          {/* Sök och filter */}
-          <Card className="mb-6">
-            <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row gap-4 items-center">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Sök på namn, e-post, telefon eller hundnamn..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <Button
-                  variant={showActiveOnly ? "default" : "outline"}
-                  onClick={() => setShowActiveOnly(!showActiveOnly)}
-                  className="flex items-center gap-2"
-                >
-                  <Filter className="h-4 w-4" />
-                  {showActiveOnly ? "Endast med hundar" : "Visa alla"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Sök och filter */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Sök på namn, e-post, telefon eller hundnamn..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+              />
+            </div>
+            <button
+              onClick={() => setShowActiveOnly(!showActiveOnly)}
+              className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                showActiveOnly
+                  ? "bg-[#2c7a4c] text-white"
+                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              {showActiveOnly ? "Endast med hundar" : "Visa alla"}
+            </button>
+          </div>
         </div>
 
         {/* Error display */}
