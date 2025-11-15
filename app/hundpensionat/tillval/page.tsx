@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/AuthContext";
-import { Plus, Edit, Trash2, X, Save } from "lucide-react";
+import { Plus, Edit, Trash2, X, Save, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { Database } from "@/types/database";
 
 type ExtraService = Database["public"]["Tables"]["extra_services"]["Row"];
@@ -29,6 +30,7 @@ const UNIT_OPTIONS = [
 ];
 
 export default function TillvalstjansterPage() {
+  const router = useRouter();
   const { user, currentOrgId, loading: authLoading } = useAuth();
   const [services, setServices] = useState<ExtraService[]>([]);
   const [loading, setLoading] = useState(true);
@@ -184,7 +186,7 @@ export default function TillvalstjansterPage() {
       {notification && (
         <div className="fixed top-20 right-4 z-50 animate-slide-in-right">
           <div
-            className={`px-6 py-4 rounded-lg shadow-lg border-2 ${
+            className={`px-6 py-4 rounded-lg shadow-lg border-2 text-sm ${
               notification.type === "success"
                 ? "bg-green-50 border-green-400 text-green-800"
                 : "bg-red-50 border-red-400 text-red-800"
@@ -195,40 +197,47 @@ export default function TillvalstjansterPage() {
         </div>
       )}
 
-      {/* Hero Section - FIXAD */}
-      <div
-        className="relative bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] py-12 overflow-hidden"
-        style={{
-          background: "linear-gradient(to bottom right, #2c7a4c, #1e5a36)",
-        }}
-      >
-        {/* Bakgrundsmönster */}
-        <div
-          className="absolute inset-0 opacity-20 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')',
-          }}
-        />
-        <div className="relative z-10 max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            🛎️ Tillvalstjänster
-          </h1>
-          <p className="text-lg text-white/90">
-            Hantera extra tjänster för pensionat och dagis
-          </p>
+      {/* Header - Hunddagis template */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                Tillvalstjänster
+              </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Hantera extra tjänster för pensionat och dagis
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-500">Antal tjänster</div>
+                <div className="text-xl font-bold text-gray-900">
+                  {services.length}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Main Content - FIXAD STRUKTUR */}
-      <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 py-8">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <button
+          onClick={() => router.push("/hundpensionat")}
+          className="mb-6 flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-semibold text-sm"
+        >
+          <ArrowLeft size={16} />
+          Tillbaka
+        </button>
+
         {error && (
           <div className="mb-6 bg-red-50 border border-red-300 rounded-lg p-4">
-            <p className="text-red-800">{error}</p>
+            <p className="text-red-800 text-sm">{error}</p>
           </div>
         )}
 
-        {/* Info Box - KOMPAKT */}
+        {/* Info Box */}
         <div className="bg-blue-50 border border-blue-300 rounded-lg p-3 mb-6">
           <p className="text-sm text-blue-800">
             <strong>💡 Tips:</strong> Vanliga tillvalstjänster inkluderar
@@ -237,22 +246,22 @@ export default function TillvalstjansterPage() {
           </p>
         </div>
 
-        {/* Add New Button - SYMMETRISK */}
+        {/* Add New Button */}
         {!isAddingNew && !editingService && (
           <div className="mb-6 flex justify-end">
             <button
               onClick={handleAddNew}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4" />
               Lägg till tjänst
             </button>
           </div>
         )}
 
-        {/* Add/Edit Form - KOMPAKT */}
+        {/* Add/Edit Form */}
         {(isAddingNew || editingService) && (
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-5 mb-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">
                 {isAddingNew ? "Lägg till ny tjänst" : "Redigera tjänst"}
@@ -261,11 +270,11 @@ export default function TillvalstjansterPage() {
                 onClick={handleCancel}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Namn */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -277,7 +286,7 @@ export default function TillvalstjansterPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, label: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-sm"
                   placeholder="T.ex. Kloklippning"
                   required
                 />
@@ -297,7 +306,7 @@ export default function TillvalstjansterPage() {
                       price: parseFloat(e.target.value) || 0,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-sm"
                   placeholder="T.ex. 150"
                   required
                 />
@@ -313,7 +322,7 @@ export default function TillvalstjansterPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, unit: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-sm"
                 >
                   {UNIT_OPTIONS.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -328,7 +337,7 @@ export default function TillvalstjansterPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Tillgänglig för <span className="text-red-500">*</span>
                 </label>
-                <div className="flex gap-4">
+                <div className="flex gap-4 text-sm">
                   <label className="flex items-center">
                     <input
                       type="radio"
@@ -379,18 +388,18 @@ export default function TillvalstjansterPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 mt-6">
+            <div className="flex gap-3 mt-6">
               <button
                 onClick={handleSave}
                 disabled={!formData.label || formData.price <= 0}
-                className="flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Save className="w-5 h-5" />
+                <Save className="w-4 h-4" />
                 Spara
               </button>
               <button
                 onClick={handleCancel}
-                className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium"
+                className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-semibold text-sm"
               >
                 Avbryt
               </button>
@@ -402,16 +411,16 @@ export default function TillvalstjansterPage() {
         {!isAddingNew && !editingService && (
           <div className="space-y-4">
             {services.length === 0 ? (
-              <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">
                   Inga tillvalstjänster ännu
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 mb-6 text-sm">
                   Lägg till din första tillvalstjänst
                 </p>
                 <button
                   onClick={handleAddNew}
-                  className="px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium"
+                  className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm"
                 >
                   Lägg till tjänst
                 </button>
@@ -421,11 +430,11 @@ export default function TillvalstjansterPage() {
                 {services.map((service) => (
                   <div
                     key={service.id}
-                    className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow"
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                        <h3 className="text-lg font-bold text-gray-800 mb-2">
                           {service.label}
                         </h3>
                         <p className="text-2xl font-bold text-[#2c7a4c] mb-1">
@@ -455,19 +464,19 @@ export default function TillvalstjansterPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleEdit(service)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                           title="Redigera"
                         >
-                          <Edit className="w-5 h-5" />
+                          <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() =>
                             handleDelete(service.id, service.label)
                           }
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
                           title="Ta bort"
                         >
-                          <Trash2 className="w-5 h-5" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>

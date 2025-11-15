@@ -237,43 +237,57 @@ export default function PriserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div
-        className="relative bg-cover bg-center pt-20 pb-28"
-        style={{
-          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url('/Hero.jpeg')`,
-        }}
-      >
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            💰 Priser & Säsonger
-          </h1>
-          <p className="text-lg text-white/90 max-w-2xl mx-auto">
-            Hantera grundpriser per storlek och säsongstillägg för pensionatet
-          </p>
+      {/* Header med Hunddagis-struktur */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-start">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
+                💰 Priser & Säsonger
+              </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Hantera grundpriser per storlek och säsongstillägg för
+                pensionatet
+              </p>
+            </div>
+            <div className="flex gap-3 ml-4">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-600">Prismodeller</div>
+                <div className="text-xl font-bold text-[#2c7a4c]">
+                  {prices.length}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-600">Säsonger</div>
+                <div className="text-xl font-bold text-[#2c7a4c]">
+                  {seasons.length}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 -mt-12 pb-12">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Back button */}
         <div className="mb-6">
           <Link
             href="/hundpensionat"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-colors border border-gray-300"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-semibold text-sm"
           >
-            ← Tillbaka till Hundpensionat
+            ← Tillbaka
           </Link>
         </div>
 
         {/* Status messages */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 text-sm">
             {error}
           </div>
         )}
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6 text-sm">
             {success}
           </div>
         )}
@@ -281,9 +295,9 @@ export default function PriserPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* PRISER */}
           <div>
-            <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                   <DollarSign className="text-[#2c7a4c]" />
                   Grundpriser
                 </h2>
@@ -300,7 +314,7 @@ export default function PriserPage() {
                       created_at: "",
                     })
                   }
-                  className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm"
                 >
                   <Plus size={16} />
                   Lägg till
@@ -308,7 +322,7 @@ export default function PriserPage() {
               </div>
 
               {prices.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">
+                <p className="text-gray-500 text-center py-8 text-sm">
                   Inga priser ännu. Klicka på "Lägg till" för att skapa.
                 </p>
               ) : (
@@ -320,7 +334,7 @@ export default function PriserPage() {
                     >
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h3 className="font-semibold text-gray-900">
+                          <h3 className="font-semibold text-gray-900 text-sm">
                             {price.size_category
                               ? SIZE_LABELS[price.size_category]
                               : "Allmänt"}
@@ -332,32 +346,32 @@ export default function PriserPage() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => setEditingPrice(price)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
                           >
                             <Edit2 size={16} />
                           </button>
                           <button
                             onClick={() => deletePrice(price.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded"
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-md"
                           >
                             <Trash2 size={16} />
                           </button>
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-sm">
-                        <div className="bg-orange-50 px-2 py-1 rounded">
+                        <div className="bg-orange-50 px-2 py-1 rounded-md">
                           <span className="text-gray-600">Helg:</span>{" "}
                           <span className="font-medium">
                             {price.weekend_multiplier}x
                           </span>
                         </div>
-                        <div className="bg-red-50 px-2 py-1 rounded">
+                        <div className="bg-red-50 px-2 py-1 rounded-md">
                           <span className="text-gray-600">Högtid:</span>{" "}
                           <span className="font-medium">
                             {price.holiday_multiplier}x
                           </span>
                         </div>
-                        <div className="bg-yellow-50 px-2 py-1 rounded">
+                        <div className="bg-yellow-50 px-2 py-1 rounded-md">
                           <span className="text-gray-600">Säsong:</span>{" "}
                           <span className="font-medium">
                             {price.high_season_multiplier}x
@@ -372,7 +386,7 @@ export default function PriserPage() {
               {/* Edit Form */}
               {editingPrice && (
                 <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="font-semibold mb-4">
+                  <h3 className="font-semibold mb-4 text-sm">
                     {editingPrice.id ? "Redigera pris" : "Nytt pris"}
                   </h3>
                   <div className="space-y-3">
@@ -388,7 +402,7 @@ export default function PriserPage() {
                             size_category: e.target.value as SizeCategory,
                           })
                         }
-                        className="w-full px-3 py-2 border rounded-lg"
+                        className="w-full px-3 py-2 border rounded-md text-sm"
                       >
                         <option value="">Välj storlek</option>
                         {Object.entries(SIZE_LABELS).map(([key, label]) => (
@@ -411,7 +425,7 @@ export default function PriserPage() {
                             base_price: parseFloat(e.target.value),
                           })
                         }
-                        className="w-full px-3 py-2 border rounded-lg"
+                        className="w-full px-3 py-2 border rounded-md text-sm"
                       />
                     </div>
                     <div className="grid grid-cols-3 gap-2">
@@ -429,7 +443,7 @@ export default function PriserPage() {
                               weekend_multiplier: parseFloat(e.target.value),
                             })
                           }
-                          className="w-full px-3 py-2 border rounded-lg"
+                          className="w-full px-3 py-2 border rounded-md text-sm"
                         />
                       </div>
                       <div>
@@ -446,7 +460,7 @@ export default function PriserPage() {
                               holiday_multiplier: parseFloat(e.target.value),
                             })
                           }
-                          className="w-full px-3 py-2 border rounded-lg"
+                          className="w-full px-3 py-2 border rounded-md text-sm"
                         />
                       </div>
                       <div>
@@ -465,21 +479,21 @@ export default function PriserPage() {
                               ),
                             })
                           }
-                          className="w-full px-3 py-2 border rounded-lg"
+                          className="w-full px-3 py-2 border rounded-md text-sm"
                         />
                       </div>
                     </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => savePrice(editingPrice)}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139]"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
                       >
                         <Save size={16} />
                         Spara
                       </button>
                       <button
                         onClick={() => setEditingPrice(null)}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                        className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
                       >
                         Avbryt
                       </button>
@@ -492,9 +506,9 @@ export default function PriserPage() {
 
           {/* SÄSONGER */}
           <div>
-            <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                   <Calendar className="text-[#2c7a4c]" />
                   Säsonger & Högtider
                 </h2>
@@ -510,7 +524,7 @@ export default function PriserPage() {
                       created_at: "",
                     })
                   }
-                  className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm"
                 >
                   <Plus size={16} />
                   Lägg till
@@ -518,7 +532,7 @@ export default function PriserPage() {
               </div>
 
               {seasons.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">
+                <p className="text-gray-500 text-center py-8 text-sm">
                   Inga säsonger ännu. Klicka på "Lägg till" för att skapa.
                 </p>
               ) : (
@@ -536,7 +550,7 @@ export default function PriserPage() {
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h3 className="font-semibold text-gray-900">
+                          <h3 className="font-semibold text-gray-900 text-sm">
                             {season.name}
                           </h3>
                           <p className="text-sm text-gray-600">
@@ -552,13 +566,13 @@ export default function PriserPage() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => setEditingSeason(season)}
-                            className="p-2 text-blue-600 hover:bg-blue-100 rounded"
+                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-md"
                           >
                             <Edit2 size={16} />
                           </button>
                           <button
                             onClick={() => deleteSeason(season.id)}
-                            className="p-2 text-red-600 hover:bg-red-100 rounded"
+                            className="p-2 text-red-600 hover:bg-red-100 rounded-md"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -587,7 +601,7 @@ export default function PriserPage() {
               {/* Edit Form */}
               {editingSeason && (
                 <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="font-semibold mb-4">
+                  <h3 className="font-semibold mb-4 text-sm">
                     {editingSeason.id ? "Redigera säsong" : "Ny säsong"}
                   </h3>
                   <div className="space-y-3">
@@ -605,7 +619,7 @@ export default function PriserPage() {
                           })
                         }
                         placeholder="t.ex. Sommar 2025"
-                        className="w-full px-3 py-2 border rounded-lg"
+                        className="w-full px-3 py-2 border rounded-md text-sm"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -622,7 +636,7 @@ export default function PriserPage() {
                               start_date: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2 border rounded-lg"
+                          className="w-full px-3 py-2 border rounded-md text-sm"
                         />
                       </div>
                       <div>
@@ -638,7 +652,7 @@ export default function PriserPage() {
                               end_date: e.target.value,
                             })
                           }
-                          className="w-full px-3 py-2 border rounded-lg"
+                          className="w-full px-3 py-2 border rounded-md text-sm"
                         />
                       </div>
                     </div>
@@ -654,7 +668,7 @@ export default function PriserPage() {
                             type: e.target.value as "high" | "low" | "holiday",
                           })
                         }
-                        className="w-full px-3 py-2 border rounded-lg"
+                        className="w-full px-3 py-2 border rounded-md text-sm"
                       >
                         <option value="high">☀️ Högsäsong</option>
                         <option value="low">❄️ Lågsäsong</option>
@@ -664,14 +678,14 @@ export default function PriserPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => saveSeason(editingSeason)}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139]"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
                       >
                         <Save size={16} />
                         Spara
                       </button>
                       <button
                         onClick={() => setEditingSeason(null)}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                        className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
                       >
                         Avbryt
                       </button>
@@ -685,7 +699,7 @@ export default function PriserPage() {
 
         {/* Info Box */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-semibold text-blue-900 mb-3">
+          <h3 className="font-semibold text-blue-900 mb-3 text-sm">
             ℹ️ Hur prisberäkning fungerar
           </h3>
           <div className="space-y-2 text-sm text-blue-800">
