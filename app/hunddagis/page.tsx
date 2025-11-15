@@ -1188,84 +1188,84 @@ export default function HunddagisPage() {
                         }}
                       >
                         {columns.includes("name") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.name}
                           </td>
                         )}
                         {columns.includes("breed") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.breed || "-"}
                           </td>
                         )}
                         {columns.includes("gender") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.gender || "-"}
                           </td>
                         )}
                         {columns.includes("heightcm") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.heightcm ? `${dog.heightcm} cm` : "-"}
                           </td>
                         )}
                         {columns.includes("birth") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.birth
                               ? new Date(dog.birth).toLocaleDateString("sv-SE")
                               : "-"}
                           </td>
                         )}
                         {columns.includes("owner") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.owners?.full_name || "-"}
                           </td>
                         )}
                         {columns.includes("customer_number") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.owners?.customer_number || "-"}
                           </td>
                         )}
                         {columns.includes("personnummer") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.owners?.personnummer || "-"}
                           </td>
                         )}
                         {columns.includes("phone") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.owners?.phone || "-"}
                           </td>
                         )}
                         {columns.includes("email") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.owners?.email || "-"}
                           </td>
                         )}
                         {columns.includes("address") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.owners?.address || "-"}
                           </td>
                         )}
                         {columns.includes("contact_person_2") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.owners?.contact_person_2 || "-"}
                           </td>
                         )}
                         {columns.includes("contact_phone_2") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.owners?.contact_phone_2 || "-"}
                           </td>
                         )}
                         {columns.includes("subscription") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.subscription || "Ej valt"}
                           </td>
                         )}
                         {columns.includes("days") && (
-                          <td className="px-4 py-3 whitespace-nowrap">
+                          <td className="px-4 py-2.5 whitespace-nowrap">
                             {renderWeekdays(dog.days)}
                           </td>
                         )}
                         {columns.includes("startdate") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.startdate
                               ? new Date(dog.startdate).toLocaleDateString(
                                   "sv-SE"
@@ -1274,7 +1274,7 @@ export default function HunddagisPage() {
                           </td>
                         )}
                         {columns.includes("enddate") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.enddate
                               ? new Date(dog.enddate).toLocaleDateString(
                                   "sv-SE"
@@ -1283,22 +1283,22 @@ export default function HunddagisPage() {
                           </td>
                         )}
                         {columns.includes("room_id") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {getRoomName(dog.room_id)}
                           </td>
                         )}
                         {columns.includes("insurance_company") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.insurance_company || "-"}
                           </td>
                         )}
                         {columns.includes("insurance_number") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.insurance_number || "-"}
                           </td>
                         )}
                         {columns.includes("vaccdhp") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.vaccdhp
                               ? new Date(dog.vaccdhp).toLocaleDateString(
                                   "sv-SE"
@@ -1307,34 +1307,34 @@ export default function HunddagisPage() {
                           </td>
                         )}
                         {columns.includes("vaccpi") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.vaccpi
                               ? new Date(dog.vaccpi).toLocaleDateString("sv-SE")
                               : "-"}
                           </td>
                         )}
                         {columns.includes("is_castrated") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.is_castrated ? "Ja" : "Nej"}
                           </td>
                         )}
                         {columns.includes("destroys_things") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.destroys_things ? "Ja" : "Nej"}
                           </td>
                         )}
                         {columns.includes("is_house_trained") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.is_house_trained ? "Ja" : "Nej"}
                           </td>
                         )}
                         {columns.includes("food_info") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.food_info || "-"}
                           </td>
                         )}
                         {columns.includes("notes") && (
-                          <td className="px-4 py-3 whitespace-nowrap text-base text-[#333333]">
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.notes || "-"}
                           </td>
                         )}
