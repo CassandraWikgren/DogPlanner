@@ -23,6 +23,8 @@ type Booking = Database["public"]["Tables"]["bookings"]["Row"] & {
       })
     | null;
   rooms?: Database["public"]["Tables"]["rooms"]["Row"] | null;
+  belongings?: string | null;
+  bed_location?: string | null;
 };
 type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
@@ -938,6 +940,22 @@ export default function KalenderPage() {
                                 {booking.status}
                               </span>
                             </div>
+                            {booking.bed_location && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                📍 Säng:{" "}
+                                <span className="font-medium">
+                                  {booking.bed_location}
+                                </span>
+                              </div>
+                            )}
+                            {booking.belongings && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                🎒 Tillhörigheter:{" "}
+                                <span className="font-medium">
+                                  {booking.belongings}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
