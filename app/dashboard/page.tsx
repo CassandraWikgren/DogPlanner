@@ -24,8 +24,8 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50">
       {/* Kompakt header - INGEN HERO */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-relaxed">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
             Dashboard
           </h1>
           <p className="text-base text-gray-600 mt-1">
@@ -36,27 +36,27 @@ export default function Dashboard() {
 
       {/* Stats overview - om org finns */}
       {currentOrgId && (
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <DashboardWidgets />
         </div>
       )}
 
       {/* Modulkort - Kompakta och professionella */}
-      <div className="max-w-7xl mx-auto px-6 pb-12">
+      <div className="max-w-7xl mx-auto px-6 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Hunddagis */}
           <Link href="/hunddagis" className="group">
             <StandardCard
-              padding="md"
+              padding="sm"
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center py-2">
-                <div className="text-3xl mb-3">🐕</div>
-                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
+              <div className="flex flex-col items-center justify-center text-center py-1">
+                <div className="text-2xl mb-2">🐕</div>
+                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                   Hunddagis
                 </h2>
-                <p className="text-sm text-gray-600 leading-normal">
+                <p className="text-xs text-gray-600 leading-normal">
                   Dagishundar, schema och verksamhet
                 </p>
               </div>
@@ -66,16 +66,16 @@ export default function Dashboard() {
           {/* Hundpensionat */}
           <Link href="/hundpensionat" className="group">
             <StandardCard
-              padding="md"
+              padding="sm"
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center py-2">
-                <div className="text-3xl mb-3">🏨</div>
-                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
+              <div className="flex flex-col items-center justify-center text-center py-1">
+                <div className="text-2xl mb-2">🏨</div>
+                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                   Hundpensionat
                 </h2>
-                <p className="text-sm text-gray-600 leading-normal">
+                <p className="text-xs text-gray-600 leading-normal">
                   Bokningar och in-/utcheckning
                 </p>
               </div>
@@ -85,16 +85,16 @@ export default function Dashboard() {
           {/* Hundfrisör */}
           <Link href="/frisor" className="group">
             <StandardCard
-              padding="md"
+              padding="sm"
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center py-2">
-                <div className="text-3xl mb-3">✂️</div>
-                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
+              <div className="flex flex-col items-center justify-center text-center py-1">
+                <div className="text-2xl mb-2">✂️</div>
+                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                   Hundfrisör
                 </h2>
-                <p className="text-sm text-gray-600 leading-normal">
+                <p className="text-xs text-gray-600 leading-normal">
                   Bokningar och hundtrimning
                 </p>
               </div>
@@ -104,16 +104,16 @@ export default function Dashboard() {
           {/* Admin */}
           <Link href="/admin" className="group">
             <StandardCard
-              padding="md"
+              padding="sm"
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center py-2">
-                <div className="text-3xl mb-3">⚙️</div>
-                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
+              <div className="flex flex-col items-center justify-center text-center py-1">
+                <div className="text-2xl mb-2">⚙️</div>
+                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                   Admin
                 </h2>
-                <p className="text-sm text-gray-600 leading-normal">
+                <p className="text-xs text-gray-600 leading-normal">
                   Ekonomi, priser och hantering
                 </p>
               </div>

@@ -307,202 +307,139 @@ export default function HundpensionatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Clean och kompakt */}
-      <div className="relative bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] overflow-hidden">
-        {/* Subtil bakgrundsmönster */}
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage:
-              'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')',
-          }}
-        />
-
-        {/* Hero content */}
-        <div className="relative z-10 max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 py-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
-                🏨 Hundpensionat
+      {/* Kompakt header med inline stats - som Hunddagis */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                Hundpensionat
               </h1>
-              <p className="text-white/80 text-sm">
+              <p className="mt-1 text-base text-gray-600">
                 Professionell pensionathantering med fullständig översikt
               </p>
             </div>
 
-            {/* Action buttons i hero */}
-            <div className="flex gap-2">
-              <Link
-                href="/hundpensionat/ansokningar"
-                className="relative inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm text-white rounded-lg hover:bg-white/20 transition-all border border-white/20 text-sm font-medium"
-              >
-                <ClipboardList className="w-4 h-4" />
-                <span>Ansökningar</span>
-                {liveStats.pendingBookings > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {liveStats.pendingBookings}
-                  </span>
-                )}
-              </Link>
-
-              <Link
-                href="/hundpensionat/new"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#2c7a4c] rounded-lg hover:bg-white/90 transition-all text-sm font-medium shadow-lg"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Ny bokning</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Stats Cards - Kompakta i hero */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-            {/* Antal hundar */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-              <div className="flex items-center gap-3">
-                <div className="text-3xl">🐕</div>
-                <div className="flex-1">
-                  <div className="text-white/70 text-xs font-medium">
-                    Antal hundar
-                  </div>
-                  <div className="text-white text-2xl font-bold">
-                    {liveStats.hundarIdag}
-                  </div>
-                  <div className="text-white/50 text-xs">aktiva idag</div>
-                </div>
+            {/* Statistik inline höger - Kompakta boxar */}
+            <div className="flex items-center gap-4 ml-8">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {liveStats.hundarIdag}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Aktiva idag</p>
               </div>
-            </div>
-
-            {/* Ankomster idag */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-              <div className="flex items-center gap-3">
-                <div className="text-3xl">📅</div>
-                <div className="flex-1">
-                  <div className="text-white/70 text-xs font-medium">
-                    Ankomster idag
-                  </div>
-                  <div className="text-white text-2xl font-bold">
-                    {liveStats.incheckIdag}
-                  </div>
-                  <div className="text-white/50 text-xs">nya incheckning</div>
-                </div>
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-blue-600">
+                  {liveStats.incheckIdag}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Ankomster</p>
               </div>
-            </div>
-
-            {/* Ankomster imorgon */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-              <div className="flex items-center gap-3">
-                <div className="text-3xl">🧳</div>
-                <div className="flex-1">
-                  <div className="text-white/70 text-xs font-medium">
-                    Ankomster imorgon
-                  </div>
-                  <div className="text-white text-2xl font-bold">
-                    {liveStats.incheckImorgon}
-                  </div>
-                  <div className="text-white/50 text-xs">planerade</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Avresor imorgon */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-              <div className="flex items-center gap-3">
-                <div className="text-3xl">👋</div>
-                <div className="flex-1">
-                  <div className="text-white/70 text-xs font-medium">
-                    Avresor imorgon
-                  </div>
-                  <div className="text-white text-2xl font-bold">
-                    {liveStats.utcheckImorgon}
-                  </div>
-                  <div className="text-white/50 text-xs">utcheckning</div>
-                </div>
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-orange-600">
+                  {liveStats.utcheckIdag}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Avresor</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content - Direkt under hero */}
-      <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 py-6">
-        {/* Kompakta kontroller */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
-          <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-center">
-            {/* Sök och Filter */}
-            <div className="flex flex-col sm:flex-row gap-2 flex-1 w-full lg:w-auto">
-              <select
-                value={selectedMonthId}
-                onChange={(e) => setSelectedMonthId(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white text-sm hover:border-gray-400 transition-colors"
-              >
-                <option value="">📅 Alla månader</option>
-                {availableMonths.map((month) => (
-                  <option key={month} value={month}>
-                    {new Date(month + "-01").toLocaleDateString("sv-SE", {
-                      year: "numeric",
-                      month: "long",
-                    })}
-                  </option>
-                ))}
-              </select>
+      {/* Main Content - Kompakt padding */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* Action buttons row */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/hundpensionat/new"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Ny bokning
+            </Link>
+            <Link
+              href="/hundpensionat/ansokningar"
+              className="relative inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-gray-500 hover:bg-gray-600 shadow-sm transition-colors"
+            >
+              <ClipboardList className="h-4 w-4 mr-2" />
+              Ansökningar
+              {liveStats.pendingBookings > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {liveStats.pendingBookings}
+                </span>
+              )}
+            </Link>
+            <button
+              onClick={loadBookings}
+              disabled={isLoading}
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors disabled:opacity-50"
+            >
+              <RefreshCcw
+                className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+              />
+              Ladda om
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/hundpensionat/priser"
+              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <DollarSign className="h-4 w-4 mr-1" />
+              Priser
+            </Link>
+            <Link
+              href="/hundpensionat/tillval"
+              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <Settings className="h-4 w-4 mr-1" />
+              Tillval
+            </Link>
+            <Link
+              href="/hundpensionat/kalender"
+              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <Calendar className="h-4 w-4 mr-1" />
+              Kalender
+            </Link>
+            <button
+              onClick={exportToPDF}
+              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <Download className="h-4 w-4 mr-1" />
+              PDF
+            </button>
+          </div>
+        </div>
 
-              <div className="relative flex-1 sm:min-w-[300px]">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Sök efter hund, ägare eller rum..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-sm hover:border-gray-400 transition-colors"
-                />
-              </div>
-            </div>
+        {/* Sök och filter box */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="flex items-center gap-4">
+            <select
+              value={selectedMonthId}
+              onChange={(e) => setSelectedMonthId(e.target.value)}
+              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base"
+            >
+              <option value="">Alla månader</option>
+              {availableMonths.map((month) => (
+                <option key={month} value={month}>
+                  {new Date(month + "-01").toLocaleDateString("sv-SE", {
+                    year: "numeric",
+                    month: "long",
+                  })}
+                </option>
+              ))}
+            </select>
 
-            {/* Action buttons */}
-            <div className="flex flex-wrap gap-2">
-              <Link
-                href="/hundpensionat/priser"
-                className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all text-sm font-medium"
-              >
-                <DollarSign className="w-4 h-4" />
-                <span>Priser</span>
-              </Link>
-
-              <Link
-                href="/hundpensionat/tillval"
-                className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all text-sm font-medium"
-              >
-                <Settings className="w-4 h-4" />
-                <span>Tillval</span>
-              </Link>
-
-              <Link
-                href="/hundpensionat/kalender"
-                className="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all text-sm font-medium"
-              >
-                <Calendar className="w-4 h-4" />
-                <span>Kalender</span>
-              </Link>
-
-              <button
-                onClick={loadBookings}
-                disabled={isLoading}
-                className="inline-flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all text-sm font-medium disabled:opacity-50"
-              >
-                <RefreshCcw
-                  className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
-                />
-                <span>Uppdatera</span>
-              </button>
-
-              <button
-                onClick={exportToPDF}
-                className="inline-flex items-center gap-2 px-3 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-all text-sm font-medium"
-              >
-                <Download className="w-4 h-4" />
-                <span>PDF</span>
-              </button>
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Sök på hundnamn, ägarnamn, telefon, ras..."
+                className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+              />
             </div>
           </div>
         </div>
