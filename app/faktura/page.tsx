@@ -7,8 +7,8 @@ import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 import { toast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 import {
   Accordion,
@@ -733,112 +733,124 @@ const FakturorPage = () => {
   }
 
   return (
-    <>
-      {/* ⬆️ Övre sektion: laddar-status och total summa */}
-      <div className="p-6">
-        {loading ? (
-          <div className="flex items-center gap-2 text-gray-600">
-            <Loader2 className="animate-spin" /> Laddar fakturor…
+    <div className="min-h-screen bg-gray-50">
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-start">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                💸 Fakturor och underlag
+              </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Hantera fakturor för hunddagis, pensionat och frisör.
+              </p>
+            </div>
+            <div className="flex gap-3 ml-4">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-600">Fakturor</div>
+                <div className="text-xl font-bold text-[#2c7a4c]">
+                  {invoices.length}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-600">Totalt</div>
+                <div className="text-xl font-bold text-[#2c7a4c]">
+                  {totals.total.toLocaleString()} kr
+                </div>
+              </div>
+              <span
+                className={`px-3 py-2 rounded-lg text-sm font-semibold ${
+                  online
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "bg-red-100 text-red-600"
+                }`}
+              >
+                {online ? "🟢 Online" : "🔴 Offline"}
+              </span>
+            </div>
           </div>
-        ) : (
-          <p className="text-sm text-gray-500">
-            {invoices.length} fakturor laddade. Totalt{" "}
-            {totals.total.toLocaleString()} kr.
-          </p>
-        )}
+        </div>
       </div>
 
-      {/* 📄 Huvudinnehåll */}
-      <div className="p-6 space-y-4">
-        {/* Sidhuvud med titel och knappar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-emerald-700">
-              💸 DogPlanner – Fakturor och underlag
-            </h1>
-            <p className="text-gray-600">
-              Hantera fakturor för hunddagis, pensionat och frisör.
-            </p>
+      <main className="max-w-7xl mx-auto px-6 py-6">
+        {loading && (
+          <div className="flex items-center gap-2 text-gray-600 mb-6 text-sm">
+            <Loader2 className="animate-spin" /> Laddar fakturor…
           </div>
-          <div className="flex items-center gap-2 mt-3 sm:mt-0">
-            <span
-              className={`px-3 py-1 rounded-full text-sm ${
-                online
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-red-100 text-red-600"
-              }`}
-            >
-              {online ? "🟢 Online med Supabase" : "🔴 Ej uppkopplad"}
-            </span>
+        )}
 
-            {/* Export-funktioner */}
-            <Button
-              variant="outline"
-              onClick={() => {
-                const csvData = generateCSVExport(filtered);
-                downloadCSV(
-                  csvData,
-                  `fakturor-${new Date().toISOString().split("T")[0]}.csv`
-                );
-                logDebug(
-                  "success",
-                  `CSV-export skapad med ${filtered.length} fakturor`
-                );
-                toast("CSV-fil exporterad", "success");
-              }}
-              className="flex items-center gap-1"
-            >
-              <FileText size={16} />
-              Exportera CSV
-            </Button>
+        {/* Knappar */}
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            onClick={() => {
+              const csvData = generateCSVExport(filtered);
+              downloadCSV(
+                csvData,
+                `fakturor-${new Date().toISOString().split("T")[0]}.csv`
+              );
+              logDebug(
+                "success",
+                `CSV-export skapad med ${filtered.length} fakturor`
+              );
+              toast("CSV-fil exporterad", "success");
+            }}
+            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
+          >
+            <FileText size={16} />
+            Exportera CSV
+          </button>
 
-            <Button
-              variant="outline"
-              onClick={toggleLock}
-              className="flex items-center gap-1"
-            >
-              {locked ? <Unlock size={16} /> : <Lock size={16} />}
-              {locked ? "Avlås månad" : "Lås månad"}
-            </Button>
-            <Button
-              onClick={() => setCreating(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1"
-              disabled={locked}
-            >
-              <PlusCircle size={16} /> Ny faktura
-            </Button>
-          </div>
+          <button
+            onClick={toggleLock}
+            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
+          >
+            {locked ? <Unlock size={16} /> : <Lock size={16} />}
+            {locked ? "Avlås månad" : "Lås månad"}
+          </button>
+          <button
+            onClick={() => setCreating(true)}
+            disabled={locked}
+            className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <PlusCircle size={16} /> Ny faktura
+          </button>
         </div>
 
         {/* 💰 Summeringsrutor */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center mt-4">
-          <div className="bg-gray-50 p-3 rounded-md shadow">
-            <h2 className="text-gray-500 text-sm">💰 Totalt</h2>
-            <p className="text-lg font-semibold">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center mb-6">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <h2 className="text-gray-600 text-sm font-semibold">💰 Totalt</h2>
+            <p className="text-lg font-bold">
               {totals.total.toLocaleString("sv-SE")} kr
             </p>
           </div>
-          <div className="bg-gray-50 p-3 rounded-md shadow">
-            <h2 className="text-gray-500 text-sm">✅ Betalt</h2>
-            <p className="text-lg font-semibold text-emerald-700">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <h2 className="text-gray-600 text-sm font-semibold">✅ Betalt</h2>
+            <p className="text-lg font-bold text-emerald-700">
               {totals.paid.toLocaleString("sv-SE")} kr
             </p>
           </div>
-          <div className="bg-gray-50 p-3 rounded-md shadow">
-            <h2 className="text-gray-500 text-sm">🕓 Ej betalt</h2>
-            <p className="text-lg font-semibold text-blue-600">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <h2 className="text-gray-600 text-sm font-semibold">
+              🕓 Ej betalt
+            </h2>
+            <p className="text-lg font-bold text-blue-600">
               {totals.unpaid.toLocaleString("sv-SE")} kr
             </p>
           </div>
-          <div className="bg-gray-50 p-3 rounded-md shadow">
-            <h2 className="text-gray-500 text-sm">⚠️ Förfallet</h2>
-            <p className="text-lg font-semibold text-red-600">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <h2 className="text-gray-600 text-sm font-semibold">
+              ⚠️ Förfallet
+            </h2>
+            <p className="text-lg font-bold text-red-600">
               {totals.overdue.toLocaleString("sv-SE")} kr
             </p>
           </div>
-          <div className="bg-gray-50 p-3 rounded-md shadow">
-            <h2 className="text-gray-500 text-sm">⏰ Förfaller snart</h2>
-            <p className="text-lg font-semibold text-orange-600">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <h2 className="text-gray-600 text-sm font-semibold">
+              ⏰ Förfaller snart
+            </h2>
+            <p className="text-lg font-bold text-orange-600">
               {totals.dueSoon.toLocaleString("sv-SE")} kr
             </p>
           </div>
@@ -853,12 +865,15 @@ const FakturorPage = () => {
                 placeholder="Sök kund, faktura, belopp eller status..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="max-w-md"
+                className="max-w-md text-sm"
               />
               {search && (
-                <Button variant="outline" onClick={() => setSearch("")}>
+                <button
+                  onClick={() => setSearch("")}
+                  className="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
+                >
                   Rensa
-                </Button>
+                </button>
               )}
             </div>
 
@@ -891,9 +906,7 @@ const FakturorPage = () => {
 
             {/* Kolumnval */}
             <div className="relative">
-              <Button
-                variant="outline"
-                className="flex items-center gap-1"
+              <button
                 data-column-toggle
                 onClick={() => {
                   const dropdown = document.getElementById("column-dropdown");
@@ -901,9 +914,10 @@ const FakturorPage = () => {
                     dropdown.classList.toggle("hidden");
                   }
                 }}
+                className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
               >
                 Kolumner ({visibleColumns.length})
-              </Button>
+              </button>
               <div
                 id="column-dropdown"
                 className="hidden absolute top-full right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 p-2 min-w-[200px]"
@@ -1337,15 +1351,13 @@ const FakturorPage = () => {
                                 )}
                                 {isColumnVisible("actions") && (
                                   <td className="p-2">
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
+                                    <button
                                       onClick={() => exportPDF(inv.id)}
-                                      className="flex items-center gap-1"
+                                      className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-1"
                                     >
                                       <FileText size={14} />
                                       PDF
-                                    </Button>
+                                    </button>
                                   </td>
                                 )}
                               </tr>
@@ -1413,10 +1425,13 @@ const FakturorPage = () => {
                 />
               </div>
               <DialogFooter className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setCreating(false)}>
+                <button
+                  onClick={() => setCreating(false)}
+                  className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
+                >
                   Avbryt
-                </Button>
-                <Button
+                </button>
+                <button
                   onClick={async () => {
                     const ownerId = (
                       document.getElementById("ownerId") as HTMLInputElement
@@ -1428,17 +1443,16 @@ const FakturorPage = () => {
                     await createInvoice(ownerId, belopp);
                     // Modal stängs efter skapande
                   }}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
                 >
                   Skapa
-                </Button>
+                </button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         )}
-      </div>
-    </>
+      </main>
+    </div>
   );
 };
-
 export default FakturorPage;
