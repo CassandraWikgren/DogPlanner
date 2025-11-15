@@ -382,95 +382,88 @@ export default function KalenderPage() {
                 : "bg-red-50 border-red-400 text-red-800"
             }`}
           >
-            <p className="font-medium">{notification.message}</p>
+            <p className="font-medium text-sm">{notification.message}</p>
           </div>
         </div>
       )}
 
-      {/* Hero Section - FIXAD med bakgrundsbild */}
-      <div
-        className="relative bg-gradient-to-br from-[#2c7a4c] to-[#1e5a36] py-12 overflow-hidden"
-        style={{
-          background: "linear-gradient(to bottom right, #2c7a4c, #1e5a36)",
-        }}
-      >
-        {/* Bakgrundsmönster */}
-        <div
-          className="absolute inset-0 opacity-20 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.4"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')',
-          }}
-        />
-        <div className="relative z-10 max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            📅 Pensionatkalender
-          </h1>
-          <p className="text-lg text-white/90 max-w-2xl mx-auto">
-            Översikt av bokningar och beläggning med färgkoder för
-            in/utcheckning
-          </p>
+      {/* Header med Hunddagis-struktur */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-start">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
+                📅 Pensionatkalender
+              </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Översikt av bokningar och beläggning med färgkoder för
+                in/utcheckning
+              </p>
+            </div>
+            <div className="flex gap-3 ml-4">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-600">Hundar inne</div>
+                <div className="text-xl font-bold text-[#2c7a4c]">
+                  {stats.hundarInne}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-600">Ankomster</div>
+                <div className="text-xl font-bold text-[#2c7a4c]">
+                  {stats.ankomsterIdag}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-600">Avresor</div>
+                <div className="text-xl font-bold text-[#2c7a4c]">
+                  {stats.avresorIdag}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Stats Cards - SYMMETRISK GRID */}
-      <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div className="bg-white rounded-lg shadow-sm p-4 border border-green-200 text-center">
-            <p className="text-xs text-gray-600 mb-1">Hundar inne</p>
-            <p className="text-2xl font-bold text-green-600">
-              {stats.hundarInne}
+      {/* Stats Cards */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm text-center">
+            <p className="text-sm font-semibold text-gray-600 mb-1">
+              Totala bokningar
             </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-4 border border-yellow-200 text-center">
-            <p className="text-xs text-gray-600 mb-1">Ankomster idag</p>
-            <p className="text-2xl font-bold text-yellow-600">
-              {stats.ankomsterIdag}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-4 border border-red-200 text-center">
-            <p className="text-xs text-gray-600 mb-1">Avresor idag</p>
-            <p className="text-2xl font-bold text-red-600">
-              {stats.avresorIdag}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-4 border border-blue-200 text-center">
-            <p className="text-xs text-gray-600 mb-1">Totala bokningar</p>
-            <p className="text-2xl font-bold text-blue-600">
+            <p className="text-2xl font-bold text-[#2c7a4c]">
               {stats.totalaBokningar}
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-4 border border-purple-200 text-center">
-            <p className="text-xs text-gray-600 mb-1">Aktiva rum</p>
-            <p className="text-2xl font-bold text-purple-600">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm text-center">
+            <p className="text-sm font-semibold text-gray-600 mb-1">
+              Aktiva rum
+            </p>
+            <p className="text-2xl font-bold text-[#2c7a4c]">
               {stats.aktuellaRum}
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200 text-center">
-            <p className="text-xs text-gray-600 mb-1">Ø Beläggning</p>
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm text-center">
+            <p className="text-sm font-semibold text-gray-600 mb-1">
+              Ø Beläggning
+            </p>
             <p className="text-2xl font-bold text-[#2c7a4c]">
               {stats.genomsnittBelaggning}%
             </p>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         {/* Kontroller */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               {/* View Mode Selector */}
               <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
                 <button
                   onClick={() => setViewMode("month")}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
                     viewMode === "month"
                       ? "bg-[#2c7a4c] text-white"
                       : "text-gray-600 hover:bg-gray-200"
@@ -480,7 +473,7 @@ export default function KalenderPage() {
                 </button>
                 <button
                   onClick={() => setViewMode("week")}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
                     viewMode === "week"
                       ? "bg-[#2c7a4c] text-white"
                       : "text-gray-600 hover:bg-gray-200"
@@ -490,7 +483,7 @@ export default function KalenderPage() {
                 </button>
                 <button
                   onClick={() => setViewMode("day")}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
                     viewMode === "day"
                       ? "bg-[#2c7a4c] text-white"
                       : "text-gray-600 hover:bg-gray-200"
@@ -504,7 +497,7 @@ export default function KalenderPage() {
               <select
                 value={roomFilter}
                 onChange={(e) => setRoomFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-sm"
               >
                 <option value="all">Alla rum</option>
                 {rooms.map((room) => (
@@ -518,13 +511,13 @@ export default function KalenderPage() {
             <div className="flex gap-2 w-full md:w-auto">
               <Link
                 href="/hundpensionat"
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-semibold text-sm"
               >
                 Tillbaka
               </Link>
               <Link
                 href="/hundpensionat/nybokning"
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm"
               >
                 <Plus size={16} />
                 <span className="hidden sm:inline">Ny bokning</span>
@@ -534,7 +527,7 @@ export default function KalenderPage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 text-sm">
             {error}
           </div>
         )}
