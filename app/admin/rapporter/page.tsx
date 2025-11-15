@@ -11,6 +11,7 @@ import {
   Users,
   Home,
 } from "lucide-react";
+import * as XLSX from "xlsx";
 
 // Error codes för robust felhantering
 const ERROR_CODES = {
@@ -203,9 +204,129 @@ export default function RapporterPage() {
     }
   };
 
-  const handleExport = () => {
-    // Placeholder för Excel-export (implementeras i nästa steg)
-    alert("Excel-export kommer snart! (Använd sheetjs/xlsx)");
+  const handleExport = async () => {
+    try {
+      if (!currentOrgId) {
+        throw new Error(ERROR_CODES.NO_ORG);
+      }
+
+      // Hämta fullständig bokningsdata för export
+      const { data: bookings, error: bookingsError } = await supabase
+        .from("bookings")
+        .select(
+          `
+          id,
+          check_in,
+          check_out,
+          status,
+          total_price,
+          special_requests,
+          belongings,
+          bed_location,
+          dogs (
+            name,
+            breed
+          ),
+          owners (
+            full_name,
+            email,
+            phone
+          ),
+          rooms (
+            name
+          )
+        `
+        )
+        .eq("org_id", currentOrgId)
+        .gte("check_in", dateRange.start)
+        .lte("check_out", dateRange.end)
+        .order("check_in", { ascending: false });
+
+      if (bookingsError) {
+        console.error(ERROR_CODES.EXPORT_FAILED, bookingsError);
+        throw new Error(ERROR_CODES.EXPORT_FAILED);
+      }
+
+      // Formattera data för Excel
+      const excelData = bookings.map((booking: any) => ({
+        "Boknings-ID": booking.id,
+        Incheckning: booking.check_in,
+        Utcheckning: booking.check_out,
+        Status:
+          booking.status === "confirmed"
+            ? "Bekräftad"
+            : booking.status === "pending"
+              ? "Väntande"
+              : "Avbokad",
+        Hund: booking.dogs?.name || "-",
+        Ras: booking.dogs?.breed || "-",
+        Ägare: booking.owners?.full_name || "-",
+        Email: booking.owners?.email || "-",
+        Telefon: booking.owners?.phone || "-",
+        Rum: booking.rooms?.name || "-",
+        Sängplacering: booking.bed_location || "-",
+        Tillhörigheter: booking.belongings || "-",
+        "Pris (kr)": booking.total_price || 0,
+        "Önskemål/Anmärkningar": booking.special_requests || "-",
+      }));
+
+      // Skapa sammanfattningsdata
+      const summaryData = [
+        {
+          Sammanfattning: "Totalt antal bokningar",
+          Värde: stats.totalBookings,
+        },
+        {
+          Sammanfattning: "Bekräftade bokningar",
+          Värde: stats.confirmedBookings,
+        },
+        {
+          Sammanfattning: "Väntande bokningar",
+          Värde: stats.pendingBookings,
+        },
+        {
+          Sammanfattning: "Avbokade bokningar",
+          Värde: stats.cancelledBookings,
+        },
+        { Sammanfattning: "", Värde: "" },
+        {
+          Sammanfattning: "Totala intäkter (kr)",
+          Värde: stats.totalRevenue,
+        },
+        {
+          Sammanfattning: "Genomsnittlig beläggning (%)",
+          Värde: stats.averageOccupancy.toFixed(1),
+        },
+        {
+          Sammanfattning: "Max beläggning (%)",
+          Värde: stats.peakOccupancy.toFixed(1),
+        },
+      ];
+
+      // Skapa Excel workbook
+      const workbook = XLSX.utils.book_new();
+
+      // Lägg till sammanfattning
+      const summarySheet = XLSX.utils.json_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(workbook, summarySheet, "Sammanfattning");
+
+      // Lägg till bokningsdata
+      const bookingsSheet = XLSX.utils.json_to_sheet(excelData);
+      XLSX.utils.book_append_sheet(workbook, bookingsSheet, "Bokningar");
+
+      // Generera filnamn med datum
+      const filename = `DogPlanner_Rapport_${dateRange.start}_till_${dateRange.end}.xlsx`;
+
+      // Spara fil
+      XLSX.writeFile(workbook, filename);
+
+      console.log(`✅ Excel-export lyckades: ${filename}`);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : ERROR_CODES.EXPORT_FAILED;
+      console.error("Export error:", errorMessage);
+      alert(`Export misslyckades: ${errorMessage}`);
+    }
   };
 
   if (authLoading || loading) {
