@@ -1,8 +1,112 @@
-<!-- Last updated: 2025-11-13 kväll (boarding_prices fix + UI redesign) -->
+<!-- Last updated: 2025-11-15 (FAS 1-2: Aktivera befintliga fält + bookings-fält) -->
 
 ---
 
-## 🔄 Senaste Uppdateringar (13 november 2025)
+## 🔄 Senaste Uppdateringar (15 november 2025)
+
+### 🎨 FAS 1-2: Aktivera Befintliga Fält + Bookings-fält (15 november)
+
+**Problem:** Flera viktiga funktioner fanns i databasen men syntes inte i UI
+**Lösning:** Aktiverade befintliga fält och lade till nya pensionat-fält för bättre gästhantering
+
+#### ✅ FAS 1: Aktivera Befintliga Fält
+
+**Hunddagis - Profilbilder:**
+
+- ✅ Foto-upload fanns redan i `EditDogModal` (line 994-1015)
+- ✅ Lagt till foto-kolumn i Hunddagis-tabellen (`app/hunddagis/page.tsx`)
+  ```tsx
+  // Rund avatar 40x40px med placeholder
+  {
+    dog.photo_url ? (
+      <img
+        src={dog.photo_url}
+        className="w-10 h-10 rounded-full object-cover border border-gray-300"
+      />
+    ) : (
+      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+        🐕
+      </div>
+    );
+  }
+  ```
+- ✅ Kolumn inkluderad i `DEFAULT_COLUMNS` för automatisk visning
+
+**Hunddagis - Väntelista:**
+
+- ✅ Kolumn `waitlist` (boolean) fanns redan i dogs-tabellen
+- ✅ Lagt till väntelista-kolumn i Hunddagis-tabellen
+- ✅ Orange badge vid hund-namnet när `waitlist=true`
+  ```tsx
+  {
+    dog.waitlist && (
+      <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">
+        Väntelista
+      </span>
+    );
+  }
+  ```
+- ✅ Separat kolumn för översikt: "På väntelista" eller "-"
+
+**Ägare - Kontaktperson 2:**
+
+- ✅ Fält `contact_person_2`, `contact_phone_2` fanns redan i owners-tabellen
+- ✅ Visas redan korrekt i `EditDogModal` (lines 952-983)
+- ✅ Kolumn inkluderad i Hunddagis-tabellen för snabb åtkomst
+
+#### ✅ FAS 2: Bookings-fält för Pensionat
+
+**Database Migration:**
+
+```sql
+-- supabase/migrations/20251115_add_bookings_belongings.sql
+ALTER TABLE bookings
+ADD COLUMN IF NOT EXISTS belongings TEXT,
+ADD COLUMN IF NOT EXISTS bed_location TEXT;
+
+COMMENT ON COLUMN bookings.belongings IS 'Items brought by guest (toys, blankets, food, etc)';
+COMMENT ON COLUMN bookings.bed_location IS 'Assigned bed or room location for the dog';
+
+CREATE INDEX IF NOT EXISTS idx_bookings_bed_location ON bookings(bed_location);
+```
+
+**Nybokning-formulär uppdaterat:**
+
+- ✅ `app/hundpensionat/nybokning/page.tsx` - Nya fält tillagda
+
+  ```tsx
+  // Medtagna tillhörigheter
+  <textarea
+    value={bookingNotes.belongings}
+    placeholder="T.ex. egen säng, leksaker, filt, mat..."
+  />
+
+  // Säng/Rumstilldelning
+  <input
+    value={bookingNotes.bedLocation}
+    placeholder="T.ex. Rum 3, Säng A, Bur 2..."
+  />
+  ```
+
+- ✅ Sparas automatiskt i `handleSubmit` till databas
+- ✅ State-hantering med `bookingNotes.belongings` och `bookingNotes.bedLocation`
+
+**Resultat:**
+
+- ✅ Hunddagis visar nu profilbilder för alla hundar
+- ✅ Väntelista-status tydligt markerad med orange badge
+- ✅ Kontaktperson 2 tillgänglig i tabellen
+- ✅ Pensionat kan nu spåra gästernas tillhörigheter
+- ✅ Säng/rumstilldelning dokumenteras per bokning
+
+**Nästa steg (FAS 3):**
+
+- � Visa belongings/bed_location i kalender-detaljvy
+- 🔜 A4 PDF-utskrift för hundrum (alla hundar i rummet)
+
+---
+
+## 🔄 Tidigare Uppdateringar (13 november 2025)
 
 ### 🎨 Admin Pricing Pages Redesign (13 november kl 22:00)
 

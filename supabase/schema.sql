@@ -289,6 +289,9 @@ CREATE TABLE IF NOT EXISTS bookings (
   extra_service_ids jsonb,
   notes text,
   special_requests text,
+  -- NYA FÄLT FÖR GÄSTHANTERING (tillagt 2025-11-15)
+  belongings text, -- Medtagna tillhörigheter (leksaker, filtar, mat, etc)
+  bed_location text, -- Tilldelad säng/rum (t.ex. "Rum 3, Säng A")
   -- FÖRSKOTTS-/EFTERSKOTTSFAKTURERING (tillagt 2025-11-01)
   prepayment_status text CHECK (prepayment_status IN ('unpaid', 'paid', 'partially_paid', 'refunded')) DEFAULT 'unpaid',
   prepayment_invoice_id uuid REFERENCES invoices(id) ON DELETE SET NULL,
@@ -335,6 +338,9 @@ CREATE TABLE IF NOT EXISTS extra_service (
 CREATE INDEX IF NOT EXISTS idx_extra_service_service_id ON extra_service(service_id);
 CREATE INDEX IF NOT EXISTS idx_extra_service_dogs_id ON extra_service(dogs_id);
 CREATE INDEX IF NOT EXISTS idx_extra_service_org_id ON extra_service(org_id);
+
+-- === BOOKINGS INDEXES (tillagt 2025-11-15) ===
+CREATE INDEX IF NOT EXISTS idx_bookings_bed_location ON bookings(bed_location);
 
 -- === BOKNINGSTJÄNSTER ===
 CREATE TABLE IF NOT EXISTS booking_services (
