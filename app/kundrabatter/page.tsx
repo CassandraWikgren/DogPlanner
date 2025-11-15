@@ -248,55 +248,76 @@ export default function CustomerDiscountsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-green-700 mb-2">
-            💰 Kundrabatter
-          </h1>
-          <p className="text-gray-600">
-            Hantera permanenta och tillfälliga rabatter för kunder
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Kompakt header */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-[#2C7A4C] leading-tight">
+                Kundrabatter
+              </h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
+                <div className="text-xs text-gray-500">Aktiva rabatter</div>
+                <div className="text-2xl font-bold text-[#2C7A4C]">
+                  {discounts.filter((d) => isDiscountValid(d)).length}
+                </div>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
+                <div className="text-xs text-gray-500">Totalt</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {discounts.length}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
+      {/* Main content */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {message && (
           <div
-            className={`mb-6 p-4 rounded-lg ${
+            className={`mb-6 p-4 rounded-lg text-sm ${
               message.startsWith("✅")
-                ? "bg-green-50 text-green-700"
-                : "bg-red-50 text-red-700"
+                ? "bg-green-50 text-green-700 border border-green-200"
+                : "bg-red-50 text-red-700 border border-red-200"
             }`}
           >
             {message}
           </div>
         )}
 
+        {/* Action button */}
+        <div className="mb-6">
+          <button
+            onClick={() => setShowForm(true)}
+            className="px-4 py-2 bg-[#2C7A4C] text-white rounded-md hover:bg-[#236139] font-semibold transition text-sm flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Ny rabatt
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Rabattlista */}
           <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Percent className="h-5 w-5" />
-                    Aktiva rabatter
-                  </CardTitle>
-                  <Button
-                    onClick={() => setShowForm(true)}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Ny rabatt
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="border-b p-4">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <Percent className="h-5 w-5" />
+                  Aktiva rabatter
+                </h2>
+              </div>
+              <div className="p-4">
                 {discounts.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">
+                  <p className="text-gray-500 text-center py-8 text-sm">
                     Inga rabatter registrerade
                   </p>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {discounts.map((discount) => (
                       <div
                         key={discount.id}
@@ -374,28 +395,28 @@ export default function CustomerDiscountsPage() {
                     ))}
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* Formulär */}
           {showForm && (
             <div>
-              <Card>
-                <CardHeader>
-                  <CardTitle>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="border-b p-4">
+                  <h2 className="text-lg font-semibold text-gray-900">
                     {editingDiscount ? "Redigera rabatt" : "Ny kundrabatt"}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                  </h2>
+                </div>
+                <div className="p-4 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">
+                    <label className="block text-sm font-semibold text-[#2C7A4C] mb-2">
                       Kund
                     </label>
                     <select
                       value={selectedOwner}
                       onChange={(e) => setSelectedOwner(e.target.value)}
-                      className="w-full border rounded-lg px-3 py-2"
+                      className="w-full h-10 border border-gray-300 rounded-md px-3 focus:outline-none focus:ring-2 focus:ring-[#2C7A4C] focus:border-transparent text-sm"
                       disabled={!!editingDiscount}
                     >
                       <option value="">-- Välj kund --</option>
@@ -499,27 +520,27 @@ export default function CustomerDiscountsPage() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button
+                    <button
                       onClick={handleSubmit}
                       disabled={loading}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      className="flex-1 px-4 py-2 bg-[#2C7A4C] text-white rounded-md hover:bg-[#236139] transition disabled:opacity-50 text-sm font-semibold"
                     >
                       {loading
                         ? "Sparar..."
                         : editingDiscount
                           ? "Uppdatera"
                           : "Skapa"}
-                    </Button>
-                    <Button
-                      variant="outline"
+                    </button>
+                    <button
                       onClick={resetForm}
                       disabled={loading}
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-semibold"
                     >
                       Avbryt
-                    </Button>
+                    </button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           )}
         </div>
