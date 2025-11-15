@@ -13,7 +13,11 @@ type Props = {
 };
 
 /** Typer */
-type Room = { id: string; name: string | null };
+type Room = {
+  id: string;
+  name: string | null;
+  room_type?: string | null;
+};
 type OwnerRow = {
   id?: string;
   full_name?: string | null;
@@ -83,17 +87,33 @@ export default function EditDogModal({
   // === INIT ===
   React.useEffect(() => {
     if (!open) return;
+    if (!currentOrgId) {
+      console.warn("⚠️ EditDogModal: currentOrgId saknas, kan inte hämta rum");
+      return;
+    }
+
     (async () => {
       try {
-        // Hämta rum
+        console.log("🔍 EditDogModal: Hämtar rum för org:", currentOrgId);
+
+        // Hämta rum (alla rum som är daycare eller both)
         const { data: roomsData, error: roomsErr } = await supabase
           .from("rooms")
-          .select("id, name")
+          .select("id, name, room_type")
           .eq("org_id", currentOrgId)
           .eq("is_active", true)
+          .in("room_type", ["daycare", "both"])
           .order("name");
-        if (roomsErr) console.warn("⚠️ rooms error", roomsErr);
-        setRooms(roomsData ?? []);
+
+        if (roomsErr) {
+          console.error("[ERR-5002] Fel vid hämtning av rum:", roomsErr);
+        } else {
+          console.log(
+            `✅ EditDogModal: Hämtade ${roomsData?.length || 0} rum:`,
+            roomsData
+          );
+          setRooms(roomsData ?? []);
+        }
 
         // Hämta roll (admin-låsningar)
         const { data: me } = await supabase.auth.getUser();
@@ -141,10 +161,10 @@ export default function EditDogModal({
           setAddons([]);
         }
       } catch (e) {
-        console.error("Init modal error:", e);
+        console.error("[ERR-5003] Init modal error:", e);
       }
     })();
-  }, [open, supabase, initialDog]);
+  }, [open, supabase, initialDog, currentOrgId]); // Lägg till currentOrgId i dependencies
 
   /* ===========================
    *   FORM STATE
@@ -1351,12 +1371,22 @@ export default function EditDogModal({
                     onChange={(e) => setRoomId(e.target.value)}
                   >
                     <option value="">Välj rum…</option>
+                    {rooms.length === 0 && (
+                      <option value="" disabled>
+                        Inga rum tillgängliga (skapa rum först)
+                      </option>
+                    )}
                     {rooms.map((r) => (
                       <option key={r.id} value={r.id}>
                         {r.name ?? r.id}
                       </option>
                     ))}
                   </select>
+                  {rooms.length === 0 && (
+                    <p className="text-xs text-orange-600 mt-1">
+                      💡 Skapa rum under Admin → Rum & Platser först
+                    </p>
+                  )}
                 </div>
               </div>
 

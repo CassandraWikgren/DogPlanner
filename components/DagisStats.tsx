@@ -28,7 +28,11 @@ interface DagisStatsProps {
   currentOrgId?: string | null;
 }
 
-export function DagisStats({ dogs, onStatClick, currentOrgId }: DagisStatsProps) {
+export function DagisStats({
+  dogs,
+  onStatClick,
+  currentOrgId,
+}: DagisStatsProps) {
   const [applications, setApplications] = useState(0);
   const [services, setServices] = useState(0);
   const [rooms, setRooms] = useState(0);
@@ -119,7 +123,7 @@ export function DagisStats({ dogs, onStatClick, currentOrgId }: DagisStatsProps)
         // Hämta intresseanmälningar från senaste månaden
         const oneMonthAgo = new Date();
         oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-        
+
         const { data: applicationsData, error: appError } = await supabase
           .from("applications")
           .select("id", { count: "exact" })
@@ -131,8 +135,12 @@ export function DagisStats({ dogs, onStatClick, currentOrgId }: DagisStatsProps)
         }
 
         // Hämta tjänster (extra_services) från denna månaden
-        const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        
+        const thisMonthStart = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          1
+        );
+
         const { data: servicesData, error: servError } = await supabase
           .from("extra_service")
           .select("id", { count: "exact" })
