@@ -1,5 +1,3 @@
-AI får läsa README för att förstå DogPlanners uppbyggnad och syfte och kunna efterfölja det som står. Men AI får inte under några omständigheter ändra eller ta bort text ifrån README.md.
-
 <!-- Last updated: 2025-11-13 kväll (boarding_prices fix + UI redesign) -->
 
 ---
@@ -902,24 +900,273 @@ Gör ALLT i en fil:
     Ekonomimodulen i DogPlanner ger full kontroll över intäkter, fakturor och kunddata.
     Med automatisk fakturering, rapporter och integrationer kan verksamheten växa utan extra administration.
     DogPlanner är inte bara ett verktyg – det är ett komplett ekonomiskt nav för hela hundverksamheten.
-    🐾 DogPlanner – UI Design och Layoutspecifikation
-    DogPlanner är byggt med en tydlig, professionell och lugn layout.
-    Varje komponent ska följa samma proportioner, marginaler, färger och typografi.
-    Designen ska kännas stabil, enkel och förtroendeingivande – i linje med modern nordisk SaaS-design.
 
-    🎨 Färg och formspråk
-    Primärfärg: grön #2C7A4C
-    Sekundära färger:
-    Ljusgrön #E6F4EA – hover/bakgrundstoner
-    Vit #FFFFFF – kort, tabeller, modaler
-    Ljusgrå #F5F5F5 – bakgrund
-    Textfärg #333333
-    Fel #D9534F
-    Länk/neutralt #3B82F6
-    Alla kort, knappar och tabeller har rundade hörn (8–12 px) och mjuk skugga (0 4 10 rgba(0, 0, 0, 0.05)).
+---
 
-    ✍️ Typografi
-    Font: Inter (fallback Roboto eller Segoe UI).
+## 🎨 DogPlanner Design System V2
+
+> **Uppdaterad: 15 november 2025**  
+> **Komplett designspecifikation för enhetligt och professionellt utseende**
+
+### 🎯 Designfilosofi
+
+DogPlanner är ett **nordiskt kontorssystem för hundar** - tänk Fortnox/Visma men för hunddagis.
+
+**Kärnvärden:**
+
+- ✅ **Professionellt men vänligt** - Inte stelt, men inte lekfullt
+- ✅ **Informationstätt men luftigt** - Mycket data, men det andas
+- ✅ **Tydlig hierarki** - Man ser direkt vad som är viktigast
+- ✅ **Minimalistiskt** - Ingen onödig dekoration
+- ✅ **Grön som accent** - Inte dominant, används strategiskt
+
+**Design-principer:**
+
+1. **Symmetri** - Allt välbalanserat och centrerat där det passar
+2. **Kompakthet** - Minimal scrollning, viktiga saker "above the fold"
+3. **Användarvänlighet** - Rätt sak på rätt plats
+4. **Tillförlitlighet** - Ser genomtänkt och stabil ut
+5. **Smart kreativitet** - Innovativt men inte experimentellt
+
+### 🎨 Färgpalett
+
+**Primärfärger:**
+
+```css
+--primary-green: #2c7a4c /* Knappar, rubriker, accenter */
+  --primary-hover: #236139 /* Hover-state */ --light-green: #e6f4ea
+  /* Subtil bakgrund, hover */;
+```
+
+**Neutraler:**
+
+```css
+--white: #ffffff /* Kort, tabeller */ --background: #f5f5f5 /* Sidbackground */
+  --gray-50: #f9fafb /* Alternerande rader */ --gray-100: #f3f4f6
+  /* Hover på rader */ --gray-200: #e5e7eb /* Borders */ --text-primary: #333333
+  /* Huvudtext */ --text-secondary: #6b7280 /* Sekundär text */;
+```
+
+**Status:**
+
+```css
+--success: #10b981 /* Grön framgång */ --warning: #f59e0b /* Orange varning */
+  --error: #d9534f /* Röd fel */;
+```
+
+### ✍️ Typografi
+
+**Font:** Inter (fallback Roboto, Segoe UI)
+
+**Rubriker:**
+
+- H1: 32px (2rem), bold, #2C7A4C, line-height 1.6
+- H2: 24px (1.5rem), semibold, #2C7A4C, line-height 1.6
+- H3: 18px (1.125rem), medium, #2C7A4C, line-height 1.6
+
+**Brödtext:**
+
+- Body: 16px (1rem), normal, #333333, line-height 1.6
+- Small: 14px (0.875rem), normal, #6B7280
+- Tiny: 12px (0.75rem), normal, #6B7280
+
+**UI-element:**
+
+- Button: 15px, semibold
+- Input label: 15px, semibold, #2C7A4C
+- Table header: 14px, semibold
+
+**Hero-rubriker** (endast publika sidor):
+
+- Hero H1: 36-40px, bold, white, centered, text-shadow
+- Hero H2: 18-20px, semibold, white, opacity 0.9
+
+### 📐 Spacing & Layout
+
+**Container-bredder:**
+
+```css
+--max-width-sm: 672px /* Formulär */ --max-width-md: 896px /* Innehållssidor */
+  --max-width-lg: 1152px /* Breda sidor */ --max-width-xl: 1280px
+  /* Data-sidor (~1200px) */;
+```
+
+**Standard padding:**
+
+```css
+--padding-page: px-6 py-8 /* 24px/32px */ --padding-card: p-6
+  /* 24px alla håll */ --padding-compact: p-4 /* 16px kompakt */;
+```
+
+**Gap mellan element:**
+
+- Grid av kort: `gap-5` (20px)
+- Mellan sektioner: `mb-8` (32px)
+- Mellan form-fält: `gap-4` (16px)
+- Mellan knappar: `space-x-3` (12px)
+
+### 📄 Page-typologi
+
+**TYP 1: LANDING/DASHBOARD** (efter inloggning)
+
+- ❌ INGEN hero-sektion (användaren redan inloggad)
+- ✅ Kompakt header: H1 + beskrivning
+- ✅ Stats-översikt (om relevant)
+- ✅ 4-6 modulkort för navigation
+- ✅ Layout: max-w-7xl, px-6 py-8
+
+**TYP 2: DATA-SIDOR** (Hunddagis, Pensionat, Ekonomi)
+
+- ❌ INGEN hero-sektion
+- ✅ Kompakt header: titel + beskrivning vänster, 2-3 små stats höger
+- ✅ Action buttons: tydlig rad överst
+- ✅ Sök/filter: egen sektion, vit bakgrund
+- ✅ Tabell: grön header, alternating rows, hover
+- ✅ Layout: max-w-7xl, px-6 py-6
+
+**TYP 3: FORMULÄR/UNDERSIDOR** (Ny hund, Prissättning)
+
+- ✅ Smalare layout: max-w-3xl (768px)
+- ✅ Tillbaka-knapp överst
+- ✅ Ett vitt kort med formulär
+- ✅ Mer luft runt inputs (gap-6)
+- ✅ Tydliga labels (bold grön)
+
+### 🧱 Komponenter
+
+**Knappar:**
+
+```css
+height: 40px (h-10)
+padding: 0 16px (px-4)
+border-radius: 6px (rounded-md)
+font-size: 15px, font-weight: 600
+/* Primary: bg-[#2c7a4c], hover:bg-[#236139] */
+/* Secondary: bg-gray-500 */
+/* Outline: border-[#2c7a4c], hover:bg-[#E6F4EA] */
+```
+
+**Kort:**
+
+```css
+background: #FFFFFF
+border: 1px solid #E5E7EB
+border-radius: 8px (rounded-lg)
+box-shadow: 0 1px 3px rgba(0,0,0,0.05)
+padding: 24px (p-6) standard, 16px (p-4) kompakt
+hover: shadow-md, border-[#2c7a4c] (klickbara)
+```
+
+**Inputs:**
+
+```css
+height: 40px (h-10)
+border-radius: 6px (rounded-md)
+border: 1px solid #D1D5DB
+focus: ring-2 #2C7A4C, border-transparent
+```
+
+**Tabeller:**
+
+```css
+/* Header */
+background: #2C7A4C, color: white
+height: 44px, font-size: 14px, padding: px-4 py-3
+
+/* Rows */
+alternating: #FFFFFF / #F9FAFB
+hover: #F3F4F6
+padding: px-4 py-3, font-size: 16px
+```
+
+### 🎭 Emoji-användning
+
+**Storlekar:**
+
+- `text-3xl` (30px) - Modulkort på dashboard
+- `text-2xl` (24px) - Sidhuvuden
+- `text-xl` (20px) - Inline i text
+
+**Placering:**
+
+- ✅ Centrerat ovanför rubrik på modulkort
+- ✅ Inline framför sidhuvud (små sidor)
+- ❌ INTE i tabellrader
+- ❌ INTE som huvudfokus - text alltid viktigare
+
+### 📊 Stats-boxar
+
+**Variant A: Inline** (datasidor header)
+
+```tsx
+<div className="flex items-center gap-6">
+  <div className="bg-white rounded-lg px-4 py-3 border shadow-sm">
+    <p className="text-2xl font-bold text-[#2c7a4c]">47</p>
+    <p className="text-sm text-gray-600">Antagna</p>
+  </div>
+</div>
+```
+
+- Små, kompakta, max 2-3 per sida
+
+**Variant B: Grid** (dashboard overview)
+
+- Större boxar med ikon, mer info
+- Max 6 per dashboard
+- Egen sektion under header
+
+### 🔄 Navbar
+
+```css
+height: 60px (kompakt, tidigare 80px)
+padding: px-6 py-3
+logo-height: 48px
+background: #2C7A4C
+```
+
+**Innehåll:**
+
+- Logotyp vänster (→ dashboard)
+- Notifikation-ikon
+- Användarnamn + "Logga ut" höger
+- INGA navigeringslänkar
+
+### 📱 Responsivitet
+
+**Mobil:**
+
+- Komponenter vertikalt
+- Knappar två per rad
+- Textstorlek -2 till -4px
+
+**Surfplatta:**
+
+- Två kolumner
+- Kompaktare spacing
+
+**Desktop:**
+
+- Full layout
+- Max-width 1200-1280px
+
+### 🌿 Sammanfattning
+
+**Denna design ger:**
+
+- ✅ Enhetligt utseende över hela systemet
+- ✅ Professionellt och tillförlitligt intryck
+- ✅ Kompakt men luftig känsla
+- ✅ Tydlig hierarki och användarvänlighet
+- ✅ Minimalt med scrollning
+- ✅ Smart användning av grön accent
+- ✅ Perfekt balans: "kontorssystem" + "hundvänlig"
+
+**Resultat:** Ett system som kännas som det är byggt av EN person med EN vision.
+
+> 📚 **Fullständig spec:** Se `DESIGN_SYSTEM_V2.md` för 700+ rader detaljerad dokumentation
+
+---
+
     H1 – 32 px, bold, #2C7A4C
     H2 – 24 px, semibold, #2C7A4C
     H3 – 18 px, medium, #2C7A4C

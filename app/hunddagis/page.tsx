@@ -129,8 +129,10 @@ const DEFAULT_COLUMNS = [
   "owner",
   "phone",
   "subscription",
-  "room_id",
   "days",
+  "room_id",
+  "vaccdhp",
+  "vaccpi",
 ];
 
 const ALL_COLUMNS = [
@@ -164,7 +166,7 @@ const ALL_COLUMNS = [
 ];
 
 const COLUMN_LABELS: Record<string, string> = {
-  name: "Hund",
+  name: "Hund ▲",
   breed: "Ras",
   gender: "Kön",
   heightcm: "Mankhöjd (cm)",
@@ -184,8 +186,8 @@ const COLUMN_LABELS: Record<string, string> = {
   room_id: "Rum",
   insurance_company: "Försäkringsbolag",
   insurance_number: "Försäkringsnummer",
-  vaccdhp: "Vaccination DHP",
-  vaccpi: "Vaccination Pi",
+  vaccdhp: "Vacc. DHP",
+  vaccpi: "Vacc. Pi",
   is_castrated: "Kasterad/Steriliserad",
   destroys_things: "Biter på saker",
   is_house_trained: "Rumsren",
@@ -707,40 +709,40 @@ export default function HunddagisPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header med titel och statistik - ENLIGT STILGUIDE */}
+      {/* Header med titel och statistik - KOMPAKT som bild 2 */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-relaxed">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                 Hunddagis
               </h1>
-              <p className="mt-2 text-base text-gray-600">
+              <p className="mt-1 text-base text-gray-600">
                 Dagens sammanställning – Sök, filtrera och hantera dina hundar
               </p>
             </div>
 
-            {/* Statistik i högra hörnet - Kompakta kort */}
-            <div className="flex items-center space-x-6">
-              <div className="text-center bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+            {/* Statistik inline höger - Små kompakta boxar */}
+            <div className="flex items-center gap-4 ml-8">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
                 <p className="text-2xl font-bold text-[#2c7a4c]">
                   {dogs.filter((d) => d.subscription).length}
                 </p>
-                <p className="text-sm text-gray-600 mt-1">Antagna hundar</p>
+                <p className="text-xs text-gray-600 mt-0.5">Antagna hundar</p>
               </div>
-              <div className="text-center bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
                 <p className="text-2xl font-bold text-orange-600">
                   {dogs.filter((d) => !d.subscription).length}
                 </p>
-                <p className="text-sm text-gray-600 mt-1">Väntelista</p>
+                <p className="text-xs text-gray-600 mt-0.5">Väntelista</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content Area - ENLIGT STILGUIDE: maxbredd 1200px, padding 24px */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* Main Content Area - KOMPAKT padding */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Action Buttons Row - ENLIGT STILGUIDE: rounded-md, shadow-sm */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center space-x-3">
