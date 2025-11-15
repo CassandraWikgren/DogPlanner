@@ -10,6 +10,8 @@ import {
   Scissors,
   Home,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 interface Dog {
   id: string;
@@ -23,9 +25,14 @@ interface Dog {
 interface DagisStatsProps {
   dogs: Dog[];
   onStatClick: (stat: string) => void;
+  currentOrgId?: string | null;
 }
 
-export function DagisStats({ dogs, onStatClick }: DagisStatsProps) {
+export function DagisStats({ dogs, onStatClick, currentOrgId }: DagisStatsProps) {
+  const [applications, setApplications] = useState(0);
+  const [services, setServices] = useState(0);
+  const [rooms, setRooms] = useState(0);
+
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -103,10 +110,55 @@ export function DagisStats({ dogs, onStatClick }: DagisStatsProps) {
   // Beräkna promenader (approximation: 70% av dagens hundar)
   const walkingDogs = Math.floor(todayDogs * 0.7);
 
-  // Placeholder för värden som kommer från andra tabeller
-  const applications = 8; // TODO: Hämta från applications-tabellen
-  const services = 5; // TODO: Beräkna från tilläggstjänster (kloklipp, bad)
-  const rooms = 6; // TODO: Hämta från rooms-tabellen
+  // Hämta statistik från Supabase
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!currentOrgId) return;
+
+      try {
+        // Hämta intresseanmälningar från senaste månaden
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+        
+        const { data: applicationsData, error: appError } = await supabase
+          .from("applications")
+          .select("id", { count: "exact" })
+          .eq("org_id", currentOrgId)
+          .gte("created_at", oneMonthAgo.toISOString());
+
+        if (!appError && applicationsData) {
+          setApplications(applicationsData.length);
+        }
+
+        // Hämta tjänster (extra_services) från denna månaden
+        const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        const { data: servicesData, error: servError } = await supabase
+          .from("extra_service")
+          .select("id", { count: "exact" })
+          .eq("org_id", currentOrgId)
+          .gte("created_at", thisMonthStart.toISOString());
+
+        if (!servError && servicesData) {
+          setServices(servicesData.length);
+        }
+
+        // Hämta antal rum
+        const { data: roomsData, error: roomsError } = await supabase
+          .from("rooms")
+          .select("id", { count: "exact" })
+          .eq("org_id", currentOrgId);
+
+        if (!roomsError && roomsData) {
+          setRooms(roomsData.length);
+        }
+      } catch (error) {
+        console.error("[ERR-5001] Fel vid hämtning av DagisStats:", error);
+      }
+    };
+
+    fetchStats();
+  }, [currentOrgId, today]);
 
   const stats = [
     {
@@ -207,13 +259,6 @@ export function DagisStats({ dogs, onStatClick }: DagisStatsProps) {
             </div>
           );
         })}
-      </div>
-
-      {/* Debug information (kan tas bort senare) */}
-      <div className="mt-4 p-2 bg-gray-100 rounded text-xs text-gray-600">
-        <strong>Debug:</strong> Idag: {currentWeekday}, Imorgon:{" "}
-        {tomorrowWeekday}, Totalt hundar: {dogs.length}, Idag: {todayDogs},
-        Imorgon: {tomorrowDogs}
       </div>
     </div>
   );
