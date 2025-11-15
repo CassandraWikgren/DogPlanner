@@ -92,93 +92,150 @@ export default function OrganisationSettingsPage() {
 
   if (loading)
     return (
-      <div className="p-10 text-center text-gray-500">
-        Hämtar organisation...
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center text-gray-500">Hämtar organisation...</div>
       </div>
     );
 
   return (
-    <PageContainer maxWidth="4xl">
-      <div className="bg-white shadow rounded-2xl p-8">
-        <h1 className="text-3xl font-bold text-green-700 mb-6">
-          Företagsinställningar
-        </h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Kompakt header */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-3xl mx-auto px-6 py-4">
+          <div className="flex items-center gap-4">
+            <a
+              href="/dashboard"
+              className="text-gray-600 hover:text-[#2C7A4C] transition-colors"
+            >
+              ← Tillbaka
+            </a>
+            <h1 className="text-2xl font-bold text-[#2C7A4C] leading-tight">
+              Företagsinställningar
+            </h1>
+          </div>
+        </div>
+      </div>
 
-        {org ? (
-          <>
-            <div className="mb-6">
-              <p>
-                <strong>Företagsnamn:</strong> {org.name}
-              </p>
-              <p>
-                <strong>Plan:</strong>{" "}
-                {org.subscription_plan === "pro"
-                  ? "Pro (fullversion)"
-                  : "Basic"}
-              </p>
-              <p>
-                <strong>Skapad:</strong>{" "}
-                {new Date(org.created_at).toLocaleDateString("sv-SE")}
-              </p>
-            </div>
-
-            {role === "admin" && (
-              <div className="border-t border-gray-200 pt-6">
-                <h2 className="text-xl font-semibold mb-3">Byt företagsnamn</h2>
-                <div className="flex flex-wrap gap-3 items-center">
-                  <input
-                    type="text"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    className="border px-3 py-2 rounded-lg flex-1"
-                  />
-                  <button
-                    onClick={handleRename}
-                    className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg font-semibold"
-                  >
-                    Spara
-                  </button>
+      {/* Main content - narrow form layout */}
+      <div className="max-w-3xl mx-auto px-6 py-6">
+        <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+          {org ? (
+            <div className="space-y-6">
+              {/* Företagsinformation */}
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  Företagsinformation
+                </h2>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-semibold text-gray-700">
+                      Företagsnamn:
+                    </span>
+                    <span className="text-gray-900">{org.name}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-semibold text-gray-700">Plan:</span>
+                    <span className="text-gray-900">
+                      {org.subscription_plan === "pro"
+                        ? "Pro (fullversion)"
+                        : "Basic"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b">
+                    <span className="font-semibold text-gray-700">Skapad:</span>
+                    <span className="text-gray-900">
+                      {new Date(org.created_at).toLocaleDateString("sv-SE")}
+                    </span>
+                  </div>
                 </div>
-                {message && (
-                  <p className="text-sm mt-2 text-green-700">{message}</p>
+              </div>
+
+              {/* Byt företagsnamn (endast admin) */}
+              {role === "admin" && (
+                <div className="border-t pt-6">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                    Byt företagsnamn
+                  </h2>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-semibold text-[#2C7A4C] mb-2">
+                        Nytt företagsnamn
+                      </label>
+                      <input
+                        type="text"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        className="w-full h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2C7A4C] focus:border-transparent"
+                      />
+                    </div>
+                    <button
+                      onClick={handleRename}
+                      className="w-full px-4 py-2 bg-[#2C7A4C] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold"
+                    >
+                      Spara ändringar
+                    </button>
+                    {message && (
+                      <p className="text-sm text-green-600 font-medium">
+                        {message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Användare i företaget */}
+              <div className="border-t pt-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  👥 Användare i företaget
+                </h2>
+                {members.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-[#2C7A4C] text-white">
+                        <tr>
+                          <th className="py-2 px-4 text-left">Namn</th>
+                          <th className="py-2 px-4 text-left">Roll</th>
+                          <th className="py-2 px-4 text-left">Skapad</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {members.map((m, idx) => (
+                          <tr
+                            key={m.full_name || idx}
+                            className={
+                              idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                            }
+                          >
+                            <td className="py-2 px-4 border-b">
+                              {m.full_name || "–"}
+                            </td>
+                            <td className="py-2 px-4 border-b capitalize">
+                              {m.role}
+                            </td>
+                            <td className="py-2 px-4 border-b">
+                              {new Date(m.created_at).toLocaleDateString(
+                                "sv-SE"
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm">
+                    Inga användare hittades.
+                  </p>
                 )}
               </div>
-            )}
-
-            <div className="border-t border-gray-200 mt-8 pt-6">
-              <h2 className="text-xl font-semibold mb-4">
-                👥 Användare i företaget
-              </h2>
-              {members.length > 0 ? (
-                <table className="min-w-full border-collapse text-sm">
-                  <thead className="bg-green-700 text-white">
-                    <tr>
-                      <th className="py-2 px-4 text-left">Namn</th>
-                      <th className="py-2 px-4 text-left">Roll</th>
-                      <th className="py-2 px-4 text-left">Skapad</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {members.map((m) => (
-                      <tr key={m.full_name} className="even:bg-green-50">
-                        <td className="py-2 px-4">{m.full_name || "–"}</td>
-                        <td className="py-2 px-4 capitalize">{m.role}</td>
-                        <td className="py-2 px-4">
-                          {new Date(m.created_at).toLocaleDateString("sv-SE")}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p className="text-gray-500">Inga användare hittades.</p>
-              )}
             </div>
-          </>
-        ) : (
-          <p className="text-red-600">Kunde inte hämta företagsinformation.</p>
-        )}
+          ) : (
+            <p className="text-red-600">
+              Kunde inte hämta företagsinformation.
+            </p>
+          )}
+        </div>
       </div>
-    </PageContainer>
+    </div>
   );
 }
