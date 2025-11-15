@@ -137,13 +137,15 @@ export default function MinaPriserPage() {
         )}
 
         <p className="text-sm text-gray-600 mb-6">
-          Här kan du ange vilka priser som gäller för ditt företag. Dessa används
-          automatiskt vid fakturering och tilläggstjänster.
+          Här kan du ange vilka priser som gäller för ditt företag. Dessa
+          används automatiskt vid fakturering och tilläggstjänster.
         </p>
 
         {/* Dagispriser */}
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Dagisabonnemang</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Dagisabonnemang
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <PriceField
               label="Heltid (kr/mån)"
@@ -165,7 +167,9 @@ export default function MinaPriserPage() {
 
         {/* Tilläggstjänster */}
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Tilläggstjänster</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Tilläggstjänster
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <PriceField
               label="Kloklipp (kr)"
@@ -215,10 +219,10 @@ export default function MinaPriserPage() {
           </button>
 
           {lastUpdated && (
-            <p className="text-xs text-gray-500">Senast ändrad: {lastUpdated}</p>
+            <p className="text-xs text-gray-500">
+              Senast ändrad: {lastUpdated}
+            </p>
           )}
-        </div>
-
         </div>
 
         {/* Historikvy */}
@@ -234,7 +238,9 @@ export default function MinaPriserPage() {
                   className="flex justify-between items-center py-3 text-sm"
                 >
                   <span className="text-gray-900">
-                    <b>{i === 0 ? "Aktuell prislista" : "Tidigare prislista"}</b>{" "}
+                    <b>
+                      {i === 0 ? "Aktuell prislista" : "Tidigare prislista"}
+                    </b>{" "}
                     från{" "}
                     {new Date(h.effective_from).toLocaleDateString("sv-SE", {
                       year: "numeric",
@@ -270,7 +276,9 @@ function PriceField({
 }) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-[#2C7A4C] mb-2">{label}</label>
+      <label className="block text-sm font-semibold text-[#2C7A4C] mb-2">
+        {label}
+      </label>
       <Input
         type="number"
         value={value ?? ""}
