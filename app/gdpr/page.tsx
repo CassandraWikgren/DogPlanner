@@ -1,6 +1,5 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 
 export default function GDPRPage() {
   const router = useRouter();
@@ -11,26 +10,35 @@ export default function GDPRPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header - EXAKT som Hunddagis */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
             Integritetspolicy & GDPR
           </h1>
+          <p className="mt-1 text-base text-gray-600">
+            Hantering av personuppgifter enligt dataskyddsförordningen
+          </p>
+        </div>
+      </div>
 
-          <div className="prose max-w-none">
-            <h2 className="text-xl font-semibold mb-4">
+      {/* Main Content - EXAKT som Hunddagis */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+          <div className="max-w-4xl">
+            <h2 className="text-xl font-semibold text-[#333333] mb-4">
               Hantering av personuppgifter
             </h2>
-            <p className="mb-4">
+            <p className="text-sm text-gray-700 mb-6">
               DogPlanner värnar om din integritet och hanterar dina
               personuppgifter enligt gällande dataskyddsförordning (GDPR).
             </p>
 
-            <h3 className="text-lg font-semibold mb-3">
+            <h3 className="text-lg font-semibold text-[#333333] mb-3">
               Vilka uppgifter samlar vi in?
             </h3>
-            <ul className="list-disc pl-6 mb-4">
+            <ul className="list-disc pl-6 mb-6 text-sm text-gray-700 space-y-1">
               <li>Kontaktuppgifter (namn, e-post, telefon)</li>
               <li>
                 Information om hundar (namn, ras, ålder, hälsoinformation)
@@ -38,35 +46,34 @@ export default function GDPRPage() {
               <li>Bokningshistorik och fakturauppgifter</li>
             </ul>
 
-            <h3 className="text-lg font-semibold mb-3">
+            <h3 className="text-lg font-semibold text-[#333333] mb-3">
               Hur används uppgifterna?
             </h3>
-            <ul className="list-disc pl-6 mb-4">
+            <ul className="list-disc pl-6 mb-6 text-sm text-gray-700 space-y-1">
               <li>Tillhandahålla våra tjänster</li>
               <li>Kommunikation kring bokningar och fakturering</li>
               <li>Förbättra systemets funktionalitet</li>
             </ul>
 
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-6">
-              <p className="text-gray-700 mb-4">
+              <p className="text-sm text-gray-700 mb-4">
                 Genom att fortsätta använda DogPlanner godkänner du vår
                 hantering av personuppgifter enligt denna policy.
               </p>
 
               <div className="flex gap-4">
-                <Button
+                <button
                   onClick={handleAccept}
-                  className="bg-[#2c7a4c] hover:bg-[#1e5a35] text-white"
+                  className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
                 >
                   Jag godkänner
-                </Button>
-                <Button
-                  variant="outline"
+                </button>
+                <button
                   onClick={() => router.push("/")}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-medium text-sm"
                 >
                   Tillbaka
-                </Button>
+                </button>
               </div>
             </div>
           </div>
