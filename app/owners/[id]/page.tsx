@@ -9,6 +9,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
 import { EditOwnerModal } from "@/components/EditOwnerModal";
 import { Button } from "@components/ui/button";
+import PageContainer from "@/components/PageContainer";
 
 export default function OwnerPage() {
   const { user } = useAuth();
@@ -67,38 +68,40 @@ export default function OwnerPage() {
   if (!owner) return <p className="p-6 text-red-600">Ingen ägare hittades.</p>;
 
   return (
-    <main className="max-w-5xl mx-auto p-6 space-y-8">
-      <section className="bg-white p-6 shadow rounded-xl">
-        <h1 className="text-2xl font-bold text-green-700 mb-2">
-          👤 {owner.name}
-        </h1>
-        <p>Kundnummer: {owner.customernumber}</p>
-        <p>Telefon: {owner.phone}</p>
-        <p>E-post: {owner.email}</p>
+    <PageContainer maxWidth="5xl">
+      <section className="bg-white p-6 shadow rounded-xl space-y-8">
+        <div>
+          <h1 className="text-2xl font-bold text-green-700 mb-2">
+            👤 {owner.name}
+          </h1>
+          <p>Kundnummer: {owner.customernumber}</p>
+          <p>Telefon: {owner.phone}</p>
+          <p>E-post: {owner.email}</p>
 
-        <Button
-          onClick={() => setEditOpen(true)}
-          className="mt-4 bg-green-700 hover:bg-green-800 text-white"
-        >
-          ✏️ Redigera uppgifter
-        </Button>
-      </section>
+          <Button
+            onClick={() => setEditOpen(true)}
+            className="mt-4 bg-green-700 hover:bg-green-800 text-white"
+          >
+            ✏️ Redigera uppgifter
+          </Button>
+        </div>
 
-      <section className="bg-white p-6 shadow rounded-xl">
-        <h2 className="text-xl font-semibold text-green-700 mb-3">
-          🐶 Hundar till denna ägare
-        </h2>
-        {dogs.length === 0 ? (
-          <p className="text-gray-500">Inga hundar registrerade ännu.</p>
-        ) : (
-          <ul className="list-disc list-inside">
-            {dogs.map((dog) => (
-              <li key={dog.id}>
-                {dog.name} ({dog.breed}, {dog.gender})
-              </li>
-            ))}
-          </ul>
-        )}
+        <div>
+          <h2 className="text-xl font-semibold text-green-700 mb-3">
+            🐶 Hundar till denna ägare
+          </h2>
+          {dogs.length === 0 ? (
+            <p className="text-gray-500">Inga hundar registrerade ännu.</p>
+          ) : (
+            <ul className="list-disc list-inside">
+              {dogs.map((dog) => (
+                <li key={dog.id}>
+                  {dog.name} ({dog.breed}, {dog.gender})
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </section>
 
       {editOpen && (
@@ -109,6 +112,6 @@ export default function OwnerPage() {
           refresh={() => window.location.reload()}
         />
       )}
-    </main>
+    </PageContainer>
   );
 }

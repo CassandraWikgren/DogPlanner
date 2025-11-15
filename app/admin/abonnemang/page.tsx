@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import PageContainer from "@/components/PageContainer";
 import {
   ArrowLeft,
   Briefcase,
@@ -201,183 +202,177 @@ export default function AdminAbonnemangPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-6">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-4 mb-4">
-            <Link href="/admin" className="text-gray-600 hover:text-gray-900">
-              <ArrowLeft className="h-6 w-6" />
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                📋 Mitt abonnemang
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Hantera din DogPlanner-prenumeration
-              </p>
-            </div>
+    <PageContainer maxWidth="4xl">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center space-x-4 mb-4">
+          <Link href="/admin" className="text-gray-600 hover:text-gray-900">
+            <ArrowLeft className="h-6 w-6" />
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              📋 Mitt abonnemang
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Hantera din DogPlanner-prenumeration
+            </p>
           </div>
         </div>
+      </div>
 
-        {error && (
-          <Card className="mb-6 border-red-200 bg-red-50">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2 text-red-700">
-                <AlertTriangle className="h-5 w-5" />
-                <span>{error}</span>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      {error && (
+        <Card className="mb-6 border-red-200 bg-red-50">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2 text-red-700">
+              <AlertTriangle className="h-5 w-5" />
+              <span>{error}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-        {/* Subscription Status */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Briefcase className="h-6 w-6 text-purple-600" />
-              <span>Prenumerationsstatus</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {subscription ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Subscription Status */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Briefcase className="h-6 w-6 text-purple-600" />
+            <span>Prenumerationsstatus</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {subscription ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    Plan
+                  </label>
+                  <p className="text-lg font-semibold capitalize">
+                    {subscription.plan}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    Status
+                  </label>
+                  <span
+                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                      subscription.status
+                    )}`}
+                  >
+                    {getStatusText(subscription.status)}
+                  </span>
+                </div>
+
+                {subscription.trial_ends_at && (
                   <div>
                     <label className="text-sm font-medium text-gray-600">
-                      Plan
-                    </label>
-                    <p className="text-lg font-semibold capitalize">
-                      {subscription.plan}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">
-                      Status
-                    </label>
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                        subscription.status
-                      )}`}
-                    >
-                      {getStatusText(subscription.status)}
-                    </span>
-                  </div>
-
-                  {subscription.trial_ends_at && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">
-                        Gratis period slutar
-                      </label>
-                      <p className="text-lg">
-                        {new Date(
-                          subscription.trial_ends_at
-                        ).toLocaleDateString("sv-SE")}
-                      </p>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">
-                      Prenumeration startad
+                      Gratis period slutar
                     </label>
                     <p className="text-lg">
-                      {new Date(subscription.created_at).toLocaleDateString(
+                      {new Date(subscription.trial_ends_at).toLocaleDateString(
                         "sv-SE"
                       )}
                     </p>
                   </div>
+                )}
+
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    Prenumeration startad
+                  </label>
+                  <p className="text-lg">
+                    {new Date(subscription.created_at).toLocaleDateString(
+                      "sv-SE"
+                    )}
+                  </p>
                 </div>
+              </div>
 
-                {/* Action Buttons */}
-                <div className="flex space-x-4 pt-4">
-                  {subscription.status === "active" ||
-                  subscription.status === "trialing" ? (
-                    <Button
-                      onClick={pauseSubscription}
-                      disabled={saving}
-                      variant="outline"
-                      className="border-yellow-500 text-yellow-700 hover:bg-yellow-50"
-                    >
-                      {saving ? "Pausar..." : "Pausa prenumeration"}
-                    </Button>
-                  ) : subscription.status === "paused" ? (
-                    <Button
-                      onClick={resumeSubscription}
-                      disabled={saving}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      {saving
-                        ? "Återaktiverar..."
-                        : "Återaktivera prenumeration"}
-                    </Button>
-                  ) : null}
-
+              {/* Action Buttons */}
+              <div className="flex space-x-4 pt-4">
+                {subscription.status === "active" ||
+                subscription.status === "trialing" ? (
                   <Button
+                    onClick={pauseSubscription}
+                    disabled={saving}
                     variant="outline"
-                    className="border-red-500 text-red-700 hover:bg-red-50"
-                    onClick={() => {
-                      if (
-                        confirm(
-                          "Är du säker på att du vill avsluta prenumerationen? Detta kan inte ångras."
-                        )
-                      ) {
-                        // Implementera avsluta-funktionalitet
-                        alert(
-                          "Kontakta support för att avsluta prenumerationen"
-                        );
-                      }
-                    }}
+                    className="border-yellow-500 text-yellow-700 hover:bg-yellow-50"
                   >
-                    Avsluta prenumeration
+                    {saving ? "Pausar..." : "Pausa prenumeration"}
                   </Button>
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-8">
-                <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-                <p className="text-gray-600">
-                  Ingen aktiv prenumeration hittades
-                </p>
+                ) : subscription.status === "paused" ? (
+                  <Button
+                    onClick={resumeSubscription}
+                    disabled={saving}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    {saving ? "Återaktiverar..." : "Återaktivera prenumeration"}
+                  </Button>
+                ) : null}
+
                 <Button
-                  className="mt-4 bg-purple-600 hover:bg-purple-700 text-white"
-                  onClick={createSubscription}
-                  disabled={creating}
+                  variant="outline"
+                  className="border-red-500 text-red-700 hover:bg-red-50"
+                  onClick={() => {
+                    if (
+                      confirm(
+                        "Är du säker på att du vill avsluta prenumerationen? Detta kan inte ångras."
+                      )
+                    ) {
+                      // Implementera avsluta-funktionalitet
+                      alert("Kontakta support för att avsluta prenumerationen");
+                    }
+                  }}
                 >
-                  {creating ? "Skapar..." : "Skapa ny prenumeration"}
+                  Avsluta prenumeration
                 </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Billing Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <CreditCard className="h-6 w-6 text-blue-600" />
-              <span>Faktureringsinformation</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center space-x-2 text-blue-700 mb-2">
-                  <CheckCircle className="h-5 w-5" />
-                  <span className="font-medium">Information</span>
-                </div>
-                <p className="text-blue-600 text-sm">
-                  Faktureringsinformation och betalningsmetoder hanteras via vår
-                  betalningspartner. Kontakta support om du behöver ändra
-                  betalningsuppgifter.
-                </p>
-              </div>
-
-              <Button variant="outline">Kontakta support</Button>
+            </>
+          ) : (
+            <div className="text-center py-8">
+              <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+              <p className="text-gray-600">
+                Ingen aktiv prenumeration hittades
+              </p>
+              <Button
+                className="mt-4 bg-purple-600 hover:bg-purple-700 text-white"
+                onClick={createSubscription}
+                disabled={creating}
+              >
+                {creating ? "Skapar..." : "Skapa ny prenumeration"}
+              </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Billing Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <CreditCard className="h-6 w-6 text-blue-600" />
+            <span>Faktureringsinformation</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2 text-blue-700 mb-2">
+                <CheckCircle className="h-5 w-5" />
+                <span className="font-medium">Information</span>
+              </div>
+              <p className="text-blue-600 text-sm">
+                Faktureringsinformation och betalningsmetoder hanteras via vår
+                betalningspartner. Kontakta support om du behöver ändra
+                betalningsuppgifter.
+              </p>
+            </div>
+
+            <Button variant="outline">Kontakta support</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </PageContainer>
   );
 }

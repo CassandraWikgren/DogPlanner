@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { Calculator, Save, Plus } from "lucide-react";
+import PageContainer from "@/components/PageContainer";
 
 interface Dog {
   id: string;
@@ -414,837 +415,832 @@ export default function NewPensionatBooking() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="bg-white border border-gray-200 p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-8 pb-4 border-b border-gray-200">
-            Ny pensionatsbokning
-          </h1>
+    <PageContainer>
+      <div className="bg-white border border-gray-200 p-8">
+        <h1 className="text-2xl font-bold text-gray-900 mb-8 pb-4 border-b border-gray-200">
+          Ny pensionatsbokning
+        </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-12">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-200">
-                Ägare
-              </h2>
+        <form onSubmit={handleSubmit} className="space-y-12">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+              Ägare
+            </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Kundnummer
-                  </label>
-                  <input
-                    type="text"
-                    value={ownerData.customerNumber}
-                    onChange={(e) =>
-                      setOwnerData({
-                        ...ownerData,
-                        customerNumber: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Genereras automatiskt"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Förnamn *
-                  </label>
-                  <input
-                    type="text"
-                    value={ownerData.firstName}
-                    onChange={(e) =>
-                      setOwnerData({ ...ownerData, firstName: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Efternamn *
-                  </label>
-                  <input
-                    type="text"
-                    value={ownerData.lastName}
-                    onChange={(e) =>
-                      setOwnerData({ ...ownerData, lastName: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Telefon *
-                  </label>
-                  <input
-                    type="tel"
-                    value={ownerData.phone}
-                    onChange={(e) =>
-                      setOwnerData({ ...ownerData, phone: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    E-post
-                  </label>
-                  <input
-                    type="email"
-                    value={ownerData.email}
-                    onChange={(e) =>
-                      setOwnerData({ ...ownerData, email: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Adress
-                  </label>
-                  <input
-                    type="text"
-                    value={ownerData.address}
-                    onChange={(e) =>
-                      setOwnerData({ ...ownerData, address: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Postnummer
-                  </label>
-                  <input
-                    type="text"
-                    value={ownerData.zipcode}
-                    onChange={(e) =>
-                      setOwnerData({ ...ownerData, zipcode: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ort
-                  </label>
-                  <input
-                    type="text"
-                    value={ownerData.city}
-                    onChange={(e) =>
-                      setOwnerData({ ...ownerData, city: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* KONTAKT 2 SEKTION */}
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-200">
-                Kontakt 2 (valfritt)
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Förnamn
-                  </label>
-                  <input
-                    type="text"
-                    value={contact2Data.firstName}
-                    onChange={(e) =>
-                      setContact2Data({
-                        ...contact2Data,
-                        firstName: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Efternamn
-                  </label>
-                  <input
-                    type="text"
-                    value={contact2Data.lastName}
-                    onChange={(e) =>
-                      setContact2Data({
-                        ...contact2Data,
-                        lastName: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Telefon
-                  </label>
-                  <input
-                    type="tel"
-                    value={contact2Data.phone}
-                    onChange={(e) =>
-                      setContact2Data({
-                        ...contact2Data,
-                        phone: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    E-post
-                  </label>
-                  <input
-                    type="email"
-                    value={contact2Data.email}
-                    onChange={(e) =>
-                      setContact2Data({
-                        ...contact2Data,
-                        email: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Relation
-                  </label>
-                  <input
-                    type="text"
-                    value={contact2Data.relation}
-                    onChange={(e) =>
-                      setContact2Data({
-                        ...contact2Data,
-                        relation: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="t.ex. Make/maka, barn"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* HUND SEKTION */}
-            <div>
-              <div className="flex items-center justify-between mb-6 pb-2 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Hund</h2>
-                <button
-                  type="button"
-                  onClick={() => setShowNewDogModal(true)}
-                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 text-sm font-medium border border-blue-600"
-                >
-                  <Plus className="h-4 w-4" />
-                  Ny hund
-                </button>
-              </div>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Välj hund *
+                  Kundnummer
                 </label>
-                <select
-                  value={selectedDog}
-                  onChange={(e) => setSelectedDog(e.target.value)}
-                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                >
-                  <option value="">Välj hund...</option>
-                  {dogs.map((dog) => (
-                    <option key={dog.id} value={dog.id}>
-                      {dog.name} ({dog.breed || "Okänd ras"}) - Ägare:{" "}
-                      {dog.owners?.full_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Annan ägare (valfritt)
-                </label>
-                <select
-                  value={customOwnerId}
-                  onChange={(e) => setCustomOwnerId(e.target.value)}
-                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Använd hundens ägare...</option>
-                  {owners.map((owner) => (
-                    <option key={owner.id} value={owner.id}>
-                      {owner.full_name} ({owner.phone})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Detaljerade hunddata */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Hundnamn
-                  </label>
-                  <input
-                    type="text"
-                    value={dogData.name}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, name: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ras
-                  </label>
-                  <input
-                    type="text"
-                    value={dogData.breed}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, breed: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Födelsedatum
-                  </label>
-                  <input
-                    type="date"
-                    value={dogData.birthDate}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, birthDate: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Kön
-                  </label>
-                  <select
-                    value={dogData.sex}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, sex: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Välj kön...</option>
-                    <option value="male">Hane</option>
-                    <option value="female">Tik</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Höjd (cm)
-                  </label>
-                  <input
-                    type="number"
-                    value={dogData.heightcm}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, heightcm: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Vikt (kg)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={dogData.weightkg}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, weightkg: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Chipnummer
-                  </label>
-                  <input
-                    type="text"
-                    value={dogData.chipNumber}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, chipNumber: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Reg.nummer
-                  </label>
-                  <input
-                    type="text"
-                    value={dogData.regNumber}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, regNumber: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={dogData.neutered}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, neutered: e.target.checked })
-                    }
-                    className="mr-2 h-4 w-4 text-blue-600"
-                  />
-                  <span className="text-sm text-gray-700">
-                    Kastrerad/steriliserad
-                  </span>
-                </label>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Personlighet
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={dogData.personality}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, personality: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Beskriv hundens personlighet..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Utbildning
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={dogData.training}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, training: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Kommando, utbildning, beteende..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Rastningsvanor
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={dogData.walkingHabits}
-                    onChange={(e) =>
-                      setDogData({ ...dogData, walkingHabits: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Hur ofta, hur långt, särskilda behov..."
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* HÄLSA SEKTION */}
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-200">
-                Hälsa
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Försäkringsbolag
-                  </label>
-                  <input
-                    type="text"
-                    value={healthData.insuranceCompany}
-                    onChange={(e) =>
-                      setHealthData({
-                        ...healthData,
-                        insuranceCompany: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="t.ex. Agria, If, Folksam"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Försäkringsnummer
-                  </label>
-                  <input
-                    type="text"
-                    value={healthData.insuranceNumber}
-                    onChange={(e) =>
-                      setHealthData({
-                        ...healthData,
-                        insuranceNumber: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Vaccination DHP (giltig 3 år)
-                  </label>
-                  <input
-                    type="date"
-                    value={healthData.vaccinationDHP}
-                    onChange={(e) =>
-                      setHealthData({
-                        ...healthData,
-                        vaccinationDHP: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Vaccination Pi (giltig ett år)
-                  </label>
-                  <input
-                    type="date"
-                    value={healthData.vaccinationPI}
-                    onChange={(e) =>
-                      setHealthData({
-                        ...healthData,
-                        vaccinationPI: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Vård / Medicin
-                </label>
-                <textarea
-                  rows={3}
-                  value={healthData.careAndMedicine}
+                <input
+                  type="text"
+                  value={ownerData.customerNumber}
                   onChange={(e) =>
-                    setHealthData({
-                      ...healthData,
-                      careAndMedicine: e.target.value,
+                    setOwnerData({
+                      ...ownerData,
+                      customerNumber: e.target.value,
                     })
                   }
                   className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Beskriv eventuell medicin, allergier, särskilda behov..."
+                  placeholder="Genereras automatiskt"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Förnamn *
+                </label>
+                <input
+                  type="text"
+                  value={ownerData.firstName}
+                  onChange={(e) =>
+                    setOwnerData({ ...ownerData, firstName: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Efternamn *
+                </label>
+                <input
+                  type="text"
+                  value={ownerData.lastName}
+                  onChange={(e) =>
+                    setOwnerData({ ...ownerData, lastName: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Telefon *
+                </label>
+                <input
+                  type="tel"
+                  value={ownerData.phone}
+                  onChange={(e) =>
+                    setOwnerData({ ...ownerData, phone: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  E-post
+                </label>
+                <input
+                  type="email"
+                  value={ownerData.email}
+                  onChange={(e) =>
+                    setOwnerData({ ...ownerData, email: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Adress
+                </label>
+                <input
+                  type="text"
+                  value={ownerData.address}
+                  onChange={(e) =>
+                    setOwnerData({ ...ownerData, address: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Postnummer
+                </label>
+                <input
+                  type="text"
+                  value={ownerData.zipcode}
+                  onChange={(e) =>
+                    setOwnerData({ ...ownerData, zipcode: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ort
+                </label>
+                <input
+                  type="text"
+                  value={ownerData.city}
+                  onChange={(e) =>
+                    setOwnerData({ ...ownerData, city: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             </div>
+          </div>
 
-            {/* BOKNING SEKTION */}
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-200">
-                Bokning
-              </h2>
+          {/* KONTAKT 2 SEKTION */}
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+              Kontakt 2 (valfritt)
+            </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Startdatum *
-                  </label>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Starttid
-                  </label>
-                  <input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Slutdatum *
-                  </label>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Sluttid
-                  </label>
-                  <input
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Förnamn
+                </label>
+                <input
+                  type="text"
+                  value={contact2Data.firstName}
+                  onChange={(e) =>
+                    setContact2Data({
+                      ...contact2Data,
+                      firstName: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
               </div>
 
-              {/* Rum och extratjänster */}
-              <div className="mb-6">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Rum *
+                  Efternamn
+                </label>
+                <input
+                  type="text"
+                  value={contact2Data.lastName}
+                  onChange={(e) =>
+                    setContact2Data({
+                      ...contact2Data,
+                      lastName: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Telefon
+                </label>
+                <input
+                  type="tel"
+                  value={contact2Data.phone}
+                  onChange={(e) =>
+                    setContact2Data({
+                      ...contact2Data,
+                      phone: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  E-post
+                </label>
+                <input
+                  type="email"
+                  value={contact2Data.email}
+                  onChange={(e) =>
+                    setContact2Data({
+                      ...contact2Data,
+                      email: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Relation
+                </label>
+                <input
+                  type="text"
+                  value={contact2Data.relation}
+                  onChange={(e) =>
+                    setContact2Data({
+                      ...contact2Data,
+                      relation: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="t.ex. Make/maka, barn"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* HUND SEKTION */}
+          <div>
+            <div className="flex items-center justify-between mb-6 pb-2 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Hund</h2>
+              <button
+                type="button"
+                onClick={() => setShowNewDogModal(true)}
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 text-sm font-medium border border-blue-600"
+              >
+                <Plus className="h-4 w-4" />
+                Ny hund
+              </button>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Välj hund *
+              </label>
+              <select
+                value={selectedDog}
+                onChange={(e) => setSelectedDog(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                required
+              >
+                <option value="">Välj hund...</option>
+                {dogs.map((dog) => (
+                  <option key={dog.id} value={dog.id}>
+                    {dog.name} ({dog.breed || "Okänd ras"}) - Ägare:{" "}
+                    {dog.owners?.full_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Annan ägare (valfritt)
+              </label>
+              <select
+                value={customOwnerId}
+                onChange={(e) => setCustomOwnerId(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">Använd hundens ägare...</option>
+                {owners.map((owner) => (
+                  <option key={owner.id} value={owner.id}>
+                    {owner.full_name} ({owner.phone})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Detaljerade hunddata */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Hundnamn
+                </label>
+                <input
+                  type="text"
+                  value={dogData.name}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, name: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ras
+                </label>
+                <input
+                  type="text"
+                  value={dogData.breed}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, breed: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Födelsedatum
+                </label>
+                <input
+                  type="date"
+                  value={dogData.birthDate}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, birthDate: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kön
                 </label>
                 <select
-                  value={selectedRoom}
-                  onChange={(e) => setSelectedRoom(e.target.value)}
+                  value={dogData.sex}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, sex: e.target.value })
+                  }
                   className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  required
                 >
-                  <option value="">Välj rum...</option>
-                  {rooms.map((room) => (
-                    <option key={room.id} value={room.id}>
-                      {room.name} (Kapacitet: {room.capacity_m2})
-                    </option>
-                  ))}
+                  <option value="">Välj kön...</option>
+                  <option value="male">Hane</option>
+                  <option value="female">Tik</option>
                 </select>
               </div>
 
-              {extraServices.length > 0 && (
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Extratjänster
-                  </label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {extraServices.map((service) => (
-                      <label
-                        key={service.id}
-                        className="flex items-center p-3 border border-gray-200 hover:bg-gray-50 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedExtras.includes(service.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedExtras((prev) => [
-                                ...prev,
-                                service.id,
-                              ]);
-                            } else {
-                              setSelectedExtras((prev) =>
-                                prev.filter((id) => id !== service.id)
-                              );
-                            }
-                          }}
-                          className="mr-3 h-4 w-4 text-blue-600"
-                        />
-                        <div className="flex-1">
-                          <div className="font-medium text-sm">
-                            {service.label}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {service.price} kr
-                            {service.unit && ` / ${service.unit}`}
-                          </div>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Anteckningar */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Journalanteckningar
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={bookingNotes.journalNotes}
-                    onChange={(e) =>
-                      setBookingNotes({
-                        ...bookingNotes,
-                        journalNotes: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Anteckningar för personalen..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Kommentarer ägare
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={bookingNotes.ownerComments}
-                    onChange={(e) =>
-                      setBookingNotes({
-                        ...bookingNotes,
-                        ownerComments: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Särskilda önskemål eller information från ägaren..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Foder
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={bookingNotes.feedingInstructions}
-                    onChange={(e) =>
-                      setBookingNotes({
-                        ...bookingNotes,
-                        feedingInstructions: e.target.value,
-                      })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Foderinstruktioner, allergier, specialkost..."
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* RABATT SEKTION */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                Rabatt
-              </h3>
-              <div className="max-w-xs">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Rabatt (kr)
+                  Höjd (cm)
                 </label>
                 <input
                   type="number"
-                  value={discountAmount}
+                  value={dogData.heightcm}
                   onChange={(e) =>
-                    setDiscountAmount(
-                      Math.max(0, parseFloat(e.target.value) || 0)
-                    )
+                    setDogData({ ...dogData, heightcm: e.target.value })
                   }
                   className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  min="0"
-                  step="0.01"
-                  placeholder="0"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vikt (kg)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={dogData.weightkg}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, weightkg: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Chipnummer
+                </label>
+                <input
+                  type="text"
+                  value={dogData.chipNumber}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, chipNumber: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Reg.nummer
+                </label>
+                <input
+                  type="text"
+                  value={dogData.regNumber}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, regNumber: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             </div>
 
-            {/* PRISBERÄKNING */}
-            <div className="border-t pt-8">
-              <div className="flex flex-col md:flex-row gap-6 items-start">
-                <button
-                  type="button"
-                  onClick={calculatePrice}
-                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium border border-blue-600"
-                >
-                  <Calculator className="h-4 w-4" />
-                  Beräkna pris
-                </button>
+            <div className="mb-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={dogData.neutered}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, neutered: e.target.checked })
+                  }
+                  className="mr-2 h-4 w-4 text-blue-600"
+                />
+                <span className="text-sm text-gray-700">
+                  Kastrerad/steriliserad
+                </span>
+              </label>
+            </div>
 
-                {priceCalc && (
-                  <div className="bg-gray-50 border border-gray-200 p-4 flex-1">
-                    <h3 className="font-medium text-gray-900 mb-3">
-                      Prisberäkning
-                    </h3>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span>
-                          Grundpris ({priceCalc.baseDays} dagar á 500 kr):
-                        </span>
-                        <span>{priceCalc.basePrice} kr</span>
-                      </div>
-                      {priceCalc.extraServices.map((extra, i) => (
-                        <div key={i} className="flex justify-between">
-                          <span>{extra.name}:</span>
-                          <span>{extra.price} kr</span>
-                        </div>
-                      ))}
-                      <div className="flex justify-between border-t pt-1">
-                        <span>Subtotal:</span>
-                        <span>{priceCalc.subtotal} kr</span>
-                      </div>
-                      {priceCalc.discount > 0 && (
-                        <div className="flex justify-between text-red-600">
-                          <span>Rabatt:</span>
-                          <span>-{priceCalc.discount} kr</span>
-                        </div>
-                      )}
-                      <div className="flex justify-between font-medium text-base border-t pt-1">
-                        <span>Totalt:</span>
-                        <span>{priceCalc.total} kr</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Personlighet
+                </label>
+                <textarea
+                  rows={3}
+                  value={dogData.personality}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, personality: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Beskriv hundens personlighet..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Utbildning
+                </label>
+                <textarea
+                  rows={3}
+                  value={dogData.training}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, training: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Kommando, utbildning, beteende..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Rastningsvanor
+                </label>
+                <textarea
+                  rows={3}
+                  value={dogData.walkingHabits}
+                  onChange={(e) =>
+                    setDogData({ ...dogData, walkingHabits: e.target.value })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Hur ofta, hur långt, särskilda behov..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* HÄLSA SEKTION */}
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+              Hälsa
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Försäkringsbolag
+                </label>
+                <input
+                  type="text"
+                  value={healthData.insuranceCompany}
+                  onChange={(e) =>
+                    setHealthData({
+                      ...healthData,
+                      insuranceCompany: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="t.ex. Agria, If, Folksam"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Försäkringsnummer
+                </label>
+                <input
+                  type="text"
+                  value={healthData.insuranceNumber}
+                  onChange={(e) =>
+                    setHealthData({
+                      ...healthData,
+                      insuranceNumber: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vaccination DHP (giltig 3 år)
+                </label>
+                <input
+                  type="date"
+                  value={healthData.vaccinationDHP}
+                  onChange={(e) =>
+                    setHealthData({
+                      ...healthData,
+                      vaccinationDHP: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vaccination Pi (giltig ett år)
+                </label>
+                <input
+                  type="date"
+                  value={healthData.vaccinationPI}
+                  onChange={(e) =>
+                    setHealthData({
+                      ...healthData,
+                      vaccinationPI: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
               </div>
             </div>
 
-            <div className="flex justify-end pt-8 border-t">
-              <button
-                type="submit"
-                disabled={saving || !priceCalc}
-                className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 py-3 text-sm font-medium border border-green-600"
-              >
-                {saving ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                ) : (
-                  <Save className="h-4 w-4" />
-                )}
-                {saving ? "Sparar..." : "Spara bokning"}
-              </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Vård / Medicin
+              </label>
+              <textarea
+                rows={3}
+                value={healthData.careAndMedicine}
+                onChange={(e) =>
+                  setHealthData({
+                    ...healthData,
+                    careAndMedicine: e.target.value,
+                  })
+                }
+                className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Beskriv eventuell medicin, allergier, särskilda behov..."
+              />
             </div>
-          </form>
-        </div>
+          </div>
+
+          {/* BOKNING SEKTION */}
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-6 pb-2 border-b border-gray-200">
+              Bokning
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Startdatum *
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Starttid
+                </label>
+                <input
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Slutdatum *
+                </label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Sluttid
+                </label>
+                <input
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Rum och extratjänster */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Rum *
+              </label>
+              <select
+                value={selectedRoom}
+                onChange={(e) => setSelectedRoom(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                required
+              >
+                <option value="">Välj rum...</option>
+                {rooms.map((room) => (
+                  <option key={room.id} value={room.id}>
+                    {room.name} (Kapacitet: {room.capacity_m2})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {extraServices.length > 0 && (
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Extratjänster
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {extraServices.map((service) => (
+                    <label
+                      key={service.id}
+                      className="flex items-center p-3 border border-gray-200 hover:bg-gray-50 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedExtras.includes(service.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedExtras((prev) => [...prev, service.id]);
+                          } else {
+                            setSelectedExtras((prev) =>
+                              prev.filter((id) => id !== service.id)
+                            );
+                          }
+                        }}
+                        className="mr-3 h-4 w-4 text-blue-600"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">
+                          {service.label}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {service.price} kr
+                          {service.unit && ` / ${service.unit}`}
+                        </div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Anteckningar */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Journalanteckningar
+                </label>
+                <textarea
+                  rows={4}
+                  value={bookingNotes.journalNotes}
+                  onChange={(e) =>
+                    setBookingNotes({
+                      ...bookingNotes,
+                      journalNotes: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Anteckningar för personalen..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kommentarer ägare
+                </label>
+                <textarea
+                  rows={4}
+                  value={bookingNotes.ownerComments}
+                  onChange={(e) =>
+                    setBookingNotes({
+                      ...bookingNotes,
+                      ownerComments: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Särskilda önskemål eller information från ägaren..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Foder
+                </label>
+                <textarea
+                  rows={4}
+                  value={bookingNotes.feedingInstructions}
+                  onChange={(e) =>
+                    setBookingNotes({
+                      ...bookingNotes,
+                      feedingInstructions: e.target.value,
+                    })
+                  }
+                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Foderinstruktioner, allergier, specialkost..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* RABATT SEKTION */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+              Rabatt
+            </h3>
+            <div className="max-w-xs">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Rabatt (kr)
+              </label>
+              <input
+                type="number"
+                value={discountAmount}
+                onChange={(e) =>
+                  setDiscountAmount(
+                    Math.max(0, parseFloat(e.target.value) || 0)
+                  )
+                }
+                className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                min="0"
+                step="0.01"
+                placeholder="0"
+              />
+            </div>
+          </div>
+
+          {/* PRISBERÄKNING */}
+          <div className="border-t pt-8">
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              <button
+                type="button"
+                onClick={calculatePrice}
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium border border-blue-600"
+              >
+                <Calculator className="h-4 w-4" />
+                Beräkna pris
+              </button>
+
+              {priceCalc && (
+                <div className="bg-gray-50 border border-gray-200 p-4 flex-1">
+                  <h3 className="font-medium text-gray-900 mb-3">
+                    Prisberäkning
+                  </h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>
+                        Grundpris ({priceCalc.baseDays} dagar á 500 kr):
+                      </span>
+                      <span>{priceCalc.basePrice} kr</span>
+                    </div>
+                    {priceCalc.extraServices.map((extra, i) => (
+                      <div key={i} className="flex justify-between">
+                        <span>{extra.name}:</span>
+                        <span>{extra.price} kr</span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between border-t pt-1">
+                      <span>Subtotal:</span>
+                      <span>{priceCalc.subtotal} kr</span>
+                    </div>
+                    {priceCalc.discount > 0 && (
+                      <div className="flex justify-between text-red-600">
+                        <span>Rabatt:</span>
+                        <span>-{priceCalc.discount} kr</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-medium text-base border-t pt-1">
+                      <span>Totalt:</span>
+                      <span>{priceCalc.total} kr</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-8 border-t">
+            <button
+              type="submit"
+              disabled={saving || !priceCalc}
+              className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 py-3 text-sm font-medium border border-green-600"
+            >
+              {saving ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              {saving ? "Sparar..." : "Spara bokning"}
+            </button>
+          </div>
+        </form>
       </div>
 
       {showNewDogModal && (
@@ -1325,6 +1321,6 @@ export default function NewPensionatBooking() {
           </div>
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

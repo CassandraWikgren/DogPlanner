@@ -199,9 +199,7 @@ function LoginPageContent() {
               </Link>
 
               <div className="border-t pt-3">
-                <p className="text-sm text-gray-600 mb-3">
-                  Har du inget konto än?
-                </p>
+                <p className="text-sm text-white">Har du inget konto än?</p>
                 <Link href="/kundportal/registrera">
                   <Button variant="outline" className="w-full">
                     Skapa nytt konto

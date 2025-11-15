@@ -90,19 +90,29 @@ EXCEPTION
 END;
 $$;
 
--- Ta bort gamla, felaktiga triggers
-DROP TRIGGER IF EXISTS trg_assign_org_to_new_user ON auth.users;
-DROP TRIGGER IF EXISTS trg_handle_new_user ON auth.users;
-
--- Skapa den nya, korrekta triggern
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW
-  EXECUTE FUNCTION handle_new_user();
-
-COMMENT ON TRIGGER on_auth_user_created ON auth.users IS 
-  'Skapar organisation och profil för nya användare med värden från user_metadata';
+-- ============================================================================
+-- VIKTIGT: Triggers på auth.users måste skapas via Supabase Dashboard
+-- ============================================================================
+-- Du kan INTE skapa triggers på auth.users via SQL Editor (permissions-fel)
+-- Istället: Gå till Supabase Dashboard → Database → Triggers
+-- 
+-- ELLER använd denna SQL i postgres connection string (avancerat):
+-- 
+-- BEGIN;
+-- SET ROLE postgres;
+-- DROP TRIGGER IF EXISTS trg_assign_org_to_new_user ON auth.users;
+-- DROP TRIGGER IF EXISTS trg_handle_new_user ON auth.users;
+-- DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+-- CREATE TRIGGER on_auth_user_created
+--   AFTER INSERT ON auth.users
+--   FOR EACH ROW
+--   EXECUTE FUNCTION public.handle_new_user();
+-- RESET ROLE;
+-- COMMIT;
+--
+-- För nu: triggern finns redan i din databas (från schema.sql)
+-- Vi behöver bara uppdatera funktionen ovan!
+-- ============================================================================
 
 -- ============================================================================
 -- LAGER 2: Förbättrad auto-onboarding API (redan bra, ingen ändring behövs)

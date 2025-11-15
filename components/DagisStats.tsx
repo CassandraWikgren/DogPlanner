@@ -172,8 +172,8 @@ export function DagisStats({ dogs, onStatClick }: DagisStatsProps) {
   ];
 
   return (
-    <div className="mb-8">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div className="mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
@@ -182,23 +182,27 @@ export function DagisStats({ dogs, onStatClick }: DagisStatsProps) {
               className={`cursor-pointer transition-all duration-200 ${stat.bgColor} ${stat.hoverColor} border-l-4 border-l-transparent hover:border-l-current hover:shadow-md rounded-lg border bg-card text-card-foreground shadow-sm`}
               onClick={() => onStatClick(stat.key)}
             >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <Icon className={`h-5 w-5 ${stat.color}`} />
-                  <Badge variant="outline" className="text-xs">
+              <CardContent className="p-3">
+                <div className="flex items-center justify-between mb-1.5">
+                  <Icon className={`h-4 w-4 ${stat.color}`} />
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">
                     Live
                   </Badge>
                 </div>
 
-                <div className={`text-2xl font-bold ${stat.color} mb-1`}>
+                <div
+                  className={`text-xl font-bold ${stat.color} mb-0.5 leading-tight`}
+                >
                   {stat.value}
                 </div>
 
-                <div className="text-sm font-medium text-gray-800 mb-1 leading-tight">
+                <div className="text-xs font-medium text-gray-800 mb-0.5 leading-tight">
                   {stat.label}
                 </div>
 
-                <div className="text-xs text-gray-500">{stat.description}</div>
+                <div className="text-[10px] text-gray-500 leading-tight">
+                  {stat.description}
+                </div>
               </CardContent>
             </div>
           );

@@ -9,7 +9,7 @@ export default function AdminPage() {
   const { currentOrgId } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
       {/* Header med titel - KOMPRIMERAD */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32 py-4">
@@ -188,6 +188,6 @@ export default function AdminPage() {
           </div>
         </div>
       </main>
-    </div>
+    </>
   );
 }

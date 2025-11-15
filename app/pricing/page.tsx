@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import PageContainer from "@/components/PageContainer";
 
 const PRIMARY_GREEN = "#2c7a4c";
 
@@ -109,7 +110,7 @@ export default function MinaPriserPage() {
   }
 
   return (
-    <main className="max-w-3xl mx-auto p-6 space-y-6">
+    <PageContainer maxWidth="4xl">
       <h1 className="text-3xl font-bold mb-4" style={{ color: PRIMARY_GREEN }}>
         💰 Mina priser
       </h1>
@@ -235,7 +236,7 @@ export default function MinaPriserPage() {
           </div>
         </section>
       )}
-    </main>
+    </PageContainer>
   );
 }
 

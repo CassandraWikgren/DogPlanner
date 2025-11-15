@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/AuthContext";
+import PageContainer from "@/components/PageContainer";
 
 import Link from "next/link";
 
@@ -127,7 +128,7 @@ export default function StaffAdminPage() {
   }
 
   return (
-    <main className="max-w-5xl mx-auto p-6">
+    <PageContainer maxWidth="5xl">
       <div className="mb-6 flex items-center justify-between gap-3">
         <h1 className="text-2xl md:text-3xl font-bold text-[#2c7a4c]">
           👥 Personal (admin)
@@ -239,6 +240,6 @@ export default function StaffAdminPage() {
           </div>
         )}
       </section>
-    </main>
+    </PageContainer>
   );
 }
