@@ -36,21 +36,26 @@ export default function DashboardWidgets() {
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    // Om ingen org_id, visa demo-data istället
-    if (currentOrgId) {
-      fetchStats();
-    } else {
-      // Visa demo-data för icke-autentiserade användare
-      setStats({
-        totalDogs: 47,
-        todayCheckedIn: 23,
-        pendingApplications: 8,
-        monthlyRevenue: 45000,
-        overdueInvoices: 3,
-        activeSubscriptions: 4,
-      });
-      setLoading(false);
-    }
+    // Vänta lite för att AuthContext ska ladda
+    const timer = setTimeout(() => {
+      if (currentOrgId) {
+        fetchStats();
+      } else {
+        // Visa demo-data om ingen org_id finns efter timeout
+        console.log("Ingen org_id tillgänglig, visar demo-data");
+        setStats({
+          totalDogs: 47,
+          todayCheckedIn: 23,
+          pendingApplications: 8,
+          monthlyRevenue: 45000,
+          overdueInvoices: 3,
+          activeSubscriptions: 4,
+        });
+        setLoading(false);
+      }
+    }, 500); // Vänta 500ms på att AuthContext ska ladda
+
+    return () => clearTimeout(timer);
   }, [currentOrgId]);
 
   const fetchStats = async () => {
