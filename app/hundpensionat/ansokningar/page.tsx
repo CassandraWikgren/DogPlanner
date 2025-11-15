@@ -3,10 +3,6 @@
 import { useEffect, useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   CheckCircle,
   XCircle,
@@ -18,6 +14,7 @@ import {
   FileText,
   Percent,
   AlertCircle,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -404,84 +401,104 @@ export default function PensionatAnsokningarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      {/* Header */}
-      <div className="max-w-[1600px] mx-auto mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Bokningsansökningar
-            </h1>
-            <p className="text-gray-600">
-              Granska och godkänn nya pensionatbokningar
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header med Hunddagis-struktur */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-start">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                Bokningsansökningar
+              </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Granska och godkänn nya pensionatbokningar
+              </p>
+            </div>
+            <div className="flex gap-3 ml-4">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-600">Väntande</div>
+                <div className="text-xl font-bold text-[#2c7a4c]">
+                  {bookings.length}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-xs text-gray-600">Totalt värde</div>
+                <div className="text-xl font-bold text-[#2c7a4c]">
+                  {bookings
+                    .reduce((sum, b) => sum + (b.total_price || 0), 0)
+                    .toFixed(0)}{" "}
+                  kr
+                </div>
+              </div>
+            </div>
           </div>
-          <Link href="/hundpensionat">
-            <Button variant="outline">← Tillbaka till Pensionat</Button>
-          </Link>
-        </div>
-
-        {/* Statistik */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Clock className="h-8 w-8 text-yellow-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">{bookings.length}</p>
-                  <p className="text-gray-600">Väntande ansökningar</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <DollarSign className="h-8 w-8 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">
-                    {bookings
-                      .reduce((sum, b) => sum + (b.total_price || 0), 0)
-                      .toFixed(0)}{" "}
-                    kr
-                  </p>
-                  <p className="text-gray-600">Totalt bokningsvärde</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Dog className="h-8 w-8 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">
-                    {new Set(bookings.map((b) => b.dogs?.id)).size}
-                  </p>
-                  <p className="text-gray-600">Unika hundar</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
 
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <Link
+          href="/hundpensionat"
+          className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-semibold text-sm"
+        >
+          <ArrowLeft size={16} />
+          Tillbaka till Pensionat
+        </Link>
+
+        {/* Statistik */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center">
+              <Clock className="h-8 w-8 text-yellow-600" />
+              <div className="ml-4">
+                <p className="text-2xl font-bold text-gray-900">
+                  {bookings.length}
+                </p>
+                <p className="text-sm text-gray-600">Väntande ansökningar</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center">
+              <DollarSign className="h-8 w-8 text-green-600" />
+              <div className="ml-4">
+                <p className="text-2xl font-bold text-gray-900">
+                  {bookings
+                    .reduce((sum, b) => sum + (b.total_price || 0), 0)
+                    .toFixed(0)}{" "}
+                  kr
+                </p>
+                <p className="text-sm text-gray-600">Totalt bokningsvärde</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center">
+              <Dog className="h-8 w-8 text-blue-600" />
+              <div className="ml-4">
+                <p className="text-2xl font-bold text-gray-900">
+                  {new Set(bookings.map((b) => b.dogs?.id)).size}
+                </p>
+                <p className="text-sm text-gray-600">Unika hundar</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
       {/* Bokningslista */}
-      <div className="max-w-[1600px] mx-auto space-y-6">
+      <div className="space-y-6">
         {bookings.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <CheckCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Inga väntande ansökningar
-              </h3>
-              <p className="text-gray-600">
-                Alla bokningar har behandlats. Bra jobbat!
-              </p>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <CheckCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              Inga väntande ansökningar
+            </h3>
+            <p className="text-gray-600 text-sm">
+              Alla bokningar har behandlats. Bra jobbat!
+            </p>
+          </div>
         ) : (
           bookings.map((booking) => {
             const ownerId = booking.dogs?.owners?.id || "";
@@ -493,17 +510,20 @@ export default function PensionatAnsokningarPage() {
             const services = extraServices[booking.id] || [];
 
             return (
-              <Card key={booking.id} className="border-2 border-yellow-200">
-                <CardHeader className="bg-yellow-50">
+              <div
+                key={booking.id}
+                className="bg-white rounded-lg shadow-sm border-2 border-yellow-200"
+              >
+                <div className="bg-yellow-50 px-6 py-4 border-b border-yellow-200">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-xl flex items-center gap-2">
+                      <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                         <Dog className="h-6 w-6 text-blue-600" />
                         {booking.dogs?.name || "Okänd hund"}
                         <span className="text-sm font-normal text-gray-600">
                           ({booking.dogs?.breed || "Okänd ras"})
                         </span>
-                      </CardTitle>
+                      </h3>
                       <div className="mt-2 space-y-1 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4" />
@@ -547,13 +567,13 @@ export default function PensionatAnsokningarPage() {
                         )}
                     </div>
                   </div>
-                </CardHeader>
+                </div>
 
-                <CardContent className="p-6 space-y-6">
+                <div className="p-6 space-y-6">
                   {/* Extra tjänster */}
                   {services.length > 0 && (
                     <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
+                      <h4 className="font-semibold mb-2 flex items-center gap-2 text-sm">
                         <FileText className="h-4 w-4" />
                         Valda tillvalstjänster
                       </h4>
@@ -576,7 +596,7 @@ export default function PensionatAnsokningarPage() {
                   {/* Kundanteckningar */}
                   {booking.notes && (
                     <div className="bg-gray-50 p-4 rounded-lg">
-                      <h4 className="font-semibold mb-2">
+                      <h4 className="font-semibold mb-2 text-sm">
                         Anteckningar från kund
                       </h4>
                       <p className="text-sm text-gray-700 whitespace-pre-wrap">
@@ -587,7 +607,7 @@ export default function PensionatAnsokningarPage() {
 
                   {/* Rabattval */}
                   <div className="border-t pt-4">
-                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-sm">
                       <Percent className="h-5 w-5" />
                       Applicera rabatter
                     </h4>
@@ -599,7 +619,7 @@ export default function PensionatAnsokningarPage() {
                           Kundrabatter för denna ägare
                         </label>
                         <select
-                          className="w-full p-2 border rounded"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                           value={selectedDiscounts[booking.id] || ""}
                           onChange={(e) =>
                             setSelectedDiscounts((prev) => ({
@@ -630,7 +650,7 @@ export default function PensionatAnsokningarPage() {
                           Typ
                         </label>
                         <select
-                          className="w-full p-2 border rounded"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                           value={customDiscountType[booking.id] || "percentage"}
                           onChange={(e) =>
                             setCustomDiscountType((prev) => ({
@@ -649,11 +669,12 @@ export default function PensionatAnsokningarPage() {
                         <label className="block text-sm font-medium mb-1">
                           Värde
                         </label>
-                        <Input
+                        <input
                           type="number"
                           min="0"
                           step="0.01"
                           placeholder="0"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                           value={customDiscountValue[booking.id] || ""}
                           onChange={(e) =>
                             setCustomDiscountValue((prev) => ({
@@ -671,9 +692,10 @@ export default function PensionatAnsokningarPage() {
                     <label className="block text-sm font-medium mb-2">
                       Admin-anteckningar (valfritt)
                     </label>
-                    <Textarea
+                    <textarea
                       placeholder="T.ex. 'Bekräftad via telefon med kunden'"
                       rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                       value={adminNotes[booking.id] || ""}
                       onChange={(e) =>
                         setAdminNotes((prev) => ({
@@ -686,30 +708,29 @@ export default function PensionatAnsokningarPage() {
 
                   {/* Åtgärdsknappar */}
                   <div className="flex gap-3 pt-4 border-t">
-                    <Button
+                    <button
                       onClick={() => handleApprove(booking.id)}
                       disabled={processing === booking.id}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold text-sm disabled:opacity-50"
                     >
                       {processing === booking.id ? (
-                        <Clock className="h-4 w-4 animate-spin mr-2" />
+                        <Clock className="h-4 w-4 animate-spin" />
                       ) : (
-                        <CheckCircle className="h-4 w-4 mr-2" />
+                        <CheckCircle className="h-4 w-4" />
                       )}
                       Godkänn bokning
-                    </Button>
-                    <Button
+                    </button>
+                    <button
                       onClick={() => handleReject(booking.id)}
                       disabled={processing === booking.id}
-                      variant="destructive"
-                      className="flex-1"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-semibold text-sm disabled:opacity-50"
                     >
-                      <XCircle className="h-4 w-4 mr-2" />
+                      <XCircle className="h-4 w-4" />
                       Avslå
-                    </Button>
+                    </button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })
         )}
