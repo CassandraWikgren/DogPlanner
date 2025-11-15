@@ -6,8 +6,6 @@ export const dynamic = "force-dynamic";
 import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -154,8 +152,15 @@ export default function ApplicationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        <div className="border-b border-gray-200 bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+              Intresseanmälningar
+            </h1>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-64 mb-6"></div>
             <div className="grid grid-cols-1 gap-6">
@@ -170,113 +175,125 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-[1600px] mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-            <PawPrint className="h-8 w-8 text-blue-600" />
-            Intresseanmälningar
-          </h1>
-          <p className="text-gray-600">
-            Hantera ansökningar från hundägare som vill anmäla sina hundar till
-            dagiset.
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header - EXAKT som Hunddagis */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                Intresseanmälningar
+              </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Hantera ansökningar från hundägare som vill anmäla sina hundar
+                till dagiset
+              </p>
+            </div>
+            {/* Inline stats boxes */}
+            <div className="flex gap-4 ml-6">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-2xl font-bold text-yellow-600">
+                  {applications.filter((a) => a.status === "pending").length}
+                </div>
+                <div className="text-xs text-gray-600 mt-0.5">Väntande</div>
+              </div>
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <div className="text-2xl font-bold text-[#2c7a4c]">
+                  {applications.filter((a) => a.status === "accepted").length}
+                </div>
+                <div className="text-xs text-gray-600 mt-0.5">Godkända</div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Statistik */}
+      {/* Main Content - EXAKT som Hunddagis */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* Statistik grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Väntande</p>
-                  <p className="text-2xl font-bold text-yellow-600">
-                    {applications.filter((a) => a.status === "pending").length}
-                  </p>
-                </div>
-                <Clock className="h-8 w-8 text-yellow-600" />
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Väntande</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {applications.filter((a) => a.status === "pending").length}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <Clock className="h-8 w-8 text-yellow-600" />
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Godkända</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {applications.filter((a) => a.status === "accepted").length}
-                  </p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-green-600" />
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Godkända</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {applications.filter((a) => a.status === "accepted").length}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Avslagna</p>
-                  <p className="text-2xl font-bold text-red-600">
-                    {applications.filter((a) => a.status === "declined").length}
-                  </p>
-                </div>
-                <XCircle className="h-8 w-8 text-red-600" />
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Avslagna</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {applications.filter((a) => a.status === "declined").length}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <XCircle className="h-8 w-8 text-red-600" />
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Totalt</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {applications.length}
-                  </p>
-                </div>
-                <PawPrint className="h-8 w-8 text-gray-600" />
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Totalt</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {applications.length}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+              <PawPrint className="h-8 w-8 text-gray-600" />
+            </div>
+          </div>
         </div>
 
         {/* Filter */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Filter</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-4">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="pending">Väntande</option>
-                <option value="accepted">Godkända</option>
-                <option value="declined">Avslagna</option>
-                <option value="contacted">Kontaktade</option>
-                <option value="all">Alla</option>
-              </select>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm mb-6">
+          <h2 className="text-lg font-semibold text-[#333333] mb-4">Filter</h2>
+          <div className="flex gap-4">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
+            >
+              <option value="pending">Väntande</option>
+              <option value="accepted">Godkända</option>
+              <option value="declined">Avslagna</option>
+              <option value="contacted">Kontaktade</option>
+              <option value="all">Alla</option>
+            </select>
+          </div>
+        </div>
 
         {/* Ansökningslista */}
         <div className="space-y-6">
           {filteredApplications.map((app) => (
-            <Card key={app.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
+            <div
+              key={app.id}
+              className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-lg transition-shadow"
+            >
+              <div className="p-6">
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-xl text-gray-900 flex items-center gap-2">
-                      <PawPrint className="h-5 w-5 text-blue-600" />
+                    <h3 className="text-xl font-semibold text-[#333333] flex items-center gap-2">
+                      <PawPrint className="h-5 w-5 text-[#2c7a4c]" />
                       {app.dog_name}
-                    </CardTitle>
-                    <p className="text-gray-600">
+                    </h3>
+                    <p className="text-gray-600 text-sm">
                       {app.dog_breed} {app.dog_age && `• ${app.dog_age} år`}
                     </p>
                   </div>
@@ -287,125 +304,128 @@ export default function ApplicationsPage() {
                     </div>
                   </Badge>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Ägarinfo */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      Ägare
-                    </h4>
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div>{app.parent_name}</div>
-                      {app.parent_phone && (
-                        <div className="flex items-center gap-1">
-                          <Phone className="h-4 w-4" />
-                          <a
-                            href={`tel:${app.parent_phone}`}
-                            className="text-blue-600 hover:underline"
-                          >
-                            {app.parent_phone}
-                          </a>
-                        </div>
-                      )}
-                      {app.parent_email && (
-                        <div className="flex items-center gap-1">
-                          <Mail className="h-4 w-4" />
-                          <a
-                            href={`mailto:${app.parent_email}`}
-                            className="text-blue-600 hover:underline"
-                          >
-                            {app.parent_email}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
 
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Ansökan</h4>
-                    <div className="space-y-1 text-sm text-gray-600">
-                      {/* Ingen abonnemangstyp i interest_applications */}
-                      {app.preferred_start_date && (
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          Önskad start:{" "}
-                          {new Date(
-                            app.preferred_start_date
-                          ).toLocaleDateString("sv-SE")}
+                <div className="space-y-4 text-sm mt-4">
+                  {/* Ägarinfo */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Ägare
+                      </h4>
+                      <div className="space-y-1 text-gray-600">
+                        <div>{app.parent_name}</div>
+                        {app.parent_phone && (
+                          <div className="flex items-center gap-1">
+                            <Phone className="h-4 w-4" />
+                            <a
+                              href={`tel:${app.parent_phone}`}
+                              className="text-[#2c7a4c] hover:underline"
+                            >
+                              {app.parent_phone}
+                            </a>
+                          </div>
+                        )}
+                        {app.parent_email && (
+                          <div className="flex items-center gap-1">
+                            <Mail className="h-4 w-4" />
+                            <a
+                              href={`mailto:${app.parent_email}`}
+                              className="text-[#2c7a4c] hover:underline"
+                            >
+                              {app.parent_email}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">
+                        Ansökan
+                      </h4>
+                      <div className="space-y-1 text-gray-600">
+                        {app.preferred_start_date && (
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            Önskad start:{" "}
+                            {new Date(
+                              app.preferred_start_date
+                            ).toLocaleDateString("sv-SE")}
+                          </div>
+                        )}
+                        <div>
+                          Ansökt:{" "}
+                          {new Date(app.created_at).toLocaleDateString("sv-SE")}
                         </div>
-                      )}
-                      <div>
-                        Ansökt:{" "}
-                        {new Date(app.created_at).toLocaleDateString("sv-SE")}
                       </div>
                     </div>
                   </div>
+
+                  {/* Särskilda behov */}
+                  {app.special_needs && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">
+                        Särskilda behov
+                      </h4>
+                      <p className="text-gray-600">{app.special_needs}</p>
+                    </div>
+                  )}
+
+                  {/* Anteckningar */}
+                  {app.notes && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-2">
+                        Anteckningar
+                      </h4>
+                      <p className="text-gray-600">{app.notes}</p>
+                    </div>
+                  )}
+
+                  {/* Åtgärder */}
+                  {app.status === "pending" && (
+                    <div className="flex gap-3 pt-4">
+                      <button
+                        onClick={() => setSelectedApp(app)}
+                        className="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
+                      >
+                        Hantera ansökan
+                      </button>
+                    </div>
+                  )}
                 </div>
-
-                {/* Särskilda behov */}
-                {app.special_needs && (
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">
-                      Särskilda behov
-                    </h4>
-                    <p className="text-sm text-gray-600">{app.special_needs}</p>
-                  </div>
-                )}
-
-                {/* Anteckningar */}
-                {app.notes && (
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-2">
-                      Anteckningar
-                    </h4>
-                    <p className="text-sm text-gray-600">{app.notes}</p>
-                  </div>
-                )}
-
-                {/* Åtgärder */}
-                {app.status === "pending" && (
-                  <div className="flex gap-3 pt-4">
-                    <Button
-                      onClick={() => setSelectedApp(app)}
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      Hantera ansökan
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
 
         {/* Tom lista */}
         {filteredApplications.length === 0 && (
-          <Card className="text-center py-12">
-            <CardContent>
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm text-center py-12">
+            <div className="p-6">
               <PawPrint className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Inga ansökningar hittades
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-sm">
                 Det finns inga ansökningar som matchar dina filterkriterier.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
 
         {/* Modal för att hantera ansökan */}
         {selectedApp && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <Card className="w-full max-w-md">
-              <CardHeader>
-                <CardTitle>Hantera ansökan - {selectedApp.dog_name}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 shadow-lg">
+              <div className="p-6 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-[#333333]">
+                  Hantera ansökan - {selectedApp.dog_name}
+                </h3>
+              </div>
+              <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Anteckningar
                   </label>
                   <Textarea
@@ -413,43 +433,42 @@ export default function ApplicationsPage() {
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Lägg till anteckningar..."
                     rows={3}
+                    className="text-sm"
                   />
                 </div>
 
                 <div className="flex gap-3">
-                  <Button
+                  <button
                     onClick={() =>
                       updateApplicationStatus(selectedApp.id, "accepted", notes)
                     }
-                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold text-sm flex items-center justify-center gap-2"
                   >
-                    <CheckCircle className="h-4 w-4 mr-2" />
+                    <CheckCircle className="h-4 w-4" />
                     Godkänn
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     onClick={() =>
                       updateApplicationStatus(selectedApp.id, "declined", notes)
                     }
-                    variant="destructive"
-                    className="flex-1"
+                    className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-semibold text-sm flex items-center justify-center gap-2"
                   >
-                    <XCircle className="h-4 w-4 mr-2" />
+                    <XCircle className="h-4 w-4" />
                     Avslå
-                  </Button>
+                  </button>
                 </div>
 
-                <Button
+                <button
                   onClick={() => {
                     setSelectedApp(null);
                     setNotes("");
                   }}
-                  variant="outline"
-                  className="w-full"
+                  className="w-full px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
                 >
                   Avbryt
-                </Button>
-              </CardContent>
-            </Card>
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
