@@ -28,12 +28,30 @@ type Booking = Database["public"]["Tables"]["bookings"]["Row"] & {
 };
 type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
+type SpecialDate = {
+  id: string;
+  date: string;
+  name: string;
+  category: "red_day" | "holiday" | "event" | "custom";
+  price_surcharge: number;
+  is_active: boolean;
+};
+
 // 🎨 Färgkodning för beläggning enligt specifikation
 const OCCUPANCY_COLORS = {
   inne: "bg-green-100 border-green-400 text-green-800", // Grön = inne
   checkOut: "bg-red-100 border-red-400 text-red-800", // Röd = checkar ut idag
   checkIn: "bg-yellow-100 border-yellow-400 text-yellow-800", // Gul = anländer idag
   free: "bg-gray-100 border-gray-300 text-gray-600", // Ledigt
+} as const;
+
+// 🎯 Färgkodning för pristillägg
+const PRICE_INDICATOR_COLORS = {
+  red_day: "bg-red-500", // Röd = röda dagar
+  holiday: "bg-purple-500", // Lila = lov/semester
+  event: "bg-blue-500", // Blå = events
+  custom: "bg-pink-500", // Rosa = anpassade
+  weekend: "bg-orange-400", // Orange = helg
 } as const;
 
 interface DayData {
@@ -45,12 +63,15 @@ interface DayData {
   occupancy: number; // 0-100%
   isToday: boolean;
   isCurrentMonth: boolean;
+  specialDate?: SpecialDate; // Pristillägg för detta datum
+  isWeekend: boolean;
 }
 
 export default function KalenderPage() {
   const { user, currentOrgId, loading: authLoading } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [specialDates, setSpecialDates] = useState<SpecialDate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -94,7 +115,7 @@ export default function KalenderPage() {
         `[Kalender] Laddar data för: ${startOfMonth.toISOString()} - ${endOfMonth.toISOString()}`
       );
 
-      const [roomsRes, bookingsRes] = await Promise.all([
+      const [roomsRes, bookingsRes, specialDatesRes] = await Promise.all([
         (supabase as any)
           .from("rooms")
           .select("id, name, capacity_m2, room_type")
@@ -115,17 +136,29 @@ export default function KalenderPage() {
           .gte("start_date", startOfMonth.toISOString())
           .lte("end_date", endOfMonth.toISOString())
           .order("start_date"),
+
+        // Hämta special_dates (pristillägg) för månaden
+        (supabase as any)
+          .from("special_dates")
+          .select("id, date, name, category, price_surcharge, is_active")
+          .eq("org_id", currentOrgId)
+          .eq("is_active", true)
+          .gte("date", startOfMonth.toISOString().split("T")[0])
+          .lte("date", endOfMonth.toISOString().split("T")[0]),
       ]);
 
       if (roomsRes.error) throw new Error(`Rooms: ${roomsRes.error.message}`);
       if (bookingsRes.error)
         throw new Error(`Bookings: ${bookingsRes.error.message}`);
+      if (specialDatesRes.error)
+        console.warn("Special dates error:", specialDatesRes.error);
 
       setRooms(roomsRes.data || []);
       setBookings(bookingsRes.data || []);
+      setSpecialDates(specialDatesRes.data || []);
 
       console.log(
-        `[Kalender] Laddad: ${roomsRes.data?.length} rum, ${bookingsRes.data?.length} bokningar`
+        `[Kalender] Laddad: ${roomsRes.data?.length} rum, ${bookingsRes.data?.length} bokningar, ${specialDatesRes.data?.length} pristillägg`
       );
     } catch (err: any) {
       console.error(
@@ -268,6 +301,13 @@ export default function KalenderPage() {
         Math.round((usedCapacity / totalCapacity) * 100)
       );
 
+      // Kolla om datum har pristillägg
+      const specialDate = specialDates.find((sd) => sd.date === dateString);
+
+      // Kolla om det är helg (fredag-söndag)
+      const dayOfWeek = currentDate.getDay();
+      const isWeekend = dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0;
+
       days.push({
         date: new Date(currentDate),
         dateString,
@@ -277,13 +317,15 @@ export default function KalenderPage() {
         occupancy,
         isToday: dateString === today.toISOString().split("T")[0],
         isCurrentMonth: currentDate.getMonth() === month,
+        specialDate,
+        isWeekend,
       });
 
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
     return days;
-  }, [currentMonth, bookings, rooms, roomFilter]);
+  }, [currentMonth, bookings, rooms, roomFilter, specialDates]);
 
   // === NAVIGATION ===
   function navigateMonth(direction: "prev" | "next") {
@@ -510,6 +552,35 @@ export default function KalenderPage() {
               </select>
             </div>
 
+            {/* Pristillägg-legend */}
+            <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600">
+              <span className="font-semibold">Pristillägg:</span>
+              <div className="flex items-center gap-1.5">
+                <div
+                  className={`w-2.5 h-2.5 rounded-full ${PRICE_INDICATOR_COLORS.red_day}`}
+                />
+                <span>Röd dag</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div
+                  className={`w-2.5 h-2.5 rounded-full ${PRICE_INDICATOR_COLORS.holiday}`}
+                />
+                <span>Lov/Semester</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div
+                  className={`w-2.5 h-2.5 rounded-full ${PRICE_INDICATOR_COLORS.event}`}
+                />
+                <span>Event</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div
+                  className={`w-2.5 h-2.5 rounded-full ${PRICE_INDICATOR_COLORS.weekend}`}
+                />
+                <span>Helg</span>
+              </div>
+            </div>
+
             <div className="flex gap-2 w-full md:w-auto">
               <Link
                 href="/hundpensionat"
@@ -614,14 +685,34 @@ export default function KalenderPage() {
                       `}
                     >
                       {/* Datum */}
-                      <div
-                        className={`text-sm font-medium mb-1 ${
-                          day.isToday
-                            ? "text-blue-600 font-bold"
-                            : "text-gray-700"
-                        }`}
-                      >
-                        {day.date.getDate()}
+                      <div className="flex items-center gap-1 mb-1">
+                        <div
+                          className={`text-sm font-medium ${
+                            day.isToday
+                              ? "text-blue-600 font-bold"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {day.date.getDate()}
+                        </div>
+
+                        {/* Pristillägg-indikator */}
+                        {day.specialDate && (
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              PRICE_INDICATOR_COLORS[day.specialDate.category]
+                            }`}
+                            title={`${day.specialDate.name}: +${day.specialDate.price_surcharge} kr`}
+                          />
+                        )}
+
+                        {/* Helg-indikator (endast om inte special_date finns) */}
+                        {!day.specialDate && day.isWeekend && (
+                          <div
+                            className={`w-2 h-2 rounded-full ${PRICE_INDICATOR_COLORS.weekend}`}
+                            title="Helgpåslag"
+                          />
+                        )}
                       </div>
 
                       {/* Status indicators med spec-färger */}
@@ -681,8 +772,25 @@ export default function KalenderPage() {
                             weekday: "short",
                           })}
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">
-                          {day.date.getDate()}
+                        <div className="flex items-center gap-2">
+                          <div className="text-2xl font-bold text-gray-900">
+                            {day.date.getDate()}
+                          </div>
+                          {/* Pristillägg-indikator i veckovisning */}
+                          {day.specialDate && (
+                            <div
+                              className={`w-3 h-3 rounded-full ${
+                                PRICE_INDICATOR_COLORS[day.specialDate.category]
+                              }`}
+                              title={`${day.specialDate.name}: +${day.specialDate.price_surcharge} kr`}
+                            />
+                          )}
+                          {!day.specialDate && day.isWeekend && (
+                            <div
+                              className={`w-3 h-3 rounded-full ${PRICE_INDICATOR_COLORS.weekend}`}
+                              title="Helgpåslag"
+                            />
+                          )}
                         </div>
                         <div className="text-xs text-gray-500">
                           {day.date.toLocaleDateString("sv-SE", {
@@ -883,6 +991,47 @@ export default function KalenderPage() {
 
               {selectedDayData ? (
                 <div className="space-y-4">
+                  {/* Pristillägg-info */}
+                  {(selectedDayData.specialDate ||
+                    selectedDayData.isWeekend) && (
+                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 border border-purple-200">
+                      <div className="flex items-start gap-2">
+                        <div
+                          className={`w-4 h-4 rounded-full mt-0.5 flex-shrink-0 ${
+                            selectedDayData.specialDate
+                              ? PRICE_INDICATOR_COLORS[
+                                  selectedDayData.specialDate.category
+                                ]
+                              : PRICE_INDICATOR_COLORS.weekend
+                          }`}
+                        />
+                        <div>
+                          <div className="font-semibold text-sm text-gray-900">
+                            {selectedDayData.specialDate
+                              ? selectedDayData.specialDate.name
+                              : "Helgpåslag"}
+                          </div>
+                          <div className="text-xs text-gray-600 mt-1">
+                            {selectedDayData.specialDate ? (
+                              <>
+                                +{selectedDayData.specialDate.price_surcharge}{" "}
+                                kr pristillägg
+                                {selectedDayData.specialDate.category ===
+                                  "red_day" && " (Röd dag)"}
+                                {selectedDayData.specialDate.category ===
+                                  "holiday" && " (Lov/Semester)"}
+                                {selectedDayData.specialDate.category ===
+                                  "event" && " (Event)"}
+                              </>
+                            ) : (
+                              "Helgpris tillämpas (fredag-söndag)"
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Sammanfattning */}
                   <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
                     <div className="text-sm space-y-2">
