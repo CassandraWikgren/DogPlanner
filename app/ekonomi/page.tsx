@@ -212,71 +212,49 @@ export default function FakturaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
-      {/* Hero Section */}
-      <section
-        className="relative text-center text-white overflow-hidden"
-        style={{
-          padding: "80px 20px 110px",
-          background:
-            'linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url("/Hero.jpeg") center/cover no-repeat',
-        }}
-      >
-        <div className="relative z-10 max-w-4xl mx-auto">
-          <h1 className="text-5xl font-bold mb-4">Ekonomi & Fakturor</h1>
-          <p className="text-xl mb-8 leading-relaxed opacity-95 max-w-2xl mx-auto">
-            Översikt över fakturor, betalningar och ekonomisk status.
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Kompakt header med inline stats */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                Ekonomi & Fakturor
+              </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Översikt över fakturor, betalningar och ekonomisk status
+              </p>
+            </div>
+
+            {/* Statistik inline höger */}
+            <div className="flex items-center gap-4 ml-8">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {stats.paidAmount.toLocaleString()} kr
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Betalda</p>
+              </div>
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-orange-600">
+                  {stats.unpaidAmount.toLocaleString()} kr
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Utestående</p>
+              </div>
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-red-600">
+                  {stats.overdueCount}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Förfallna</p>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
 
       {/* Main Content */}
-      <main className="max-w-[1600px] mx-auto px-6 -mt-12 pb-16 relative z-20">
-        {/* Floating Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-green-100">
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-3xl font-bold text-green-600">
-                {stats.paidAmount.toLocaleString()} kr
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-            <div className="text-sm text-gray-600">Betalda fakturor</div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-orange-100">
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-3xl font-bold text-orange-600">
-                {stats.unpaidAmount.toLocaleString()} kr
-              </div>
-              <Clock className="h-8 w-8 text-orange-600" />
-            </div>
-            <div className="text-sm text-gray-600">Utestående</div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-red-100">
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-3xl font-bold text-red-600">
-                {stats.overdueCount}
-              </div>
-              <AlertCircle className="h-8 w-8 text-red-600" />
-            </div>
-            <div className="text-sm text-gray-600">Förfallna fakturor</div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-100">
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-3xl font-bold text-[#2c7a4c]">
-                {stats.totalInvoices}
-              </div>
-              <Receipt className="h-8 w-8 text-[#2c7a4c]" />
-            </div>
-            <div className="text-sm text-gray-600">Totalt antal fakturor</div>
-          </div>
-        </div>
-
+      <main className="max-w-7xl mx-auto px-6 py-6">
         {/* Actions */}
-        <div className="flex flex-wrap gap-4 justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-6">
           <Link
             href="/dashboard"
             className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#2c7a4c] transition-colors"
@@ -285,67 +263,58 @@ export default function FakturaPage() {
             Tillbaka till Dashboard
           </Link>
           <div className="flex gap-3">
-            <Link href="/faktura/new">
-              <Button className="bg-[#2c7a4c] hover:bg-[#236139] text-white">
-                <Plus className="h-4 w-4 mr-2" />
-                Ny faktura
-              </Button>
+            <Link
+              href="/faktura/new"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Ny faktura
             </Link>
-            <Link href="/faktura">
-              <Button
-                variant="outline"
-                className="border-[#2c7a4c] text-[#2c7a4c] hover:bg-green-50"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Alla fakturor
-              </Button>
+            <Link
+              href="/faktura"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Alla fakturor
             </Link>
           </div>
         </div>
 
-        {/* Filter */}
-        <Card className="mb-8 border border-gray-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Search className="h-5 w-5 text-[#2c7a4c]" />
-              Sök och filtrera
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Sök på fakturanummer, kund eller kundnummer..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-gray-300 focus:border-[#2c7a4c] focus:ring-[#2c7a4c]"
-                />
-              </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
-              >
-                <option value="all">Alla status</option>
-                <option value="draft">Utkast</option>
-                <option value="sent">Skickade</option>
-                <option value="paid">Betalda</option>
-                <option value="overdue">Förfallna</option>
-              </select>
-              <Button
-                onClick={() => {
-                  setSearchTerm("");
-                  setStatusFilter("all");
-                }}
-                variant="outline"
-                className="border-gray-300 hover:bg-gray-50"
-              >
-                Rensa filter
-              </Button>
+        {/* Sök och filter */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Sök på fakturanummer, kund eller kundnummer..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+              />
             </div>
-          </CardContent>
-        </Card>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base"
+            >
+              <option value="all">Alla status</option>
+              <option value="draft">Utkast</option>
+              <option value="sent">Skickade</option>
+              <option value="paid">Betalda</option>
+              <option value="overdue">Förfallna</option>
+            </select>
+            <button
+              onClick={() => {
+                setSearchTerm("");
+                setStatusFilter("all");
+              }}
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Rensa filter
+            </button>
+          </div>
+        </div>
 
         {/* Fakturlista */}
         <div className="space-y-4">

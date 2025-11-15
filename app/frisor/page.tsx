@@ -276,86 +276,57 @@ export default function FrisorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-[1600px] mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-              <Scissors className="h-8 w-8 text-orange-600" />
-              Hundfrisör
-            </h1>
-            <Link href="/frisor/ny-bokning">
-              <Button className="bg-orange-600 hover:bg-orange-700">
-                <Plus className="h-4 w-4 mr-2" />
-                Ny bokning
-              </Button>
-            </Link>
+    <div className="min-h-screen bg-gray-50">
+      {/* Kompakt header med inline stats */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                Hundfrisör
+              </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Hantera frisörbokningar och journalföring för alla behandlingar
+              </p>
+            </div>
+
+            {/* Statistik inline höger */}
+            <div className="flex items-center gap-4 ml-8">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-orange-600">
+                  {stats.todayBookings}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Idag</p>
+              </div>
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-green-600">
+                  {stats.completedThisWeek}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Denna vecka</p>
+              </div>
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {stats.pendingBookings}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Väntande</p>
+              </div>
+            </div>
           </div>
-          <p className="text-gray-600">
-            Hantera frisörbokningar och journalföring för alla behandlingar.
-          </p>
         </div>
+      </div>
 
-        {/* Statistik */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Idag</p>
-                  <p className="text-2xl font-bold text-orange-600">
-                    {stats.todayBookings}
-                  </p>
-                </div>
-                <Calendar className="h-8 w-8 text-orange-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Denna vecka
-                  </p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {stats.completedThisWeek}
-                  </p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Intäkter</p>
-                  <p className="text-2xl font-bold text-emerald-600">
-                    {stats.totalRevenue.toLocaleString()} kr
-                  </p>
-                </div>
-                <DollarSign className="h-8 w-8 text-emerald-600" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Väntande</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {stats.pendingBookings}
-                  </p>
-                </div>
-                <Clock className="h-8 w-8 text-blue-600" />
-              </div>
-            </CardContent>
-          </Card>
+      {/* Main content */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* Action buttons */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3"></div>
+          <Link
+            href="/frisor/ny-bokning"
+            className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Ny bokning
+          </Link>
         </div>
 
         {/* Tabs */}
