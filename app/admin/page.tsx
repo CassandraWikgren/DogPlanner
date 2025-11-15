@@ -47,6 +47,22 @@ export default function AdminPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Rapporter - NY! */}
+            <Link href="/admin/rapporter">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-3xl">📊</div>
+                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                    Rapporter & Statistik
+                  </h3>
+                </div>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Intäkter, beläggning och bokningsstatistik. Exportera till
+                  Excel.
+                </p>
+              </div>
+            </Link>
+
             {/* Ekonomi & Fakturor */}
             <Link href="/ekonomi">
               <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
