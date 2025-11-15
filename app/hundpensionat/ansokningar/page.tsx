@@ -487,253 +487,260 @@ export default function PensionatAnsokningarPage() {
           </div>
         </div>
 
-      {/* Bokningslista */}
-      <div className="space-y-6">
-        {bookings.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <CheckCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              Inga väntande ansökningar
-            </h3>
-            <p className="text-gray-600 text-sm">
-              Alla bokningar har behandlats. Bra jobbat!
-            </p>
-          </div>
-        ) : (
-          bookings.map((booking) => {
-            const ownerId = booking.dogs?.owners?.id || "";
-            const ownerDiscounts = discounts[ownerId] || [];
-            const nights = calculateNights(
-              booking.start_date,
-              booking.end_date
-            );
-            const services = extraServices[booking.id] || [];
+        {/* Bokningslista */}
+        <div className="space-y-6">
+          {bookings.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+              <CheckCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Inga väntande ansökningar
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Alla bokningar har behandlats. Bra jobbat!
+              </p>
+            </div>
+          ) : (
+            bookings.map((booking) => {
+              const ownerId = booking.dogs?.owners?.id || "";
+              const ownerDiscounts = discounts[ownerId] || [];
+              const nights = calculateNights(
+                booking.start_date,
+                booking.end_date
+              );
+              const services = extraServices[booking.id] || [];
 
-            return (
-              <div
-                key={booking.id}
-                className="bg-white rounded-lg shadow-sm border-2 border-yellow-200"
-              >
-                <div className="bg-yellow-50 px-6 py-4 border-b border-yellow-200">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                        <Dog className="h-6 w-6 text-blue-600" />
-                        {booking.dogs?.name || "Okänd hund"}
-                        <span className="text-sm font-normal text-gray-600">
-                          ({booking.dogs?.breed || "Okänd ras"})
-                        </span>
-                      </h3>
-                      <div className="mt-2 space-y-1 text-sm text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <User className="h-4 w-4" />
-                          <span>
-                            {booking.dogs?.owners?.full_name || "Okänd ägare"}
+              return (
+                <div
+                  key={booking.id}
+                  className="bg-white rounded-lg shadow-sm border-2 border-yellow-200"
+                >
+                  <div className="bg-yellow-50 px-6 py-4 border-b border-yellow-200">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                          <Dog className="h-6 w-6 text-blue-600" />
+                          {booking.dogs?.name || "Okänd hund"}
+                          <span className="text-sm font-normal text-gray-600">
+                            ({booking.dogs?.breed || "Okänd ras"})
                           </span>
-                          <span className="text-gray-400">•</span>
-                          <span>{booking.dogs?.owners?.phone || "—"}</span>
-                          <span className="text-gray-400">•</span>
-                          <span>{booking.dogs?.owners?.email || "—"}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>
-                            {booking.start_date} → {booking.end_date}
-                          </span>
-                          <span className="font-medium">({nights} nätter)</span>
-                        </div>
-                        {booking.dogs && (
+                        </h3>
+                        <div className="mt-2 space-y-1 text-sm text-gray-600">
                           <div className="flex items-center gap-2">
-                            <AlertCircle className="h-4 w-4" />
+                            <User className="h-4 w-4" />
                             <span>
-                              {getSizeCategory(booking.dogs.heightcm)} •{" "}
-                              {booking.dogs.heightcm} cm
+                              {booking.dogs?.owners?.full_name || "Okänd ägare"}
+                            </span>
+                            <span className="text-gray-400">•</span>
+                            <span>{booking.dogs?.owners?.phone || "—"}</span>
+                            <span className="text-gray-400">•</span>
+                            <span>{booking.dogs?.owners?.email || "—"}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            <span>
+                              {booking.start_date} → {booking.end_date}
+                            </span>
+                            <span className="font-medium">
+                              ({nights} nätter)
                             </span>
                           </div>
-                        )}
+                          {booking.dogs && (
+                            <div className="flex items-center gap-2">
+                              <AlertCircle className="h-4 w-4" />
+                              <span>
+                                {getSizeCategory(booking.dogs.heightcm)} •{" "}
+                                {booking.dogs.heightcm} cm
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">Totalpris</p>
-                      <p className="text-3xl font-bold text-blue-600">
-                        {booking.total_price?.toFixed(2) || 0} kr
-                      </p>
-                      {booking.discount_amount &&
-                        booking.discount_amount > 0 && (
-                          <p className="text-sm text-green-600">
-                            Rabatt: -{booking.discount_amount.toFixed(2)} kr
-                          </p>
-                        )}
+                      <div className="text-right">
+                        <p className="text-sm text-gray-600">Totalpris</p>
+                        <p className="text-3xl font-bold text-blue-600">
+                          {booking.total_price?.toFixed(2) || 0} kr
+                        </p>
+                        {booking.discount_amount &&
+                          booking.discount_amount > 0 && (
+                            <p className="text-sm text-green-600">
+                              Rabatt: -{booking.discount_amount.toFixed(2)} kr
+                            </p>
+                          )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="p-6 space-y-6">
-                  {/* Extra tjänster */}
-                  {services.length > 0 && (
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-semibold mb-2 flex items-center gap-2 text-sm">
-                        <FileText className="h-4 w-4" />
-                        Valda tillvalstjänster
-                      </h4>
-                      <div className="space-y-1 text-sm">
-                        {services.map((service) => (
-                          <div
-                            key={service.id}
-                            className="flex justify-between"
-                          >
-                            <span>{service.label}</span>
-                            <span className="font-medium">
-                              {service.price} kr ({service.unit})
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Kundanteckningar */}
-                  {booking.notes && (
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h4 className="font-semibold mb-2 text-sm">
-                        Anteckningar från kund
-                      </h4>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                        {booking.notes}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Rabattval */}
-                  <div className="border-t pt-4">
-                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-sm">
-                      <Percent className="h-5 w-5" />
-                      Applicera rabatter
-                    </h4>
-
-                    {/* Kundrabatter */}
-                    {ownerDiscounts.length > 0 && (
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium mb-2">
-                          Kundrabatter för denna ägare
-                        </label>
-                        <select
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                          value={selectedDiscounts[booking.id] || ""}
-                          onChange={(e) =>
-                            setSelectedDiscounts((prev) => ({
-                              ...prev,
-                              [booking.id]: e.target.value,
-                            }))
-                          }
-                        >
-                          <option value="">Ingen rabatt</option>
-                          {ownerDiscounts.map((discount) => (
-                            <option key={discount.id} value={discount.id}>
-                              {discount.description ||
-                                `${discount.discount_value}${
-                                  discount.discount_type === "percentage"
-                                    ? "%"
-                                    : " kr"
-                                }`}
-                            </option>
+                  <div className="p-6 space-y-6">
+                    {/* Extra tjänster */}
+                    {services.length > 0 && (
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <h4 className="font-semibold mb-2 flex items-center gap-2 text-sm">
+                          <FileText className="h-4 w-4" />
+                          Valda tillvalstjänster
+                        </h4>
+                        <div className="space-y-1 text-sm">
+                          {services.map((service) => (
+                            <div
+                              key={service.id}
+                              className="flex justify-between"
+                            >
+                              <span>{service.label}</span>
+                              <span className="font-medium">
+                                {service.price} kr ({service.unit})
+                              </span>
+                            </div>
                           ))}
-                        </select>
+                        </div>
                       </div>
                     )}
 
-                    {/* Custom rabatt */}
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Typ
-                        </label>
-                        <select
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                          value={customDiscountType[booking.id] || "percentage"}
-                          onChange={(e) =>
-                            setCustomDiscountType((prev) => ({
-                              ...prev,
-                              [booking.id]: e.target.value as
-                                | "percentage"
-                                | "fixed_amount",
-                            }))
-                          }
-                        >
-                          <option value="percentage">Procent (%)</option>
-                          <option value="fixed_amount">Fast belopp (kr)</option>
-                        </select>
+                    {/* Kundanteckningar */}
+                    {booking.notes && (
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <h4 className="font-semibold mb-2 text-sm">
+                          Anteckningar från kund
+                        </h4>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                          {booking.notes}
+                        </p>
                       </div>
-                      <div className="col-span-2">
-                        <label className="block text-sm font-medium mb-1">
-                          Värde
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          placeholder="0"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                          value={customDiscountValue[booking.id] || ""}
-                          onChange={(e) =>
-                            setCustomDiscountValue((prev) => ({
-                              ...prev,
-                              [booking.id]: parseFloat(e.target.value) || 0,
-                            }))
-                          }
-                        />
+                    )}
+
+                    {/* Rabattval */}
+                    <div className="border-t pt-4">
+                      <h4 className="font-semibold mb-3 flex items-center gap-2 text-sm">
+                        <Percent className="h-5 w-5" />
+                        Applicera rabatter
+                      </h4>
+
+                      {/* Kundrabatter */}
+                      {ownerDiscounts.length > 0 && (
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium mb-2">
+                            Kundrabatter för denna ägare
+                          </label>
+                          <select
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                            value={selectedDiscounts[booking.id] || ""}
+                            onChange={(e) =>
+                              setSelectedDiscounts((prev) => ({
+                                ...prev,
+                                [booking.id]: e.target.value,
+                              }))
+                            }
+                          >
+                            <option value="">Ingen rabatt</option>
+                            {ownerDiscounts.map((discount) => (
+                              <option key={discount.id} value={discount.id}>
+                                {discount.description ||
+                                  `${discount.discount_value}${
+                                    discount.discount_type === "percentage"
+                                      ? "%"
+                                      : " kr"
+                                  }`}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+
+                      {/* Custom rabatt */}
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Typ
+                          </label>
+                          <select
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                            value={
+                              customDiscountType[booking.id] || "percentage"
+                            }
+                            onChange={(e) =>
+                              setCustomDiscountType((prev) => ({
+                                ...prev,
+                                [booking.id]: e.target.value as
+                                  | "percentage"
+                                  | "fixed_amount",
+                              }))
+                            }
+                          >
+                            <option value="percentage">Procent (%)</option>
+                            <option value="fixed_amount">
+                              Fast belopp (kr)
+                            </option>
+                          </select>
+                        </div>
+                        <div className="col-span-2">
+                          <label className="block text-sm font-medium mb-1">
+                            Värde
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="0"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                            value={customDiscountValue[booking.id] || ""}
+                            onChange={(e) =>
+                              setCustomDiscountValue((prev) => ({
+                                ...prev,
+                                [booking.id]: parseFloat(e.target.value) || 0,
+                              }))
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Admin anteckningar */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Admin-anteckningar (valfritt)
-                    </label>
-                    <textarea
-                      placeholder="T.ex. 'Bekräftad via telefon med kunden'"
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                      value={adminNotes[booking.id] || ""}
-                      onChange={(e) =>
-                        setAdminNotes((prev) => ({
-                          ...prev,
-                          [booking.id]: e.target.value,
-                        }))
-                      }
-                    />
-                  </div>
+                    {/* Admin anteckningar */}
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Admin-anteckningar (valfritt)
+                      </label>
+                      <textarea
+                        placeholder="T.ex. 'Bekräftad via telefon med kunden'"
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                        value={adminNotes[booking.id] || ""}
+                        onChange={(e) =>
+                          setAdminNotes((prev) => ({
+                            ...prev,
+                            [booking.id]: e.target.value,
+                          }))
+                        }
+                      />
+                    </div>
 
-                  {/* Åtgärdsknappar */}
-                  <div className="flex gap-3 pt-4 border-t">
-                    <button
-                      onClick={() => handleApprove(booking.id)}
-                      disabled={processing === booking.id}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold text-sm disabled:opacity-50"
-                    >
-                      {processing === booking.id ? (
-                        <Clock className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <CheckCircle className="h-4 w-4" />
-                      )}
-                      Godkänn bokning
-                    </button>
-                    <button
-                      onClick={() => handleReject(booking.id)}
-                      disabled={processing === booking.id}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-semibold text-sm disabled:opacity-50"
-                    >
-                      <XCircle className="h-4 w-4" />
-                      Avslå
-                    </button>
+                    {/* Åtgärdsknappar */}
+                    <div className="flex gap-3 pt-4 border-t">
+                      <button
+                        onClick={() => handleApprove(booking.id)}
+                        disabled={processing === booking.id}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold text-sm disabled:opacity-50"
+                      >
+                        {processing === booking.id ? (
+                          <Clock className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <CheckCircle className="h-4 w-4" />
+                        )}
+                        Godkänn bokning
+                      </button>
+                      <button
+                        onClick={() => handleReject(booking.id)}
+                        disabled={processing === booking.id}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-semibold text-sm disabled:opacity-50"
+                      >
+                        <XCircle className="h-4 w-4" />
+                        Avslå
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })
-        )}
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );

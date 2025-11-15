@@ -114,6 +114,8 @@ export default function NewPensionatBooking() {
     journalNotes: "",
     ownerComments: "",
     feedingInstructions: "",
+    belongings: "",
+    bedLocation: "",
   });
 
   const [showNewDogModal, setShowNewDogModal] = useState(false);
@@ -293,6 +295,8 @@ export default function NewPensionatBooking() {
         total_price: priceCalc.total,
         discount_amount: discountAmount,
         notes: bookingNotes.journalNotes,
+        belongings: bookingNotes.belongings || null,
+        bed_location: bookingNotes.bedLocation || null,
         status: "confirmed",
         created_at: new Date().toISOString(),
       };
@@ -382,6 +386,8 @@ export default function NewPensionatBooking() {
         journalNotes: "",
         ownerComments: "",
         feedingInstructions: "",
+        belongings: "",
+        bedLocation: "",
       });
 
       // Generera nytt kundnummer för nästa bokning
@@ -1159,6 +1165,42 @@ export default function NewPensionatBooking() {
                     }
                     className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Foderinstruktioner, allergier, specialkost..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Medtagna tillhörigheter
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={bookingNotes.belongings}
+                    onChange={(e) =>
+                      setBookingNotes({
+                        ...bookingNotes,
+                        belongings: e.target.value,
+                      })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="T.ex. egen säng, leksaker, filt, mat..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Säng/Rumstilldelning
+                  </label>
+                  <input
+                    type="text"
+                    value={bookingNotes.bedLocation}
+                    onChange={(e) =>
+                      setBookingNotes({
+                        ...bookingNotes,
+                        bedLocation: e.target.value,
+                      })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="T.ex. Rum 3, Säng A, Bur 2..."
                   />
                 </div>
               </div>

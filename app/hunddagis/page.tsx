@@ -92,6 +92,7 @@ type Dog = {
   checkin_date: string | null;
   checkout_date: string | null;
   notes: string | null;
+  waitlist: boolean | null;
   events: any | null;
   created_at: string | null;
   updated_at: string | null;
@@ -124,6 +125,7 @@ type SortKey =
   | "days";
 
 const DEFAULT_COLUMNS = [
+  "photo",
   "name",
   "breed",
   "owner",
@@ -136,6 +138,7 @@ const DEFAULT_COLUMNS = [
 ];
 
 const ALL_COLUMNS = [
+  "photo",
   "name",
   "breed",
   "gender",
@@ -163,9 +166,11 @@ const ALL_COLUMNS = [
   "is_house_trained",
   "food_info",
   "notes",
+  "waitlist",
 ];
 
 const COLUMN_LABELS: Record<string, string> = {
+  photo: "Foto",
   name: "Hund ▲",
   breed: "Ras",
   gender: "Kön",
@@ -193,6 +198,7 @@ const COLUMN_LABELS: Record<string, string> = {
   is_house_trained: "Rumsren",
   food_info: "Foder",
   notes: "Anteckningar",
+  waitlist: "Väntelista",
 };
 
 export default function HunddagisPage() {
@@ -944,6 +950,14 @@ export default function HunddagisPage() {
                 <table className="min-w-full">
                   <thead className="bg-[#2c7a4c] text-white">
                     <tr>
+                      {columns.includes("photo") && (
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-left text-sm font-semibold"
+                        >
+                          Foto
+                        </th>
+                      )}
                       {columns.includes("name") && (
                         <th
                           scope="col"
@@ -1174,6 +1188,14 @@ export default function HunddagisPage() {
                           Anteckningar
                         </th>
                       )}
+                      {columns.includes("waitlist") && (
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-left text-sm font-semibold"
+                        >
+                          Väntelista
+                        </th>
+                      )}
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -1187,9 +1209,31 @@ export default function HunddagisPage() {
                           setSelectedDog(dogCopy);
                         }}
                       >
+                        {columns.includes("photo") && (
+                          <td className="px-4 py-2.5 whitespace-nowrap">
+                            {dog.photo_url ? (
+                              <img
+                                src={dog.photo_url}
+                                alt={dog.name}
+                                className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs border border-gray-300">
+                                🐕
+                              </div>
+                            )}
+                          </td>
+                        )}
                         {columns.includes("name") && (
                           <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                            {dog.name}
+                            <div className="flex items-center gap-2">
+                              {dog.name}
+                              {dog.waitlist && (
+                                <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">
+                                  Väntelista
+                                </span>
+                              )}
+                            </div>
                           </td>
                         )}
                         {columns.includes("breed") && (
@@ -1336,6 +1380,17 @@ export default function HunddagisPage() {
                         {columns.includes("notes") && (
                           <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             {dog.notes || "-"}
+                          </td>
+                        )}
+                        {columns.includes("waitlist") && (
+                          <td className="px-4 py-2.5 whitespace-nowrap text-sm">
+                            {dog.waitlist ? (
+                              <span className="px-3 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">
+                                På väntelista
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
                           </td>
                         )}
                       </tr>
