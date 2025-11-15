@@ -3,9 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/AuthContext";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import {
   Home,
   Plus,
@@ -421,7 +418,7 @@ export default function RoomsPage() {
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-lg font-semibold text-[#333333] flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                         <Home className="h-5 w-5 text-[#2c7a4c]" />
                         {room.name}
                       </h3>
@@ -651,34 +648,35 @@ function RoomModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 shadow-lg">
+      <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 shadow-sm">
         <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-[#333333]">
+          <h3 className="text-lg font-bold text-gray-900">
             {room ? "Redigera rum" : "Lägg till nytt rum"}
           </h3>
         </div>
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4 text-sm">
             <div>
-              <label className="block font-semibold text-gray-700 mb-1">
+              <label className="block font-bold text-gray-900 mb-1 text-sm">
                 Rumsnamn *
               </label>
-              <Input
+              <input
+                type="text"
                 value={formData.name}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, name: e.target.value }))
                 }
                 placeholder="t.ex. Rum 1, Stora rummet"
                 required
-                className="text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-gray-700 mb-1">
+              <label className="block font-bold text-gray-900 mb-1 text-sm">
                 Yta (m²) *
               </label>
-              <Input
+              <input
                 type="number"
                 step="0.1"
                 min="0"
@@ -691,7 +689,7 @@ function RoomModal({
                 }
                 placeholder="t.ex. 25.5"
                 required
-                className="text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Enligt Jordbruksverket (SJVFS 2019:2): <br />
@@ -704,7 +702,7 @@ function RoomModal({
             </div>
 
             <div>
-              <label className="block font-semibold text-gray-700 mb-1">
+              <label className="block font-bold text-gray-900 mb-1 text-sm">
                 Rumstyp
               </label>
               <select
@@ -724,10 +722,10 @@ function RoomModal({
             </div>
 
             <div>
-              <label className="block font-semibold text-gray-700 mb-1">
+              <label className="block font-bold text-gray-900 mb-1 text-sm">
                 Max antal hundar (valfritt)
               </label>
-              <Input
+              <input
                 type="number"
                 min="1"
                 value={formData.max_dogs}
@@ -735,22 +733,22 @@ function RoomModal({
                   setFormData((prev) => ({ ...prev, max_dogs: e.target.value }))
                 }
                 placeholder="Lämna tomt för automatisk beräkning"
-                className="text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-gray-700 mb-1">
+              <label className="block font-bold text-gray-900 mb-1 text-sm">
                 Anteckningar
               </label>
-              <Textarea
+              <textarea
                 value={formData.notes}
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, notes: e.target.value }))
                 }
                 placeholder="Ytterligare information om rummet..."
                 rows={3}
-                className="text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
               />
             </div>
 

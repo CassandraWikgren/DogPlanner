@@ -6,28 +6,15 @@ export const dynamic = "force-dynamic";
 import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-import { toast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-
 import { Loader2, Lock, Unlock, PlusCircle, FileText } from "lucide-react";
+
+// Simple toast replacement
+const toast = (
+  message: string,
+  type: "success" | "error" | "info" = "info"
+) => {
+  console.log(`[${type.toUpperCase()}]`, message);
+};
 
 // Felkoder enligt systemet
 const ERROR_CODES = {
@@ -124,6 +111,9 @@ const FakturorPage = () => {
     dueSoon: 0,
   });
   const [online, setOnline] = useState(true);
+  const [activeTab, setActiveTab] = useState<"dagis" | "pensionat" | "frisör">(
+    "dagis"
+  );
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
     const now = new Date();
     return `${now.getFullYear()}-${(now.getMonth() + 1)
@@ -861,11 +851,12 @@ const FakturorPage = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             {/* Sökfält */}
             <div className="flex items-center gap-2 flex-1">
-              <Input
+              <input
+                type="text"
                 placeholder="Sök kund, faktura, belopp eller status..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="max-w-md text-sm"
+                className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
               />
               {search && (
                 <button
@@ -955,17 +946,17 @@ const FakturorPage = () => {
           )}
         </div>
 
-        {/* 💵 Prisöversikt (accordion) */}
-        <Accordion type="single" collapsible className="w-full mt-4">
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="text-emerald-700 font-medium">
+        {/* 💵 Prisöversikt (kollapsbar sektion) */}
+        <div className="w-full mt-4">
+          <details className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <summary className="px-4 py-3 cursor-pointer text-[#2c7a4c] font-bold text-sm hover:bg-gray-50">
               💰 Visa prisöversikt
-            </AccordionTrigger>
-            <AccordionContent className="bg-white border rounded-md shadow-sm p-4">
+            </summary>
+            <div className="p-6 border-t border-gray-200">
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Hunddagis */}
                 <div>
-                  <h3 className="font-semibold text-green-700 mb-2">
+                  <h3 className="font-bold text-green-700 mb-2 text-sm">
                     🐾 Hunddagis
                   </h3>
                   <table className="w-full text-sm">
@@ -994,7 +985,7 @@ const FakturorPage = () => {
 
                 {/* Hundpensionat */}
                 <div>
-                  <h3 className="font-semibold text-blue-700 mb-2">
+                  <h3 className="font-bold text-blue-700 mb-2 text-sm">
                     🏕️ Hundpensionat
                   </h3>
                   <table className="w-full text-sm">
@@ -1028,7 +1019,7 @@ const FakturorPage = () => {
 
                 {/* Hundfrisör */}
                 <div>
-                  <h3 className="font-semibold text-purple-700 mb-2">
+                  <h3 className="font-bold text-purple-700 mb-2 text-sm">
                     ✂️ Hundfrisör
                   </h3>
                   <table className="w-full text-sm">
@@ -1061,7 +1052,7 @@ const FakturorPage = () => {
 
                 {/* Tillvalstjänster */}
                 <div>
-                  <h3 className="font-semibold text-amber-700 mb-2">
+                  <h3 className="font-bold text-amber-700 mb-2 text-sm">
                     ⭐ Tillvalstjänster
                   </h3>
                   <table className="w-full text-sm">
@@ -1092,20 +1083,37 @@ const FakturorPage = () => {
                   </table>
                 </div>
               </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+            </div>
+          </details>
+        </div>
 
         {/* 🧾 Flikar för olika verksamheter */}
-        <Tabs defaultValue="dagis">
-          <TabsList className="bg-gray-100 mb-3">
-            <TabsTrigger value="dagis">🐾 Hunddagis</TabsTrigger>
-            <TabsTrigger value="pensionat">🏕️ Hundpensionat</TabsTrigger>
-            <TabsTrigger value="frisör">✂️ Hundfrisör</TabsTrigger>
-          </TabsList>
+        <div className="mt-6">
+          <div className="bg-white border-b border-gray-200 rounded-t-lg">
+            <div className="flex gap-2 p-2">
+              <button
+                onClick={() => setActiveTab("dagis")}
+                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "dagis" ? "bg-[#2c7a4c] text-white" : "text-gray-700 hover:bg-gray-100"}`}
+              >
+                🐾 Hunddagis
+              </button>
+              <button
+                onClick={() => setActiveTab("pensionat")}
+                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "pensionat" ? "bg-[#2c7a4c] text-white" : "text-gray-700 hover:bg-gray-100"}`}
+              >
+                🏕️ Hundpensionat
+              </button>
+              <button
+                onClick={() => setActiveTab("frisör")}
+                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "frisör" ? "bg-[#2c7a4c] text-white" : "text-gray-700 hover:bg-gray-100"}`}
+              >
+                ✂️ Hundfrisör
+              </button>
+            </div>
+          </div>
 
           {["dagis", "pensionat", "frisör"].map((typ) => (
-            <TabsContent key={typ} value={typ}>
+            <div key={typ} className={activeTab === typ ? "block" : "hidden"}>
               <div className="border rounded-md overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm min-w-[700px]">
@@ -1368,17 +1376,17 @@ const FakturorPage = () => {
                   </table>
                 </div>
               </div>
-            </TabsContent>
+            </div>
           ))}
-        </Tabs>
+        </div>
 
         {/* 🧰 Felsökningspanel */}
-        <Accordion type="single" collapsible className="mt-8">
-          <AccordionItem value="debug">
-            <AccordionTrigger className="text-sm text-gray-600">
+        <div className="mt-8">
+          <details className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <summary className="px-4 py-3 cursor-pointer text-gray-600 text-sm font-bold hover:bg-gray-50">
               🧰 Visa felsökningslogg ({debugLogs.length})
-            </AccordionTrigger>
-            <AccordionContent>
+            </summary>
+            <div className="p-4 border-t border-gray-200">
               <div className="bg-gray-900 text-gray-100 text-xs p-3 rounded-md max-h-64 overflow-y-auto">
                 {debugLogs.map((log, i) => (
                   <div
@@ -1396,18 +1404,20 @@ const FakturorPage = () => {
                   </div>
                 ))}
               </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+            </div>
+          </details>
+        </div>
 
         {/* ➕ Modal för ny faktura */}
         {creating && (
-          <Dialog open={creating} onOpenChange={setCreating}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Skapa ny faktura</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-2 py-2">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 shadow-sm">
+              <div className="p-6 border-b border-gray-200">
+                <h3 className="text-lg font-bold text-gray-900">
+                  Skapa ny faktura
+                </h3>
+              </div>
+              <div className="p-6 space-y-4">
                 <p className="text-sm text-gray-500">
                   Ange kund-ID och belopp för den nya fakturan.
                 </p>
@@ -1415,16 +1425,16 @@ const FakturorPage = () => {
                   type="text"
                   placeholder="Kund-ID"
                   id="ownerId"
-                  className="w-full border rounded p-2 text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
                 />
                 <input
                   type="number"
                   placeholder="Belopp (SEK)"
                   id="amount"
-                  className="w-full border rounded p-2 text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
                 />
               </div>
-              <DialogFooter className="flex justify-end gap-2">
+              <div className="p-6 border-t border-gray-200 flex justify-end gap-2">
                 <button
                   onClick={() => setCreating(false)}
                   className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
@@ -1447,9 +1457,9 @@ const FakturorPage = () => {
                 >
                   Skapa
                 </button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              </div>
+            </div>
+          </div>
         )}
       </main>
     </div>

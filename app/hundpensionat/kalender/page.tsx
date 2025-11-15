@@ -535,18 +535,18 @@ export default function KalenderPage() {
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           {/* Kalenderdel */}
           <div className="xl:col-span-3">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               {/* Kalender Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => navigateMonth("prev")}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-2 hover:bg-gray-100 rounded-md transition-colors"
                   >
                     <ChevronLeft className="h-5 w-5 text-gray-600" />
                   </button>
 
-                  <h2 className="text-xl font-semibold text-gray-800">
+                  <h2 className="text-xl font-bold text-gray-800">
                     {currentMonth.toLocaleDateString("sv-SE", {
                       month: "long",
                       year: "numeric",
@@ -555,7 +555,7 @@ export default function KalenderPage() {
 
                   <button
                     onClick={() => navigateMonth("next")}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-2 hover:bg-gray-100 rounded-md transition-colors"
                   >
                     <ChevronRight className="h-5 w-5 text-gray-600" />
                   </button>
@@ -563,7 +563,7 @@ export default function KalenderPage() {
 
                 <button
                   onClick={() => setCurrentMonth(new Date())}
-                  className="text-sm text-[#2c7a4c] hover:text-[#236139] font-medium transition-colors"
+                  className="px-4 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold transition-colors"
                 >
                   Idag
                 </button>
@@ -625,19 +625,19 @@ export default function KalenderPage() {
                       {/* Status indicators med spec-färger */}
                       <div className="space-y-1">
                         {day.checkIns.length > 0 && (
-                          <div className="text-xs px-1 py-0.5 bg-yellow-100 text-yellow-800 rounded border border-yellow-400">
+                          <div className="text-xs px-1.5 py-0.5 bg-yellow-100 text-yellow-900 rounded border border-yellow-400 font-medium">
                             📥 {day.checkIns.length}
                           </div>
                         )}
                         {day.checkOuts.length > 0 && (
-                          <div className="text-xs px-1 py-0.5 bg-red-100 text-red-800 rounded border border-red-400">
+                          <div className="text-xs px-1.5 py-0.5 bg-red-100 text-red-900 rounded border border-red-400 font-medium">
                             📤 {day.checkOuts.length}
                           </div>
                         )}
                         {day.bookings.length > 0 &&
                           !day.checkIns.length &&
                           !day.checkOuts.length && (
-                            <div className="text-xs px-1 py-0.5 bg-green-100 text-green-800 rounded border border-green-400">
+                            <div className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-900 rounded border border-blue-400 font-medium">
                               {day.bookings.length} inne
                             </div>
                           )}
@@ -655,7 +655,7 @@ export default function KalenderPage() {
                       key={day.dateString}
                       onClick={() => setSelectedDate(day.dateString)}
                       className={`
-                        cursor-pointer rounded-lg border-2 p-4 min-h-[220px] hover:shadow-lg transition-all
+                        cursor-pointer rounded-lg border-2 p-4 min-h-[220px] hover:shadow-md transition-all
                         ${day.isToday ? "ring-2 ring-blue-500" : ""}
                         ${
                           selectedDate === day.dateString
@@ -668,18 +668,18 @@ export default function KalenderPage() {
                             : day.checkOuts.length > 0
                               ? "bg-red-50 border-red-400"
                               : day.bookings.length > 0
-                                ? "bg-green-50 border-green-400"
+                                ? "bg-blue-50 border-blue-400"
                                 : "bg-white border-gray-300"
                         }
                       `}
                     >
-                      <div className="text-center mb-3">
-                        <div className="text-xs text-gray-600 uppercase">
+                      <div className="text-left mb-3">
+                        <div className="text-xs text-gray-600 uppercase font-semibold">
                           {day.date.toLocaleDateString("sv-SE", {
                             weekday: "short",
                           })}
                         </div>
-                        <div className="text-2xl font-bold text-gray-800">
+                        <div className="text-2xl font-bold text-gray-900">
                           {day.date.getDate()}
                         </div>
                         <div className="text-xs text-gray-500">
@@ -690,17 +690,17 @@ export default function KalenderPage() {
                       </div>
                       <div className="space-y-2">
                         {day.checkIns.length > 0 && (
-                          <div className="text-sm px-2 py-1 bg-yellow-100 text-yellow-800 rounded border border-yellow-400">
+                          <div className="text-sm px-2 py-1 bg-yellow-100 text-yellow-900 rounded border border-yellow-400 font-medium">
                             📥 {day.checkIns.length} in
                           </div>
                         )}
                         {day.checkOuts.length > 0 && (
-                          <div className="text-sm px-2 py-1 bg-red-100 text-red-800 rounded border border-red-400">
+                          <div className="text-sm px-2 py-1 bg-red-100 text-red-900 rounded border border-red-400 font-medium">
                             📤 {day.checkOuts.length} ut
                           </div>
                         )}
                         {day.bookings.length > 0 && (
-                          <div className="text-sm px-2 py-1 bg-green-100 text-green-800 rounded border border-green-400">
+                          <div className="text-sm px-2 py-1 bg-blue-100 text-blue-900 rounded border border-blue-400 font-medium">
                             🐕 {day.bookings.length} inne
                           </div>
                         )}
@@ -714,7 +714,7 @@ export default function KalenderPage() {
               {viewMode === "day" && todayData && (
                 <div className="p-6">
                   <div className="mb-6">
-                    <h3 className="text-2xl font-bold text-gray-800">
+                    <h3 className="text-xl font-bold text-gray-900">
                       {todayData.date.toLocaleDateString("sv-SE", {
                         weekday: "long",
                         day: "numeric",
@@ -728,7 +728,7 @@ export default function KalenderPage() {
                     {/* Incheckningar */}
                     {todayData.checkIns.length > 0 && (
                       <div>
-                        <h4 className="text-lg font-semibold text-yellow-800 mb-3 flex items-center gap-2">
+                        <h4 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
                           📥 Incheckningar ({todayData.checkIns.length})
                         </h4>
                         <div className="space-y-2">
@@ -739,7 +739,7 @@ export default function KalenderPage() {
                             >
                               <div className="flex justify-between items-start">
                                 <div>
-                                  <div className="font-semibold text-gray-800">
+                                  <div className="font-semibold text-gray-900 text-sm">
                                     🐕{" "}
                                     {booking.dogs?.name ||
                                       `Hund ID: ${booking.dog_id}`}
@@ -760,7 +760,7 @@ export default function KalenderPage() {
                                 </div>
                                 <button
                                   onClick={() => handleCheckIn(booking.id)}
-                                  className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm font-medium"
+                                  className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors text-sm font-semibold"
                                 >
                                   Checka in
                                 </button>
@@ -774,7 +774,7 @@ export default function KalenderPage() {
                     {/* Utcheckningar */}
                     {todayData.checkOuts.length > 0 && (
                       <div>
-                        <h4 className="text-lg font-semibold text-red-800 mb-3 flex items-center gap-2">
+                        <h4 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
                           📤 Utcheckningar ({todayData.checkOuts.length})
                         </h4>
                         <div className="space-y-2">
@@ -785,7 +785,7 @@ export default function KalenderPage() {
                             >
                               <div className="flex justify-between items-start">
                                 <div>
-                                  <div className="font-semibold text-gray-800">
+                                  <div className="font-semibold text-gray-900 text-sm">
                                     🐕{" "}
                                     {booking.dogs?.name ||
                                       `Hund ID: ${booking.dog_id}`}
@@ -806,7 +806,7 @@ export default function KalenderPage() {
                                 </div>
                                 <button
                                   onClick={() => handleCheckOut(booking.id)}
-                                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm font-medium"
+                                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm font-semibold"
                                 >
                                   Checka ut
                                 </button>
@@ -820,16 +820,16 @@ export default function KalenderPage() {
                     {/* Hundar inne */}
                     {todayData.bookings.length > 0 && (
                       <div>
-                        <h4 className="text-lg font-semibold text-green-800 mb-3 flex items-center gap-2">
+                        <h4 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
                           🐕 Hundar inne ({todayData.bookings.length})
                         </h4>
                         <div className="space-y-2">
                           {todayData.bookings.map((booking) => (
                             <div
                               key={booking.id}
-                              className="p-4 bg-green-50 border border-green-300 rounded-lg"
+                              className="p-4 bg-blue-50 border border-blue-300 rounded-lg"
                             >
-                              <div className="font-semibold text-gray-800">
+                              <div className="font-semibold text-gray-900 text-sm">
                                 🐕{" "}
                                 {booking.dogs?.name ||
                                   `Hund ID: ${booking.dog_id}`}
@@ -868,8 +868,8 @@ export default function KalenderPage() {
 
           {/* Detaljpanel */}
           <div className="xl:col-span-1">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold mb-4 text-gray-800">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-bold mb-4 text-gray-900">
                 {selectedDayData
                   ? `${selectedDayData.date.toLocaleDateString("sv-SE", {
                       weekday: "long",
@@ -951,7 +951,7 @@ export default function KalenderPage() {
                   {/* Snabb-bokning */}
                   <Link
                     href={`/hundpensionat/nybokning?date=${selectedDayData.dateString}`}
-                    className="block w-full text-center bg-[#2c7a4c] hover:bg-[#236139] text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors"
+                    className="block w-full text-center bg-[#2c7a4c] hover:bg-[#236139] text-white py-2 px-4 rounded-md text-sm font-semibold transition-colors"
                   >
                     Boka denna dag
                   </Link>
@@ -964,32 +964,26 @@ export default function KalenderPage() {
               )}
             </div>
 
-            {/* Legend - Uppdaterad enligt spec */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mt-4">
-              <h4 className="font-semibold mb-3 text-gray-800">Färgkoder</h4>
+            {/* Legend */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-4">
+              <h4 className="font-bold mb-3 text-gray-900 text-sm">
+                Färgkoder
+              </h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <div
-                    className={`w-4 h-4 rounded ${OCCUPANCY_COLORS.checkIn}`}
-                  ></div>
+                  <div className="w-4 h-4 rounded bg-yellow-100 border border-yellow-400"></div>
                   <span>🟡 Gul = Anländer idag</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div
-                    className={`w-4 h-4 rounded ${OCCUPANCY_COLORS.checkOut}`}
-                  ></div>
+                  <div className="w-4 h-4 rounded bg-red-100 border border-red-400"></div>
                   <span>🔴 Röd = Checkar ut idag</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div
-                    className={`w-4 h-4 rounded ${OCCUPANCY_COLORS.inne}`}
-                  ></div>
-                  <span>� Grön = Inne</span>
+                  <div className="w-4 h-4 rounded bg-blue-100 border border-blue-400"></div>
+                  <span>🔵 Blå = Inne</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div
-                    className={`w-4 h-4 rounded ${OCCUPANCY_COLORS.free}`}
-                  ></div>
+                  <div className="w-4 h-4 rounded bg-gray-100 border border-gray-300"></div>
                   <span>⚪️ Grå = Ledigt</span>
                 </div>
               </div>

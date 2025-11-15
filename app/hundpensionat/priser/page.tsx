@@ -297,8 +297,8 @@ export default function PriserPage() {
           <div>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <DollarSign className="text-[#2c7a4c]" />
+                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <DollarSign className="text-[#2c7a4c]" size={20} />
                   Grundpriser
                 </h2>
                 <button
@@ -322,7 +322,7 @@ export default function PriserPage() {
               </div>
 
               {prices.length === 0 ? (
-                <p className="text-gray-500 text-center py-8 text-sm">
+                <p className="text-gray-500 py-8 text-sm">
                   Inga priser ännu. Klicka på "Lägg till" för att skapa.
                 </p>
               ) : (
@@ -508,8 +508,8 @@ export default function PriserPage() {
           <div>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <Calendar className="text-[#2c7a4c]" />
+                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <Calendar className="text-[#2c7a4c]" size={20} />
                   Säsonger & Högtider
                 </h2>
                 <button
@@ -532,7 +532,7 @@ export default function PriserPage() {
               </div>
 
               {seasons.length === 0 ? (
-                <p className="text-gray-500 text-center py-8 text-sm">
+                <p className="text-gray-500 py-8 text-sm">
                   Inga säsonger ännu. Klicka på "Lägg till" för att skapa.
                 </p>
               ) : (
@@ -699,7 +699,7 @@ export default function PriserPage() {
 
         {/* Info Box */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-semibold text-blue-900 mb-3 text-sm">
+          <h3 className="font-bold text-blue-900 mb-3 text-sm">
             ℹ️ Hur prisberäkning fungerar
           </h3>
           <div className="space-y-2 text-sm text-blue-800">

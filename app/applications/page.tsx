@@ -6,9 +6,6 @@ export const dynamic = "force-dynamic";
 import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Clock,
   CheckCircle,
@@ -263,12 +260,12 @@ export default function ApplicationsPage() {
 
         {/* Filter */}
         <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm mb-6">
-          <h2 className="text-lg font-semibold text-[#333333] mb-4">Filter</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Filter</h2>
           <div className="flex gap-4">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
+              className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
             >
               <option value="pending">Väntande</option>
               <option value="accepted">Godkända</option>
@@ -289,7 +286,7 @@ export default function ApplicationsPage() {
               <div className="p-6">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-xl font-semibold text-[#333333] flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                       <PawPrint className="h-5 w-5 text-[#2c7a4c]" />
                       {app.dog_name}
                     </h3>
@@ -297,12 +294,12 @@ export default function ApplicationsPage() {
                       {app.dog_breed} {app.dog_age && `• ${app.dog_age} år`}
                     </p>
                   </div>
-                  <Badge className={getStatusColor(app.status)}>
-                    <div className="flex items-center gap-1">
-                      {getStatusIcon(app.status)}
-                      {getStatusText(app.status)}
-                    </div>
-                  </Badge>
+                  <div
+                    className={`px-3 py-1 rounded-md text-sm font-medium flex items-center gap-1 ${getStatusColor(app.status)}`}
+                  >
+                    {getStatusIcon(app.status)}
+                    {getStatusText(app.status)}
+                  </div>
                 </div>
 
                 <div className="space-y-4 text-sm mt-4">
@@ -387,7 +384,7 @@ export default function ApplicationsPage() {
                     <div className="flex gap-3 pt-4">
                       <button
                         onClick={() => setSelectedApp(app)}
-                        className="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
+                        className="flex-1 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
                       >
                         Hantera ansökan
                       </button>
@@ -417,23 +414,23 @@ export default function ApplicationsPage() {
         {/* Modal för att hantera ansökan */}
         {selectedApp && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 shadow-lg">
+            <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 shadow-sm">
               <div className="p-6 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-[#333333]">
+                <h3 className="text-lg font-bold text-gray-900">
                   Hantera ansökan - {selectedApp.dog_name}
                 </h3>
               </div>
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-gray-900 mb-2">
                     Anteckningar
                   </label>
-                  <Textarea
+                  <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Lägg till anteckningar..."
                     rows={3}
-                    className="text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
                   />
                 </div>
 
