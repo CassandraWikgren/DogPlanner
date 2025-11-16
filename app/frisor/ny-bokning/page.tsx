@@ -339,25 +339,35 @@ export default function NyBokning() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-[1600px] mx-auto">
-        {/* Header */}
-        <div className="mb-8">
+    <div className="min-h-screen bg-gray-50">
+      {/* Tillbaka-knapp ovanför hero */}
+      <div className="bg-gray-50 pt-6 px-6">
+        <div className="max-w-7xl mx-auto">
           <Link href="/frisor">
             <Button variant="outline" className="mb-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Tillbaka till frisör
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <Scissors className="h-8 w-8 text-orange-600" />
-            Ny Frisörbokning
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Skapa en ny frisörtid för en av dina hundar.
+        </div>
+      </div>
+
+      {/* Hero-sektion med orange gradient */}
+      <div className="relative bg-gradient-to-br from-orange-600 to-orange-700 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative max-w-7xl mx-auto px-6 py-12 text-center">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <Scissors className="h-10 w-10" />
+            <h1 className="text-3xl font-bold">Ny Frisörbokning</h1>
+          </div>
+          <p className="text-white/90 text-lg">
+            Skapa en ny frisörtid för en av dina hundar
           </p>
         </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Error Display */}
         {error && (
           <Card className="mb-6 border-red-200 bg-red-50">
