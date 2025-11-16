@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { Calculator, Save, Plus } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
+import AssistedRegistrationModal from "@/components/AssistedRegistrationModal";
+import { useAuth } from "@/app/context/AuthContext";
 
 interface Dog {
   id: string;
@@ -50,6 +52,7 @@ interface PriceCalculation {
 }
 
 export default function NewPensionatBooking() {
+  const { currentOrgId } = useAuth();
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [owners, setOwners] = useState<Owner[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -119,6 +122,8 @@ export default function NewPensionatBooking() {
   });
 
   const [showNewDogModal, setShowNewDogModal] = useState(false);
+  const [showAssistedRegistration, setShowAssistedRegistration] =
+    useState(false);
   const [newDogData, setNewDogData] = useState({
     name: "",
     breed: "",
@@ -267,7 +272,7 @@ export default function NewPensionatBooking() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedDog || !selectedRoom || !startDate || !endDate || !priceCalc) {
+    if (!selectedDog || !startDate || !endDate || !priceCalc) {
       alert(
         "Vänligen fyll i alla obligatoriska fält och beräkna priset först."
       );
@@ -663,53 +668,119 @@ export default function NewPensionatBooking() {
             {/* HUND SEKTION */}
             <div>
               <div className="flex items-center justify-between mb-6 pb-2 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Hund</h2>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Välj kundtyp
+                </h2>
+              </div>
+
+              {/* Val mellan befintlig och ny kund */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <button
                   type="button"
-                  onClick={() => setShowNewDogModal(true)}
-                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 text-sm font-medium border border-blue-600"
+                  onClick={() => {
+                    // Visa befintlig kund-formulär
+                    const section = document.getElementById(
+                      "existing-customer-section"
+                    );
+                    if (section) section.style.display = "block";
+                  }}
+                  className="p-6 border-2 border-blue-300 bg-blue-50 rounded-lg hover:border-blue-500 hover:bg-blue-100 transition-all text-left group"
                 >
-                  <Plus className="h-4 w-4" />
-                  Ny hund
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-blue-500 rounded-lg text-white">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 mb-1">
+                        Befintlig kund
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        Kunden finns redan i systemet (t.ex. via Hunddagis)
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAssistedRegistration(true)}
+                  className="p-6 border-2 border-green-300 bg-green-50 rounded-lg hover:border-green-500 hover:bg-green-100 transition-all text-left group"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-green-600 rounded-lg text-white">
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 mb-1">
+                        🆕 Ny kund
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        Assisterad registrering (GDPR-säker) för helt nya kunder
+                      </p>
+                    </div>
+                  </div>
                 </button>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Välj hund *
-                </label>
-                <select
-                  value={selectedDog}
-                  onChange={(e) => setSelectedDog(e.target.value)}
-                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                >
-                  <option value="">Välj hund...</option>
-                  {dogs.map((dog) => (
-                    <option key={dog.id} value={dog.id}>
-                      {dog.name} ({dog.breed || "Okänd ras"}) - Ägare:{" "}
-                      {dog.owners?.full_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {/* Befintlig kund-sektion (visas när man klickar på befintlig) */}
+              <div id="existing-customer-section" style={{ display: "none" }}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-md font-semibold text-gray-800">
+                    Välj hund från befintlig kund
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowNewDogModal(true)}
+                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 text-sm font-medium rounded"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Lägg till hund till vald kund
+                  </button>
+                </div>
 
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Annan ägare (valfritt)
-                </label>
-                <select
-                  value={customOwnerId}
-                  onChange={(e) => setCustomOwnerId(e.target.value)}
-                  className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Använd hundens ägare...</option>
-                  {owners.map((owner) => (
-                    <option key={owner.id} value={owner.id}>
-                      {owner.full_name} ({owner.phone})
-                    </option>
-                  ))}
-                </select>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Välj hund *
+                  </label>
+                  <select
+                    value={selectedDog}
+                    onChange={(e) => setSelectedDog(e.target.value)}
+                    className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    <option value="">Välj hund...</option>
+                    {dogs.map((dog) => (
+                      <option key={dog.id} value={dog.id}>
+                        {dog.name} ({dog.breed || "Okänd ras"}) - Ägare:{" "}
+                        {dog.owners?.full_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               {/* Detaljerade hunddata */}
@@ -1052,13 +1123,12 @@ export default function NewPensionatBooking() {
               {/* Rum och extratjänster */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Rum *
+                  Rum
                 </label>
                 <select
                   value={selectedRoom}
                   onChange={(e) => setSelectedRoom(e.target.value)}
                   className="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  required
                 >
                   <option value="">Välj rum...</option>
                   {rooms.map((room) => (
@@ -1378,6 +1448,23 @@ export default function NewPensionatBooking() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Assisterad registrering-modal */}
+        {currentOrgId && (
+          <AssistedRegistrationModal
+            isOpen={showAssistedRegistration}
+            onClose={() => setShowAssistedRegistration(false)}
+            onSuccess={async (ownerId: string) => {
+              // Ladda om ägare-listan
+              await loadInitialData();
+              setShowAssistedRegistration(false);
+              alert(
+                "✓ Kund registrerad! De finns nu i systemet och kan väljas för bokning."
+              );
+            }}
+            orgId={currentOrgId}
+          />
         )}
       </div>
     </div>
