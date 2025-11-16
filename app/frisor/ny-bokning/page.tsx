@@ -408,7 +408,7 @@ export default function NyBokning() {
                           key={dog.id}
                           type="button"
                           onClick={() => handleDogSelect(dog)}
-                          className="flex items-center gap-4 p-4 border rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-left"
+                          className="flex items-center gap-4 p-4 bg-white border border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-left shadow-sm"
                         >
                           <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
                             <span className="text-orange-600 font-bold text-lg">
