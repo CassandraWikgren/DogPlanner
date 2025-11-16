@@ -417,7 +417,7 @@ export default function HunddagisPriserPage() {
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => handleDeletePrice(price.id)}
-                      className="inline-flex items-center gap-1 px-3 py-1 text-red-600 hover:bg-red-50 rounded transition"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-red-600 hover:bg-red-50 border border-gray-300 hover:border-red-500 rounded transition"
                       title="Ta bort"
                     >
                       <Trash2 className="h-4 w-4" />

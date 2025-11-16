@@ -228,9 +228,8 @@ export default function NewPensionatBooking() {
       const dogPayload = {
         name: newDogData.name,
         breed: newDogData.breed || null,
-        birth_date: newDogData.birth_date || null,
+        birth: newDogData.birth_date || null,
         heightcm: newDogData.heightcm ? parseInt(newDogData.heightcm) : null,
-        weightkg: newDogData.weightkg ? parseFloat(newDogData.weightkg) : null,
         owner_id: selectedDogData.owner_id,
         org_id: currentOrgId,
       };
@@ -288,9 +287,9 @@ export default function NewPensionatBooking() {
         owner_id: selectedDogData.owner_id,
         room_id: selectedRoom || null,
         start_date: startDate,
-        start_time: startTime,
+        checkin_time: startTime,
         end_date: endDate,
-        end_time: endTime,
+        checkout_time: endTime,
         total_price: priceCalc.total,
         discount_amount: discountAmount,
         notes: bookingNotes.journalNotes || null,
@@ -337,7 +336,7 @@ export default function NewPensionatBooking() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c7a4c] mx-auto mb-4"></div>
           <p className="text-gray-600">Laddar...</p>
         </div>
       </div>
@@ -381,10 +380,10 @@ export default function NewPensionatBooking() {
                       .getElementById("dog-selector")
                       ?.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="p-6 border-2 border-green-300 bg-green-50 rounded-lg hover:border-green-500 hover:bg-green-100 transition-all text-left group"
+                  className="p-6 border-2 border-[#2c7a4c] bg-green-50 rounded-lg hover:border-[#236139] hover:bg-green-100 transition-all text-left group"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="p-3 bg-green-600 rounded-lg text-white flex-shrink-0">
+                    <div className="p-3 bg-[#2c7a4c] rounded-lg text-white flex-shrink-0">
                       <User className="w-6 h-6" />
                     </div>
                     <div className="flex-1">
@@ -546,7 +545,7 @@ export default function NewPensionatBooking() {
                   <button
                     type="button"
                     onClick={() => setShowNewDogModal(true)}
-                    className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium rounded-md transition-colors"
+                    className="inline-flex items-center gap-2 bg-[#2c7a4c] hover:bg-[#236139] text-white px-4 py-2 text-sm font-medium rounded-md transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                     Lägg till ytterligare hund till denna ägare
@@ -804,7 +803,7 @@ export default function NewPensionatBooking() {
                   type="button"
                   onClick={calculatePrice}
                   disabled={!startDate || !endDate}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
                   <Calculator className="h-5 w-5" />
                   Beräkna pris
@@ -812,7 +811,7 @@ export default function NewPensionatBooking() {
                 <button
                   type="submit"
                   disabled={saving || !priceCalc}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-green-700 hover:bg-green-800 text-white rounded-md font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
                   <Save className="h-5 w-5" />
                   {saving ? "Sparar..." : "Spara bokning"}
@@ -911,7 +910,7 @@ export default function NewPensionatBooking() {
                   type="button"
                   onClick={createNewDog}
                   disabled={saving || !newDogData.name}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 font-semibold"
+                  className="flex-1 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] disabled:bg-gray-400 font-semibold"
                 >
                   {saving ? "Sparar..." : "Skapa hund"}
                 </button>

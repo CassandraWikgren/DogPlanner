@@ -10,6 +10,7 @@ type Props = {
   open: boolean;
   onCloseAction: () => void;
   onSavedAction: () => Promise<void> | void;
+  roomTypeFilter?: ("daycare" | "boarding" | "both")[]; // Optional: vilka rumstyper som ska visas
 };
 
 /** Typer */
@@ -70,6 +71,7 @@ export default function EditDogModal({
   open,
   onCloseAction,
   onSavedAction,
+  roomTypeFilter = ["daycare", "boarding", "both"], // Default: visa alla rum
 }: Props) {
   const supabase = createClientComponentClient(); // Korrekt klient för client components
   const { user, currentOrgId } = useAuth(); // Hämta user och org_id från AuthContext
@@ -96,13 +98,13 @@ export default function EditDogModal({
       try {
         console.log("🔍 EditDogModal: Hämtar rum för org:", currentOrgId);
 
-        // Hämta rum (alla rum som är daycare eller both)
+        // Hämta rum - använd roomTypeFilter från props
         const { data: roomsData, error: roomsErr } = await supabase
           .from("rooms")
           .select("id, name, room_type")
           .eq("org_id", currentOrgId)
           .eq("is_active", true)
-          .in("room_type", ["daycare", "both"])
+          .in("room_type", roomTypeFilter)
           .order("name");
 
         if (roomsErr) {
@@ -164,7 +166,7 @@ export default function EditDogModal({
         console.error("[ERR-5003] Init modal error:", e);
       }
     })();
-  }, [open, supabase, initialDog, currentOrgId]); // Lägg till currentOrgId i dependencies
+  }, [open, supabase, initialDog, currentOrgId, roomTypeFilter]); // Lägg till roomTypeFilter i dependencies
 
   /* ===========================
    *   FORM STATE

@@ -1361,7 +1361,7 @@ const FakturorPage = () => {
                                   <td className="p-2">
                                     <button
                                       onClick={() => exportPDF(inv.id)}
-                                      className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-1"
+                                      className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 font-semibold text-sm flex items-center gap-1"
                                     >
                                       <FileText size={14} />
                                       PDF

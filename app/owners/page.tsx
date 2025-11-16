@@ -597,7 +597,7 @@ export default function OwnersPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => startEditing(owner)}
-                            className="text-blue-600 hover:text-blue-800"
+                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -605,7 +605,7 @@ export default function OwnersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-green-600 hover:text-green-800"
+                              className="text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                             >
                               <FileText className="h-4 w-4" />
                             </Button>
@@ -614,7 +614,7 @@ export default function OwnersPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => deleteOwner(owner)}
-                            className="text-red-600 hover:text-red-800"
+                            className="text-red-600 hover:text-red-800 hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

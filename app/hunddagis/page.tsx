@@ -1418,6 +1418,7 @@ export default function HunddagisPage() {
             // Hämta fresh data från databasen
             await fetchDogs();
           }}
+          roomTypeFilter={["daycare", "both"]} // Visa bara dagis-rum
         />
       )}
 
@@ -1431,6 +1432,7 @@ export default function HunddagisPage() {
             setShowAddDogModal(false);
             fetchDogs();
           }}
+          roomTypeFilter={["daycare", "both"]} // Visa bara dagis-rum
         />
       )}
     </div>

@@ -450,7 +450,7 @@ export default function AdminPriserPage() {
                                   onClick={saveEdit}
                                   disabled={saving}
                                   size="sm"
-                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                  className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                                 >
                                   <Save className="h-4 w-4" />
                                 </Button>
@@ -458,6 +458,7 @@ export default function AdminPriserPage() {
                                   onClick={cancelEdit}
                                   size="sm"
                                   variant="outline"
+                                  className="hover:bg-gray-100"
                                 >
                                   <X className="h-4 w-4" />
                                 </Button>
@@ -493,6 +494,7 @@ export default function AdminPriserPage() {
                                   onClick={() => startEdit(price)}
                                   size="sm"
                                   variant="outline"
+                                  className="hover:bg-gray-100"
                                 >
                                   <Edit className="h-4 w-4" />
                                 </Button>
@@ -500,7 +502,7 @@ export default function AdminPriserPage() {
                                   onClick={() => deletePrice(price.id)}
                                   size="sm"
                                   variant="outline"
-                                  className="border-red-500 text-red-700 hover:bg-red-50"
+                                  className="text-red-600 hover:bg-red-50 hover:border-red-500"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>

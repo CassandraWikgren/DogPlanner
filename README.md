@@ -1,8 +1,66 @@
-<!-- Last updated: 2025-11-16 (FAS 6: GDPR-säker assisterad kundregistrering) -->
+<!-- Last updated: 2025-11-16 (Landing Pages Refactored + GDPR) -->
 
 ---
 
 ## 🔄 Senaste Uppdateringar (16 november 2025)
+
+### 🎨 Landing Pages - Teknisk Skuld Eliminerad (16 november)
+
+**Problem:** Duplicerad navigationskod, hårdkodade färger, saknad mobilmeny, dålig underhållbarhet  
+**Lösning:** Fullständig refaktorering med komponentisering och Tailwind semantic tokens
+
+#### ✅ Implementerat
+
+**PublicNav-komponent (127 rader):**
+
+- Enhetlig navigation för alla publika sidor
+- Props-baserad variant: `currentPage: "customer" | "business"`
+- Responsiv desktop + mobil hamburger-meny med framer-motion animationer
+- **Resultat:** Eliminerade **140+ rader** duplicerad kod
+
+**Tailwind Color System:**
+
+```javascript
+// tailwind.config.js
+colors: {
+  primary: {
+    DEFAULT: '#2c7a4c',  // Huvudfärg
+    dark: '#236139',      // Hover/aktiva tillstånd
+    light: '#3d9960',     // Ljusa accenter
+    50-900: // Komplett skala
+  }
+}
+```
+
+- Ersatte **50+ hårdkodade färgkoder** med semantiska tokens
+- `#2c7a4c` → `primary`, `#236139` → `primary-dark`
+- **Resultat:** Framtida färgändringar = 1 redigering istället för 50+
+
+**Refaktorerade sidor:**
+
+- `/app/page.tsx` (611 rader) - B2C landing för hundägare
+- `/app/foretag/page.tsx` (834 rader) - B2B landing för företag
+- Borttagna inline styles (~200 rader)
+- Konverterat till ren Tailwind utilities
+- Mobiloptimerad design
+
+**Mätbara resultat:**
+
+- **-140 rader** duplicerad navigation
+- **-200 rader** inline styles
+- **-213 rader netto** (renare kodbas)
+- **+1** återanvändbar komponent
+- **50+ → 0** hårdkodade färger
+
+**Filer:**
+
+- ✅ **NY:** `/components/PublicNav.tsx`
+- ✅ Uppdaterad: `/tailwind.config.js`
+- ✅ Refaktorerad: `/app/page.tsx`
+- ✅ Refaktorerad: `/app/foretag/page.tsx`
+- 📄 Dokumentation: `/LANDING_PAGES_REFACTORED.md`
+
+---
 
 ### 🔐 FAS 6: GDPR-säker Assisterad Kundregistrering (16 november)
 
@@ -1260,10 +1318,29 @@ height: 40px (h-10)
 padding: 0 16px (px-4)
 border-radius: 6px (rounded-md)
 font-size: 15px, font-weight: 600
-/* Primary: bg-[#2c7a4c], hover:bg-[#236139] */
+/* Primary: bg-primary, hover:bg-primary-dark */
 /* Secondary: bg-gray-500 */
-/* Outline: border-[#2c7a4c], hover:bg-[#E6F4EA] */
+/* Outline: border-primary, hover:bg-green-50 */
 ```
+
+**Färger (Tailwind semantic tokens):**
+
+```javascript
+// tailwind.config.js
+primary: {
+  DEFAULT: '#2c7a4c',  // Huvudfärg - bg-primary, text-primary
+  dark: '#236139',      // Hover/aktiva - hover:bg-primary-dark
+  light: '#3d9960',     // Accenter - bg-primary-light
+  50-900: // Komplett skala för nyanser
+}
+```
+
+**Komponenter:**
+
+- ✅ **PublicNav** (`/components/PublicNav.tsx`) - Enhetlig navigation för publika sidor
+  - Props: `currentPage: "customer" | "business"`
+  - Responsiv desktop + mobil hamburger-meny
+  - Återanvändbar över alla landing pages
 
 **Kort:**
 

@@ -224,10 +224,10 @@ export default function StaffAdminPage() {
                         disabled={
                           !canManage || m.id === user?.id || m.role === "admin"
                         }
-                        className={`px-3 py-1 rounded text-sm font-semibold ${
+                        className={`px-3 py-1.5 rounded text-sm font-semibold border ${
                           !canManage || m.id === user?.id || m.role === "admin"
-                            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                            : "bg-red-600 text-white hover:bg-red-700"
+                            ? "bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed"
+                            : "text-red-600 border-gray-300 hover:bg-red-50 hover:border-red-500"
                         }`}
                       >
                         Ta bort
