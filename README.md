@@ -420,7 +420,7 @@ WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND pr
 - ✅ `app/applications/page.tsx` - Intresseanmälningar
 - ✅ `app/hundpensionat/page.tsx` - Huvudöversikt pensionat
 - ✅ `app/hundpensionat/tillval/page.tsx` - Extra tjänster
-- ✅ `app/hundpensionat/new/page.tsx` - Ny bokning
+- ✅ `app/hundpensionat/nybokning/page.tsx` - Ny bokning (FAS 6)
 - ✅ `app/hundpensionat/priser/page.tsx` - Prislista
 - ✅ `app/hundpensionat/ansokningar/page.tsx` - Ansökningar (pending bookings)
 - ✅ `app/hundpensionat/kalender/page.tsx` - Kalendervy
