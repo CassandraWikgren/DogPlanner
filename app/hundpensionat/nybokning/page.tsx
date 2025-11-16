@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { Calculator, Save, Plus, User, Calendar, Home } from "lucide-react";
-import AssistedRegistrationModal from "@/components/AssistedRegistrationModal";
 import { useAuth } from "@/app/context/AuthContext";
 
 // ============================================================================
@@ -84,8 +83,6 @@ export default function NewPensionatBooking() {
   });
 
   // Modal state
-  const [showAssistedRegistration, setShowAssistedRegistration] =
-    useState(false);
   const [showNewDogModal, setShowNewDogModal] = useState(false);
   const [newDogData, setNewDogData] = useState({
     name: "",
@@ -404,29 +401,27 @@ export default function NewPensionatBooking() {
                   </div>
                 </button>
 
-                {/* Ny kund */}
-                <button
-                  type="button"
-                  onClick={() => setShowAssistedRegistration(true)}
-                  className="p-6 border-2 border-green-400 bg-green-100 rounded-lg hover:border-green-600 hover:bg-green-200 transition-all text-left group"
-                >
+                {/* Info om nya kunder */}
+                <div className="p-6 border-2 border-blue-200 bg-blue-50 rounded-lg">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 bg-green-700 rounded-lg text-white flex-shrink-0">
-                      <Plus className="w-6 h-6" />
+                    <div className="p-3 bg-blue-500 rounded-lg text-white flex-shrink-0">
+                      <User className="w-6 h-6" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-1 text-lg">
-                        🆕 Ny kund
+                      <h4 className="font-semibold text-gray-900 mb-2 text-lg">
+                        💡 Ny kund?
                       </h4>
-                      <p className="text-sm text-gray-600">
-                        Assisterad registrering (GDPR-säker) för helt nya kunder
+                      <p className="text-sm text-gray-700 mb-3">
+                        Kunder måste först registrera sig via ägarblankett innan
+                        de kan boka. Detta säkerställer GDPR-compliance och att
+                        all information är korrekt.
                       </p>
-                      <p className="text-xs text-green-800 mt-2 font-medium">
-                        → Öppnar registreringsguide
+                      <p className="text-xs text-blue-700 font-medium">
+                        → Hänvisa kunden till ägarregistreringen först
                       </p>
                     </div>
                   </div>
-                </button>
+                </div>
               </div>
 
               {/* Hundselektion (befintlig kund) */}
@@ -829,40 +824,6 @@ export default function NewPensionatBooking() {
       </div>
 
       {/* MODALS */}
-
-      {/* Assisterad registrering */}
-      {currentOrgId && (
-        <AssistedRegistrationModal
-          isOpen={showAssistedRegistration}
-          onClose={() => setShowAssistedRegistration(false)}
-          onSuccess={async (ownerId: string) => {
-            // 1. Ladda om hundar
-            await loadInitialData();
-
-            // 2. VÄNTA lite så state uppdateras, sedan hitta hundar för denna ägare
-            setTimeout(() => {
-              // Hämta UPPDATERADE dogs från state via callback
-              setDogs((currentDogs) => {
-                const ownerDogs = currentDogs.filter(
-                  (d) => d.owner_id === ownerId
-                );
-
-                // 3. Auto-välj första hunden
-                if (ownerDogs.length > 0) {
-                  setSelectedDog(ownerDogs[0].id);
-                }
-
-                // Returnera samma array (ingen förändring av dogs)
-                return currentDogs;
-              });
-            }, 300);
-
-            setShowAssistedRegistration(false);
-            alert("✅ Kund registrerad! Fortsätt med bokningen nedan.");
-          }}
-          orgId={currentOrgId}
-        />
-      )}
 
       {/* Lägg till ny hund (för befintlig ägare) */}
       {showNewDogModal && selectedDogData && (
