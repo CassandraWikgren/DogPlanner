@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "@/lib/emailSender";
 
 const JWT_SECRET =
   process.env.JWT_SECRET || "fallback-secret-CHANGE-IN-PRODUCTION";
@@ -142,33 +143,37 @@ export async function POST(request: Request) {
     // Skapa email-innehåll
     const emailContent = createConsentEmail(name, verificationUrl);
 
-    // TODO: Integrera med faktisk email-service (SendGrid, Resend, etc.)
-    // För nu: Logga URL för testning
-    console.log("📧 Consent verification email:");
+    // ✅ Skicka email med Resend via befintlig emailSender
+    const emailResult = await sendEmail(
+      {
+        subject: emailContent.subject,
+        html: emailContent.html,
+        text: emailContent.text,
+      },
+      {
+        to: email,
+        orgId, // Använd org-specifik avsändare om konfigurerat
+      }
+    );
+
+    if (!emailResult.success) {
+      console.error("[ERR-6005] Email send failed:", emailResult.error);
+      return NextResponse.json(
+        {
+          error: `[ERR-6005] Kunde inte skicka email: ${emailResult.error}`,
+        },
+        { status: 500 }
+      );
+    }
+
+    console.log("✅ Consent verification email sent successfully");
     console.log(`   To: ${email}`);
-    console.log(`   URL: ${verificationUrl}`);
-    console.log(`   Expires: 7 days`);
-
-    // Simulera email-skickande (ta bort när verklig integration finns)
-    // I produktion: använd emailSender.ts eller Supabase Edge Functions
-
-    // Exempel med Resend (om du vill integrera):
-    /*
-    const { Resend } = require('resend');
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    
-    await resend.emails.send({
-      from: 'DogPlanner <noreply@dogplanner.se>',
-      to: email,
-      subject: emailContent.subject,
-      html: emailContent.html,
-    });
-    */
+    console.log(`   Message ID: ${emailResult.messageId}`);
 
     return NextResponse.json({
       success: true,
-      message: "Bekräftelse-email förberett (integration pending)",
-      verificationUrl, // Returnera URL för testning
+      message: "Bekräftelse-email skickat",
+      messageId: emailResult.messageId,
     });
   } catch (error: any) {
     console.error("[ERR-6005] Email send error:", error);

@@ -1,12 +1,127 @@
-<!-- Last updated: 2025-11-15 (FAS 1-2: Aktivera befintliga fält + bookings-fält) -->
+<!-- Last updated: 2025-11-16 (FAS 6: GDPR-säker assisterad kundregistrering) -->
 
 ---
 
-## 🔄 Senaste Uppdateringar (15 november 2025)
+## 🔄 Senaste Uppdateringar (16 november 2025)
+
+### 🔐 FAS 6: GDPR-säker Assisterad Kundregistrering (16 november)
+
+**Problem:** Pensionat kan inte boka äldre kunder som inte är med i Hunddagis  
+**Lösning:** Dubbelspårssystem för assisterad registrering med full GDPR-compliance
+
+#### ✅ Nya funktioner
+
+**AssistedRegistrationModal - Två registreringsmetoder:**
+
+1. **📧 Email-baserad registrering (Alternativ 1):**
+   - Personal fyller i grunduppgifter (namn, email, telefon, adress)
+   - System skapar ägare med `consent_status='pending'`
+   - Email skickas automatiskt med JWT-verifieringslänk (7 dagars giltighet)
+   - Kunden klickar länk → fyller i GDPR-samtycke, personnummer (frivilligt), skapar lösenord
+   - Status uppdateras till `consent_status='verified'` → konto aktivt
+
+2. **📄 Fysisk blankett (Alternativ 3):**
+   - Personal laddar upp foto av signerad GDPR-blankett
+   - Lagras i Supabase Storage bucket `documents` (privat)
+   - Ägare skapas direkt med `consent_status='verified'`
+   - Konto aktivt omedelbart
+
+**Databas - consent_logs system:**
+
+- Ny tabell `consent_logs` spårar all samtycke-historik (22 kolumner)
+- Kolumner tillagda i `owners`: `consent_status`, `consent_verified_at`, `gdpr_marketing_consent`
+- Kolumner tillagda i `bookings`: `consent_required`, `consent_pending_until`
+- RLS-policies för säker åtkomst (org-scopad)
+- Funktioner: `has_valid_consent()`, `withdraw_consent()` (GDPR Art. 7.3)
+- Trigger: `update_owner_consent_status()` (auto-uppdaterar owners.consent_status)
+
+**Storage:**
+
+- Bucket `documents` för fysiska blanketter (privat, authenticated access)
+- RLS-policies via Supabase UI (SELECT, INSERT, UPDATE, DELETE för authenticated)
+
+**Email-system:**
+
+- API route: `/api/consent/send-email` med JWT-generering
+- Verifieringssida: `/consent/verify` med komplett GDPR-information
+- Integration med befintligt `lib/emailSender.ts` (Resend)
+- Svenska GDPR-texter (Art. 6.1.a, 7, 7.3, 15, 16, 17, 20, 32)
+
+**UX-förbättringar i nybokning:**
+
+- Två-vägs val: "Befintlig kund" / "🆕 Ny kund"
+- Dold formulär tills val görs (mindre förvirrande)
+- Knapp "Lägg till hund till vald kund" för flera hundar per kund
+- Rum-fält nu frivilligt (ej obligatoriskt)
+
+#### ✅ Teknisk implementation
+
+**Migrations (alla körda i Supabase):**
+
+```sql
+20251116_consent_part1_tables.sql    - Tabeller, kolumner, indexes
+20251116_consent_part2_policies.sql  - RLS-policies
+20251116_consent_part3_functions.sql - Functions & triggers
+20251116_create_documents_bucket.sql - Storage bucket
+```
+
+**Komponenter:**
+
+- `components/AssistedRegistrationModal.tsx` - Huvudkomponent (580 rader)
+- `app/api/consent/send-email/route.ts` - Email API med JWT
+- `app/consent/verify/page.tsx` - Verifieringssida för kund
+- `app/hundpensionat/nybokning/page.tsx` - Uppdaterad med modal-integration
+
+**Environment variables (lägg till i Vercel):**
+
+```bash
+JWT_SECRET=<din-secret-från-openssl-rand-base64-32>
+NEXT_PUBLIC_JWT_SECRET=<samma-värde>
+NEXT_PUBLIC_SITE_URL=https://din-domän.vercel.app
+RESEND_API_KEY=<din-resend-nyckel>  # Redan konfigurerad
+```
+
+**Error codes:**
+
+- [ERR-6001] till [ERR-6005]: AssistedRegistrationModal
+- [ERR-6006] till [ERR-6013]: Consent verification page
+
+#### ✅ GDPR-compliance
+
+**Rättslig grund:**
+
+- **Art. 6.1.a** - Samtycke som grund för behandling
+- **Art. 7** - Villkor för samtycke (frivilligt, specifikt, informerat)
+- **Art. 7.3** - Rätt att återkalla samtycke
+- **Art. 32** - Säkerhet i behandlingen (JWT, RLS, kryptering)
+
+**Kundens rättigheter (visas tydligt):**
+
+- **Art. 15** - Rätt till tillgång (registerutdrag)
+- **Art. 16** - Rätt till rättelse
+- **Art. 17** - Rätt till radering
+- **Art. 20** - Rätt till dataportabilitet
+
+**Dokumentation:**
+
+- Fullständig guide: `FAS6_README.md` (500+ rader)
+- Migrations dokumenterade i SQL-filer
+- Inline-kommentarer i kod
+
+#### ✅ Nästa steg
+
+- 🔜 Testa i produktion på Vercel
+- 🔜 Verifiera email-utskick med Resend
+- � Implementera GDPR-kundportal (/account/gdpr)
+- 🔜 Automatisk cleanup (pending users efter 7 dagar)
+
+---
+
+## 🔄 Tidigare Uppdateringar (15 november 2025)
 
 ### 🎨 FAS 1-2: Aktivera Befintliga Fält + Bookings-fält (15 november)
 
-**Problem:** Flera viktiga funktioner fanns i databasen men syntes inte i UI
+**Problem:** Flera viktiga funktioner fanns i databasen men syntes inte i UI  
 **Lösning:** Aktiverade befintliga fält och lade till nya pensionat-fält för bättre gästhantering
 
 #### ✅ FAS 1: Aktivera Befintliga Fält
