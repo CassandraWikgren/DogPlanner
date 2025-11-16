@@ -360,22 +360,42 @@ export default function PriserPage() {
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-sm">
                         <div className="bg-orange-50 px-2 py-1 rounded-md">
-                          <span className="text-gray-600">Helg:</span>{" "}
-                          <span className="font-medium">
-                            {price.weekend_multiplier}x
-                          </span>
+                          <div className="text-gray-600 text-xs">Helg</div>
+                          <div className="font-semibold text-gray-900">
+                            {Math.round(
+                              price.base_price * price.weekend_multiplier
+                            )}{" "}
+                            kr
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            ({price.weekend_multiplier}x)
+                          </div>
                         </div>
                         <div className="bg-red-50 px-2 py-1 rounded-md">
-                          <span className="text-gray-600">Högtid:</span>{" "}
-                          <span className="font-medium">
-                            {price.holiday_multiplier}x
-                          </span>
+                          <div className="text-gray-600 text-xs">Högtid</div>
+                          <div className="font-semibold text-gray-900">
+                            {Math.round(
+                              price.base_price * price.holiday_multiplier
+                            )}{" "}
+                            kr
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            ({price.holiday_multiplier}x)
+                          </div>
                         </div>
                         <div className="bg-yellow-50 px-2 py-1 rounded-md">
-                          <span className="text-gray-600">Säsong:</span>{" "}
-                          <span className="font-medium">
-                            {price.high_season_multiplier}x
-                          </span>
+                          <div className="text-gray-600 text-xs">
+                            Högssäsong
+                          </div>
+                          <div className="font-semibold text-gray-900">
+                            {Math.round(
+                              price.base_price * price.high_season_multiplier
+                            )}{" "}
+                            kr
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            ({price.high_season_multiplier}x)
+                          </div>
                         </div>
                       </div>
                     </div>
