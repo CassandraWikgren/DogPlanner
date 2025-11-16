@@ -225,58 +225,58 @@ export default function AssistedRegistrationModal({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div>
-            <h2 className="text-2xl font-bold text-[#2c7a4c]">
+            <h2 className="text-xl font-bold text-[#2c7a4c]">
               Ny kund - Assisterad registrering
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-xs text-gray-600 mt-0.5">
               GDPR-säker registrering för kunder som behöver hjälp
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-4">
           {!step ? (
             // Välj registrerings-typ
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="space-y-3">
+              <h3 className="text-base font-semibold text-gray-900 mb-3">
                 Hur vill du registrera kunden?
               </h3>
 
               {/* Alternativ 1: Email */}
               <button
                 onClick={() => setStep("email")}
-                className="w-full p-6 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all text-left group"
+                className="w-full p-4 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all text-left group"
               >
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-blue-50 rounded-lg transition-colors flex-shrink-0">
-                    <Mail className="w-6 h-6 text-blue-500" />
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-blue-50 rounded-lg transition-colors flex-shrink-0">
+                    <Mail className="w-5 h-5 text-blue-500" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 mb-2 text-base">
+                    <h4 className="font-semibold text-gray-900 mb-1 text-sm">
                       📧 Email-baserad registrering
                     </h4>
-                    <p className="text-sm text-gray-600 mb-3 leading-relaxed">
+                    <p className="text-xs text-gray-600 mb-2">
                       Kunden får ett email med länk för att bekräfta sina
                       uppgifter och skapa konto. Rekommenderas för kunder med
                       email.
                     </p>
-                    <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                    <div className="flex flex-wrap gap-1.5 text-xs text-gray-500">
+                      <span className="bg-green-50 text-green-700 px-1.5 py-0.5 rounded text-xs">
                         ✓ GDPR-säker
                       </span>
-                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                      <span className="bg-green-50 text-green-700 px-1.5 py-0.5 rounded text-xs">
                         ✓ Automatisk dokumentation
                       </span>
-                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                      <span className="bg-green-50 text-green-700 px-1.5 py-0.5 rounded text-xs">
                         ✓ Kunden har kontroll
                       </span>
                     </div>
@@ -287,28 +287,28 @@ export default function AssistedRegistrationModal({
               {/* Alternativ 3: Fysisk blankett */}
               <button
                 onClick={() => setStep("physical")}
-                className="w-full p-6 bg-white border-2 border-gray-200 rounded-lg hover:border-orange-300 hover:shadow-md transition-all text-left group"
+                className="w-full p-4 bg-white border-2 border-gray-200 rounded-lg hover:border-orange-300 hover:shadow-md transition-all text-left group"
               >
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-orange-50 rounded-lg transition-colors flex-shrink-0">
-                    <FileText className="w-6 h-6 text-orange-500" />
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-orange-50 rounded-lg transition-colors flex-shrink-0">
+                    <FileText className="w-5 h-5 text-orange-500" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 mb-2 text-base">
+                    <h4 className="font-semibold text-gray-900 mb-1 text-sm">
                       📄 Fysisk blankett (signerad)
                     </h4>
-                    <p className="text-sm text-gray-600 mb-3 leading-relaxed">
+                    <p className="text-xs text-gray-600 mb-2">
                       Ladda upp foto/scan av signerad GDPR-blankett. Använd för
                       kunder utan email eller som föredrar papper.
                     </p>
-                    <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                    <div className="flex flex-wrap gap-1.5 text-xs text-gray-500">
+                      <span className="bg-green-50 text-green-700 px-1.5 py-0.5 rounded text-xs">
                         ✓ Fungerar utan email
                       </span>
-                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                      <span className="bg-green-50 text-green-700 px-1.5 py-0.5 rounded text-xs">
                         ✓ Fysisk dokumentation
                       </span>
-                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                      <span className="bg-green-50 text-green-700 px-1.5 py-0.5 rounded text-xs">
                         ✓ Juridiskt giltigt
                       </span>
                     </div>
@@ -317,35 +317,34 @@ export default function AssistedRegistrationModal({
               </button>
 
               {/* GDPR-info */}
-              <div className="mt-6 p-5 bg-gray-50 border border-gray-200 rounded-lg">
-                <h5 className="font-semibold text-sm text-gray-900 mb-3 flex items-center gap-2">
+              <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                <h5 className="font-semibold text-xs text-gray-900 mb-2 flex items-center gap-2">
                   🔒 GDPR-information
                 </h5>
-                <ul className="text-sm text-gray-600 space-y-2">
+                <ul className="text-xs text-gray-600 space-y-1">
                   <li>• Samtycke dokumenteras med tidsstämpel och ursprung</li>
                   <li>• Kunden kan när som helst återkalla samtycke</li>
                   <li>• Personnummer är frivilligt och får ej krävas</li>
-                  <li>• All data krypteras och skyddas enligt GDPR Art. 32</li>
                 </ul>
               </div>
             </div>
           ) : step === "email" ? (
             // Email-baserad registrering-formulär
-            <div className="space-y-4">
+            <div className="space-y-3">
               <button
                 onClick={() => setStep(null)}
-                className="text-sm text-gray-600 hover:text-gray-900 mb-4"
+                className="text-xs text-gray-600 hover:text-gray-900 mb-2"
               >
                 ← Tillbaka
               </button>
 
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-base font-semibold text-gray-900 mb-3">
                 Fyll i kundens uppgifter
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Namn <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -358,13 +357,13 @@ export default function AssistedRegistrationModal({
                         full_name: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="Anna Andersson"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Email <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -377,13 +376,13 @@ export default function AssistedRegistrationModal({
                         email: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="anna@example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Telefon <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -396,13 +395,13 @@ export default function AssistedRegistrationModal({
                         phone: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="070-123 45 67"
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Adress (frivilligt)
                   </label>
                   <input
@@ -414,13 +413,13 @@ export default function AssistedRegistrationModal({
                         address: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="Storgatan 1"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Stad (frivilligt)
                   </label>
                   <input
@@ -432,13 +431,13 @@ export default function AssistedRegistrationModal({
                         city: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="Stockholm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Postnummer (frivilligt)
                   </label>
                   <input
@@ -450,14 +449,14 @@ export default function AssistedRegistrationModal({
                         postal_code: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="123 45"
                   />
                 </div>
               </div>
 
-              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm text-yellow-800">
+              <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-xs text-yellow-800">
                   <strong>Nästa steg:</strong> Ett email skickas till kunden med
                   länk för att bekräfta uppgifterna och skapa lösenord.
                   Personnummer kan anges frivilligt vid bekräftelsen.
@@ -465,15 +464,15 @@ export default function AssistedRegistrationModal({
               </div>
 
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700">
                   {error}
                 </div>
               )}
 
-              <div className="flex gap-3 justify-end pt-4">
+              <div className="flex gap-2 justify-end pt-3">
                 <button
                   onClick={() => setStep(null)}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Avbryt
                 </button>
@@ -485,7 +484,7 @@ export default function AssistedRegistrationModal({
                     !emailFormData.email ||
                     !emailFormData.phone
                   }
-                  className="px-6 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-sm bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   {loading ? "Skickar..." : "Skicka bekräftelse-email"}
                 </button>
