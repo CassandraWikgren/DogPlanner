@@ -351,7 +351,7 @@ export default function HundpensionatPage() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <Link
-              href="/hundpensionat/new"
+              href="/hundpensionat/nybokning"
               className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors"
             >
               <Plus className="h-4 w-4 mr-2" />
