@@ -66,6 +66,7 @@ export default function NewPensionatBooking() {
 
   // Selection state
   const [selectedDog, setSelectedDog] = useState("");
+  const [dogSearchQuery, setDogSearchQuery] = useState("");
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("09:00");
   const [endDate, setEndDate] = useState("");
@@ -155,6 +156,23 @@ export default function NewPensionatBooking() {
   const selectedDogData = useMemo(() => {
     return dogs.find((dog) => dog.id === selectedDog);
   }, [dogs, selectedDog]);
+
+  const filteredDogs = useMemo(() => {
+    if (!dogSearchQuery.trim()) return dogs;
+
+    const query = dogSearchQuery.toLowerCase();
+    return dogs.filter((dog) => {
+      const dogName = dog.name?.toLowerCase() || "";
+      const dogBreed = dog.breed?.toLowerCase() || "";
+      const ownerName = dog.owners?.full_name?.toLowerCase() || "";
+
+      return (
+        dogName.includes(query) ||
+        dogBreed.includes(query) ||
+        ownerName.includes(query)
+      );
+    });
+  }, [dogs, dogSearchQuery]);
 
   // ============================================================================
   // PRICE CALCULATION
@@ -419,13 +437,30 @@ export default function NewPensionatBooking() {
                 <label className="block text-sm font-semibold text-gray-900 mb-3">
                   Välj hund från befintlig kund:
                 </label>
+
+                {/* Sökruta */}
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    value={dogSearchQuery}
+                    onChange={(e) => setDogSearchQuery(e.target.value)}
+                    placeholder="Sök på hundnamn, ras eller ägare..."
+                    className="w-full border-2 border-gray-300 px-4 py-2 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                  {dogSearchQuery && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Visar {filteredDogs.length} av {dogs.length} hundar
+                    </p>
+                  )}
+                </div>
+
                 <select
                   value={selectedDog}
                   onChange={(e) => setSelectedDog(e.target.value)}
                   className="w-full border-2 border-gray-300 px-4 py-3 text-base rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
                   <option value="">Välj hund...</option>
-                  {dogs.map((dog) => (
+                  {filteredDogs.map((dog) => (
                     <option key={dog.id} value={dog.id}>
                       {dog.name} ({dog.breed || "Okänd ras"}) - Ägare:{" "}
                       {dog.owners?.full_name}

@@ -254,25 +254,31 @@ export default function AssistedRegistrationModal({
               {/* Alternativ 1: Email */}
               <button
                 onClick={() => setStep("email")}
-                className="w-full p-6 border-2 border-gray-200 rounded-lg hover:border-[#2c7a4c] hover:bg-green-50 transition-all text-left group"
+                className="w-full p-6 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all text-left group"
               >
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                    <Mail className="w-6 h-6 text-blue-600" />
+                  <div className="p-3 bg-blue-50 rounded-lg transition-colors flex-shrink-0">
+                    <Mail className="w-6 h-6 text-blue-500" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 mb-1">
+                    <h4 className="font-semibold text-gray-900 mb-2 text-base">
                       📧 Email-baserad registrering
                     </h4>
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-sm text-gray-600 mb-3 leading-relaxed">
                       Kunden får ett email med länk för att bekräfta sina
                       uppgifter och skapa konto. Rekommenderas för kunder med
                       email.
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-green-600 font-medium">
-                      <span>✓ GDPR-säker</span>
-                      <span>✓ Automatisk dokumentation</span>
-                      <span>✓ Kunden har kontroll</span>
+                    <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                        ✓ GDPR-säker
+                      </span>
+                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                        ✓ Automatisk dokumentation
+                      </span>
+                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                        ✓ Kunden har kontroll
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -281,35 +287,41 @@ export default function AssistedRegistrationModal({
               {/* Alternativ 3: Fysisk blankett */}
               <button
                 onClick={() => setStep("physical")}
-                className="w-full p-6 border-2 border-gray-200 rounded-lg hover:border-[#2c7a4c] hover:bg-green-50 transition-all text-left group"
+                className="w-full p-6 bg-white border-2 border-gray-200 rounded-lg hover:border-orange-300 hover:shadow-md transition-all text-left group"
               >
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors">
-                    <FileText className="w-6 h-6 text-orange-600" />
+                  <div className="p-3 bg-orange-50 rounded-lg transition-colors flex-shrink-0">
+                    <FileText className="w-6 h-6 text-orange-500" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 mb-1">
+                    <h4 className="font-semibold text-gray-900 mb-2 text-base">
                       📄 Fysisk blankett (signerad)
                     </h4>
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-sm text-gray-600 mb-3 leading-relaxed">
                       Ladda upp foto/scan av signerad GDPR-blankett. Använd för
                       kunder utan email eller som föredrar papper.
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-green-600 font-medium">
-                      <span>✓ Fungerar utan email</span>
-                      <span>✓ Fysisk dokumentation</span>
-                      <span>✓ Juridiskt giltigt</span>
+                    <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                        ✓ Fungerar utan email
+                      </span>
+                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                        ✓ Fysisk dokumentation
+                      </span>
+                      <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                        ✓ Juridiskt giltigt
+                      </span>
                     </div>
                   </div>
                 </div>
               </button>
 
               {/* GDPR-info */}
-              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h5 className="font-semibold text-sm text-blue-900 mb-2">
+              <div className="mt-6 p-5 bg-gray-50 border border-gray-200 rounded-lg">
+                <h5 className="font-semibold text-sm text-gray-900 mb-3 flex items-center gap-2">
                   🔒 GDPR-information
                 </h5>
-                <ul className="text-xs text-blue-800 space-y-1">
+                <ul className="text-sm text-gray-600 space-y-2">
                   <li>• Samtycke dokumenteras med tidsstämpel och ursprung</li>
                   <li>• Kunden kan när som helst återkalla samtycke</li>
                   <li>• Personnummer är frivilligt och får ej krävas</li>
