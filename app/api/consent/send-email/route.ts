@@ -118,12 +118,27 @@ export async function POST(request: Request) {
   try {
     const { ownerId, email, name, orgId } = await request.json();
 
+    console.log("🔍 Email send request received:", {
+      ownerId,
+      email,
+      name,
+      orgId,
+    });
+
     if (!ownerId || !email || !name || !orgId) {
       return NextResponse.json(
         { error: "[ERR-6005] Saknade parametrar för email" },
         { status: 400 }
       );
     }
+
+    console.log("🔍 Environment check:");
+    console.log("   JWT_SECRET:", JWT_SECRET ? "✓ Set" : "✗ Missing");
+    console.log("   SITE_URL:", SITE_URL);
+    console.log(
+      "   RESEND_API_KEY:",
+      process.env.RESEND_API_KEY ? "✓ Set" : "✗ Missing"
+    );
 
     // Skapa JWT-token med 7 dagars giltighetstid
     const token = jwt.sign(
