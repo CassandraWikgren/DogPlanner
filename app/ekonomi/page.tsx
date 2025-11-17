@@ -55,6 +55,8 @@ export default function FakturaPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [dateFilter, setDateFilter] = useState<string>("all"); // all, this-month, last-month, this-year
+  const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null);
 
   const statusTypes = ["all", "draft", "sent", "paid", "overdue"];
 
@@ -178,8 +180,55 @@ export default function FakturaPage() {
     const matchesStatus =
       statusFilter === "all" || invoice.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
+    // Datumfiltrering
+    let matchesDate = true;
+    if (dateFilter !== "all") {
+      const invoiceDate = new Date(invoice.invoice_date);
+      const now = new Date();
+
+      if (dateFilter === "this-month") {
+        matchesDate =
+          invoiceDate.getMonth() === now.getMonth() &&
+          invoiceDate.getFullYear() === now.getFullYear();
+      } else if (dateFilter === "last-month") {
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        matchesDate =
+          invoiceDate.getMonth() === lastMonth.getMonth() &&
+          invoiceDate.getFullYear() === lastMonth.getFullYear();
+      } else if (dateFilter === "this-year") {
+        matchesDate = invoiceDate.getFullYear() === now.getFullYear();
+      }
+    }
+
+    return matchesSearch && matchesStatus && matchesDate;
   });
+
+  // Ladda ner PDF
+  const downloadPdf = async (invoiceId: string, invoiceNumber: string) => {
+    try {
+      setDownloadingPdf(invoiceId);
+      const response = await fetch(`/api/invoices/${invoiceId}/pdf`);
+
+      if (!response.ok) {
+        throw new Error("Kunde inte generera PDF");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Faktura-${invoiceNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      alert("Kunde inte ladda ner PDF. Försök igen.");
+    } finally {
+      setDownloadingPdf(null);
+    }
+  };
 
   // Beräkna statistik
   const stats = {
@@ -282,8 +331,8 @@ export default function FakturaPage() {
 
         {/* Sök och filter */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="relative flex-1 min-w-[280px]">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 type="text"
@@ -304,15 +353,33 @@ export default function FakturaPage() {
               <option value="paid">Betalda</option>
               <option value="overdue">Förfallna</option>
             </select>
+            <select
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base"
+            >
+              <option value="all">Alla perioder</option>
+              <option value="this-month">Denna månad</option>
+              <option value="last-month">Förra månaden</option>
+              <option value="this-year">Detta år</option>
+            </select>
             <button
               onClick={() => {
                 setSearchTerm("");
                 setStatusFilter("all");
+                setDateFilter("all");
               }}
               className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
             >
               Rensa filter
             </button>
+          </div>
+
+          {/* Resultaträknare */}
+          <div className="mt-2 text-sm text-gray-600">
+            Visar{" "}
+            <span className="font-semibold">{filteredInvoices.length}</span> av{" "}
+            <span className="font-semibold">{invoices.length}</span> fakturor
           </div>
         </div>
 
@@ -456,10 +523,16 @@ export default function FakturaPage() {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={() =>
+                      downloadPdf(invoice.id, invoice.invoice_number)
+                    }
+                    disabled={downloadingPdf === invoice.id}
                     className="border-gray-300 hover:bg-gray-50"
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    Ladda ner PDF
+                    {downloadingPdf === invoice.id
+                      ? "Genererar..."
+                      : "Ladda ner PDF"}
                   </Button>
                   {invoice.status === "sent" && (
                     <Button

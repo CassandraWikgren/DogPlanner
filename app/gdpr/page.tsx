@@ -4,11 +4,6 @@ import { useRouter } from "next/navigation";
 export default function GDPRPage() {
   const router = useRouter();
 
-  function handleAccept() {
-    console.log("✅ GDPR-godkännande accepterat");
-    router.push("/dashboard");
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header - EXAKT som Hunddagis */}
@@ -62,12 +57,6 @@ export default function GDPRPage() {
               </p>
 
               <div className="flex gap-4">
-                <button
-                  onClick={handleAccept}
-                  className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
-                >
-                  Jag godkänner
-                </button>
                 <button
                   onClick={() => router.push("/")}
                   className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-medium text-sm"

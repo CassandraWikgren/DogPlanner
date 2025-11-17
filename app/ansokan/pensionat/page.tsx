@@ -257,10 +257,14 @@ export default function PensionatAnsokanPage() {
         .from("orgs")
         .select("name, email")
         .eq("id", orgId)
-        .single();
+        .maybeSingle();
 
       if (orgError) {
         console.error("Could not fetch org details for emails:", orgError);
+      }
+
+      if (!orgData) {
+        console.warn(`No org found with id: ${orgId}`);
       }
 
       // 6. Skicka bekräftelse-email till KUND
