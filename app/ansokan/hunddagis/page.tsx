@@ -699,8 +699,10 @@ export default function HunddagisAnsokanPage() {
                       >
                         DogPlanners integritetspolicy
                       </Link>{" "}
-                      samt <strong>{orgName}s</strong> villkor och avtal. Jag
-                      förstår att mina uppgifter delas med {orgName} för
+                      samt bekräftar att jag har tagit del av{" "}
+                      <strong>{orgName}s</strong> allmänna villkor, regler och
+                      avbokningspolicy genom att kontakta dagishemmet direkt.
+                      Jag förstår att mina uppgifter delas med {orgName} för
                       hantering av min ansökan.{" "}
                       <span className="text-red-600">*</span>
                     </span>

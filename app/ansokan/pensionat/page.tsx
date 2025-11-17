@@ -939,15 +939,11 @@ export default function PensionatAnsokanPage() {
                     }
                   />
                   <span className="text-sm text-gray-700">
-                    Jag accepterar <strong>{orgName}s</strong>{" "}
-                    <Link
-                      href="/terms"
-                      target="_blank"
-                      className="text-[#2c7a4c] hover:underline font-medium"
-                    >
-                      regler och villkor
-                    </Link>{" "}
-                    samt avbokningspolicy{" "}
+                    Jag bekräftar att jag har tagit del av{" "}
+                    <strong>{orgName}s</strong> allmänna villkor, regler och
+                    avbokningspolicy. Jag har kontaktat pensionatet direkt för
+                    att läsa igenom deras specifika bestämmelser innan jag
+                    skickar denna ansökan.{" "}
                     <span className="text-red-600">*</span>
                   </span>
                 </label>
