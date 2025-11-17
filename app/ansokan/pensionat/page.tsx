@@ -277,7 +277,7 @@ export default function PensionatAnsokanPage() {
             pensionatName: orgData?.name || orgName || "Hundpensionatet",
             checkinDate: formData.checkin_date,
             checkoutDate: formData.checkout_date,
-            applicationId: newBooking.id,
+            applicationId: newBooking[0].id,
           },
           formData.owner_email,
           orgId
