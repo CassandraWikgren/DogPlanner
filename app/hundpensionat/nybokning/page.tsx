@@ -238,13 +238,13 @@ export default function NewPensionatBooking() {
       const { data, error } = await supabase
         .from("dogs")
         .insert([dogPayload])
-        .select("*, owners(id, full_name, phone, email, address)")
-        .single();
+        .select("*, owners(id, full_name, phone, email, address)");
 
-      if (error) throw error;
+      if (error || !data || data.length === 0)
+        throw error || new Error("Dog not created");
 
-      setDogs((prev) => [...prev, data]);
-      setSelectedDog(data.id);
+      setDogs((prev) => [...prev, data[0]]);
+      setSelectedDog(data[0].id);
       setShowNewDogModal(false);
       setNewDogData({
         name: "",
