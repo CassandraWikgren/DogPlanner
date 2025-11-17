@@ -8,6 +8,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import { Home, Send, CheckCircle, AlertCircle, Calendar } from "lucide-react";
 import OrganisationSelector from "@/components/OrganisationSelector";
+import { DogBreedSelect } from "@/components/DogBreedSelect";
 
 export default function PensionatAnsokanPage() {
   const supabase = createClientComponentClient();
@@ -514,14 +515,13 @@ export default function PensionatAnsokanPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Ras <span className="text-red-600">*</span>
                   </label>
-                  <input
-                    type="text"
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
+                  <DogBreedSelect
                     value={formData.dog_breed}
-                    onChange={(e) =>
-                      setFormData({ ...formData, dog_breed: e.target.value })
+                    onChange={(breed) =>
+                      setFormData({ ...formData, dog_breed: breed })
                     }
-                    placeholder="Golden Retriever"
+                    placeholder="Välj hundras..."
+                    required
                   />
                 </div>
 

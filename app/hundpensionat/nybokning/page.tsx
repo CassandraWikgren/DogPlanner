@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { Calculator, Save, Plus, User, Calendar, Home } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
+import { DogBreedSelect } from "@/components/DogBreedSelect";
 
 // ============================================================================
 // TYPES
@@ -852,14 +853,10 @@ export default function NewPensionatBooking() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Ras
                 </label>
-                <input
-                  type="text"
+                <DogBreedSelect
                   value={newDogData.breed}
-                  onChange={(e) =>
-                    setNewDogData({ ...newDogData, breed: e.target.value })
-                  }
-                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
-                  placeholder="T.ex. Beagle"
+                  onChange={(breed) => setNewDogData({ ...newDogData, breed })}
+                  placeholder="Välj hundras..."
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
+import { DogBreedSelect } from "@/components/DogBreedSelect";
 
 /** Props */
 type Props = {
@@ -1026,10 +1027,10 @@ export default function EditDogModal({
                 </div>
                 <div>
                   <label className="text-xs text-[#2c7a4c]">Ras</label>
-                  <input
-                    className="w-full border rounded-lg px-3 py-2"
+                  <DogBreedSelect
                     value={breed}
-                    onChange={(e) => setBreed(e.target.value)}
+                    onChange={(newBreed) => setBreed(newBreed)}
+                    placeholder="Välj hundras..."
                   />
                 </div>
                 <div>
