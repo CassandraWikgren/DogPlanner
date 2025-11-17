@@ -184,8 +184,8 @@ export function DogBreedSelect({
                   className={`w-full px-4 py-2.5 text-left text-sm transition-colors border-l-2 ${
                     breed === value
                       ? "bg-gray-50 border-l-[#2c7a4c] font-medium text-gray-900"
-                      : "border-l-transparent hover:bg-gray-50 text-gray-700"
-                  } ${index === highlightedIndex ? "bg-gray-50" : ""}`}
+                      : "border-l-transparent hover:bg-gray-50 text-gray-700 bg-white"
+                  } ${index === highlightedIndex ? "bg-gray-100" : ""}`}
                   role="option"
                   aria-selected={breed === value}
                 >

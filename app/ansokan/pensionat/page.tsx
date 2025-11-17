@@ -181,11 +181,12 @@ export default function PensionatAnsokanPage() {
               consent_status: "pending",
             },
           ])
-          .select("id")
-          .single();
+          .select("id");
 
         if (ownerCreateError) throw ownerCreateError;
-        owner_id = newOwner.id;
+        if (!newOwner || newOwner.length === 0)
+          throw new Error("Owner not created");
+        owner_id = newOwner[0].id;
       }
 
       // 2. Skapa hund
@@ -207,10 +208,10 @@ export default function PensionatAnsokanPage() {
             notes: formData.medical_notes.trim() || null,
           },
         ])
-        .select("id")
-        .single();
+        .select("id");
 
       if (dogError) throw dogError;
+      if (!newDog || newDog.length === 0) throw new Error("Dog not created");
 
       // 3. Skapa bokning med status "pending"
       const { data: newBooking, error: bookingError } = await supabase
@@ -218,7 +219,7 @@ export default function PensionatAnsokanPage() {
         .insert([
           {
             org_id: orgId,
-            dog_id: newDog.id,
+            dog_id: newDog[0].id,
             owner_id,
             start_date: formData.checkin_date,
             end_date: formData.checkout_date,
@@ -228,11 +229,11 @@ export default function PensionatAnsokanPage() {
             total_price: 0,
           },
         ])
-        .select("id")
-        .single();
+        .select("id");
 
       if (bookingError) throw bookingError;
-      if (!newBooking) throw new Error("Booking ID not returned");
+      if (!newBooking || newBooking.length === 0)
+        throw new Error("Booking not created");
 
       // 4. Skapa GDPR-logg
       const { error: consentError } = await supabase
