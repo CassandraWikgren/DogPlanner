@@ -11,6 +11,13 @@
 -- 3. Testa genom att registrera ett nytt konto via /register
 -- ============================================================================
 
+-- === STEG 1: LÄGG TILL KOLUMNER I ORGS-TABELLEN ===
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS lan text;
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS kommun text;
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS service_types text[];
+ALTER TABLE orgs ADD COLUMN IF NOT EXISTS is_visible_to_customers boolean DEFAULT true;
+
+-- === STEG 2: UPPDATERA HANDLE_NEW_USER FUNKTIONEN ===
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS trigger 
 SECURITY DEFINER
