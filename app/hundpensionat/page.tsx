@@ -16,6 +16,7 @@ import {
   DollarSign,
   Settings,
   ClipboardList,
+  Grid3x3,
 } from "lucide-react";
 import type { Database } from "@/types/database";
 
@@ -435,6 +436,13 @@ export default function HundpensionatPage() {
             >
               <Settings className="h-4 w-4 mr-1" />
               Tillval
+            </Link>
+            <Link
+              href="/hundpensionat/schema"
+              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <Grid3x3 className="h-4 w-4 mr-1" />
+              Schema
             </Link>
             <Link
               href="/hundpensionat/kalender"
