@@ -247,7 +247,7 @@ export default function PensionatAnsokanPage() {
       // 5. Hämta organisations-info för emails
       const { data: orgData, error: orgError } = await supabase
         .from("orgs")
-        .select("org_name, contact_email")
+        .select("name, email")
         .eq("id", orgId)
         .single();
 
@@ -261,7 +261,7 @@ export default function PensionatAnsokanPage() {
           {
             ownerName: formData.owner_name,
             dogName: formData.dog_name,
-            pensionatName: orgData?.org_name || orgName || "Hundpensionatet",
+            pensionatName: orgData?.name || orgName || "Hundpensionatet",
             checkinDate: formData.checkin_date,
             checkoutDate: formData.checkout_date,
             applicationId: newBooking.id,
@@ -284,7 +284,7 @@ export default function PensionatAnsokanPage() {
       }
 
       // 7. Skicka notifiering till PENSIONAT
-      if (orgData?.contact_email) {
+      if (orgData?.email) {
         try {
           const notificationResult = await sendApplicationNotificationEmail(
             {
@@ -298,7 +298,7 @@ export default function PensionatAnsokanPage() {
               specialRequests: formData.special_requests || undefined,
               applicationUrl: `${window.location.origin}/hundpensionat/ansokningar`,
             },
-            orgData.contact_email,
+            orgData.email,
             orgId
           );
 
@@ -314,7 +314,7 @@ export default function PensionatAnsokanPage() {
           console.error("Exception sending notification email:", emailErr);
         }
       } else {
-        console.warn("No contact_email found for org - skipping notification");
+        console.warn("No email found for org - skipping notification");
       }
 
       setSuccess(true);
