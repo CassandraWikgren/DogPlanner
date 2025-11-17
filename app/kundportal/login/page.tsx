@@ -84,7 +84,7 @@ function LoginPageContent() {
         .from("owners")
         .select("id, full_name, email")
         .eq("email", email)
-        .single();
+        .maybeSingle();
 
       if (ownerError || !ownerData) {
         // Logga ut användaren om de inte är en registrerad ägare

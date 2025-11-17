@@ -56,11 +56,12 @@ export default function AdminAbonnemangPage() {
             created_at: new Date().toISOString(),
           },
         ])
-        .select()
-        .single();
+        .select();
 
-      if (error) {
-        throw new Error(`[ERR-4001] Skapa prenumeration: ${error.message}`);
+      if (error || !data || data.length === 0) {
+        throw new Error(
+          `[ERR-4001] Skapa prenumeration: ${error?.message || "No data returned"}`
+        );
       }
       await loadSubscription();
       alert("Prenumerationen har skapats!");

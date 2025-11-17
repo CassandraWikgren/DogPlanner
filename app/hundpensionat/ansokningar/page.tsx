@@ -320,7 +320,7 @@ export default function PensionatAnsokningarPage() {
         .from("bookings")
         .select("prepayment_invoice_id")
         .eq("id", bookingId)
-        .single();
+        .maybeSingle();
 
       let invoiceMessage = "";
       if (updatedBooking?.prepayment_invoice_id) {
@@ -332,7 +332,7 @@ export default function PensionatAnsokningarPage() {
         .from("orgs")
         .select("org_name")
         .eq("id", currentOrgId)
-        .single();
+        .maybeSingle();
 
       // Skicka godkännande-email till kund
       if (booking.dogs?.owners?.email) {
@@ -416,7 +416,7 @@ export default function PensionatAnsokningarPage() {
         .from("orgs")
         .select("org_name")
         .eq("id", currentOrgId)
-        .single();
+        .maybeSingle();
 
       // Skicka avslagsmail till kund
       if (booking.dogs?.owners?.email) {

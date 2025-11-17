@@ -290,14 +290,14 @@ export default function PensionatPriserPage() {
               is_active: true,
             },
           ])
-          .select()
-          .single();
+          .select();
 
-        if (error) throw error;
+        if (error || !data || data.length === 0)
+          throw error || new Error("No data returned");
 
         // Replace temp with real data
         setBoardingPrices((prev) =>
-          prev.map((p) => (p.dog_size === size ? data : p))
+          prev.map((p) => (p.dog_size === size ? data[0] : p))
         );
       }
 
@@ -330,12 +330,12 @@ export default function PensionatPriserPage() {
             ...newSpecialDate,
           },
         ])
-        .select()
-        .single();
+        .select();
 
-      if (error) throw error;
+      if (error || !data || data.length === 0)
+        throw error || new Error("No data returned");
 
-      setSpecialDates([...specialDates, data]);
+      setSpecialDates([...specialDates, data[0]]);
       setNewSpecialDate({
         date: "",
         name: "",
@@ -392,12 +392,12 @@ export default function PensionatPriserPage() {
             ...newSeason,
           },
         ])
-        .select()
-        .single();
+        .select();
 
-      if (error) throw error;
+      if (error || !data || data.length === 0)
+        throw error || new Error("No data returned");
 
-      setSeasons([...seasons, data]);
+      setSeasons([...seasons, data[0]]);
       setNewSeason({
         name: "",
         start_date: "",
