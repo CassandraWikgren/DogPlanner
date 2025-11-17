@@ -51,7 +51,7 @@ serve(async (req) => {
 
     // === Hämta alla hundar med ägare + organisation ===
     const { data: dogs, error: dogsErr } = await supabase.from("dogs").select(`
-      id, name, subscription, user_id, org_id,
+      id, name, subscription, owner_id, org_id,
       owner:owners (full_name, email)
     `);
     if (dogsErr) throw new Error(`Dogs fetch error: ${dogsErr.message}`);
@@ -80,8 +80,9 @@ serve(async (req) => {
     const owners = {};
     for (const d of dogs) {
       const ownerName = d.owner?.full_name ?? "Okänd ägare";
-      const orgId = d.org_id ?? d.user_id ?? null;
-      if (!owners[ownerName]) owners[ownerName] = { dogs: [], org_id: orgId };
+      const orgId = d.org_id ?? null;
+      const ownerId = d.owner_id ?? null; // Hämta owner_id direkt från dogs-tabellen
+      if (!owners[ownerName]) owners[ownerName] = { dogs: [], org_id: orgId, owner_id: ownerId };
       owners[ownerName].dogs.push(d);
     }
 
@@ -96,8 +97,8 @@ serve(async (req) => {
       const orgId = info.org_id ?? null;
       const ownerEmail = dogsList[0]?.owner?.email ?? "";
 
-      // FIX: Hämta owner_id från dogs.owner_id (inte user_id som inte finns)
-      const ownerId = dogsList[0]?.owner_id ?? null;
+      // Hämta owner_id från grupperade data (mer robust än att ta från första hunden)
+      const ownerId = info.owner_id ?? null;
 
       dogCount += dogsList.length;
       const lines = [];
