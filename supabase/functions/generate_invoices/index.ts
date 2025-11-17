@@ -20,14 +20,18 @@ serve(async (req) => {
 
   try {
     const body = await req.json().catch(() => ({}));
+
+    // FIX: Fakturera FÖREGÅENDE månad (inte aktuell månad)
+    // Om body.month anges, använd den, annars beräkna föregående månad
     const monthId =
       body.month ??
       (() => {
         const now = new Date();
-        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-          2,
-          "0"
-        )}`;
+        // Gå tillbaka en månad
+        const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        return `${prevMonth.getFullYear()}-${String(
+          prevMonth.getMonth() + 1
+        ).padStart(2, "0")}`;
       })();
 
     console.log("🧾 Generating invoices for:", monthId);
@@ -66,9 +70,11 @@ serve(async (req) => {
 
     console.log(`🐶 Found ${dogs.length} dogs.`);
     const invoices = [];
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    // FIX: Använd monthId för att beräkna rätt period (föregående månad)
+    const [year, month] = monthId.split("-").map(Number);
+    const startOfMonth = new Date(year, month - 1, 1);
+    const endOfMonth = new Date(year, month, 0);
 
     // === Gruppera hundar per ägare & org ===
     const owners = {};
@@ -82,11 +88,18 @@ serve(async (req) => {
     console.log(`👥 Grouped into ${Object.keys(owners).length} owners.`);
 
     // === Skapa fakturor ===
+    let totalAmount = 0;
+    let dogCount = 0;
+
     for (const [ownerName, info] of Object.entries(owners)) {
       const dogsList = info.dogs;
       const orgId = info.org_id ?? null;
       const ownerEmail = dogsList[0]?.owner?.email ?? "";
-      const ownerId = dogsList[0]?.user_id ?? null; // Hämta owner_id från första hunden
+
+      // FIX: Hämta owner_id från dogs.owner_id (inte user_id som inte finns)
+      const ownerId = dogsList[0]?.owner_id ?? null;
+
+      dogCount += dogsList.length;
       const lines = [];
       let total = 0;
 
@@ -119,6 +132,7 @@ serve(async (req) => {
           );
           continue;
         }
+
         // === Hämta aktiva pensionatsbokningar ===
         const { data: stays, error: staysErr } = await supabase
           .from("pension_stays")
@@ -130,6 +144,7 @@ serve(async (req) => {
     season, total_price
   `
           )
+          .eq("dog_id", d.id)
           .gte("check_in", startOfMonth.toISOString())
           .lte("check_out", endOfMonth.toISOString());
 
@@ -139,8 +154,11 @@ serve(async (req) => {
           );
           // Fortsätt ändå - det är okej om inga stays finns
         }
-        console.log(`🏨 Found ${stays?.length ?? 0} active stays`);
+        console.log(
+          `🏨 Found ${stays?.length ?? 0} active stays for ${d.name}`
+        );
 
+        // FIX: Lägg till extra services i fakturan
         for (const x of extras || []) {
           const qty = x.quantity ?? 1;
           const unit = x.price ?? 0;
@@ -151,6 +169,25 @@ serve(async (req) => {
             total: qty * unit,
           });
           total += qty * unit;
+        }
+
+        // FIX: Lägg till pensionatsbokningar i fakturan
+        for (const stay of stays || []) {
+          const checkIn = new Date(stay.check_in);
+          const checkOut = new Date(stay.check_out);
+          const nights = Math.ceil(
+            (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)
+          );
+          const stayTotal =
+            stay.total_price || nights * (stay.price_per_night || 0);
+
+          lines.push({
+            description: `${d.name} – Pensionat (${nights} ${nights === 1 ? "natt" : "nätter"}, ${checkIn.toLocaleDateString("sv-SE")} - ${checkOut.toLocaleDateString("sv-SE")})`,
+            quantity: nights,
+            unit_price: stay.price_per_night || 0,
+            total: stayTotal,
+          });
+          total += stayTotal;
         }
       }
 
@@ -172,15 +209,12 @@ serve(async (req) => {
     if (invoices.length > 0) {
       console.log(`💾 Inserting ${invoices.length} invoices...`);
 
-      let totalAmount = 0;
-      let dogCount = 0;
+      // FIX: totalAmount och dogCount redan beräknat ovan, ta bort duplicering
+      let invoiceCount = 0;
 
       for (const inv of invoices) {
         const lines = inv.lines; // Spara lines separat
         delete inv.lines; // Ta bort lines från invoice-objektet
-
-        totalAmount += inv.total_amount;
-        dogCount += info.dogs?.length || 0;
 
         // Insert invoice först
         const { data: insertedInvoice, error: insertErr } = await supabase
@@ -269,10 +303,18 @@ serve(async (req) => {
           console.warn(`⚠️ Email send exception: ${emailException.message}`);
           // Fortsätt trots email-fel
         }
+
+        invoiceCount++;
       }
 
       console.log(
-        `✅ Successfully inserted ${invoices.length} invoices with items.`
+        `✅ Successfully inserted ${invoiceCount} invoices with items.`
+      );
+
+      // Beräkna totalsummor för metadata
+      const totalInvoiceAmount = invoices.reduce(
+        (sum, inv) => sum + inv.total_amount,
+        0
       );
 
       // 3. Logga i invoice_runs tabell
@@ -280,9 +322,9 @@ serve(async (req) => {
         {
           month_id: monthId,
           status: "success",
-          invoices_created: invoices.length,
+          invoices_created: invoiceCount,
           metadata: {
-            total_amount: totalAmount,
+            total_amount: totalInvoiceAmount,
             dog_count: dogCount,
             timestamp: new Date().toISOString(),
           },

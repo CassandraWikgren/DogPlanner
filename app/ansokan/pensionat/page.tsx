@@ -3,7 +3,7 @@
 // Förhindra prerendering för att undvika build-fel
 export const dynamic = "force-dynamic";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import { Home, Send, CheckCircle, AlertCircle, Calendar } from "lucide-react";
@@ -13,6 +13,8 @@ import {
   sendApplicationConfirmationEmail,
   sendApplicationNotificationEmail,
 } from "@/lib/emailSender";
+import { calculatePensionatPrice } from "@/lib/pensionatCalculations";
+import type { PriceBreakdown } from "@/types/hundpensionat";
 
 export default function PensionatAnsokanPage() {
   const supabase = createClientComponentClient();
@@ -23,6 +25,12 @@ export default function PensionatAnsokanPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Prisberäkning
+  const [priceBreakdown, setPriceBreakdown] = useState<PriceBreakdown | null>(
+    null
+  );
+  const [calculatingPrice, setCalculatingPrice] = useState(false);
 
   // Formulärdata
   const [formData, setFormData] = useState({
@@ -832,17 +840,50 @@ export default function PensionatAnsokanPage() {
                       <span className="font-semibold text-sm">Vistelse</span>
                     </div>
                     <p className="text-sm text-gray-700">
-                      {Math.ceil(
-                        (new Date(formData.checkout_date).getTime() -
-                          new Date(formData.checkin_date).getTime()) /
-                          (1000 * 60 * 60 * 24)
-                      )}{" "}
-                      nätter
+                      {(() => {
+                        const nights = Math.ceil(
+                          (new Date(formData.checkout_date).getTime() -
+                            new Date(formData.checkin_date).getTime()) /
+                            (1000 * 60 * 60 * 24)
+                        );
+                        return `${nights} ${nights === 1 ? "natt" : "nätter"}`;
+                      })()}
                     </p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      Slutligt pris beräknas baserat på hundens storlek, datum
-                      och eventuella tilläggstjänster
-                    </p>
+                    {formData.dog_height_cm && (
+                      <div className="mt-3 pt-3 border-t border-[#2c7a4c]/20">
+                        <p className="text-sm font-semibold text-gray-900 mb-1">
+                          Uppskattat pris
+                        </p>
+                        <p className="text-lg font-bold text-[#2c7a4c]">
+                          {(() => {
+                            const nights = Math.ceil(
+                              (new Date(formData.checkout_date).getTime() -
+                                new Date(formData.checkin_date).getTime()) /
+                                (1000 * 60 * 60 * 24)
+                            );
+                            const height = parseInt(formData.dog_height_cm);
+                            // Enkel prisuppskattning baserat på storlek
+                            let pricePerNight = 300; // Liten hund
+                            if (height > 60)
+                              pricePerNight = 500; // Stor hund
+                            else if (height > 40) pricePerNight = 400; // Medelstor hund
+
+                            const totalPrice = nights * pricePerNight;
+                            return `${totalPrice.toLocaleString("sv-SE")} kr`;
+                          })()}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-2">
+                          Slutligt pris kan variera beroende på säsong,
+                          helgdagar och tilläggstjänster. Du får en exakt
+                          prisuppgift när {orgName} granskar din ansökan.
+                        </p>
+                      </div>
+                    )}
+                    {!formData.dog_height_cm && (
+                      <p className="text-xs text-gray-500 mt-2">
+                        Fyll i hundens mankhöjd för att se en prisuppskattning
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -939,11 +980,11 @@ export default function PensionatAnsokanPage() {
                     }
                   />
                   <span className="text-sm text-gray-700">
-                    Jag bekräftar att jag har tagit del av{" "}
-                    <strong>{orgName}s</strong> allmänna villkor, regler och
-                    avbokningspolicy. Jag har kontaktat pensionatet direkt för
-                    att läsa igenom deras specifika bestämmelser innan jag
-                    skickar denna ansökan.{" "}
+                    Jag bekräftar att jag har tagit kontakt med{" "}
+                    <strong>{orgName}</strong> och tagit del av deras allmänna
+                    villkor, regler och avbokningspolicy. Det är mitt ansvar som
+                    hundägare att ha läst igenom pensionatets specifika
+                    bestämmelser innan jag skickar denna ansökan.{" "}
                     <span className="text-red-600">*</span>
                   </span>
                 </label>
@@ -969,10 +1010,9 @@ export default function PensionatAnsokanPage() {
                     >
                       DogPlanners integritetspolicy
                     </Link>{" "}
-                    samt <strong>{orgName}s</strong> dataskyddspolicy, och
-                    samtycker till att mina personuppgifter delas med{" "}
-                    <strong>{orgName}</strong> för hantering av min
-                    bokningsförfrågan enligt GDPR.{" "}
+                    och samtycker till att mina personuppgifter lagras av
+                    DogPlanner och delas med <strong>{orgName}</strong> för
+                    hantering av min bokningsförfrågan enligt GDPR.{" "}
                     <span className="text-red-600">*</span>
                   </span>
                 </label>
