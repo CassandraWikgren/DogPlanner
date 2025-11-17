@@ -451,18 +451,18 @@ export default function PensionatPriserPage() {
             service_type: "boarding",
           },
         ])
-        .select()
-        .single();
+        .select();
 
       if (error) throw error;
+      if (!data || data.length === 0) throw new Error("Service not created");
 
-      setExtraServices([...extraServices, data]);
+      setExtraServices([...extraServices, data[0]]);
       setNewService({ label: "", price: 0, unit: "per gång" });
       setSuccess("✅ Tillvalstjänst tillagd!");
       setTimeout(() => setSuccess(null), 2000);
     } catch (err: any) {
       console.error("Error adding service:", err);
-      setError("Kunde inte lägga till tjänst");
+      setError(`Kunde inte lägga till tjänst: ${err.message || err}`);
     }
   };
 

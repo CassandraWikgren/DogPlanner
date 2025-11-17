@@ -58,13 +58,20 @@ export default function ApplicationsPage() {
     if (!currentOrgId) return;
 
     try {
+      console.log("🔍 Hämtar intresseanmälningar för org:", currentOrgId);
+
       const { data, error } = await supabase
         .from("interest_applications")
         .select("*")
         .eq("org_id", currentOrgId)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("❌ Error fetching applications:", error);
+        throw error;
+      }
+
+      console.log(`✅ Hittade ${data?.length || 0} intresseanmälningar:`, data);
       setApplications(data || []);
     } catch (error) {
       console.error("Fel vid hämtning av ansökningar:", error);
