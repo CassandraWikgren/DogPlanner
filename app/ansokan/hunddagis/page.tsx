@@ -54,6 +54,7 @@ export default function HunddagisAnsokanPage() {
 
     // GDPR
     gdpr_consent: false,
+    terms_accepted: false,
   });
 
   const dayOptions = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
@@ -102,8 +103,10 @@ export default function HunddagisAnsokanPage() {
       return "Välj vilka dagar hunden ska gå";
     }
     if (!formData.preferred_start_date) return "Ange önskat startdatum";
+    if (!formData.terms_accepted)
+      return "Du måste bekräfta att du har tagit del av dagisets villkor";
     if (!formData.gdpr_consent)
-      return "Du måste godkänna integritetspolicyn för att skicka ansökan";
+      return "Du måste godkänna DogPlanners integritetspolicy";
     return null;
   };
 
@@ -677,11 +680,33 @@ export default function HunddagisAnsokanPage() {
                 </div>
 
                 {/* GDPR */}
-                <div className="pt-6 border-t">
+                <div className="pt-6 border-t space-y-4">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="w-5 h-5 text-green-600 rounded focus:ring-green-500 mt-0.5"
+                      className="w-5 h-5 text-green-600 rounded focus:ring-green-500 mt-0.5 flex-shrink-0"
+                      checked={formData.terms_accepted}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          terms_accepted: e.target.checked,
+                        })
+                      }
+                    />
+                    <span className="text-sm text-gray-700">
+                      Jag bekräftar att jag har tagit kontakt med{" "}
+                      <strong>{orgName}</strong> och tagit del av deras allmänna
+                      villkor, regler och avbokningspolicy. Det är mitt ansvar
+                      som hundägare att ha läst igenom dagisets specifika
+                      bestämmelser innan jag skickar denna ansökan.{" "}
+                      <span className="text-red-600">*</span>
+                    </span>
+                  </label>
+
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="w-5 h-5 text-green-600 rounded focus:ring-green-500 mt-0.5 flex-shrink-0"
                       checked={formData.gdpr_consent}
                       onChange={(e) =>
                         setFormData({
@@ -695,15 +720,13 @@ export default function HunddagisAnsokanPage() {
                       <Link
                         href="/gdpr"
                         target="_blank"
-                        className="text-green-600 hover:underline"
+                        className="text-green-600 hover:underline font-medium"
                       >
                         DogPlanners integritetspolicy
                       </Link>{" "}
-                      samt bekräftar att jag har tagit del av{" "}
-                      <strong>{orgName}s</strong> allmänna villkor, regler och
-                      avbokningspolicy genom att kontakta dagishemmet direkt.
-                      Jag förstår att mina uppgifter delas med {orgName} för
-                      hantering av min ansökan.{" "}
+                      och samtycker till att mina personuppgifter lagras av
+                      DogPlanner och delas med <strong>{orgName}</strong> för
+                      hantering av min ansökan enligt GDPR.{" "}
                       <span className="text-red-600">*</span>
                     </span>
                   </label>
