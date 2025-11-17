@@ -55,7 +55,7 @@ export default function DagensHundarWidget() {
         .order("name");
 
       if (error) throw error;
-      setDogs(data || []);
+      setDogs((data as any) || []);
     } catch (error) {
       console.error("Fel vid hämtning av incheckade hundar:", error);
     } finally {

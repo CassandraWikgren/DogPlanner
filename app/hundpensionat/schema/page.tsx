@@ -88,9 +88,8 @@ export default function PensionatSchemaPage() {
     const dateStr = date.toISOString().split("T")[0];
 
     return bookings.find((booking) => {
-      // Kolla om bokningen har rätt room (via dog)
-      const bookingRoomId = booking.dogs?.room_id;
-      if (bookingRoomId !== roomId) return false;
+      // Kolla om bokningen har rätt room
+      if (booking.room_id !== roomId) return false;
 
       // Kolla om datumet är inom bokningens period
       const start = new Date(booking.start_date || "");
