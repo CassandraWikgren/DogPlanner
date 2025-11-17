@@ -48,6 +48,7 @@ export default function HundpensionatPage() {
   const [sortKey, setSortKey] = useState<string>("start_date");
   const [sortAsc, setSortAsc] = useState(true);
   const [selectedMonthId, setSelectedMonthId] = useState<string>("");
+  const [quickFilter, setQuickFilter] = useState<string>("all"); // ny state för snabbfilter
   const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>(
     {
       room: true,
@@ -159,6 +160,18 @@ export default function HundpensionatPage() {
 
   // Filtrering och sökning
   const filtered = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const weekEnd = new Date(today);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+
+    const nextWeekEnd = new Date(today);
+    nextWeekEnd.setDate(nextWeekEnd.getDate() + 14);
+
     return bookings.filter((booking) => {
       const searchTerm = search.toLowerCase();
       const monthMatch = selectedMonthId
@@ -172,9 +185,37 @@ export default function HundpensionatPage() {
         booking.rooms?.name?.toLowerCase().includes(searchTerm) ||
         booking.status?.toLowerCase().includes(searchTerm);
 
-      return monthMatch && textMatch;
+      // Snabbfilter baserat på datum
+      let quickFilterMatch = true;
+      if (quickFilter !== "all") {
+        const startDate = new Date(booking.start_date || "");
+        const endDate = new Date(booking.end_date || "");
+
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(0, 0, 0, 0);
+
+        switch (quickFilter) {
+          case "today":
+            // Hundar som är här idag (checkat in och inte checkat ut)
+            quickFilterMatch = startDate <= today && endDate >= today;
+            break;
+          case "this-week":
+            // Bokningar som startar eller pågår denna vecka
+            quickFilterMatch =
+              startDate < weekEnd || (startDate <= weekEnd && endDate >= today);
+            break;
+          case "next-week":
+            // Bokningar som startar nästa vecka
+            quickFilterMatch = startDate >= weekEnd && startDate < nextWeekEnd;
+            break;
+          default:
+            quickFilterMatch = true;
+        }
+      }
+
+      return monthMatch && textMatch && quickFilterMatch;
     });
-  }, [bookings, search, selectedMonthId]);
+  }, [bookings, search, selectedMonthId, quickFilter]);
 
   // Sortering
   const sorted = useMemo(() => {
@@ -414,7 +455,7 @@ export default function HundpensionatPage() {
 
         {/* Sök och filter box */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 mb-4">
             <select
               value={selectedMonthId}
               onChange={(e) => setSelectedMonthId(e.target.value)}
@@ -441,6 +482,97 @@ export default function HundpensionatPage() {
                 className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
               />
             </div>
+          </div>
+
+          {/* Snabbfilterknappar */}
+          <div className="flex items-center gap-2 pt-3 border-t border-gray-200">
+            <span className="text-sm font-medium text-gray-700 mr-2">
+              Snabbfilter:
+            </span>
+            <button
+              onClick={() => setQuickFilter("all")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "all"
+                  ? "bg-[#2c7a4c] text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Alla
+              <span className="ml-1.5 text-xs opacity-80">
+                {bookings.length}
+              </span>
+            </button>
+            <button
+              onClick={() => setQuickFilter("today")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "today"
+                  ? "bg-[#2c7a4c] text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Idag
+              <span className="ml-1.5 text-xs opacity-80">
+                {
+                  bookings.filter((b) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const start = new Date(b.start_date || "");
+                    const end = new Date(b.end_date || "");
+                    start.setHours(0, 0, 0, 0);
+                    end.setHours(0, 0, 0, 0);
+                    return start <= today && end >= today;
+                  }).length
+                }
+              </span>
+            </button>
+            <button
+              onClick={() => setQuickFilter("this-week")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "this-week"
+                  ? "bg-[#2c7a4c] text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Denna vecka
+              <span className="ml-1.5 text-xs opacity-80">
+                {
+                  bookings.filter((b) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const weekEnd = new Date(today);
+                    weekEnd.setDate(weekEnd.getDate() + 7);
+                    const start = new Date(b.start_date || "");
+                    start.setHours(0, 0, 0, 0);
+                    return start < weekEnd;
+                  }).length
+                }
+              </span>
+            </button>
+            <button
+              onClick={() => setQuickFilter("next-week")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "next-week"
+                  ? "bg-[#2c7a4c] text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Nästa vecka
+              <span className="ml-1.5 text-xs opacity-80">
+                {
+                  bookings.filter((b) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const weekEnd = new Date(today);
+                    weekEnd.setDate(weekEnd.getDate() + 7);
+                    const nextWeekEnd = new Date(today);
+                    nextWeekEnd.setDate(nextWeekEnd.getDate() + 14);
+                    const start = new Date(b.start_date || "");
+                    start.setHours(0, 0, 0, 0);
+                    return start >= weekEnd && start < nextWeekEnd;
+                  }).length
+                }
+              </span>
+            </button>
           </div>
         </div>
 

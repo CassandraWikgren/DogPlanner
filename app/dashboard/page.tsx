@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
 import { StandardCard } from "@/components/ui/standard";
 import DashboardWidgets from "@/components/DashboardWidgets";
+import DagensHundarWidget from "@/components/DagensHundarWidget";
 
 export default function Dashboard() {
   const { user, loading: authLoading, currentOrgId } = useAuth();
@@ -37,7 +38,14 @@ export default function Dashboard() {
       {/* Stats overview - om org finns */}
       {currentOrgId && (
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <DashboardWidgets />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div className="lg:col-span-2">
+              <DashboardWidgets />
+            </div>
+            <div>
+              <DagensHundarWidget />
+            </div>
+          </div>
         </div>
       )}
 
