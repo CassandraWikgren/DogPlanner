@@ -360,13 +360,25 @@ export default function RapporterPage() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <p className="text-red-600 font-medium">{error}</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
+            <div className="text-5xl mb-4">📊</div>
+            <p className="text-yellow-800 font-medium text-lg mb-2">
+              {error === ERROR_CODES.FETCH_BOOKINGS
+                ? "Ingen bokningsdata att visa"
+                : error === ERROR_CODES.NO_ORG
+                  ? "Ingen organisation tilldelad"
+                  : error}
+            </p>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              {error === ERROR_CODES.FETCH_BOOKINGS
+                ? "Det finns inga bokningar för det valda datumintervallet. Skapa din första bokning för att se rapporter här!"
+                : "Ett fel uppstod vid hämtning av data. Prova att ladda om sidan."}
+            </p>
             <button
-              onClick={() => fetchReportData()}
-              className="mt-4 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
+              onClick={() => (window.location.href = "/dashboard")}
+              className="px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors font-medium"
             >
-              Försök igen
+              Gå till Dashboard
             </button>
           </div>
         </div>

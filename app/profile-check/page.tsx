@@ -24,35 +24,37 @@ export default function ProfileCheckPage() {
     try {
       setDbError(null); // Reset error
 
-      // Hämta profil direkt från databas
+      // Hämta profil direkt från databas (utan .single() för att undvika PGRST116)
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user?.id)
-        .single();
+        .eq("id", user?.id);
 
       if (profileError) {
         console.error("Profile error:", profileError);
         setDbError(
           `Profile error: ${profileError.message} (Code: ${profileError.code})`
         );
-      } else {
-        setDbProfile(profileData);
+      } else if (profileData && profileData.length > 0) {
+        // Ta första profilen om det finns flera
+        const profile = profileData[0];
+        setDbProfile(profile);
 
         // Om profil har org_id, hämta org-info
-        if (profileData?.org_id) {
+        if (profile?.org_id) {
           const { data: orgData, error: orgError } = await supabase
             .from("orgs")
             .select("*")
-            .eq("id", profileData.org_id)
-            .single();
+            .eq("id", profile.org_id);
 
           if (orgError) {
             setDbError(`Org error: ${orgError.message}`);
-          } else {
-            setDbOrg(orgData);
+          } else if (orgData && orgData.length > 0) {
+            setDbOrg(orgData[0]);
           }
         }
+      } else {
+        setDbError("Ingen profil returnerades från databasen");
       }
     } catch (err: any) {
       console.error("Error checking database:", err);
