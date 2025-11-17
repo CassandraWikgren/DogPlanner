@@ -123,9 +123,11 @@ export function DogBreedSelect({
         type="button"
         id={id}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-3 py-2 text-left bg-white border rounded-md flex items-center justify-between ${
-          isOpen ? "border-green-500 ring-2 ring-green-200" : "border-gray-300"
-        } hover:border-green-400 transition-colors`}
+        className={`w-full px-4 py-3 text-left bg-white border rounded-lg flex items-center justify-between transition-colors ${
+          isOpen
+            ? "border-[#2c7a4c] ring-2 ring-[#2c7a4c]/20"
+            : "border-gray-300 hover:border-gray-400"
+        }`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -133,7 +135,7 @@ export function DogBreedSelect({
           {value || placeholder}
         </span>
         <ChevronDown
-          className={`h-4 w-4 text-gray-400 transition-transform ${
+          className={`h-5 w-5 text-gray-400 transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -141,24 +143,24 @@ export function DogBreedSelect({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+        <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl">
           {/* Sökfält */}
-          <div className="p-2 border-b border-gray-200">
+          <div className="p-3 border-b border-gray-100">
             <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 ref={searchInputRef}
                 type="text"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
-                  setHighlightedIndex(0); // Reset highlight vid ny sökning
+                  setHighlightedIndex(0);
                 }}
                 placeholder="Sök hundras..."
-                className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]/20 focus:border-[#2c7a4c]"
               />
             </div>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-gray-500">
               Tryck på första bokstaven för att hoppa till rasen
             </p>
           </div>
@@ -179,13 +181,11 @@ export function DogBreedSelect({
                     setIsOpen(false);
                     setSearch("");
                   }}
-                  className={`w-full px-3 py-2 text-left text-sm hover:bg-green-50 transition-colors ${
-                    breed === value ? "bg-green-100 font-medium" : ""
-                  } ${
-                    index === highlightedIndex
-                      ? "bg-green-50 border-l-4 border-green-500"
-                      : ""
-                  }`}
+                  className={`w-full px-4 py-2.5 text-left text-sm transition-colors border-l-2 ${
+                    breed === value
+                      ? "bg-gray-50 border-l-[#2c7a4c] font-medium text-gray-900"
+                      : "border-l-transparent hover:bg-gray-50 text-gray-700"
+                  } ${index === highlightedIndex ? "bg-gray-50" : ""}`}
                   role="option"
                   aria-selected={breed === value}
                 >
@@ -193,7 +193,7 @@ export function DogBreedSelect({
                 </button>
               ))
             ) : (
-              <div className="px-3 py-8 text-center text-sm text-gray-500">
+              <div className="px-4 py-8 text-center text-sm text-gray-500">
                 Ingen hundras hittades
               </div>
             )}

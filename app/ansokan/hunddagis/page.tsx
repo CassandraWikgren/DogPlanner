@@ -556,10 +556,10 @@ export default function HunddagisAnsokanPage() {
               </h2>
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
                     Typ av abonnemang <span className="text-red-600">*</span>
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-4">
                     {[
                       {
                         value: "Heltid",
@@ -585,18 +585,25 @@ export default function HunddagisAnsokanPage() {
                           setFormData({
                             ...formData,
                             subscription_type: option.value as any,
+                            preferred_days: [], // Rensa valda dagar när man byter abonnemang
                           })
                         }
-                        className={`p-4 border-2 rounded-lg text-left transition ${
+                        className={`p-4 border-2 rounded-lg text-left transition-all ${
                           formData.subscription_type === option.value
-                            ? "border-green-600 bg-green-50"
-                            : "border-gray-200 hover:border-gray-300"
+                            ? "border-[#2c7a4c] bg-white shadow-md ring-2 ring-[#2c7a4c]/20"
+                            : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
                         }`}
                       >
-                        <div className="font-semibold text-gray-800">
+                        <div
+                          className={`font-semibold ${
+                            formData.subscription_type === option.value
+                              ? "text-[#2c7a4c]"
+                              : "text-gray-800"
+                          }`}
+                        >
                           {option.label}
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 mt-1">
                           {option.desc}
                         </div>
                       </button>
@@ -606,26 +613,49 @@ export default function HunddagisAnsokanPage() {
 
                 {(formData.subscription_type === "Deltid 2" ||
                   formData.subscription_type === "Deltid 3") && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Önskade veckodagar <span className="text-red-600">*</span>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <label className="block text-sm font-medium text-gray-800 mb-3">
+                      Välj specifika veckodagar{" "}
+                      <span className="text-red-600">*</span>
                     </label>
-                    <div className="flex flex-wrap gap-2">
+                    <p className="text-sm text-gray-600 mb-4">
+                      {formData.subscription_type === "Deltid 2"
+                        ? "Välj exakt 2 dagar"
+                        : "Välj exakt 3 dagar"}
+                    </p>
+                    <div className="space-y-2">
                       {dayOptions.map((day) => (
-                        <button
+                        <label
                           key={day}
-                          type="button"
-                          onClick={() => toggleDay(day)}
-                          className={`px-4 py-2 rounded-lg font-medium transition ${
+                          className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
                             formData.preferred_days.includes(day)
-                              ? "bg-green-600 text-white"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                              ? "border-[#2c7a4c] bg-white shadow-sm"
+                              : "border-gray-200 bg-white hover:border-gray-300"
                           }`}
                         >
-                          {day.slice(0, 3)}
-                        </button>
+                          <input
+                            type="checkbox"
+                            checked={formData.preferred_days.includes(day)}
+                            onChange={() => toggleDay(day)}
+                            className="w-5 h-5 text-[#2c7a4c] border-gray-300 rounded focus:ring-[#2c7a4c]"
+                          />
+                          <span
+                            className={`font-medium ${
+                              formData.preferred_days.includes(day)
+                                ? "text-[#2c7a4c]"
+                                : "text-gray-700"
+                            }`}
+                          >
+                            {day}
+                          </span>
+                        </label>
                       ))}
                     </div>
+                    <p className="text-xs text-gray-500 mt-3">
+                      Valt: {formData.preferred_days.length} av{" "}
+                      {formData.subscription_type === "Deltid 2" ? "2" : "3"}{" "}
+                      dagar
+                    </p>
                   </div>
                 )}
 
