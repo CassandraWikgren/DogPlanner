@@ -1,8 +1,82 @@
-<!-- Last updated: 2025-11-17 (Booking System Complete + GDPR + Audit Log) -->
+<!-- Last updated: 2025-11-17 (Organisationsval-system) -->
 
 ---
 
 ## 🔄 Senaste Uppdateringar (17 november 2025)
+
+### 🏢 ORGANISATIONSVAL-SYSTEM (17 november)
+
+**Status:** Fullt implementerat och pushat till GitHub ✅
+
+#### ✅ Vad som implementerats
+
+**1. Databas-migration** (`supabase/migrations/20251117_add_org_location_and_services.sql`)
+
+Nya kolumner i `orgs`:
+
+- `lan` (text) - Län där organisationen är verksam (t.ex. "Stockholm", "Västra Götaland")
+- `kommun` (text) - Kommun där organisationen är verksam (t.ex. "Stockholm", "Göteborg")
+- `service_types` (text[]) - Array av tjänster: ["hunddagis", "hundpensionat", "hundfrisor"]
+- `is_visible_to_customers` (boolean) - Om organisationen ska synas i public selector
+
+Nya index för prestanda:
+
+- `idx_orgs_lan` - På län-kolumnen
+- `idx_orgs_kommun` - På kommun-kolumnen
+- `idx_orgs_service_types` - GIN-index för array-sökning
+- `idx_orgs_visible` - Filtrerat index på synliga organisationer
+
+**2. OrganisationSelector-komponent** (`components/OrganisationSelector.tsx`)
+
+- ✅ **Län-dropdown** - Välj län först (21 svenska län)
+- ✅ **Kommun-dropdown** - Filtreras automatiskt baserat på valt län
+- ✅ **Organisationskort** - Visar alla företag i vald kommun med:
+  - Företagsnamn och tjänstetyper
+  - Adress och kontaktinfo
+  - Markering av vald organisation
+- ✅ **Cascading filtering** - län → kommun → organisation
+- ✅ **Servicetyp-filtrering** - Endast relevanta företag visas (hunddagis/pensionat/frisör)
+- ✅ **Disclaimer** - Tydlig information om att DogPlanner är en plattform
+
+**3. Uppdaterade ansökningsformulär**
+
+`app/ansokan/hunddagis/page.tsx`:
+
+- ✅ Nytt **Steg 0: Välj hunddagis** innan hundinfo
+- ✅ Progress-indikator uppdaterad (4 steg istället för 3)
+- ✅ Organisationsval sparas i state (orgId, orgName)
+- ✅ Validering: Kan inte gå vidare utan att välja organisation
+- ✅ GDPR-text uppdaterad: Nämner både DogPlanner och valt företag
+- ✅ Bekräftelse-sida: "Tack för din ansökan till {orgName}!"
+
+`app/ansokan/pensionat/page.tsx`:
+
+- ✅ Nytt **Steg 0: Välj hundpensionat** innan hundinfo
+- ✅ Progress-indikator uppdaterad (5 steg istället för 4)
+- ✅ Fixat UUID-error: Tog bort "REPLACE_WITH_ACTUAL_ORG_ID"
+- ✅ Alla org_id → orgId referenser korrigerade
+- ✅ GDPR-text uppdaterad för klarhet
+- ✅ "Vad händer nu?"-sektion uppdaterad
+
+**4. Landningssida omskriven** (`app/page.tsx`)
+
+Stora textändringar för att förtydliga plattformsrollen:
+
+- ✅ Hero: "Hitta trygg omsorg för din hund" (istället för "Trygg omsorg")
+- ✅ Ny sektion: **"Hur DogPlanner fungerar"** (3-stegs process)
+- ✅ Tjänstebeskrivning: "Tjänster via anslutna hundverksamheter"
+- ✅ Ny sektion: **"Vad anslutna företag erbjuder"**
+- ✅ Disclaimer: "DogPlanner är en bokningsplattform..."
+- ✅ FAQ omskriven: 6 nya frågor om hur plattformen fungerar
+- ✅ CTA uppdaterade: "Sök hunddagis/pensionat" (istället för "Boka")
+
+**5. Dokumentation**
+
+- ✅ `ÄNDRINGAR_2025-11-17.md` - Komplett changelog
+- ✅ `STEG_FÖR_STEG_GUIDE.md` - Installation och felsökning
+- ✅ `supabase/UPDATE_ORGS_EXAMPLES.sql` - SQL-exempel för att uppdatera organisationer
+
+---
 
 ### 🎯 KOMPLETT BOKNINGSSYSTEM för Hundpensionat (17 november)
 

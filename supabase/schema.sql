@@ -1,9 +1,21 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-16 (Avbokningssystem + GDPR + Audit Log)
+-- Uppdaterad 2025-11-17 (Organisationsval-system)
 -- ========================================
 --
--- === SENASTE ÄNDRINGAR (2025-11-16) ===
+-- === SENASTE ÄNDRINGAR (2025-11-17) ===
+--
+-- 🏢 ORGANISATIONSVAL-SYSTEM:
+--   • orgs.lan (text) - Län där organisationen är verksam
+--   • orgs.kommun (text) - Kommun där organisationen är verksam
+--   • orgs.service_types (text[]) - Array av tjänster: ["hunddagis", "hundpensionat", "hundfrisor"]
+--   • orgs.is_visible_to_customers (boolean) - Om organisationen ska synas i public selector
+--   • Nya komponenter: OrganisationSelector med län/kommun cascading dropdowns
+--   • Ansökningsformulär uppdaterade: hunddagis och pensionat börjar nu med org-val (steg 0)
+--   • Index: idx_orgs_lan, idx_orgs_kommun, idx_orgs_service_types (GIN), idx_orgs_visible
+--   • Migration: 20251117_add_org_location_and_services.sql
+--
+-- === TIDIGARE ÄNDRINGAR (2025-11-16) ===
 --
 -- 🆕 AVBOKNINGSSYSTEM:
 --   • bookings.cancellation_reason - Orsak till avbokning
@@ -210,6 +222,11 @@ CREATE TABLE IF NOT EXISTS orgs (
     "allow_customer_cancellation": true,
     "cancellation_fee_type": "percentage"
   }'::jsonb, -- Organisationens avbokningsregler
+  -- ORGANISATIONSVAL-SYSTEM (tillagt 2025-11-17)
+  lan text, -- Län där organisationen är verksam (t.ex. "Stockholm", "Västra Götaland")
+  kommun text, -- Kommun där organisationen är verksam (t.ex. "Stockholm", "Göteborg")
+  service_types text[] DEFAULT ARRAY[]::text[], -- Array av tjänster: ["hunddagis", "hundpensionat", "hundfrisor"]
+  is_visible_to_customers boolean DEFAULT true, -- Om organisationen ska synas i public organisation selector
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
@@ -389,6 +406,12 @@ CREATE TABLE IF NOT EXISTS extra_service (
 CREATE INDEX IF NOT EXISTS idx_extra_service_service_id ON extra_service(service_id);
 CREATE INDEX IF NOT EXISTS idx_extra_service_dogs_id ON extra_service(dogs_id);
 CREATE INDEX IF NOT EXISTS idx_extra_service_org_id ON extra_service(org_id);
+
+-- === ORGS INDEXES (tillagt 2025-11-17) ===
+CREATE INDEX IF NOT EXISTS idx_orgs_lan ON orgs(lan);
+CREATE INDEX IF NOT EXISTS idx_orgs_kommun ON orgs(kommun);
+CREATE INDEX IF NOT EXISTS idx_orgs_service_types ON orgs USING gin(service_types);
+CREATE INDEX IF NOT EXISTS idx_orgs_visible ON orgs(is_visible_to_customers) WHERE is_visible_to_customers = true;
 
 -- === BOOKINGS INDEXES (tillagt 2025-11-15) ===
 CREATE INDEX IF NOT EXISTS idx_bookings_bed_location ON bookings(bed_location);

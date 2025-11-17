@@ -3,52 +3,21 @@
 // Förhindra prerendering för att undvika build-fel
 export const dynamic = "force-dynamic";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import { Heart, Send, CheckCircle, AlertCircle } from "lucide-react";
+import OrganisationSelector from "@/components/OrganisationSelector";
 
 export default function HunddagisAnsokanPage() {
   const supabase = createClientComponentClient();
   const [orgId, setOrgId] = useState<string | null>(null);
+  const [orgName, setOrgName] = useState<string>("");
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Start at step 0 for organisation selection
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Hämta org_id från URL eller default organisation
-  useEffect(() => {
-    async function fetchOrgId() {
-      try {
-        // Försök hämta från URL subdomain eller query parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const orgParam = urlParams.get("org");
-
-        if (orgParam) {
-          setOrgId(orgParam);
-          return;
-        }
-
-        // Annars hämta första organisationen från databasen (för demo)
-        const { data, error } = await supabase
-          .from("organisations")
-          .select("id")
-          .limit(1)
-          .single();
-
-        if (error) throw error;
-        if (data) setOrgId(data.id);
-      } catch (err) {
-        console.error("Could not fetch org_id:", err);
-        setError(
-          "Kunde inte ladda organisationsinformation. Vänligen försök igen."
-        );
-      }
-    }
-
-    fetchOrgId();
-  }, [supabase]);
 
   // Formulärdata
   const [formData, setFormData] = useState({
@@ -98,6 +67,11 @@ export default function HunddagisAnsokanPage() {
   };
 
   const validateStep1 = () => {
+    if (!orgId) return "Välj ett hunddagis att ansöka till";
+    return null;
+  };
+
+  const validateStep2 = () => {
     if (!formData.parent_name.trim()) return "Ange ditt för- och efternamn";
     if (!formData.parent_email.trim()) return "Ange din e-postadress";
     if (!/^\S+@\S+\.\S+$/.test(formData.parent_email))
@@ -107,7 +81,7 @@ export default function HunddagisAnsokanPage() {
     return null;
   };
 
-  const validateStep2 = () => {
+  const validateStep3 = () => {
     if (!formData.dog_name.trim()) return "Ange hundens namn";
     if (!formData.dog_breed.trim()) return "Ange hundens ras";
     if (!formData.dog_birth) return "Ange hundens födelsedatum";
@@ -117,7 +91,7 @@ export default function HunddagisAnsokanPage() {
     return null;
   };
 
-  const validateStep3 = () => {
+  const validateStep4 = () => {
     if (!formData.subscription_type) return "Välj önskat abonnemang";
     if (
       (formData.subscription_type === "Deltid 2" ||
@@ -136,8 +110,9 @@ export default function HunddagisAnsokanPage() {
     setError(null);
 
     let validationError = null;
-    if (step === 1) validationError = validateStep1();
-    if (step === 2) validationError = validateStep2();
+    if (step === 0) validationError = validateStep1();
+    if (step === 1) validationError = validateStep2();
+    if (step === 2) validationError = validateStep3();
 
     if (validationError) {
       setError(validationError);
@@ -150,7 +125,7 @@ export default function HunddagisAnsokanPage() {
   const handleSubmit = async () => {
     setError(null);
 
-    const validationError = validateStep3();
+    const validationError = validateStep4();
     if (validationError) {
       setError(validationError);
       return;
@@ -162,7 +137,7 @@ export default function HunddagisAnsokanPage() {
       // Validera att vi har org_id
       if (!orgId) {
         throw new Error(
-          "Organisation kunde inte identifieras. Vänligen kontakta support."
+          "Organisation kunde inte identifieras. Vänligen välj ett hunddagis."
         );
       }
 
@@ -213,7 +188,7 @@ export default function HunddagisAnsokanPage() {
             <CheckCircle className="h-16 w-16 text-green-600 mx-auto" />
           </div>
           <h1 className="text-2xl font-bold text-gray-800 mb-3">
-            Tack för din ansökan!
+            Tack för din ansökan till {orgName}!
           </h1>
           <p className="text-gray-600 mb-6">
             Vi har mottagit din intresseanmälan för{" "}
@@ -224,7 +199,8 @@ export default function HunddagisAnsokanPage() {
             <strong>{formData.parent_email}</strong> inom kort.
             <br />
             <br />
-            Vi kontaktar dig så snart vi har gått igenom din ansökan!
+            <strong>{orgName}</strong> kommer att kontakta dig så snart de har
+            gått igenom din ansökan. Detta är vanligtvis inom 1-2 arbetsdagar.
           </p>
           <Link
             href="/"
@@ -255,7 +231,7 @@ export default function HunddagisAnsokanPage() {
 
         {/* Progress */}
         <div className="flex items-center justify-center gap-4 mb-8">
-          {[1, 2, 3].map((s) => (
+          {[0, 1, 2, 3].map((s) => (
             <div key={s} className="flex items-center gap-2">
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition ${
@@ -266,7 +242,7 @@ export default function HunddagisAnsokanPage() {
                       : "bg-gray-200 text-gray-500"
                 }`}
               >
-                {s}
+                {s + 1}
               </div>
               {s < 3 && (
                 <div
@@ -289,11 +265,44 @@ export default function HunddagisAnsokanPage() {
 
         {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-lg p-8">
+          {/* Step 0: Välj hunddagis */}
+          {step === 0 && (
+            <div>
+              <h2 className="text-xl font-bold text-gray-800 mb-2">
+                Steg 1: Välj hunddagis
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Välj vilket hunddagis du vill skicka din ansökan till. Du kan
+                filtrera på län och kommun för att hitta dagis i ditt område.
+              </p>
+
+              <OrganisationSelector
+                serviceType="hunddagis"
+                selectedOrgId={orgId}
+                onSelect={(id, name) => {
+                  setOrgId(id);
+                  setOrgName(name);
+                }}
+                required
+              />
+
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  ℹ️ <strong>Viktigt att veta:</strong> DogPlanner är en
+                  plattform som kopplar samman hundägare med hunddagis. När du
+                  skickar denna ansökan går den direkt till det valda dagiset
+                  som hanterar och godkänner ansökningar. Läs alltid företagets
+                  egna villkor och avtal innan du accepterar en dagisplats.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Step 1: Dina uppgifter */}
           {step === 1 && (
             <div>
               <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Steg 1: Dina uppgifter
+                Steg 2: Dina uppgifter
               </h2>
               <div className="space-y-4">
                 <div>
@@ -363,7 +372,7 @@ export default function HunddagisAnsokanPage() {
           {step === 2 && (
             <div>
               <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Steg 2: Om hunden
+                Steg 3: Om hunden
               </h2>
               <div className="space-y-4">
                 <div>
@@ -543,7 +552,7 @@ export default function HunddagisAnsokanPage() {
           {step === 3 && (
             <div>
               <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Steg 3: Önskat abonnemang
+                Steg 4: Önskat abonnemang
               </h2>
               <div className="space-y-6">
                 <div>
@@ -652,14 +661,17 @@ export default function HunddagisAnsokanPage() {
                       }
                     />
                     <span className="text-sm text-gray-700">
-                      Jag har läst och godkänner hunddagisets{" "}
+                      Jag har läst och godkänner{" "}
                       <Link
                         href="/gdpr"
                         target="_blank"
                         className="text-green-600 hover:underline"
                       >
-                        integritetspolicy
+                        DogPlanners integritetspolicy
                       </Link>{" "}
+                      samt <strong>{orgName}s</strong> villkor och avtal. Jag
+                      förstår att mina uppgifter delas med {orgName} för
+                      hantering av min ansökan.{" "}
                       <span className="text-red-600">*</span>
                     </span>
                   </label>
@@ -670,7 +682,7 @@ export default function HunddagisAnsokanPage() {
 
           {/* Navigation Buttons */}
           <div className="flex gap-4 mt-8 pt-6 border-t">
-            {step > 1 && (
+            {step > 0 && (
               <button
                 onClick={() => setStep(step - 1)}
                 className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition"

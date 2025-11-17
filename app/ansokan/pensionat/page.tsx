@@ -7,11 +7,14 @@ import React, { useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import { Home, Send, CheckCircle, AlertCircle, Calendar } from "lucide-react";
+import OrganisationSelector from "@/components/OrganisationSelector";
 
 export default function PensionatAnsokanPage() {
   const supabase = createClientComponentClient();
+  const [orgId, setOrgId] = useState<string | null>(null);
+  const [orgName, setOrgName] = useState<string>("");
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Start at step 0 for organisation selection
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +56,11 @@ export default function PensionatAnsokanPage() {
   });
 
   const validateStep1 = () => {
+    if (!orgId) return "Välj ett hundpensionat att ansöka till";
+    return null;
+  };
+
+  const validateStep2 = () => {
     if (!formData.owner_name.trim()) return "Ange ditt för- och efternamn";
     if (!formData.owner_email.trim()) return "Ange din e-postadress";
     if (!/^\S+@\S+\.\S+$/.test(formData.owner_email))
@@ -62,7 +70,7 @@ export default function PensionatAnsokanPage() {
     return null;
   };
 
-  const validateStep2 = () => {
+  const validateStep3 = () => {
     if (!formData.dog_name.trim()) return "Ange hundens namn";
     if (!formData.dog_breed.trim()) return "Ange hundens ras";
     if (!formData.dog_birth) return "Ange hundens födelsedatum";
@@ -72,7 +80,7 @@ export default function PensionatAnsokanPage() {
     return null;
   };
 
-  const validateStep3 = () => {
+  const validateStep4 = () => {
     if (!formData.checkin_date) return "Ange incheckningsdatum";
     if (!formData.checkout_date) return "Ange utcheckningsdatum";
 
@@ -86,7 +94,7 @@ export default function PensionatAnsokanPage() {
     return null;
   };
 
-  const validateStep4 = () => {
+  const validateStep5 = () => {
     if (!formData.gdpr_consent)
       return "Du måste godkänna integritetspolicyn för att skicka ansökan";
     if (!formData.terms_accepted)
@@ -98,9 +106,10 @@ export default function PensionatAnsokanPage() {
     setError(null);
 
     let validationError = null;
-    if (step === 1) validationError = validateStep1();
-    if (step === 2) validationError = validateStep2();
-    if (step === 3) validationError = validateStep3();
+    if (step === 0) validationError = validateStep1();
+    if (step === 1) validationError = validateStep2();
+    if (step === 2) validationError = validateStep3();
+    if (step === 3) validationError = validateStep4();
 
     if (validationError) {
       setError(validationError);
@@ -113,7 +122,7 @@ export default function PensionatAnsokanPage() {
   const handleSubmit = async () => {
     setError(null);
 
-    const validationError = validateStep4();
+    const validationError = validateStep5();
     if (validationError) {
       setError(validationError);
       return;
@@ -122,9 +131,12 @@ export default function PensionatAnsokanPage() {
     setSubmitting(true);
 
     try {
-      // TODO: Hitta org_id baserat på subdomän eller URL-parameter
-      // För nu använder vi ett placeholder-värde
-      const org_id = "REPLACE_WITH_ACTUAL_ORG_ID";
+      // Validera att vi har org_id
+      if (!orgId) {
+        throw new Error(
+          "Organisation kunde inte identifieras. Vänligen välj ett hundpensionat."
+        );
+      }
 
       // 1. Skapa eller hitta ägare
       let owner_id: string;
@@ -133,7 +145,7 @@ export default function PensionatAnsokanPage() {
         .from("owners")
         .select("id")
         .eq("email", formData.owner_email.trim().toLowerCase())
-        .eq("org_id", org_id)
+        .eq("org_id", orgId)
         .maybeSingle();
 
       if (ownerSearchError) throw ownerSearchError;
@@ -146,7 +158,7 @@ export default function PensionatAnsokanPage() {
           .from("owners")
           .insert([
             {
-              org_id,
+              org_id: orgId,
               full_name: formData.owner_name.trim(),
               email: formData.owner_email.trim().toLowerCase(),
               phone: formData.owner_phone.trim(),
@@ -168,7 +180,7 @@ export default function PensionatAnsokanPage() {
         .from("dogs")
         .insert([
           {
-            org_id,
+            org_id: orgId,
             owner_id,
             name: formData.dog_name.trim(),
             breed: formData.dog_breed.trim(),
@@ -190,7 +202,7 @@ export default function PensionatAnsokanPage() {
       // 3. Skapa bokning med status "pending"
       const { error: bookingError } = await supabase.from("bookings").insert([
         {
-          org_id,
+          org_id: orgId,
           dog_id: newDog.id,
           owner_id,
           start_date: formData.checkin_date,
@@ -209,7 +221,7 @@ export default function PensionatAnsokanPage() {
         .from("consent_logs")
         .insert([
           {
-            org_id,
+            org_id: orgId,
             owner_id,
             consent_type: "booking_application",
             consent_given: true,
@@ -241,7 +253,7 @@ export default function PensionatAnsokanPage() {
             <CheckCircle className="h-16 w-16 text-[#2c7a4c] mx-auto" />
           </div>
           <h1 className="text-2xl font-bold text-gray-800 mb-3">
-            Tack för din ansökan!
+            Tack för din ansökan till {orgName}!
           </h1>
           <p className="text-gray-600 mb-6">
             Vi har mottagit din bokningsförfrågan för{" "}
@@ -259,8 +271,9 @@ export default function PensionatAnsokanPage() {
             <strong>{formData.owner_email}</strong> inom kort.
             <br />
             <br />
-            Vi kontaktar dig så snart vi har gått igenom din ansökan och kan
-            bekräfta din bokning!
+            <strong>{orgName}</strong> kommer att kontakta dig så snart de har
+            gått igenom din ansökan och kan bekräfta din bokning! Detta är
+            vanligtvis inom 1-2 arbetsdagar.
           </p>
           <Link
             href="/"
@@ -291,7 +304,7 @@ export default function PensionatAnsokanPage() {
 
         {/* Progress */}
         <div className="flex items-center justify-center gap-4 mb-8">
-          {[1, 2, 3, 4].map((s) => (
+          {[0, 1, 2, 3, 4].map((s) => (
             <div key={s} className="flex items-center gap-2">
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition ${
@@ -302,7 +315,7 @@ export default function PensionatAnsokanPage() {
                       : "bg-gray-200 text-gray-500"
                 }`}
               >
-                {s}
+                {s + 1}
               </div>
               {s < 4 && (
                 <div
@@ -325,11 +338,51 @@ export default function PensionatAnsokanPage() {
 
         {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-lg p-8">
+          {/* Step 0: Välj pensionat */}
+          {step === 0 && (
+            <div>
+              <h2 className="text-xl font-bold text-gray-800 mb-2">
+                Steg 1: Välj hundpensionat
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Välj vilket hundpensionat du vill skicka din bokningsförfrågan
+                till. Du kan filtrera på län och kommun för att hitta pensionat
+                i ditt område.
+              </p>
+
+              <OrganisationSelector
+                serviceType="hundpensionat"
+                selectedOrgId={orgId}
+                onSelect={(id, name) => {
+                  setOrgId(id);
+                  setOrgName(name);
+                }}
+                required
+              />
+
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  ℹ️ <strong>Viktigt att veta:</strong> DogPlanner är en
+                  plattform som kopplar samman hundägare med hundpensionat. När
+                  du skickar denna bokningsförfrågan går den direkt till det
+                  valda pensionatet som hanterar och godkänner bokningar.{" "}
+                  <strong>
+                    Läs alltid företagets egna villkor och avbokningsregler
+                    innan du bekräftar en bokning.
+                  </strong>{" "}
+                  DogPlanner lämnar inga garantier för pensionatets kvalitet,
+                  men alla anslutna företag är verifierade som registrerade
+                  företag i Sverige.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Step 1: Dina uppgifter */}
           {step === 1 && (
             <div>
               <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Steg 1: Dina uppgifter
+                Steg 2: Dina uppgifter
               </h2>
               <div className="space-y-4">
                 <div>
@@ -439,7 +492,7 @@ export default function PensionatAnsokanPage() {
           {step === 2 && (
             <div>
               <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Steg 2: Om hunden
+                Steg 3: Om hunden
               </h2>
               <div className="space-y-4">
                 <div>
@@ -649,7 +702,7 @@ export default function PensionatAnsokanPage() {
           {step === 3 && (
             <div>
               <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Steg 3: Bokningsdetaljer
+                Steg 4: Bokningsdetaljer
               </h2>
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
@@ -738,7 +791,7 @@ export default function PensionatAnsokanPage() {
           {step === 4 && (
             <div>
               <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Steg 4: Bekräfta och skicka
+                Steg 5: Bekräfta och skicka
               </h2>
 
               {/* Sammanfattning */}
@@ -806,7 +859,7 @@ export default function PensionatAnsokanPage() {
                     }
                   />
                   <span className="text-sm text-gray-700">
-                    Jag accepterar pensionatets{" "}
+                    Jag accepterar <strong>{orgName}s</strong>{" "}
                     <Link
                       href="/terms"
                       target="_blank"
@@ -814,6 +867,7 @@ export default function PensionatAnsokanPage() {
                     >
                       regler och villkor
                     </Link>{" "}
+                    samt avbokningspolicy{" "}
                     <span className="text-red-600">*</span>
                   </span>
                 </label>
@@ -831,16 +885,19 @@ export default function PensionatAnsokanPage() {
                     }
                   />
                   <span className="text-sm text-gray-700">
-                    Jag har läst och godkänner pensionatets{" "}
+                    Jag har läst och godkänner{" "}
                     <Link
                       href="/gdpr"
                       target="_blank"
                       className="text-[#2c7a4c] hover:underline font-medium"
                     >
-                      integritetspolicy
+                      DogPlanners integritetspolicy
                     </Link>{" "}
-                    och samtycker till att mina personuppgifter behandlas enligt
-                    GDPR <span className="text-red-600">*</span>
+                    samt <strong>{orgName}s</strong> dataskyddspolicy, och
+                    samtycker till att mina personuppgifter delas med{" "}
+                    <strong>{orgName}</strong> för hantering av min
+                    bokningsförfrågan enligt GDPR.{" "}
+                    <span className="text-red-600">*</span>
                   </span>
                 </label>
               </div>
@@ -850,10 +907,13 @@ export default function PensionatAnsokanPage() {
                 <p className="text-sm text-blue-800">
                   <strong>ℹ️ Vad händer nu?</strong>
                   <br />
-                  Efter att du skickat ansökan kommer vi att granska din
-                  förfrågan och återkomma med prisuppgift och bekräftelse inom
-                  1-2 arbetsdagar. Du kommer få ett bekräftelsemail till{" "}
-                  {formData.owner_email}.
+                  Din bokningsförfrågan skickas till <strong>
+                    {orgName}
+                  </strong>{" "}
+                  som granskar tillgänglighet och återkommer med prisuppgift och
+                  bekräftelse inom 1-2 arbetsdagar. Du får ett bekräftelsemail
+                  till {formData.owner_email} så snart {orgName} har behandlat
+                  din förfrågan.
                 </p>
               </div>
             </div>
@@ -861,7 +921,7 @@ export default function PensionatAnsokanPage() {
 
           {/* Navigation Buttons */}
           <div className="flex gap-4 mt-8 pt-6 border-t">
-            {step > 1 && (
+            {step > 0 && (
               <button
                 onClick={() => setStep(step - 1)}
                 className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition"

@@ -55,11 +55,12 @@ export default function HomePage() {
         <div className="relative max-w-[1600px] mx-auto px-6 md:px-16 lg:px-32 py-20 md:py-32">
           <div className="max-w-2xl">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
-              Trygg omsorg för din hund
+              Hitta trygg omsorg för din hund
             </h1>
             <p className="text-lg md:text-xl text-white/95 mb-8 leading-relaxed drop-shadow-md">
-              Boka hunddagis eller pensionat hos Sveriges modernaste
-              hundverksamheter. Enkelt, tryggt och professionellt.
+              DogPlanner hjälper dig att hitta och boka hunddagis eller
+              pensionat hos Sveriges modernaste hundverksamheter. Enkelt, tryggt
+              och professionellt.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <Link
@@ -114,11 +115,11 @@ export default function HomePage() {
         <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Våra tjänster
+              Tjänster via anslutna hundverksamheter
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Professionell omsorg för din hund - vare sig det gäller daglig
-              tillsyn eller längre vistelser
+              Vi samarbetar med verifierade hunddagis och hundpensionat över
+              hela Sverige som erbjuder professionell hundomsorg
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
@@ -253,14 +254,124 @@ export default function HomePage() {
         <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Därför är din hund trygg hos oss
+              Hur DogPlanner fungerar
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Vi tar hundomsorgen på allvar och följer alla branschstandarder
+              DogPlanner är en plattform som kopplar samman hundägare med
+              verifierade hundverksamheter. Vi underlättar bokningsprocessen,
+              men varje företag ansvarar för sin egen verksamhet och kvalitet.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-8 h-8 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                1. Hitta och jämför
+              </h3>
+              <p className="text-gray-600">
+                Sök bland anslutna hunddagis och pensionat i ditt område.
+                Filtrera på plats och tjänster.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-8 h-8 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                2. Skicka ansökan
+              </h3>
+              <p className="text-gray-600">
+                Fyll i formuläret och skicka din ansökan direkt till det valda
+                företaget via vår plattform.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-8 h-8 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                3. Företaget hör av sig
+              </h3>
+              <p className="text-gray-600">
+                Det valda företaget kontaktar dig med prisuppgift och
+                bekräftelse. Du kommunicerar direkt med dem.
+              </p>
+            </div>
+          </div>
+
+          <div className="max-w-3xl mx-auto p-6 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-900">
+              <strong>📋 Viktigt att veta:</strong> DogPlanner är en
+              bokningsplattform som underlättar kontakten mellan hundägare och
+              hundverksamheter. Alla anslutna företag är verifierade som
+              registrerade svenska företag, men varje företag ansvarar själv för
+              sin verksamhet, kvalitet och följsamhet till
+              djurskyddslagstiftning.{" "}
+              <strong>
+                Läs alltid företagets egna villkor, avbokningsregler och
+                försäkringar innan du bekräftar en bokning.
+              </strong>{" "}
+              DogPlanner tillhandahåller systemet men garanterar inte för
+              individuella företags tjänster.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* What businesses offer */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Vad anslutna företag erbjuder
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Våra partnersföretag erbjuder professionell hundomsorg med moderna
+              lokaler och erfaren personal
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg
@@ -278,11 +389,11 @@ export default function HomePage() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Försäkrad verksamhet
+                Verifierade företag
               </h3>
               <p className="text-gray-600">
-                Fullständig ansvarsförsäkring och godkänd av Jordbruksverket
-                enligt gällande djurskyddslagstiftning.
+                Alla anslutna företag är registrerade svenska företag. De flesta
+                följer Jordbruksverkets rekommendationer för hundomsorg.
               </p>
             </div>
 
@@ -306,8 +417,8 @@ export default function HomePage() {
                 Erfaren personal
               </h3>
               <p className="text-gray-600">
-                Utbildad personal med lång erfarenhet av hundvård. Vi känner
-                igen tecken på stress och anpassar omsorgen.
+                De flesta anslutna företag har utbildad personal med lång
+                erfarenhet av hundvård och känner igen tecken på stress.
               </p>
             </div>
 
@@ -331,15 +442,106 @@ export default function HomePage() {
                 Moderna lokaler
               </h3>
               <p className="text-gray-600">
-                Ändamålsenliga lokaler med rätt storlek på rum enligt
-                Jordbruksverkets rekommendationer för hundens storlek.
+                Många av våra partnersföretag har ändamålsenliga lokaler med
+                rätt storlek på rum enligt Jordbruksverkets rekommendationer.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Original "Why Choose Us" becomes "Why Use DogPlanner" */}
+      <section className="py-20 bg-white">
+        <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Därför ska du använda DogPlanner
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Vi gör det enklare att hitta och boka hundomsorg i hela Sverige
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-8 h-8 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Enkelt att använda
+              </h3>
+              <p className="text-gray-600">
+                Hitta och jämför hundverksamheter på en plats. Skicka
+                ansökningar digitalt istället för att ringa runt.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-8 h-8 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Spara tid
+              </h3>
+              <p className="text-gray-600">
+                Fyll i ett formulär istället för många. Alla dina bokningar och
+                hunduppgifter på samma ställe.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-8 h-8 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                GDPR-säkert
+              </h3>
+              <p className="text-gray-600">
+                Vi hanterar dina personuppgifter enligt GDPR och delar endast
+                information med det företag du väljer att ansöka till.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials - Keep mostly the same */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32">
           <div className="text-center mb-12">
@@ -347,7 +549,7 @@ export default function HomePage() {
               Vad hundägare säger
             </h2>
             <p className="text-xl text-gray-600">
-              Läs om andra hundägares upplevelser
+              Läs om andra hundägares upplevelser med våra partnersföretag
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -412,60 +614,79 @@ export default function HomePage() {
               Vanliga frågor
             </h2>
             <p className="text-xl text-gray-600">
-              Här hittar du svar på de vanligaste frågorna om våra tjänster
+              Här hittar du svar på de vanligaste frågorna om hur DogPlanner
+              fungerar
             </p>
           </div>
           <div className="max-w-3xl mx-auto space-y-6">
             <details className="bg-gray-50 rounded-lg p-6">
               <summary className="font-semibold text-gray-900 cursor-pointer">
-                Vad krävs för att min hund ska kunna gå på dagis eller
-                pensionat?
+                Vad är DogPlanner?
               </summary>
               <p className="text-gray-600 mt-3">
-                Din hund behöver ha giltiga vaccinationer, vara försäkrad och
-                socialiserad med andra hundar. Vi gör alltid en introduktion där
-                vi träffar dig och din hund för att säkerställa att det är en
-                bra match.
+                DogPlanner är en plattform som kopplar samman hundägare med
+                hundverksamheter i hela Sverige. Vi underlättar
+                bokningsprocessen och hjälper dig att hitta rätt dagis eller
+                pensionat för din hund. Vi driver ingen egen hundverksamhet utan
+                samarbetar med anslutna företag.
               </p>
             </details>
             <details className="bg-gray-50 rounded-lg p-6">
               <summary className="font-semibold text-gray-900 cursor-pointer">
-                Hur bokar jag en plats?
+                Hur bokar jag via DogPlanner?
               </summary>
               <p className="text-gray-600 mt-3">
-                Fyll i vårt bokningsformulär för antingen hunddagis eller
-                pensionat. Vi kontaktar dig inom 24 timmar för att bekräfta
-                bokningen och boka in en introduktion om det är första gången.
+                Välj det hunddagis eller pensionat du är intresserad av genom
+                att filtrera på län och kommun. Fyll i ansökningsformuläret så
+                skickas din ansökan direkt till det valda företaget. De
+                återkommer till dig med prisuppgift och bekräftelse, vanligtvis
+                inom 1-2 arbetsdagar.
               </p>
             </details>
             <details className="bg-gray-50 rounded-lg p-6">
               <summary className="font-semibold text-gray-900 cursor-pointer">
-                Vad händer om min hund blir sjuk under vistelsen?
+                Kostar det något att använda DogPlanner?
               </summary>
               <p className="text-gray-600 mt-3">
-                Vi kontaktar dig omedelbart om din hund visar tecken på sjukdom
-                eller skada. Vi har rutiner för att hantera akuta situationer
-                och samarbetar med veterinärer i närheten om det skulle behövas.
+                Nej, DogPlanner är gratis för hundägare att använda. Du betalar
+                endast de tjänster du bokar direkt till det företag du väljer
+                att anlita. Priser varierar mellan olika verksamheter.
               </p>
             </details>
             <details className="bg-gray-50 rounded-lg p-6">
               <summary className="font-semibold text-gray-900 cursor-pointer">
-                Kan min hund få sin egen mat och medicin?
+                Hur vet jag att företagen är seriösa?
               </summary>
               <p className="text-gray-600 mt-3">
-                Absolut! Vi följer din hunds ordinarie matschema och ger
-                mediciner enligt dina instruktioner. Ta med egen mat och
-                mediciner märkta med hundens namn.
+                Alla anslutna företag är verifierade som registrerade svenska
+                företag. Vi rekommenderar starkt att du läser företagets egna
+                villkor, kontrollerar deras försäkringar och eventuellt besöker
+                lokalerna innan du bekräftar en bokning. Du är alltid välkommen
+                att ställa frågor direkt till företaget.
               </p>
             </details>
             <details className="bg-gray-50 rounded-lg p-6">
               <summary className="font-semibold text-gray-900 cursor-pointer">
-                Vilka tider kan jag lämna och hämta min hund?
+                Vad händer med mina personuppgifter?
               </summary>
               <p className="text-gray-600 mt-3">
-                Våra öppettider varierar beroende på anläggning. Normalt är
-                öppet 7:00-18:00 på vardagar. Kontakta oss för specifika
-                öppettider och för att diskutera särskilda behov.
+                Dina personuppgifter hanteras enligt GDPR. När du skickar en
+                ansökan delas uppgifterna endast med det företag du valt att
+                ansöka till. DogPlanner sparar dina uppgifter för att underlätta
+                framtida bokningar. Du kan när som helst begära att få dina
+                uppgifter raderade.
+              </p>
+            </details>
+            <details className="bg-gray-50 rounded-lg p-6">
+              <summary className="font-semibold text-gray-900 cursor-pointer">
+                Vad händer om det blir problem med en bokning?
+              </summary>
+              <p className="text-gray-600 mt-3">
+                Alla frågor och eventuella problem kring bokningar, avbokningar
+                och tjänsteutförande hanteras direkt mellan dig och företaget du
+                bokat hos. DogPlanner är en förmedlingsplattform och kan inte
+                hantera dispyter mellan hundägare och hundverksamheter. Läs
+                alltid företagets avbokningsregler noggrant innan du bekräftar.
               </p>
             </details>
           </div>
@@ -476,27 +697,27 @@ export default function HomePage() {
       <section className="py-20 bg-gradient-to-br from-primary to-primary-dark">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Redo att boka för din hund?
+            Hitta rätt hunddagis eller pensionat idag
           </h2>
           <p className="text-xl text-white/90 mb-8">
-            Enkel bokning online. Svar inom 24 timmar.
+            Enkel ansökan online. Företaget svarar inom 1-2 arbetsdagar.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/ansokan/hunddagis"
               className="px-8 py-4 bg-white text-primary rounded-lg hover:bg-gray-50 font-bold text-lg transition-all shadow-lg hover:shadow-xl"
             >
-              🐕 Boka hunddagis
+              🐕 Sök hunddagis
             </Link>
             <Link
               href="/ansokan/pensionat"
               className="px-8 py-4 border-2 border-white text-white rounded-lg hover:bg-white/10 font-semibold text-lg transition-all backdrop-blur"
             >
-              🏠 Boka pensionat
+              🏠 Sök pensionat
             </Link>
           </div>
           <p className="text-white/80 mt-6">
-            Trygg och professionell omsorg • Erfaren personal • Moderna lokaler
+            Gratis att använda • Verifierade företag • GDPR-säkert
           </p>
         </div>
       </section>

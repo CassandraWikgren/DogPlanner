@@ -391,7 +391,7 @@ export default function NewPensionatBooking() {
                         Befintlig kund
                       </h4>
                       <p className="text-sm text-gray-600">
-                        Kunden finns redan i systemet (t.ex. via Hunddagis)
+                        Kunden finns redan i systemet
                       </p>
                       <p className="text-xs text-green-700 mt-2 font-medium">
                         → Välj hund från listan nedan
@@ -411,9 +411,10 @@ export default function NewPensionatBooking() {
                         💡 Ny kund?
                       </h4>
                       <p className="text-sm text-gray-700 mb-3">
-                        Kunder måste först registrera sig via ägarblankett innan
-                        de kan boka. Detta säkerställer GDPR-compliance och att
-                        all information är korrekt.
+                        Kunder måste först registrera sig via Dogplanners
+                        bokningssystem för hundägare innan de kan synas i
+                        systemet. Detta säkerställer GDPR-compliance och att all
+                        information är korrekt.
                       </p>
                       <p className="text-xs text-blue-700 font-medium">
                         → Hänvisa kunden till ägarregistreringen först
