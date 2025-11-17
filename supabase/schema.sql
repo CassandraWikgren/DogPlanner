@@ -1,9 +1,23 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-17 (Organisationsval-system)
+-- Uppdaterad 2025-11-17 (Faktura-system bugfixar)
 -- ========================================
 --
--- === SENASTE ÄNDRINGAR (2025-11-17) ===
+-- === SENASTE ÄNDRINGAR (2025-11-17 kväll) ===
+--
+-- 🔧 KRITISKA FAKTURA-SYSTEM BUGFIXAR:
+--   • generate_invoices Edge Function: Använder nu dogs.owner_id (inte user_id som inte finns)
+--   • pension_stays inkluderas nu i månads-fakturor (tidigare hämtades men användes aldrig)
+--   • Datum-logik fixad: Fakturerar föregående månad när cron körs (inte aktuell månad)
+--   • dogCount-beräkning fixad: Flyttad till korrekt scope i owners-loop
+--   • Resultat: Alla fakturor får ägare, pensionat faktureras, rätt period, korrekt statistik
+--
+-- 💰 PRISVISNING I PENSIONATSBOKNING:
+--   • app/ansokan/pensionat/page.tsx: Visar uppskattat pris baserat på hundhöjd + datum
+--   • Prismodell: Liten (≤40cm) 300kr/natt, Medel (41-60cm) 400kr, Stor (>60cm) 500kr
+--   • Tydlig disclaimer om att slutligt pris kan variera
+--
+-- === ÄNDRINGAR (2025-11-17 morgon) ===
 --
 -- 🏢 ORGANISATIONSVAL-SYSTEM:
 --   • orgs.lan (text) - Län där organisationen är verksam

@@ -1,8 +1,79 @@
-<!-- Last updated: 2025-11-17 (Organisationsval-system) -->
+<!-- Last updated: 2025-11-17 (Faktura-system fixes + Prisvisning) -->
 
 ---
 
 ## 🔄 Senaste Uppdateringar (17 november 2025)
+
+### 🔧 KRITISKA FAKTURA-SYSTEM BUGFIXAR (17 november - kväll)
+
+**Status:** Fixat och pushat till GitHub ✅
+
+#### 🐛 Buggar som fixades
+
+**1. owner_id NULL-problem** ❌→✅
+
+- **Problem:** Fakturor skapades med `owner_id = NULL` pga referens till icke-existerande `user_id`
+- **Fix:** Använder nu `dogs.owner_id` (som faktiskt finns i dogs-tabellen)
+- **Påverkan:** Alla fakturor får nu korrekt ägarkoppling
+
+**2. Pensionatsbokningar saknas i fakturor** ❌→✅
+
+- **Problem:** `pension_stays` hämtades men användes aldrig → ingen fakturering
+- **Fix:** Lagt till kod som beräknar nätter och lägger till i invoice_items
+- **Format:** "Kid – Pensionat (6 nätter, 2025-11-24 - 2025-11-30)"
+- **Påverkan:** Pensionatsintäkter inkluderas nu i månads-fakturor
+
+**3. Fel månad faktureras** ❌→✅
+
+- **Problem:** Cron körs 1 december men fakturerade december (inte november)
+- **Fix:** Beräknar nu **föregående månad** automatiskt
+- **Logik:** `new Date(now.getFullYear(), now.getMonth() - 1, 1)`
+- **Påverkan:** Korrekt månad faktureras alltid
+
+**4. dogCount beräknas fel** ❌→✅
+
+- **Problem:** Variabel `info` refererades utanför scope
+- **Fix:** Flyttat `dogCount` till början av owners-loopen
+- **Påverkan:** Korrekt statistik i invoice_runs metadata
+
+#### 📊 Resultat
+
+- ✅ Inga fler orphan-fakturor
+- ✅ Komplett fakturering inkl. pensionat
+- ✅ Rätt månadsperiod
+- ✅ Korrekt statistik
+
+---
+
+### 💰 PRISVISNING I PENSIONATSBOKNING (17 november)
+
+**Status:** Implementerat och pushat ✅
+
+#### ✨ Ny funktionalitet
+
+**Automatisk prisuppskattning** i `app/ansokan/pensionat/page.tsx`:
+
+- ✅ Visas när **datum + hundhöjd** är ifyllt
+- ✅ Prismodell baserad på storlek:
+  - **Liten hund** (≤40cm): 300 kr/natt
+  - **Medelstor** (41-60cm): 400 kr/natt
+  - **Stor** (>60cm): 500 kr/natt
+- ✅ Visar totalpris och antal nätter
+- ✅ Tydlig disclaimer: "Slutligt pris kan variera... Du får exakt pris när [Pensionat] granskar din ansökan"
+
+**Exempel:**
+
+```
+Vistelse: 6 nätter
+
+Uppskattat pris
+2 400 kr
+
+Slutligt pris kan variera beroende på säsong, helgdagar och tilläggstjänster.
+Du får en exakt prisuppgift när Hundpensionatet granskar din ansökan.
+```
+
+---
 
 ### 🏢 ORGANISATIONSVAL-SYSTEM (17 november)
 
