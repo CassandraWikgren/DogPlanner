@@ -10,6 +10,16 @@
 
 import { Resend } from "resend";
 import { getEmailSender, getOrgEmailConfig } from "./emailConfig";
+import {
+  getApplicationConfirmationEmail,
+  getApplicationNotificationEmail,
+  getApplicationApprovedEmail,
+  getApplicationRejectedEmail,
+  ApplicationConfirmationData,
+  ApplicationNotificationData,
+  ApplicationApprovedData,
+  ApplicationRejectedData,
+} from "./emailTemplates";
 
 // Initialize Resend client (only if API key is available)
 let resend: Resend | null = null;
@@ -394,8 +404,75 @@ export async function sendWelcomeEmail(
     orgName
   );
 
-  return await sendEmail(template, {
-    to: ownerEmail,
+  return sendEmail(template, { to: ownerEmail, orgId });
+}
+
+// ===========================================
+// PENSIONAT ANSÖKNINGS-EMAILS
+// ===========================================
+
+/**
+ * Skicka bekräftelse till KUND när ansökan mottagits
+ */
+export async function sendApplicationConfirmationEmail(
+  data: ApplicationConfirmationData,
+  customerEmail: string,
+  orgId?: string
+): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const template = getApplicationConfirmationEmail(data);
+
+  return sendEmail(template, {
+    to: customerEmail,
+    orgId,
+    replyTo: undefined, // Use org's default reply-to from emailConfig
+  });
+}
+
+/**
+ * Skicka notifiering till PENSIONAT om ny ansökan
+ */
+export async function sendApplicationNotificationEmail(
+  data: ApplicationNotificationData,
+  pensionatEmail: string,
+  orgId?: string
+): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const template = getApplicationNotificationEmail(data);
+
+  return sendEmail(template, {
+    to: pensionatEmail,
+    orgId,
+    replyTo: data.ownerEmail, // Business can reply directly to customer
+  });
+}
+
+/**
+ * Skicka godkännande-email till KUND
+ */
+export async function sendApplicationApprovedEmail(
+  data: ApplicationApprovedData,
+  customerEmail: string,
+  orgId?: string
+): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const template = getApplicationApprovedEmail(data);
+
+  return sendEmail(template, {
+    to: customerEmail,
+    orgId,
+  });
+}
+
+/**
+ * Skicka avslagsmail till KUND
+ */
+export async function sendApplicationRejectedEmail(
+  data: ApplicationRejectedData,
+  customerEmail: string,
+  orgId?: string
+): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  const template = getApplicationRejectedEmail(data);
+
+  return sendEmail(template, {
+    to: customerEmail,
     orgId,
   });
 }

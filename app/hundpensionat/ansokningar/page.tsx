@@ -17,6 +17,10 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
+import {
+  sendApplicationApprovedEmail,
+  sendApplicationRejectedEmail,
+} from "@/lib/emailSender";
 
 // ====================================
 // TYPER
@@ -323,12 +327,48 @@ export default function PensionatAnsokningarPage() {
         invoiceMessage = `\n\n📄 Förskottsfaktura skapad!\nFaktura-ID: ${updatedBooking.prepayment_invoice_id}\n\nKunden ska betala förskottet innan ankomst.`;
       }
 
+      // Hämta org-data för email
+      const { data: orgData } = await (supabase as any)
+        .from("orgs")
+        .select("org_name")
+        .eq("id", currentOrgId)
+        .single();
+
+      // Skicka godkännande-email till kund
+      if (booking.dogs?.owners?.email) {
+        try {
+          const emailResult = await sendApplicationApprovedEmail(
+            {
+              ownerName: booking.dogs.owners.full_name,
+              dogName: booking.dogs.name,
+              pensionatName: orgData?.org_name || "Hundpensionatet",
+              checkinDate: booking.start_date,
+              checkoutDate: booking.end_date,
+              totalPrice: finalPrice,
+              discountAmount:
+                finalDiscountAmount > 0 ? finalDiscountAmount : undefined,
+              kundportalUrl: `${window.location.origin}/kundportal`,
+            },
+            booking.dogs.owners.email,
+            currentOrgId || undefined
+          );
+
+          if (!emailResult.success) {
+            console.error("Failed to send approval email:", emailResult.error);
+          } else {
+            console.log("✅ Approval email sent to customer");
+          }
+        } catch (emailErr) {
+          console.error("Exception sending approval email:", emailErr);
+        }
+      }
+
       alert(
         `✅ Bokning godkänd!\n\nSlutpris: ${finalPrice.toFixed(
           2
         )} kr\nRabatt: ${finalDiscountAmount.toFixed(2)} kr${
           discountDescription ? `\n${discountDescription}` : ""
-        }${invoiceMessage}`
+        }${invoiceMessage}\n\n📧 Bekräftelsemail skickat till kund!`
       );
 
       // Ta bort från listan
@@ -345,7 +385,17 @@ export default function PensionatAnsokningarPage() {
   // AVSLÅ BOKNING
   // ====================================
   const handleReject = async (bookingId: string) => {
-    if (!confirm("Är du säker på att du vill avslå denna bokning?")) return;
+    const booking = bookings.find((b) => b.id === bookingId);
+    if (!booking) return;
+
+    const rejectionReason = prompt(
+      "Vill du ange en anledning till avslaget? (valfritt)\n\nDetta kommer att skickas till kunden."
+    );
+
+    if (rejectionReason === null) {
+      // User clicked cancel
+      return;
+    }
 
     setProcessing(bookingId);
 
@@ -361,7 +411,40 @@ export default function PensionatAnsokningarPage() {
         return;
       }
 
-      alert("❌ Bokning avslogs och markerades som cancelled.");
+      // Hämta org-data för email
+      const { data: orgData } = await (supabase as any)
+        .from("orgs")
+        .select("org_name")
+        .eq("id", currentOrgId)
+        .single();
+
+      // Skicka avslagsmail till kund
+      if (booking.dogs?.owners?.email) {
+        try {
+          const emailResult = await sendApplicationRejectedEmail(
+            {
+              ownerName: booking.dogs.owners.full_name,
+              dogName: booking.dogs.name,
+              pensionatName: orgData?.org_name || "Hundpensionatet",
+              reason: rejectionReason || undefined,
+            },
+            booking.dogs.owners.email,
+            currentOrgId || undefined
+          );
+
+          if (!emailResult.success) {
+            console.error("Failed to send rejection email:", emailResult.error);
+          } else {
+            console.log("✅ Rejection email sent to customer");
+          }
+        } catch (emailErr) {
+          console.error("Exception sending rejection email:", emailErr);
+        }
+      }
+
+      alert(
+        "❌ Bokning avslogs och markerades som cancelled.\n\n📧 Email skickat till kund."
+      );
       setBookings((prev) => prev.filter((b) => b.id !== bookingId));
     } catch (err) {
       console.error("Oväntat fel:", err);

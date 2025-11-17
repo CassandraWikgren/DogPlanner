@@ -216,7 +216,7 @@ export default function OrganisationSelector({
       {/* Organisation selector */}
       {kommun && filteredOrgs.length > 0 && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
             Välj företag {required && <span className="text-red-500">*</span>}
           </label>
           <div className="space-y-2">
@@ -225,17 +225,17 @@ export default function OrganisationSelector({
                 key={org.id}
                 type="button"
                 onClick={() => onSelect(org.id, org.name)}
-                className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
+                className={`w-full p-4 border rounded-lg text-left transition-all ${
                   selectedOrgId === org.id
-                    ? "border-primary bg-green-50"
-                    : "border-gray-200 hover:border-primary hover:bg-gray-50"
+                    ? "border-[#2c7a4c] bg-white shadow-sm ring-1 ring-[#2c7a4c]"
+                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">{org.name}</h4>
-                    <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
-                      <MapPin className="w-4 h-4" />
+                    <h4 className="font-medium text-gray-900">{org.name}</h4>
+                    <div className="flex items-center gap-1.5 mt-1.5 text-sm text-gray-500">
+                      <MapPin className="w-3.5 h-3.5" />
                       <span>
                         {org.kommun}, {org.lan}
                       </span>
@@ -246,16 +246,16 @@ export default function OrganisationSelector({
                       </p>
                     )}
                     {org.phone && (
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-500 mt-1">
                         📞 {org.phone}
                       </p>
                     )}
                   </div>
                   {selectedOrgId === org.id && (
-                    <div className="ml-3">
-                      <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                    <div className="ml-3 flex-shrink-0">
+                      <div className="w-5 h-5 bg-[#2c7a4c] rounded-full flex items-center justify-center">
                         <svg
-                          className="w-4 h-4 text-white"
+                          className="w-3 h-3 text-white"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
@@ -277,8 +277,8 @@ export default function OrganisationSelector({
 
       {/* No results */}
       {kommun && filteredOrgs.length === 0 && (
-        <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
-          <p className="text-gray-600">
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-center">
+          <p className="text-sm text-gray-600">
             Tyvärr finns det inget {serviceTypeLabel[serviceType].toLowerCase()}{" "}
             i {kommun}. Försök välja en annan kommun.
           </p>
@@ -287,12 +287,10 @@ export default function OrganisationSelector({
 
       {/* Selected organisation display */}
       {selectedOrg && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm font-medium text-green-800">
-            ✓ Du har valt: <strong>{selectedOrg.name}</strong>
-          </p>
-          <p className="text-sm text-green-700 mt-1">
-            Din ansökan kommer att skickas till detta företag
+        <div className="mt-4 p-3 bg-[#f0f9f4] border border-[#c6e7d4] rounded-lg">
+          <p className="text-sm text-[#2c7a4c]">
+            ✓ Du har valt:{" "}
+            <span className="font-medium">{selectedOrg.name}</span>
           </p>
         </div>
       )}

@@ -172,9 +172,15 @@ serve(async (req) => {
     if (invoices.length > 0) {
       console.log(`💾 Inserting ${invoices.length} invoices...`);
 
+      let totalAmount = 0;
+      let dogCount = 0;
+
       for (const inv of invoices) {
         const lines = inv.lines; // Spara lines separat
         delete inv.lines; // Ta bort lines från invoice-objektet
+
+        totalAmount += inv.total_amount;
+        dogCount += info.dogs?.length || 0;
 
         // Insert invoice först
         const { data: insertedInvoice, error: insertErr } = await supabase
@@ -192,7 +198,7 @@ serve(async (req) => {
         }
 
         console.log(
-          `✅ Invoice created: ${insertedInvoice.id} for ${inv.billed_name}`
+          `✅ Invoice created: ${insertedInvoice.invoice_number} (ID: ${insertedInvoice.id}) for ${inv.billed_name}`
         );
 
         // Insert invoice_items
@@ -221,17 +227,73 @@ serve(async (req) => {
             `✅ Added ${items.length} items to invoice ${insertedInvoice.id}`
           );
         }
+
+        // 🔥 NYA FÖRBÄTTRINGAR:
+
+        // 1. Sätt status till 'sent' istället för 'draft'
+        const { error: updateErr } = await supabase
+          .from("invoices")
+          .update({
+            status: "sent",
+            sent_at: new Date().toISOString(),
+          })
+          .eq("id", insertedInvoice.id);
+
+        if (updateErr) {
+          console.warn(
+            `⚠️ Failed to update invoice status: ${updateErr.message}`
+          );
+        } else {
+          console.log(
+            `✅ Invoice ${insertedInvoice.invoice_number} marked as sent`
+          );
+        }
+
+        // 2. Skicka email till kund (via RPC function)
+        try {
+          const { data: emailResult, error: emailErr } = await supabase.rpc(
+            "send_invoice_email",
+            { p_invoice_id: insertedInvoice.id }
+          );
+
+          if (emailErr) {
+            console.warn(
+              `⚠️ Email send failed for invoice ${insertedInvoice.invoice_number}: ${emailErr.message}`
+            );
+          } else {
+            console.log(
+              `✅ Email sent for invoice ${insertedInvoice.invoice_number} to ${inv.billed_email}`
+            );
+          }
+        } catch (emailException) {
+          console.warn(`⚠️ Email send exception: ${emailException.message}`);
+          // Fortsätt trots email-fel
+        }
       }
 
       console.log(
         `✅ Successfully inserted ${invoices.length} invoices with items.`
       );
 
+      // 3. Logga i invoice_runs tabell
+      await supabase.from("invoice_runs").insert([
+        {
+          month_id: monthId,
+          status: "success",
+          invoices_created: invoices.length,
+          metadata: {
+            total_amount: totalAmount,
+            dog_count: dogCount,
+            timestamp: new Date().toISOString(),
+          },
+        },
+      ]);
+
       await supabase.from("function_logs").insert([
         {
           function_name: "generate_invoices",
           status: "success",
-          message: `✅ ${invoices.length} invoices created for ${monthId}`,
+          message: `✅ ${invoices.length} invoices created for ${monthId} (Total: ${totalAmount} kr)`,
         },
       ]);
 
@@ -252,11 +314,26 @@ serve(async (req) => {
           message: `No invoices generated for ${monthId}`,
         },
       ]);
+
+      // Logga även i invoice_runs
+      await supabase.from("invoice_runs").insert([
+        {
+          month_id: monthId,
+          status: "success",
+          invoices_created: 0,
+          metadata: {
+            message: "No dogs/subscriptions found requiring invoicing",
+            timestamp: new Date().toISOString(),
+          },
+        },
+      ]);
     }
 
     return new Response(`Invoices generated for ${monthId}`, { status: 200 });
   } catch (err) {
     console.error("❌ Invoice generation failed:", err.message);
+
+    // Logga i function_logs
     await supabase.from("function_logs").insert([
       {
         function_name: "generate_invoices",
@@ -264,6 +341,29 @@ serve(async (req) => {
         message: `❌ ${err.message}`,
       },
     ]);
+
+    // Logga i invoice_runs med failure status
+    try {
+      const body = await req.json().catch(() => ({}));
+      const monthId = body.month ?? new Date().toISOString().slice(0, 7);
+
+      await supabase.from("invoice_runs").insert([
+        {
+          month_id: monthId,
+          status: "failed",
+          invoices_created: 0,
+          error_message: err.message,
+          metadata: {
+            error: err.message,
+            stack: err.stack,
+            timestamp: new Date().toISOString(),
+          },
+        },
+      ]);
+    } catch (logErr) {
+      console.warn("⚠️ Failed to log error to invoice_runs:", logErr.message);
+    }
+
     return new Response(`Error: ${err.message}`, { status: 500 });
   }
 });

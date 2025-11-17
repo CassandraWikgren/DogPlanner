@@ -9,6 +9,10 @@ import Link from "next/link";
 import { Home, Send, CheckCircle, AlertCircle, Calendar } from "lucide-react";
 import OrganisationSelector from "@/components/OrganisationSelector";
 import { DogBreedSelect } from "@/components/DogBreedSelect";
+import {
+  sendApplicationConfirmationEmail,
+  sendApplicationNotificationEmail,
+} from "@/lib/emailSender";
 
 export default function PensionatAnsokanPage() {
   const supabase = createClientComponentClient();
@@ -201,21 +205,26 @@ export default function PensionatAnsokanPage() {
       if (dogError) throw dogError;
 
       // 3. Skapa bokning med status "pending"
-      const { error: bookingError } = await supabase.from("bookings").insert([
-        {
-          org_id: orgId,
-          dog_id: newDog.id,
-          owner_id,
-          start_date: formData.checkin_date,
-          end_date: formData.checkout_date,
-          status: "pending", // Väntar på godkännande från admin
-          special_requests: formData.special_requests.trim() || null,
-          base_price: 0, // Admin sätter pris vid godkännande
-          total_price: 0,
-        },
-      ]);
+      const { data: newBooking, error: bookingError } = await supabase
+        .from("bookings")
+        .insert([
+          {
+            org_id: orgId,
+            dog_id: newDog.id,
+            owner_id,
+            start_date: formData.checkin_date,
+            end_date: formData.checkout_date,
+            status: "pending", // Väntar på godkännande från admin
+            special_requests: formData.special_requests.trim() || null,
+            base_price: 0, // Admin sätter pris vid godkännande
+            total_price: 0,
+          },
+        ])
+        .select("id")
+        .single();
 
       if (bookingError) throw bookingError;
+      if (!newBooking) throw new Error("Booking ID not returned");
 
       // 4. Skapa GDPR-logg
       const { error: consentError } = await supabase
@@ -235,9 +244,80 @@ export default function PensionatAnsokanPage() {
       if (consentError)
         console.warn("Kunde inte logga samtycke:", consentError);
 
-      setSuccess(true);
+      // 5. Hämta organisations-info för emails
+      const { data: orgData, error: orgError } = await supabase
+        .from("orgs")
+        .select("org_name, contact_email")
+        .eq("id", orgId)
+        .single();
 
-      // TODO: Skicka bekräftelse-mejl till owner_email
+      if (orgError) {
+        console.error("Could not fetch org details for emails:", orgError);
+      }
+
+      // 6. Skicka bekräftelse-email till KUND
+      try {
+        const confirmationResult = await sendApplicationConfirmationEmail(
+          {
+            ownerName: formData.owner_name,
+            dogName: formData.dog_name,
+            pensionatName: orgData?.org_name || orgName || "Hundpensionatet",
+            checkinDate: formData.checkin_date,
+            checkoutDate: formData.checkout_date,
+            applicationId: newBooking.id,
+          },
+          formData.owner_email,
+          orgId
+        );
+
+        if (!confirmationResult.success) {
+          console.error(
+            "Failed to send confirmation email to customer:",
+            confirmationResult.error
+          );
+          // Vi fortsätter trots email-fel - ansökan är skapad
+        } else {
+          console.log("✅ Confirmation email sent to customer");
+        }
+      } catch (emailErr) {
+        console.error("Exception sending confirmation email:", emailErr);
+      }
+
+      // 7. Skicka notifiering till PENSIONAT
+      if (orgData?.contact_email) {
+        try {
+          const notificationResult = await sendApplicationNotificationEmail(
+            {
+              ownerName: formData.owner_name,
+              ownerEmail: formData.owner_email,
+              ownerPhone: formData.owner_phone,
+              dogName: formData.dog_name,
+              dogBreed: formData.dog_breed,
+              checkinDate: formData.checkin_date,
+              checkoutDate: formData.checkout_date,
+              specialRequests: formData.special_requests || undefined,
+              applicationUrl: `${window.location.origin}/hundpensionat/ansokningar`,
+            },
+            orgData.contact_email,
+            orgId
+          );
+
+          if (!notificationResult.success) {
+            console.error(
+              "Failed to send notification to business:",
+              notificationResult.error
+            );
+          } else {
+            console.log("✅ Notification email sent to business");
+          }
+        } catch (emailErr) {
+          console.error("Exception sending notification email:", emailErr);
+        }
+      } else {
+        console.warn("No contact_email found for org - skipping notification");
+      }
+
+      setSuccess(true);
     } catch (err: any) {
       console.error("Error submitting application:", err);
       setError(err.message || "Kunde inte skicka ansökan. Försök igen senare.");
