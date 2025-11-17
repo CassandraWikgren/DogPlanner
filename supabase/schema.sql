@@ -578,6 +578,26 @@ CREATE TABLE IF NOT EXISTS interest_applications (
   updated_at timestamptz DEFAULT now()
 );
 
+-- RLS for interest_applications
+ALTER TABLE interest_applications ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public to submit daycare applications"
+ON interest_applications FOR INSERT TO anon, authenticated
+WITH CHECK (true);
+
+CREATE POLICY "Allow org members to view their applications"
+ON interest_applications FOR SELECT TO authenticated
+USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+CREATE POLICY "Allow org members to update their applications"
+ON interest_applications FOR UPDATE TO authenticated
+USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
+WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+CREATE POLICY "Allow org members to delete their applications"
+ON interest_applications FOR DELETE TO authenticated
+USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
 -- === PRISLISTOR ===
 CREATE TABLE IF NOT EXISTS price_lists (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -1333,8 +1353,12 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION create_dog_journal_on_new_dog()
 RETURNS trigger AS $$
 BEGIN
-  INSERT INTO dog_journal (org_id, dog_id, user_id, entry_type, content)
-  VALUES (NEW.org_id, NEW.id, auth.uid(), 'note', 'Hund registrerad i systemet');
+  -- Skapa journal post endast om user_id finns (användaren är inloggad)
+  -- För publika ansökningar (auth.uid() är NULL) skippar vi detta
+  IF auth.uid() IS NOT NULL THEN
+    INSERT INTO dog_journal (org_id, dog_id, user_id, entry_type, content)
+    VALUES (NEW.org_id, NEW.id, auth.uid(), 'note', 'Hund registrerad i systemet');
+  END IF;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
