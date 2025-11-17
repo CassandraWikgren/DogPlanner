@@ -83,6 +83,7 @@ export default function EditDogModal({
   >("ägare");
   const [saving, setSaving] = React.useState(false);
   const [rooms, setRooms] = React.useState<Room[]>([]);
+  const [availableServices, setAvailableServices] = React.useState<any[]>([]);
   const [error, setError] = React.useState<string | null>(null);
   const [ok, setOk] = React.useState<string | null>(null);
   const [isAdmin, setIsAdmin] = React.useState(false);
@@ -118,6 +119,27 @@ export default function EditDogModal({
           setRooms(roomsData ?? []);
         }
 
+        // Hämta tillgängliga tilläggtjänster från extra_services
+        const { data: servicesData, error: servicesErr } = await supabase
+          .from("extra_services")
+          .select("id, label, price, unit, service_type")
+          .eq("org_id", currentOrgId)
+          .eq("is_active", true)
+          .order("label");
+
+        if (servicesErr) {
+          console.error(
+            "[ERR-5004] Fel vid hämtning av extra_services:",
+            servicesErr
+          );
+        } else {
+          console.log(
+            `✅ EditDogModal: Hämtade ${servicesData?.length || 0} tilläggtjänster:`,
+            servicesData
+          );
+          setAvailableServices(servicesData ?? []);
+        }
+
         // Hämta roll (admin-låsningar)
         const { data: me } = await supabase.auth.getUser();
         const userId = me.user?.id;
@@ -150,12 +172,12 @@ export default function EditDogModal({
           if (addonsData && addonsData.length > 0) {
             const loadedAddons: Addon[] = addonsData.map((es) => ({
               id: es.id || Date.now().toString(),
+              serviceId: es.service_id || "",
               name: es.service_type || "",
-              qty: es.quantity?.toString() || "1",
-              start: es.performed_at || "",
-              end: es.notes?.includes("t.o.m.")
-                ? es.notes.split("t.o.m. ")[1] || ""
-                : "",
+              qty: es.frequency || "1",
+              price: es.price || 0,
+              start: es.start_date || "",
+              end: es.end_date || "",
             }));
             setAddons(loadedAddons);
           }
@@ -241,14 +263,18 @@ export default function EditDogModal({
   // --- TILLÄGG & EKONOMI ---
   type Addon = {
     id: string;
+    serviceId: string; // FK till extra_services.id
     name: string;
     qty: string;
+    price: number;
     start: string;
     end: string;
   };
   const [addons, setAddons] = React.useState<Addon[]>([]);
+  const [currentAddonServiceId, setCurrentAddonServiceId] = React.useState("");
   const [currentAddonName, setCurrentAddonName] = React.useState("");
   const [currentAddonQty, setCurrentAddonQty] = React.useState("1");
+  const [currentAddonPrice, setCurrentAddonPrice] = React.useState<number>(0);
   const [currentAddonStart, setCurrentAddonStart] = React.useState<string>("");
   const [currentAddonEnd, setCurrentAddonEnd] = React.useState<string>("");
   const [financeNote, setFinanceNote] = React.useState("");
@@ -368,23 +394,55 @@ export default function EditDogModal({
   async function handleUploadImage(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files?.[0]) return;
     const file = e.target.files[0];
-    if (!file.type.startsWith("image/")) return alert("Endast bildfiler!");
+    if (!file.type.startsWith("image/")) {
+      setError("Endast bildfiler är tillåtna!");
+      return;
+    }
+
+    // Max 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Bilden är för stor. Max 5MB.");
+      return;
+    }
 
     try {
       setUploading(true);
+      setError(null);
+      console.log("📸 Uploading image:", file.name, file.type, file.size);
+
       const ext = file.name.split(".").pop();
-      const filePath = `new-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("dog_photos")
-        .upload(filePath, file, { upsert: true });
-      if (upErr) throw upErr;
+      const filePath = `${currentOrgId}/dog-${Date.now()}.${ext}`;
+
+      console.log("📸 Attempting upload to dog-photos bucket, path:", filePath);
+
+      const { error: upErr, data: uploadData } = await supabase.storage
+        .from("dog-photos")
+        .upload(filePath, file, {
+          upsert: true,
+          contentType: file.type,
+        });
+
+      if (upErr) {
+        console.error("❌ Upload error:", upErr);
+        throw new Error(`Uppladdning misslyckades: ${upErr.message}`);
+      }
+
+      console.log("✅ Upload successful:", uploadData);
+
       const { data } = supabase.storage
-        .from("dog_photos")
+        .from("dog-photos")
         .getPublicUrl(filePath);
+
+      console.log("✅ Public URL:", data.publicUrl);
       setPhotoUrl(data.publicUrl);
+      setOk("Bild uppladdad!");
+      setTimeout(() => setOk(null), 2000);
     } catch (err: any) {
       console.error("❌ Bilduppladdning fel:", err);
-      setError(err?.message ?? "Kunde inte ladda upp bild.");
+      setError(
+        err?.message ??
+          "Kunde inte ladda upp bild. Kontrollera att storage bucket 'dog-photos' finns och har rätt permissions."
+      );
     } finally {
       setUploading(false);
     }
@@ -660,10 +718,11 @@ export default function EditDogModal({
       if (addons.length > 0) {
         const addonInserts = addons.map((addon) => ({
           dogs_id: dogId,
+          service_id: addon.serviceId || null, // FK till extra_services.id
           service_type: addon.name.trim(),
           frequency:
             addon.qty.trim() === "" ? "1" : addon.qty.replace(/^0+/, ""),
-          price: null,
+          price: addon.price,
           start_date: addon.start || new Date().toISOString().split("T")[0],
           end_date: addon.end || null,
           is_active: true,
@@ -759,8 +818,10 @@ export default function EditDogModal({
       setRoomId("");
       setDays([]);
       setAddons([]);
+      setCurrentAddonServiceId("");
       setCurrentAddonName("");
       setCurrentAddonQty("1");
+      setCurrentAddonPrice(0);
       setCurrentAddonStart("");
       setCurrentAddonEnd("");
       setFinanceNote("");
@@ -1438,6 +1499,9 @@ export default function EditDogModal({
                         <span className="text-gray-600 ml-2">
                           ({addon.qty} ggr/mån)
                         </span>
+                        <span className="text-[#2c7a4c] ml-2 font-semibold">
+                          {addon.price} kr
+                        </span>
                         {addon.start && (
                           <span className="text-gray-500 text-sm ml-2">
                             Start: {addon.start}
@@ -1464,17 +1528,48 @@ export default function EditDogModal({
               )}
 
               {/* Formulär för att lägga till nytt addon */}
+              {availableServices.length === 0 && (
+                <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm text-orange-800">
+                  <strong>💡 Inga tilläggtjänster hittades.</strong>
+                  <p className="mt-1">
+                    Skapa tilläggtjänster under{" "}
+                    <strong>Admin → Priser → Tillval</strong> först.
+                  </p>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
                 <div className="md:col-span-2">
                   <label className="text-xs text-[#2c7a4c]">
                     Tilläggsabonnemang
                   </label>
-                  <input
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="t.ex. Kloklipp"
-                    value={currentAddonName}
-                    onChange={(e) => setCurrentAddonName(e.target.value)}
-                  />
+                  <select
+                    className="w-full border rounded-lg px-3 py-2 bg-white"
+                    value={currentAddonServiceId}
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      setCurrentAddonServiceId(selectedId);
+
+                      // Hitta vald service och fyll i namn + pris automatiskt
+                      const selectedService = availableServices.find(
+                        (s) => s.id === selectedId
+                      );
+                      if (selectedService) {
+                        setCurrentAddonName(selectedService.label);
+                        setCurrentAddonPrice(selectedService.price || 0);
+                      } else {
+                        setCurrentAddonName("");
+                        setCurrentAddonPrice(0);
+                      }
+                    }}
+                  >
+                    <option value="">Välj tilläggtjänst...</option>
+                    {availableServices.map((service) => (
+                      <option key={service.id} value={service.id}>
+                        {service.label} - {service.price} kr ({service.unit})
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="text-xs text-[#2c7a4c]">Gånger/månad</label>
@@ -1509,21 +1604,25 @@ export default function EditDogModal({
                   <button
                     type="button"
                     onClick={() => {
-                      if (!currentAddonName.trim()) {
-                        alert("Ange namn på tilläggsabonnemang");
+                      if (!currentAddonServiceId || !currentAddonName.trim()) {
+                        alert("Välj en tilläggtjänst från listan");
                         return;
                       }
                       const newAddon: Addon = {
                         id: Date.now().toString(),
+                        serviceId: currentAddonServiceId,
                         name: currentAddonName.trim(),
                         qty: currentAddonQty || "1",
+                        price: currentAddonPrice,
                         start: currentAddonStart,
                         end: currentAddonEnd,
                       };
                       setAddons([...addons, newAddon]);
                       // Reset form
+                      setCurrentAddonServiceId("");
                       setCurrentAddonName("");
                       setCurrentAddonQty("1");
+                      setCurrentAddonPrice(0);
                       setCurrentAddonStart("");
                       setCurrentAddonEnd("");
                     }}
