@@ -101,13 +101,18 @@ export default function EditDogModal({
         console.log("🔍 EditDogModal: Hämtar rum för org:", currentOrgId);
 
         // Hämta rum - använd roomTypeFilter från props
-        const { data: roomsData, error: roomsErr } = await supabase
+        let query = supabase
           .from("rooms")
           .select("id, name, room_type")
           .eq("org_id", currentOrgId)
-          .eq("is_active", true)
-          .in("room_type", roomTypeFilter)
-          .order("name");
+          .eq("is_active", true);
+
+        // Endast filtrera på room_type om det finns giltiga värden
+        if (roomTypeFilter && roomTypeFilter.length > 0) {
+          query = query.in("room_type", roomTypeFilter);
+        }
+
+        const { data: roomsData, error: roomsErr } = await query.order("name");
 
         if (roomsErr) {
           console.error("[ERR-5002] Fel vid hämtning av rum:", roomsErr);
