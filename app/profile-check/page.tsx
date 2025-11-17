@@ -12,6 +12,7 @@ export default function ProfileCheckPage() {
   const [dbOrg, setDbOrg] = useState<any>(null);
   const [healing, setHealing] = useState(false);
   const [healResult, setHealResult] = useState<any>(null);
+  const [dbError, setDbError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -21,6 +22,8 @@ export default function ProfileCheckPage() {
 
   async function checkDatabase() {
     try {
+      setDbError(null); // Reset error
+
       // Hämta profil direkt från databas
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
@@ -30,21 +33,30 @@ export default function ProfileCheckPage() {
 
       if (profileError) {
         console.error("Profile error:", profileError);
+        setDbError(
+          `Profile error: ${profileError.message} (Code: ${profileError.code})`
+        );
       } else {
         setDbProfile(profileData);
 
         // Om profil har org_id, hämta org-info
         if (profileData?.org_id) {
-          const { data: orgData } = await supabase
+          const { data: orgData, error: orgError } = await supabase
             .from("orgs")
             .select("*")
             .eq("id", profileData.org_id)
             .single();
-          setDbOrg(orgData);
+
+          if (orgError) {
+            setDbError(`Org error: ${orgError.message}`);
+          } else {
+            setDbOrg(orgData);
+          }
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error checking database:", err);
+      setDbError(`Exception: ${err.message || err}`);
     }
   }
 
@@ -107,6 +119,13 @@ export default function ProfileCheckPage() {
             <h2 className="font-bold text-lg mb-2">
               Databas-profil (direkt från Supabase)
             </h2>
+
+            {dbError && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded text-red-800 text-sm">
+                <strong>❌ Databasfel:</strong> {dbError}
+              </div>
+            )}
+
             {dbProfile ? (
               <div className="space-y-1 text-sm">
                 <p>
