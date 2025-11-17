@@ -82,7 +82,8 @@ serve(async (req) => {
       const ownerName = d.owner?.full_name ?? "Okänd ägare";
       const orgId = d.org_id ?? null;
       const ownerId = d.owner_id ?? null; // Hämta owner_id direkt från dogs-tabellen
-      if (!owners[ownerName]) owners[ownerName] = { dogs: [], org_id: orgId, owner_id: ownerId };
+      if (!owners[ownerName])
+        owners[ownerName] = { dogs: [], org_id: orgId, owner_id: ownerId };
       owners[ownerName].dogs.push(d);
     }
 
