@@ -1,8 +1,176 @@
-<!-- Last updated: 2025-11-16 (Landing Pages Refactored + GDPR) -->
+<!-- Last updated: 2025-11-17 (Booking System Complete + GDPR + Audit Log) -->
 
 ---
 
-## 🔄 Senaste Uppdateringar (16 november 2025)
+## 🔄 Senaste Uppdateringar (17 november 2025)
+
+### 🎯 KOMPLETT BOKNINGSSYSTEM för Hundpensionat (17 november)
+
+**Status:** Fullt implementerat och pushat till GitHub ✅
+
+#### ✅ Vad som implementerats
+
+**1. Kundportal - Mina bokningar** (`/app/kundportal/mina-bokningar/page.tsx`)
+
+- ✅ Visa alla bokningar för inloggad kund med full information
+- ✅ Filter-flikar: Kommande, Tidigare, Avbokade, Alla
+- ✅ Status-badges med färgkodning (pending/confirmed/checked_in/checked_out/cancelled)
+- ✅ **Avbokningsfunktion** med automatisk avgiftsberäkning
+  - Modal visar dagar kvar, avbokningsavgift och återbetalning
+  - Baserat på organisationens avbokningspolicy
+  - Frivilligt fält för orsak
+- ✅ Länkar till fakturor (förskott & slutbetalning)
+- ✅ Komplett bokningsinfo: datum, hund, pris, anteckningar, plats
+
+**2. Pensionat Admin - Aktiva gäster** (`/app/hundpensionat/aktiva-gaster/page.tsx`)
+
+- ✅ Lista över **väntande incheckningar** (confirmed + start_date <= idag)
+- ✅ Lista över **incheckade gäster** (checked_in status)
+- ✅ **Incheckning-knapp** → uppdaterar status + checkin_time
+- ✅ **Utcheckning-modal** med:
+  - Val av extra tjänster (kloklippning, tandrengöring, etc)
+  - Kvantitet per tjänst
+  - Automatisk prisberäkning
+  - Anteckningar vid utcheckning
+  - Uppdaterar status till checked_out
+- ✅ Visa hundinfo: medicinska tillstånd, allergier, tillhörigheter
+- ✅ Ägarinfo: namn, telefon, email (klickbara länkar)
+
+**3. Avboknings-API** (`/app/api/bookings/cancel/route.ts`)
+
+- ✅ Verifierar ägandeskap (endast egen bokning)
+- ✅ Kontrollerar status (endast pending/confirmed kan avbokas)
+- ✅ Beräknar avbokningsavgift enligt organisationens policy
+- ✅ Uppdaterar bokning: status='cancelled', cancelled_at, cancellation_reason, cancelled_by_user_id
+- ✅ Hanterar återbetalning av förskottsbetalning
+- ✅ Returnerar fullständig avgiftsberäkning
+
+**4. Avbokningspolicy Library** (`/lib/cancellationPolicy.ts`)
+
+```typescript
+// Standardpolicy (kan anpassas per organisation)
+{
+  free_cancellation_days: 7,      // 7+ dagar: 0% avgift
+  partial_refund_days: 3,         // 3-7 dagar: 50% avgift
+  partial_refund_percentage: 50,
+  no_refund_within_days: 3,       // <3 dagar: 100% avgift
+  allow_customer_cancellation: true
+}
+```
+
+Funktioner:
+
+- `calculateCancellationFee()` - Beräknar avgift baserat på policy
+- `canCustomerCancel()` - Avgör om avbokning är tillåten
+- `formatCancellationInfo()` - Formaterar policy för visning
+- `parsePolicyFromOrganisation()` - Hämtar och parsar org:s policy
+
+**5. Databas-migration** (`supabase/migrations/20251116_add_cancellation_and_gdpr_fields.sql`)
+
+Nya kolumner:
+
+- `bookings`: `cancellation_reason`, `cancelled_at`, `cancelled_by_user_id`
+- `dogs`: `is_deleted`, `deleted_at`, `deleted_reason` (mjuk radering)
+- `owners`: `is_anonymized`, `anonymized_at`, `anonymization_reason`, `data_retention_until`
+- `orgs`: `cancellation_policy` (jsonb)
+
+Nya tabeller:
+
+- **`booking_events`** - Audit log för alla bokningsändringar (GDPR Artikel 30)
+  - Loggar: created, approved, cancelled, checked_in, checked_out, modified
+  - Spårar: vem, vad, när, varför
+  - Metadata: prisändringar, statusändringar, extra tjänster
+- **`migrations`** - Versionshantering av schemaändringar
+  - Spårar: version, description, executed_at, execution_time_ms
+
+Nya funktioner:
+
+- `log_booking_status_change()` - Auto-loggar alla bokningsändringar
+- `calculate_cancellation_fee()` - Beräknar avgift baserat på policy
+- `anonymize_owner()` - GDPR-anonymisering av persondata
+- `calculate_data_retention_date()` - Beräknar lagringstid (3 år)
+
+Triggers:
+
+- `trigger_log_booking_changes` - Automatisk loggning vid bokningsändringar
+
+RLS Policies:
+
+- booking_events: Org-scopad SELECT/INSERT
+- migrations: Read-only för authenticated users
+
+#### ✅ GDPR-compliance
+
+**Artikel 30 - Register över behandlingar:**
+
+- `booking_events` loggar alla bokningsändringar automatiskt
+- Spårar: vem gjorde ändringen, när, varför, vilken data ändrades
+
+**Artikel 17 - Rätt till radering:**
+
+- Mjuk radering av hundar (`is_deleted`)
+- Anonymisering av ägare (`is_anonymized`)
+- Data behålls för bokföring (3 år enligt bokföringslagen)
+
+**Artikel 5.1.e - Lagringsminimering:**
+
+- `data_retention_until` beräknas automatiskt (3 år från sista aktivitet)
+- Möjlighet att schemalägga automatisk radering
+
+#### ✅ Deployment
+
+**Filer som laddats upp till GitHub:**
+
+- ✅ `app/kundportal/mina-bokningar/page.tsx` (501 rader)
+- ✅ `app/hundpensionat/aktiva-gaster/page.tsx` (722 rader)
+- ✅ `app/api/bookings/cancel/route.ts` (178 rader)
+- ✅ `lib/cancellationPolicy.ts` (187 rader)
+- ✅ `supabase/migrations/20251116_add_cancellation_and_gdpr_fields.sql` (456 rader)
+- ✅ `supabase/schema.sql` - Uppdaterad med alla nya tabeller/funktioner
+- ✅ `IMPLEMENTATION_SUMMARY_20251116.md` - Komplett dokumentation
+- ✅ `PENSIONAT_BOOKING_FLOW.md` - Flödesdiagram och användarguide
+- ✅ `STATUS_20251117.md` - Deployment-status
+
+**Commit:** `d3770e3` - "Fix: Mina bokningar TypeScript errors + Schema.sql sync"  
+**Status:** Pushed to main ✅
+
+#### 🔜 Nästa steg
+
+1. **Kör migration i Supabase** (för att aktivera alla features):
+
+   ```sql
+   -- I Supabase SQL Editor
+   \i supabase/migrations/20251116_add_cancellation_and_gdpr_fields.sql
+   ```
+
+2. **Testa bokningsflödet:**
+   - Kund skapar bokning → Pensionat godkänner
+   - Check-in → Check-out med extra tjänster
+   - Avbokning med avgiftsberäkning
+   - Verifiera att `booking_events` loggar korrekt
+
+3. **E-postnotifieringar** (planerat):
+   - Bokningsbekräftelse
+   - Godkännande från pensionat
+   - Check-in påminnelse
+   - Avbokningsbekräftelse
+   - Utcheckningsfaktura
+
+4. **Automatisk efterskottsfaktura** (planerat):
+   - Trigger vid checkout → skapar faktura automatiskt
+   - Beräknar: totalpris - förskottsbetalning
+   - Förfallodatum: 14 dagar fram
+
+#### � Dokumentation
+
+- **IMPLEMENTATION_SUMMARY_20251116.md** - Teknisk översikt och kodexempel
+- **PENSIONAT_BOOKING_FLOW.md** - Användarguide och flödesdiagram
+- **STATUS_20251117.md** - Deployment-status och checklista
+- **supabase/migrations/** - SQL-migrations med kommentarer
+
+---
+
+## 🔄 Tidigare Uppdateringar (16 november 2025)
 
 ### 🎨 Landing Pages - Teknisk Skuld Eliminerad (16 november)
 
