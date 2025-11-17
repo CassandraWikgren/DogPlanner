@@ -1,9 +1,38 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-13 (Städning + Databas-fixar + Admin-sida)
+-- Uppdaterad 2025-11-16 (Avbokningssystem + GDPR + Audit Log)
 -- ========================================
 --
--- === SENASTE ÄNDRINGAR (2025-11-13 eftermiddag/kväll) ===
+-- === SENASTE ÄNDRINGAR (2025-11-16) ===
+--
+-- 🆕 AVBOKNINGSSYSTEM:
+--   • bookings.cancellation_reason - Orsak till avbokning
+--   • bookings.cancelled_at - Tidsstämpel för avbokning
+--   • bookings.cancelled_by_user_id - Vem som avbokade (kund/personal)
+--   • orgs.cancellation_policy (jsonb) - Organisationens avbokningsregler
+--   • calculate_cancellation_fee() - Funktion för avgiftsberäkning
+--   • Index: idx_bookings_cancellation_reason, idx_bookings_cancelled_at
+--
+-- 🔒 GDPR COMPLIANCE:
+--   • dogs.is_deleted, deleted_at, deleted_reason - Mjuk radering (soft delete)
+--   • owners.is_anonymized, anonymized_at, anonymization_reason - Anonymisering
+--   • owners.data_retention_until - GDPR-lagringstid (3 år från sista aktivitet)
+--   • anonymize_owner() - Anonymiserar persondata enligt GDPR
+--   • calculate_data_retention_date() - Beräknar när data får raderas
+--
+-- 📋 BOKNINGS AUDIT LOG (GDPR Artikel 30):
+--   • booking_events - Ny tabell för händelseloggning
+--   • log_booking_status_change() - Auto-loggar alla bokningsändringar
+--   • trigger_log_booking_changes - Trigger på bookings för automatisk loggning
+--   • RLS policies: Användare ser endast sin organisations händelser
+--   • Index: booking_id, org_id, event_type, created_at för snabba queries
+--
+-- 🗄️ MIGRATIONS TRACKING:
+--   • migrations - Ny tabell för versionshantering av schemaändringar
+--   • Spårar: version, description, executed_at, execution_time_ms, created_by
+--   • Viktigt för långsiktig hållbarhet och transparent databas-underhåll
+--
+-- === TIDIGARE ÄNDRINGAR (2025-11-13 eftermiddag/kväll) ===
 --
 -- 🧹 PROJEKT-STÄDNING (kördes 2025-11-13):
 --   • Tog bort 6 .bak-filer från app/admin/ (backup-filer)
@@ -172,6 +201,15 @@ CREATE TABLE IF NOT EXISTS orgs (
   vat_rate numeric DEFAULT 25,
   modules_enabled text[] DEFAULT ARRAY['daycare'],
   pricing_currency text DEFAULT 'SEK',
+  -- AVBOKNINGSPOLICY (tillagt 2025-11-16)
+  cancellation_policy jsonb DEFAULT '{
+    "free_cancellation_days": 7,
+    "partial_refund_days": 3,
+    "partial_refund_percentage": 50,
+    "no_refund_within_days": 3,
+    "allow_customer_cancellation": true,
+    "cancellation_fee_type": "percentage"
+  }'::jsonb, -- Organisationens avbokningsregler
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
@@ -208,6 +246,11 @@ CREATE TABLE IF NOT EXISTS owners (
   gdpr_consent boolean DEFAULT false,
   marketing_consent boolean DEFAULT false,
   photo_consent boolean DEFAULT false,
+  -- GDPR ANONYMISERING (tillagt 2025-11-16)
+  is_anonymized boolean DEFAULT FALSE, -- Om persondata har anonymiserats (GDPR)
+  anonymized_at timestamptz, -- När anonymisering skedde
+  anonymization_reason text, -- Orsak (GDPR-begäran, datalagringstid uppnådd, etc.)
+  data_retention_until date, -- Datum då data får raderas enligt GDPR (3 år från sista aktivitet)
   is_active boolean DEFAULT true,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
@@ -264,6 +307,10 @@ CREATE TABLE IF NOT EXISTS dogs (
   checkout_date date,
   notes text,
   events jsonb,
+  -- GDPR SOFT DELETE (tillagt 2025-11-16)
+  is_deleted boolean DEFAULT FALSE, -- Mjuk radering istället för permanent DELETE
+  deleted_at timestamptz, -- När hunden raderades
+  deleted_reason text, -- Orsak (GDPR-begäran, inaktiv kund, etc.)
   is_active boolean DEFAULT true,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
@@ -296,6 +343,10 @@ CREATE TABLE IF NOT EXISTS bookings (
   prepayment_status text CHECK (prepayment_status IN ('unpaid', 'paid', 'partially_paid', 'refunded')) DEFAULT 'unpaid',
   prepayment_invoice_id uuid REFERENCES invoices(id) ON DELETE SET NULL,
   afterpayment_invoice_id uuid REFERENCES invoices(id) ON DELETE SET NULL,
+  -- AVBOKNINGSSYSTEM (tillagt 2025-11-16)
+  cancellation_reason text, -- Orsak till avbokning (kundens förklaring)
+  cancelled_at timestamptz, -- När bokningen avbokades
+  cancelled_by_user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL, -- Vem som avbokade (kund/personal)
   is_active boolean DEFAULT true,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
@@ -341,6 +392,45 @@ CREATE INDEX IF NOT EXISTS idx_extra_service_org_id ON extra_service(org_id);
 
 -- === BOOKINGS INDEXES (tillagt 2025-11-15) ===
 CREATE INDEX IF NOT EXISTS idx_bookings_bed_location ON bookings(bed_location);
+CREATE INDEX IF NOT EXISTS idx_bookings_cancellation_reason ON bookings(cancellation_reason);
+CREATE INDEX IF NOT EXISTS idx_bookings_cancelled_at ON bookings(cancelled_at);
+
+-- === BOKNINGSHÄNDELSER (AUDIT LOG) - Tillagt 2025-11-16 ===
+-- Används för att logga alla bokningsändringar enligt GDPR Artikel 30
+CREATE TABLE IF NOT EXISTS booking_events (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  booking_id uuid REFERENCES bookings(id) ON DELETE CASCADE NOT NULL,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE NOT NULL,
+  event_type text NOT NULL, -- 'created', 'approved', 'checked_in', 'checked_out', 'cancelled', 'modified'
+  old_status text, -- Status före ändring
+  new_status text, -- Status efter ändring
+  changed_by_user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL, -- Vem som utförde ändringen
+  change_reason text, -- Orsak till ändring (fritext)
+  metadata jsonb, -- Extra data (t.ex. pris före/efter, extra_services ändring, etc.)
+  created_at timestamptz DEFAULT now()
+);
+
+-- Index för snabba queries
+CREATE INDEX IF NOT EXISTS idx_booking_events_booking_id ON booking_events(booking_id);
+CREATE INDEX IF NOT EXISTS idx_booking_events_org_id ON booking_events(org_id);
+CREATE INDEX IF NOT EXISTS idx_booking_events_event_type ON booking_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_booking_events_created_at ON booking_events(created_at DESC);
+
+-- === MIGRATIONS (SCHEMA VERSION TRACKING) - Tillagt 2025-11-16 ===
+-- Används för att hålla koll på alla schemaändringar i databasen
+CREATE TABLE IF NOT EXISTS migrations (
+  id serial PRIMARY KEY,
+  version text UNIQUE NOT NULL, -- t.ex. '20251116_add_cancellation_and_gdpr_fields'
+  description text, -- Beskrivning av vad migrationen gör
+  executed_at timestamptz DEFAULT now(),
+  execution_time_ms integer, -- Hur lång tid migrationen tog
+  created_by text DEFAULT current_user
+);
+
+COMMENT ON TABLE migrations IS 'Håller koll på alla schemaändringar - VIKTIGT för långsiktig hållbarhet';
+COMMENT ON COLUMN migrations.version IS 'Unikt namn på migration (format: YYYYMMDD_beskrivning)';
+COMMENT ON COLUMN migrations.execution_time_ms IS 'Mäter performance för framtida optimeringar';
+
 
 -- === BOKNINGSTJÄNSTER ===
 CREATE TABLE IF NOT EXISTS booking_services (
@@ -1450,6 +1540,190 @@ FOR EACH ROW
 EXECUTE FUNCTION calc_total_amount();
 
 -- =======================================
+-- BOKNINGS AUDIT LOG TRIGGER (2025-11-16)
+-- =======================================
+
+-- Funktion för att automatiskt logga bokningsändringar
+CREATE OR REPLACE FUNCTION log_booking_status_change()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Logga endast statusändringar (skippa om status är samma)
+  IF (TG_OP = 'UPDATE' AND OLD.status != NEW.status) OR TG_OP = 'INSERT' THEN
+    INSERT INTO booking_events (
+      booking_id,
+      org_id,
+      event_type,
+      old_status,
+      new_status,
+      changed_by_user_id,
+      metadata
+    ) VALUES (
+      COALESCE(NEW.id, OLD.id),
+      COALESCE(NEW.org_id, OLD.org_id),
+      CASE 
+        WHEN TG_OP = 'INSERT' THEN 'created'
+        WHEN NEW.status = 'confirmed' THEN 'approved'
+        WHEN NEW.status = 'checked_in' THEN 'checked_in'
+        WHEN NEW.status = 'checked_out' THEN 'checked_out'
+        WHEN NEW.status = 'cancelled' THEN 'cancelled'
+        ELSE 'modified'
+      END,
+      OLD.status,
+      NEW.status,
+      auth.uid(), -- Använder Supabase auth för att identifiera användaren
+      jsonb_build_object(
+        'price_before', OLD.total_price,
+        'price_after', NEW.total_price,
+        'extra_services_changed', (OLD.extra_service_ids != NEW.extra_service_ids)
+      )
+    );
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER trigger_log_booking_changes
+AFTER INSERT OR UPDATE ON bookings
+FOR EACH ROW
+EXECUTE FUNCTION log_booking_status_change();
+
+-- =======================================
+-- AVBOKNINGSAVGIFTSBERÄKNING (2025-11-16)
+-- =======================================
+
+CREATE OR REPLACE FUNCTION calculate_cancellation_fee(
+  p_booking_id uuid,
+  p_cancellation_date timestamptz DEFAULT now()
+)
+RETURNS TABLE(
+  cancellation_fee numeric,
+  refund_amount numeric,
+  fee_percentage numeric,
+  days_before_checkin integer,
+  policy_applied jsonb
+) AS $$
+DECLARE
+  v_booking bookings%ROWTYPE;
+  v_policy jsonb;
+  v_days_before integer;
+  v_fee_pct numeric := 0;
+BEGIN
+  -- Hämta bokning
+  SELECT * INTO v_booking FROM bookings WHERE id = p_booking_id;
+  
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Bokning % hittades inte', p_booking_id;
+  END IF;
+  
+  -- Hämta avbokningspolicy från organisation
+  SELECT cancellation_policy INTO v_policy FROM orgs WHERE id = v_booking.org_id;
+  
+  -- Beräkna dagar innan incheckning
+  v_days_before := EXTRACT(DAY FROM (v_booking.start_date - p_cancellation_date::date));
+  
+  -- Beräkna avgiftsprocent baserat på policy
+  IF v_days_before >= (v_policy->>'free_cancellation_days')::integer THEN
+    v_fee_pct := 0; -- Gratis avbokning
+  ELSIF v_days_before >= (v_policy->>'partial_refund_days')::integer THEN
+    v_fee_pct := (v_policy->>'partial_refund_percentage')::numeric; -- Delvis återbetalning
+  ELSE
+    v_fee_pct := 100; -- Ingen återbetalning
+  END IF;
+  
+  -- Returnera resultat
+  RETURN QUERY SELECT
+    (v_booking.total_price * v_fee_pct / 100)::numeric AS cancellation_fee,
+    (v_booking.total_price * (100 - v_fee_pct) / 100)::numeric AS refund_amount,
+    v_fee_pct AS fee_percentage,
+    v_days_before AS days_before_checkin,
+    v_policy AS policy_applied;
+END;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+-- =======================================
+-- GDPR ANONYMISERING (2025-11-16)
+-- =======================================
+
+CREATE OR REPLACE FUNCTION anonymize_owner(
+  p_owner_id uuid,
+  p_reason text DEFAULT 'GDPR-begäran'
+)
+RETURNS boolean AS $$
+DECLARE
+  v_anon_name text;
+BEGIN
+  -- Skapa anonymt namn (t.ex. "Anonym_abc123")
+  v_anon_name := 'Anonym_' || substring(md5(random()::text) from 1 for 8);
+  
+  -- Uppdatera owner med anonymiserad data
+  UPDATE owners SET
+    full_name = v_anon_name,
+    email = v_anon_name || '@anonymiserad.se',
+    phone = NULL,
+    address = NULL,
+    postal_code = NULL,
+    city = NULL,
+    contact_person_2 = NULL,
+    contact_phone_2 = NULL,
+    personnummer = NULL,
+    notes = 'Anonymiserad enligt GDPR',
+    is_anonymized = TRUE,
+    anonymized_at = now(),
+    anonymization_reason = p_reason,
+    updated_at = now()
+  WHERE id = p_owner_id;
+  
+  -- Anonymisera även hundarna
+  UPDATE dogs SET
+    name = 'Anonymiserad Hund',
+    breed = NULL,
+    allergies = NULL,
+    medications = NULL,
+    special_needs = NULL,
+    behavior_notes = NULL,
+    food_info = NULL,
+    notes = 'Anonymiserad enligt GDPR',
+    photo_url = NULL,
+    is_deleted = TRUE,
+    deleted_at = now(),
+    deleted_reason = p_reason,
+    updated_at = now()
+  WHERE owner_id = p_owner_id;
+  
+  RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =======================================
+-- GDPR DATALAGRINGSBERÄKNING (2025-11-16)
+-- =======================================
+
+CREATE OR REPLACE FUNCTION calculate_data_retention_date(
+  p_owner_id uuid
+)
+RETURNS date AS $$
+DECLARE
+  v_last_activity_date date;
+BEGIN
+  -- Hitta senaste aktiviteten (bokning eller hundägande)
+  SELECT GREATEST(
+    COALESCE(MAX(b.end_date), '1900-01-01'::date),
+    COALESCE(MAX(d.updated_at::date), '1900-01-01'::date)
+  ) INTO v_last_activity_date
+  FROM owners o
+  LEFT JOIN dogs d ON d.owner_id = o.id
+  LEFT JOIN bookings b ON b.owner_id = o.id
+  WHERE o.id = p_owner_id;
+  
+  -- Returnera datum + 3 år (bokföringslag)
+  RETURN v_last_activity_date + INTERVAL '3 years';
+END;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+COMMENT ON FUNCTION calculate_data_retention_date IS 'Beräknar GDPR-datalagringstid (3 år från sista aktivitet)';
+
+-- =======================================
 -- SUBSCRIPTIONS TRIGGER
 -- =======================================
 
@@ -1513,6 +1787,8 @@ ALTER TABLE error_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE org_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE grooming_bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE grooming_journal ENABLE ROW LEVEL SECURITY;
+ALTER TABLE booking_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE migrations ENABLE ROW LEVEL SECURITY;
 
 -- =======================================
 -- COMPREHENSIVE RLS POLICIES
@@ -1674,6 +1950,28 @@ CREATE POLICY "Allow all for authenticated users" ON grooming_bookings
 -- Grooming journal policies
 CREATE POLICY "Allow all for authenticated users" ON grooming_journal
   FOR ALL USING (auth.role() = 'authenticated');
+
+-- Booking events policies (GDPR Artikel 30 compliance)
+CREATE POLICY "Users can view their org's booking events" ON booking_events
+  FOR SELECT
+  USING (
+    org_id IN (
+      SELECT org_id FROM profiles WHERE id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can insert booking events" ON booking_events
+  FOR INSERT
+  WITH CHECK (
+    org_id IN (
+      SELECT org_id FROM profiles WHERE id = auth.uid()
+    )
+  );
+
+-- Migrations är read-only för alla autentiserade användare
+CREATE POLICY "Authenticated users can view migrations" ON migrations
+  FOR SELECT
+  USING (auth.role() = 'authenticated');
 
 -- =======================================
 -- TESTDATA (Valfritt)

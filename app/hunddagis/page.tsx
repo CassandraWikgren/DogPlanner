@@ -223,26 +223,13 @@ export default function HunddagisPage() {
   // Ref för kolumninställningar dropdown
   const columnSettingsRef = useRef<HTMLDivElement>(null);
 
-  // Debug logging function
-  const logDebug = useCallback((level: string, message: string, data?: any) => {
-    const timestamp = new Date().toISOString();
-    console.log(
-      `[${timestamp}] [${level.toUpperCase()}] ${message}`,
-      data || ""
-    );
-  }, []);
-
   // Fetch data functions
   const fetchDogs = useCallback(async () => {
     if (!effectiveOrgId) {
-      console.warn("⚠️ fetchDogs: currentOrgId is null/undefined");
       return;
     }
 
     try {
-      console.log("🔍 fetchDogs: Fetching with orgId:", effectiveOrgId);
-      logDebug("info", "Hämtar hundar från Supabase...");
-
       const { data: dogsData, error: dogsError } = await supabase
         .from("dogs")
         .select(
@@ -266,26 +253,7 @@ export default function HunddagisPage() {
         .eq("org_id", effectiveOrgId)
         .order("name");
 
-      const firstDog = dogsData?.[0] as any;
-      console.log("📊 fetchDogs: Query result:", {
-        count: dogsData?.length || 0,
-        error: dogsError,
-        currentOrgId: effectiveOrgId,
-        sample: firstDog
-          ? {
-              id: firstDog.id,
-              name: firstDog.name,
-              org_id: firstDog.org_id,
-            }
-          : null,
-      });
-
       if (dogsError) {
-        logDebug(
-          "error",
-          `${ERROR_CODES.DATABASE_CONNECTION} Fel vid hämtning av hundar`,
-          dogsError
-        );
         setError(`Fel vid hämtning av hundar: ${dogsError.message}`);
         return;
       }
@@ -297,16 +265,10 @@ export default function HunddagisPage() {
       );
 
       setDogs(dogsWithUniqueOwners);
-      logDebug("success", `Hämtade ${dogsWithUniqueOwners.length} hundar`);
     } catch (err: any) {
-      logDebug(
-        "error",
-        `${ERROR_CODES.DATABASE_CONNECTION} Oväntat fel vid hämtning av hundar`,
-        err
-      );
       setError("Ett oväntat fel inträffade vid hämtning av hundar");
     }
-  }, [effectiveOrgId, logDebug]);
+  }, [effectiveOrgId, supabase]);
 
   const fetchRooms = useCallback(async () => {
     if (!effectiveOrgId) return;
@@ -319,25 +281,13 @@ export default function HunddagisPage() {
         .eq("is_active", true)
         .order("name");
 
-      if (roomsError) {
-        logDebug(
-          "error",
-          `${ERROR_CODES.DATABASE_CONNECTION} Fel vid hämtning av rum`,
-          roomsError
-        );
-        return;
-      }
+      if (roomsError) return;
 
       setRooms((roomsData as any as Room[]) || []);
-      logDebug("success", `Hämtade ${roomsData?.length || 0} rum`);
     } catch (err: any) {
-      logDebug(
-        "error",
-        `${ERROR_CODES.DATABASE_CONNECTION} Oväntat fel vid hämtning av rum`,
-        err
-      );
+      // Silent fail for rooms
     }
-  }, [effectiveOrgId, logDebug]);
+  }, [effectiveOrgId, supabase]);
 
   // Filter and sort functions
   const filteredAndSortedDogs = useMemo(() => {
@@ -435,7 +385,6 @@ export default function HunddagisPage() {
           filter: `org_id=eq.${effectiveOrgId}`,
         },
         () => {
-          logDebug("info", "Hundar uppdaterade via realtime");
           fetchDogs();
         }
       )
@@ -452,7 +401,6 @@ export default function HunddagisPage() {
           filter: `org_id=eq.${effectiveOrgId}`,
         },
         () => {
-          logDebug("info", "Rum uppdaterade via realtime");
           fetchRooms();
         }
       )
@@ -471,7 +419,6 @@ export default function HunddagisPage() {
           filter: `org_id=eq.${effectiveOrgId}`,
         },
         () => {
-          logDebug("info", "Ägare uppdaterade via realtime - refreshar hundar");
           fetchDogs(); // Hämta hundar igen för att få nya owner-relationer
         }
       )
@@ -482,7 +429,7 @@ export default function HunddagisPage() {
       supabase.removeChannel(roomsSubscription);
       supabase.removeChannel(ownersSubscription);
     };
-  }, [effectiveOrgId, fetchDogs, fetchRooms, logDebug]);
+  }, [effectiveOrgId, fetchDogs, fetchRooms, supabase]);
 
   // Stäng kolumninställningar när man klickar utanför
   useEffect(() => {
@@ -517,8 +464,6 @@ export default function HunddagisPage() {
 
   const exportToPDF = async () => {
     try {
-      logDebug("info", "Exporterar till PDF...");
-
       const response = await fetch("/api/pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -542,14 +487,7 @@ export default function HunddagisPage() {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-
-      logDebug("success", "PDF exporterad framgångsrikt");
     } catch (err: any) {
-      logDebug(
-        "error",
-        `${ERROR_CODES.PDF_EXPORT} PDF-export misslyckades`,
-        err
-      );
       setError("PDF-export misslyckades");
     }
   };

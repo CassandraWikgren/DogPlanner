@@ -3,18 +3,52 @@
 // Förhindra prerendering för att undvika build-fel
 export const dynamic = "force-dynamic";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import { Heart, Send, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function HunddagisAnsokanPage() {
   const supabase = createClientComponentClient();
+  const [orgId, setOrgId] = useState<string | null>(null);
 
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Hämta org_id från URL eller default organisation
+  useEffect(() => {
+    async function fetchOrgId() {
+      try {
+        // Försök hämta från URL subdomain eller query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const orgParam = urlParams.get("org");
+
+        if (orgParam) {
+          setOrgId(orgParam);
+          return;
+        }
+
+        // Annars hämta första organisationen från databasen (för demo)
+        const { data, error } = await supabase
+          .from("organisations")
+          .select("id")
+          .limit(1)
+          .single();
+
+        if (error) throw error;
+        if (data) setOrgId(data.id);
+      } catch (err) {
+        console.error("Could not fetch org_id:", err);
+        setError(
+          "Kunde inte ladda organisationsinformation. Vänligen försök igen."
+        );
+      }
+    }
+
+    fetchOrgId();
+  }, [supabase]);
 
   // Formulärdata
   const [formData, setFormData] = useState({
@@ -125,15 +159,18 @@ export default function HunddagisAnsokanPage() {
     setSubmitting(true);
 
     try {
-      // OBS: Vi måste hitta org_id baserat på subdomän eller någon identifierare
-      // För nu använder vi en placeholder - detta måste fixas i produktion
-      const org_id = "REPLACE_WITH_ACTUAL_ORG_ID"; // TODO: Fixa detta!
+      // Validera att vi har org_id
+      if (!orgId) {
+        throw new Error(
+          "Organisation kunde inte identifieras. Vänligen kontakta support."
+        );
+      }
 
       const { error: insertError } = await supabase
         .from("interest_applications")
         .insert([
           {
-            org_id,
+            org_id: orgId,
             parent_name: formData.parent_name.trim(),
             parent_email: formData.parent_email.trim(),
             parent_phone: formData.parent_phone.trim(),
@@ -160,9 +197,8 @@ export default function HunddagisAnsokanPage() {
 
       setSuccess(true);
 
-      // TODO: Skicka bekräftelse-mejl till parent_email
+      // TODO: Send confirmation email via API route
     } catch (err: any) {
-      console.error("Error submitting application:", err);
       setError(err.message || "Kunde inte skicka ansökan. Försök igen senare.");
     } finally {
       setSubmitting(false);
