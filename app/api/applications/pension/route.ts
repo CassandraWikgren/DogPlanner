@@ -91,7 +91,7 @@ export async function POST(request: Request) {
           start_date: booking.start_date,
           end_date: booking.end_date,
           status: "pending",
-          special_requests: booking.special_requests || null,
+          notes: booking.special_requests || null, // Using 'notes' instead of 'special_requests'
           base_price: 0,
           total_price: 0,
         },
