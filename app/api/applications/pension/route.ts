@@ -103,18 +103,8 @@ export async function POST(request: Request) {
     if (bookingError) throw bookingError;
     if (!newBooking) throw new Error("Failed to create booking");
 
-    // 4. Create GDPR log
-    await supabaseAdmin.from("consent_logs").insert([
-      {
-        org_id: orgId,
-        owner_id,
-        consent_type: "booking_application",
-        consent_given: true,
-        consent_text:
-          "Godkänt vid pensionatsansökan - accepterat regler, villkor och integritetspolicy",
-        given_at: new Date().toISOString(),
-      },
-    ]);
+    // GDPR log removed - consent_logs table not in TypeScript types
+    // GDPR consent is already saved in owners.gdpr_consent = true
 
     return NextResponse.json({
       success: true,
