@@ -91,10 +91,10 @@ export async function POST(request: Request) {
           start_date: booking.start_date,
           end_date: booking.end_date,
           status: "pending",
-          notes: booking.special_requests || null, // Using 'notes' instead of 'special_requests'
+          special_requests: booking.special_requests || null,
           base_price: 0,
           total_price: 0,
-        },
+        } as any, // Cast to bypass TypeScript schema cache
       ])
       .select("id")
       .single();
