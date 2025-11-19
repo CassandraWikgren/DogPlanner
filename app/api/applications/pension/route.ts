@@ -80,8 +80,8 @@ export async function POST(request: Request) {
     if (dogError) throw dogError;
     if (!newDog) throw new Error("Failed to create dog");
 
-    // 3. Create booking
-    const { data: newBooking, error: bookingError } = await supabaseAdmin
+    // Create booking - cast entire operation to bypass schema cache
+    const { data: newBooking, error: bookingError } = (await supabaseAdmin
       .from("bookings")
       .insert([
         {
@@ -94,10 +94,10 @@ export async function POST(request: Request) {
           special_requests: booking.special_requests || null,
           base_price: 0,
           total_price: 0,
-        } as any, // Cast to bypass TypeScript schema cache
+        },
       ])
       .select("id")
-      .single();
+      .single()) as any;
 
     if (bookingError) throw bookingError;
     if (!newBooking) throw new Error("Failed to create booking");
