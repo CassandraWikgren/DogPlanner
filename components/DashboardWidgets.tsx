@@ -70,6 +70,21 @@ export default function DashboardWidgets() {
       }
 
       const today = new Date().toISOString().split("T")[0];
+      const dayName = new Date()
+        .toLocaleDateString("sv-SE", { weekday: "long" })
+        .toLowerCase();
+
+      // Konvertera svensk veckodag till engelska fältnamn
+      const dayMapping: Record<string, string> = {
+        måndag: "Måndag",
+        tisdag: "Tisdag",
+        onsdag: "Onsdag",
+        torsdag: "Torsdag",
+        fredag: "Fredag",
+        lördag: "Lördag",
+        söndag: "Söndag",
+      };
+      const dayInSwedish = dayMapping[dayName] || "Måndag";
 
       // Hämta data parallellt
       const [
@@ -80,11 +95,12 @@ export default function DashboardWidgets() {
         checkOutsResult,
         pendingBookingsResult,
       ] = await Promise.all([
-        // Hunddagis - totalt och incheckade
+        // Hunddagis - ENDAST antagna hundar (waitlist != true)
         supabase
           .from("dogs")
-          .select("id, checked_in")
-          .eq("org_id", currentOrgId),
+          .select("id, checked_in, days, subscription, startdate")
+          .eq("org_id", currentOrgId)
+          .neq("waitlist", true), // ✅ Exkludera väntelista
 
         // Pensionat - totalt antal rum
         supabase.from("rooms").select("id").eq("org_id", currentOrgId),
@@ -137,11 +153,27 @@ export default function DashboardWidgets() {
       const pendingBookings = pendingBookingsResult.data || [];
       const healthInfo = dogsWithHealthInfo.data || [];
 
+      // Filtrera hundar som går IDAG (har subscription och rätt veckodag i days-fältet)
+      const dogsGoingToday = dogs.filter((dog) => {
+        // Om hunden inte har abonnemang eller startdatum, räknas den inte
+        if (!dog.subscription || !dog.startdate) return false;
+
+        // Om startdatum är i framtiden, räknas den inte
+        if (dog.startdate > today) return false;
+
+        // Om days-fältet är tomt, räknas hunden inte
+        if (!dog.days) return false;
+
+        // Kolla om dagens veckodag finns i days-strängen
+        const daysArray = dog.days.split(",").map((d: string) => d.trim());
+        return daysArray.includes(dayInSwedish);
+      });
+
       // Räkna unika rum som är bokade
       const occupiedRooms = new Set(bookings.map((b) => b.room_id)).size;
 
       setStats({
-        dagisTotal: dogs.length,
+        dagisTotal: dogsGoingToday.length, // ✅ Antal hundar som går IDAG, inte totalt
         dagisCheckedIn: dogs.filter((dog) => dog.checked_in).length,
         pensionatTotalRooms: rooms.length,
         pensionatOccupiedRooms: occupiedRooms,
@@ -165,7 +197,7 @@ export default function DashboardWidgets() {
       icon: CheckCircle,
       color: "text-green-600",
       bgColor: "bg-green-50",
-      change: `av ${stats.dagisTotal} totalt`,
+      change: `av ${stats.dagisTotal} idag`, // ✅ Tydliggör att det är dagens hundar
     },
     {
       title: "Pensionat - Beläggning",
