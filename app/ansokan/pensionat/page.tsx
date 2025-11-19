@@ -151,51 +151,21 @@ export default function PensionatAnsokanPage() {
         );
       }
 
-      // 1. Skapa eller hitta ägare
-      let owner_id: string;
-
-      const { data: existingOwner, error: ownerSearchError } = await supabase
-        .from("owners")
-        .select("id")
-        .eq("email", formData.owner_email.trim().toLowerCase())
-        .eq("org_id", orgId)
-        .maybeSingle();
-
-      if (ownerSearchError) throw ownerSearchError;
-
-      if (existingOwner) {
-        owner_id = existingOwner.id;
-      } else {
-        // Skapa ny ägare
-        const { data: newOwner, error: ownerCreateError } = await supabase
-          .from("owners")
-          .insert([
-            {
-              org_id: orgId,
-              full_name: formData.owner_name.trim(),
-              email: formData.owner_email.trim().toLowerCase(),
-              phone: formData.owner_phone.trim(),
-              address: formData.owner_address.trim() || null,
-              city: formData.owner_city.trim(),
-              postal_code: formData.owner_postal_code.trim() || null,
-              gdpr_consent: true, // Användare har godkänt vid ansökan
-            },
-          ])
-          .select("id")
-          .single();
-
-        if (ownerCreateError) throw ownerCreateError;
-        if (!newOwner) throw new Error("Owner not created");
-        owner_id = newOwner.id;
-      }
-
-      // 2. Skapa hund
-      const { data: newDog, error: dogError } = await supabase
-        .from("dogs")
-        .insert([
-          {
-            org_id: orgId,
-            owner_id,
+      // Call API route instead of direct Supabase (bypasses RLS issues)
+      const response = await fetch("/api/applications/pension", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orgId,
+          owner: {
+            full_name: formData.owner_name.trim(),
+            email: formData.owner_email.trim().toLowerCase(),
+            phone: formData.owner_phone.trim(),
+            address: formData.owner_address.trim() || null,
+            city: formData.owner_city.trim(),
+            postal_code: formData.owner_postal_code.trim() || null,
+          },
+          dog: {
             name: formData.dog_name.trim(),
             breed: formData.dog_breed.trim(),
             birth: formData.dog_birth,
@@ -207,133 +177,24 @@ export default function PensionatAnsokanPage() {
             is_house_trained: !formData.not_house_trained,
             notes: formData.medical_notes.trim() || null,
           },
-        ])
-        .select("id")
-        .single();
-
-      if (dogError) throw dogError;
-      if (!newDog) throw new Error("Dog not created");
-
-      // 3. Skapa bokning med status "pending"
-      const { data: newBooking, error: bookingError } = await supabase
-        .from("bookings")
-        .insert([
-          {
-            org_id: orgId,
-            dog_id: newDog.id,
-            owner_id,
+          booking: {
             start_date: formData.checkin_date,
             end_date: formData.checkout_date,
-            status: "pending", // Väntar på godkännande från admin
             special_requests: formData.special_requests.trim() || null,
-            base_price: 0, // Admin sätter pris vid godkännande
-            total_price: 0,
           },
-        ])
-        .select("id")
-        .single();
+        }),
+      });
 
-      if (bookingError) throw bookingError;
-      if (!newBooking) throw new Error("Booking not created");
+      const result = await response.json();
 
-      // 4. Skapa GDPR-logg
-      const { error: consentError } = await supabase
-        .from("consent_logs")
-        .insert([
-          {
-            org_id: orgId,
-            owner_id,
-            consent_type: "booking_application",
-            consent_given: true,
-            consent_text:
-              "Godkänt vid pensionatsansökan - accepterat regler, villkor och integritetspolicy",
-            given_at: new Date().toISOString(),
-          },
-        ]);
-
-      if (consentError)
-        console.warn("Kunde inte logga samtycke:", consentError);
-
-      // 5. Hämta organisations-info för emails
-      const { data: orgData, error: orgError } = await supabase
-        .from("orgs")
-        .select("name, email")
-        .eq("id", orgId)
-        .maybeSingle();
-
-      if (orgError) {
-        console.error("Could not fetch org details for emails:", orgError);
-      }
-
-      if (!orgData) {
-        console.warn(`No org found with id: ${orgId}`);
-      }
-
-      // 6. Skicka bekräftelse-email till KUND
-      try {
-        const confirmationResult = await sendApplicationConfirmationEmail(
-          {
-            ownerName: formData.owner_name,
-            dogName: formData.dog_name,
-            pensionatName: orgData?.name || orgName || "Hundpensionatet",
-            checkinDate: formData.checkin_date,
-            checkoutDate: formData.checkout_date,
-            applicationId: newBooking[0].id,
-          },
-          formData.owner_email,
-          orgId
-        );
-
-        if (!confirmationResult.success) {
-          console.error(
-            "Failed to send confirmation email to customer:",
-            confirmationResult.error
-          );
-          // Vi fortsätter trots email-fel - ansökan är skapad
-        } else {
-          console.log("✅ Confirmation email sent to customer");
-        }
-      } catch (emailErr) {
-        console.error("Exception sending confirmation email:", emailErr);
-      }
-
-      // 7. Skicka notifiering till PENSIONAT
-      if (orgData?.email) {
-        try {
-          const notificationResult = await sendApplicationNotificationEmail(
-            {
-              ownerName: formData.owner_name,
-              ownerEmail: formData.owner_email,
-              ownerPhone: formData.owner_phone,
-              dogName: formData.dog_name,
-              dogBreed: formData.dog_breed,
-              checkinDate: formData.checkin_date,
-              checkoutDate: formData.checkout_date,
-              specialRequests: formData.special_requests || undefined,
-              applicationUrl: `${window.location.origin}/hundpensionat/ansokningar`,
-            },
-            orgData.email,
-            orgId
-          );
-
-          if (!notificationResult.success) {
-            console.error(
-              "Failed to send notification to business:",
-              notificationResult.error
-            );
-          } else {
-            console.log("✅ Notification email sent to business");
-          }
-        } catch (emailErr) {
-          console.error("Exception sending notification email:", emailErr);
-        }
-      } else {
-        console.warn("No email found for org - skipping notification");
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to submit application");
       }
 
       setSuccess(true);
+
+      // TODO: Send confirmation email via API route
     } catch (err: any) {
-      console.error("Error submitting application:", err);
       setError(err.message || "Kunde inte skicka ansökan. Försök igen senare.");
     } finally {
       setSubmitting(false);
