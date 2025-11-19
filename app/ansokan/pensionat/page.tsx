@@ -178,7 +178,7 @@ export default function PensionatAnsokanPage() {
               address: formData.owner_address.trim() || null,
               city: formData.owner_city.trim(),
               postal_code: formData.owner_postal_code.trim() || null,
-              consent_status: "pending",
+              gdpr_consent: true, // Användare har godkänt vid ansökan
             },
           ])
           .select("id");
