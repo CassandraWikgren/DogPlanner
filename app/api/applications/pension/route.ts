@@ -80,8 +80,8 @@ export async function POST(request: Request) {
     if (dogError) throw dogError;
     if (!newDog) throw new Error("Failed to create dog");
 
-    // Create booking - cast entire operation to bypass schema cache
-    const { data: newBooking, error: bookingError } = (await supabaseAdmin
+    // Create booking without special_requests first (avoid schema cache issues)
+    const { data: newBooking, error: bookingError } = await supabaseAdmin
       .from("bookings")
       .insert([
         {
@@ -91,16 +91,28 @@ export async function POST(request: Request) {
           start_date: booking.start_date,
           end_date: booking.end_date,
           status: "pending",
-          special_requests: booking.special_requests || null,
           base_price: 0,
           total_price: 0,
         },
       ])
       .select("id")
-      .single()) as any;
+      .single();
 
     if (bookingError) throw bookingError;
     if (!newBooking) throw new Error("Failed to create booking");
+
+    // Update with special_requests separately to bypass TypeScript validation
+    if (booking.special_requests) {
+      const { error: updateError } = await supabaseAdmin
+        .from("bookings")
+        .update({ special_requests: booking.special_requests } as any)
+        .eq("id", newBooking.id);
+
+      if (updateError) {
+        console.error("Failed to update special requests:", updateError);
+        // Don't fail the whole operation, just log the error
+      }
+    }
 
     // 4. Create GDPR log
     await supabaseAdmin.from("consent_logs").insert([
