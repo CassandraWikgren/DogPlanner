@@ -11,6 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/app/context/AuthContext";
+import { capitalize } from "@/lib/textUtils";
 
 import {
   Download,
@@ -1167,7 +1168,7 @@ export default function HunddagisPage() {
                         {columns.includes("name") && (
                           <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                             <div className="flex items-center gap-2">
-                              {dog.name}
+                              {capitalize(dog.name)}
                               {dog.waitlist && (
                                 <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">
                                   Väntelista
@@ -1178,12 +1179,12 @@ export default function HunddagisPage() {
                         )}
                         {columns.includes("breed") && (
                           <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                            {dog.breed || "-"}
+                            {capitalize(dog.breed) || "-"}
                           </td>
                         )}
                         {columns.includes("gender") && (
                           <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                            {dog.gender || "-"}
+                            {capitalize(dog.gender) || "-"}
                           </td>
                         )}
                         {columns.includes("heightcm") && (
@@ -1200,7 +1201,7 @@ export default function HunddagisPage() {
                         )}
                         {columns.includes("owner") && (
                           <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                            {dog.owners?.full_name || "-"}
+                            {capitalize(dog.owners?.full_name) || "-"}
                           </td>
                         )}
                         {columns.includes("customer_number") && (
