@@ -42,7 +42,7 @@ export default function Dashboard() {
             <div className="lg:col-span-2">
               <DashboardWidgets />
             </div>
-            <div>
+            <div className="flex flex-col">
               <DagensHundarWidget />
             </div>
           </div>
@@ -59,12 +59,12 @@ export default function Dashboard() {
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center py-1">
-                <div className="text-2xl mb-2">🐕</div>
-                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
+              <div className="flex flex-col items-center justify-center text-center h-full min-h-[140px] py-4">
+                <div className="text-4xl mb-3">🐕</div>
+                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
                   Hunddagis
                 </h2>
-                <p className="text-xs text-gray-600 leading-normal">
+                <p className="text-sm text-gray-600 leading-relaxed px-2">
                   Dagishundar, schema och verksamhet
                 </p>
               </div>
@@ -78,12 +78,12 @@ export default function Dashboard() {
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center py-1">
-                <div className="text-2xl mb-2">🏨</div>
-                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
+              <div className="flex flex-col items-center justify-center text-center h-full min-h-[140px] py-4">
+                <div className="text-4xl mb-3">🏨</div>
+                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
                   Hundpensionat
                 </h2>
-                <p className="text-xs text-gray-600 leading-normal">
+                <p className="text-sm text-gray-600 leading-relaxed px-2">
                   Bokningar och in-/utcheckning
                 </p>
               </div>
@@ -97,12 +97,12 @@ export default function Dashboard() {
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center py-1">
-                <div className="text-2xl mb-2">✂️</div>
-                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
+              <div className="flex flex-col items-center justify-center text-center h-full min-h-[140px] py-4">
+                <div className="text-4xl mb-3">✂️</div>
+                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
                   Hundfrisör
                 </h2>
-                <p className="text-xs text-gray-600 leading-normal">
+                <p className="text-sm text-gray-600 leading-relaxed px-2">
                   Bokningar och hundtrimning
                 </p>
               </div>
@@ -116,12 +116,12 @@ export default function Dashboard() {
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center py-1">
-                <div className="text-2xl mb-2">⚙️</div>
-                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
+              <div className="flex flex-col items-center justify-center text-center h-full min-h-[140px] py-4">
+                <div className="text-4xl mb-3">⚙️</div>
+                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
                   Admin
                 </h2>
-                <p className="text-xs text-gray-600 leading-normal">
+                <p className="text-sm text-gray-600 leading-relaxed px-2">
                   Ekonomi, priser och hantering
                 </p>
               </div>

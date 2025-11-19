@@ -303,9 +303,11 @@ export default function HunddagisPage() {
 
       // Ny filterlogik för Våra hundar / Tjänster / Väntelistan
       const matchesView =
-        filterSubscription === "all" ||
-        (filterSubscription === "services" && dog.subscription) ||
-        (filterSubscription === "vantelista" && !dog.subscription);
+        (filterSubscription === "all" && dog.waitlist !== true) || // Våra hundar = endast antagna (ej väntelista)
+        (filterSubscription === "services" &&
+          dog.subscription &&
+          dog.waitlist !== true) || // Tjänster = har abonnemang och ej väntelista
+        (filterSubscription === "vantelista" && dog.waitlist === true); // Väntelistan = endast de på väntelista
 
       const matchesMonth =
         filterMonth === "all" ||

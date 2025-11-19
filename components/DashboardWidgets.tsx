@@ -211,13 +211,13 @@ export default function DashboardWidgets() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="bg-white rounded-lg p-5 shadow-sm border border-gray-200 animate-pulse"
+            className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 animate-pulse"
           >
-            <div className="h-20 bg-gray-200 rounded"></div>
+            <div className="h-32 bg-gray-200 rounded"></div>
           </div>
         ))}
       </div>
@@ -225,25 +225,23 @@ export default function DashboardWidgets() {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
       {widgets.map((widget, index) => (
         <div
           key={index}
-          className="bg-white rounded-lg p-5 shadow-sm border border-gray-200 hover:shadow-md transition-all"
+          className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all"
         >
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between mb-3">
-              <div className={`p-2.5 rounded-lg ${widget.bgColor}`}>
-                <widget.icon className={`w-5 h-5 ${widget.color}`} />
-              </div>
+          <div className="flex flex-col items-center text-center h-full">
+            <div className={`p-3 rounded-lg ${widget.bgColor} mb-3`}>
+              <widget.icon className={`w-6 h-6 ${widget.color}`} />
             </div>
             <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
               {widget.title}
             </p>
-            <p className="text-2xl font-bold text-gray-900 mb-1">
+            <p className="text-2xl font-bold text-gray-900 mb-2">
               {widget.value}
             </p>
-            <p className="text-xs text-gray-500">{widget.change}</p>
+            <p className="text-xs text-gray-500 mt-auto">{widget.change}</p>
           </div>
         </div>
       ))}

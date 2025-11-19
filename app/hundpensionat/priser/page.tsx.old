@@ -124,33 +124,35 @@ export default function PriserPage() {
         const { error } = await (supabase as any)
           .from("boarding_prices")
           .update({
-            dog_size: price.dog_size,
+            size_category: price.size_category,
             base_price: price.base_price,
-            weekend_surcharge: price.weekend_surcharge,
+            weekend_multiplier: price.weekend_multiplier,
+            holiday_multiplier: price.holiday_multiplier,
+            high_season_multiplier: price.high_season_multiplier,
           })
           .eq("id", price.id);
 
         if (error) throw error;
-        setSuccess("✅ Grundpris uppdaterat!");
+        setSuccess("Pris uppdaterat!");
       } else {
         // Skapa nytt
         const { error } = await (supabase as any)
           .from("boarding_prices")
           .insert({
             org_id: currentOrgId,
-            dog_size: price.dog_size,
+            size_category: price.size_category,
             base_price: price.base_price || 300,
-            weekend_surcharge: price.weekend_surcharge || 0,
-            is_active: true,
+            weekend_multiplier: price.weekend_multiplier || 1.2,
+            holiday_multiplier: price.holiday_multiplier || 1.5,
+            high_season_multiplier: price.high_season_multiplier || 1.3,
           });
 
         if (error) throw error;
-        setSuccess("✅ Grundpris skapat!");
+        setSuccess("Pris skapat!");
       }
 
       setEditingPrice(null);
       loadData();
-      setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       console.error("Fel vid sparande:", err);
       setError(err.message);
@@ -173,13 +175,12 @@ export default function PriserPage() {
             name: season.name,
             start_date: season.start_date,
             end_date: season.end_date,
-            price_multiplier: season.price_multiplier,
-            priority: season.priority,
+            type: season.type,
           })
           .eq("id", season.id);
 
         if (error) throw error;
-        setSuccess("✅ Säsong uppdaterad!");
+        setSuccess("Säsong uppdaterad!");
       } else {
         // Skapa ny
         const { error } = await (supabase as any)
@@ -189,18 +190,15 @@ export default function PriserPage() {
             name: season.name,
             start_date: season.start_date,
             end_date: season.end_date,
-            price_multiplier: season.price_multiplier || 1.0,
-            priority: season.priority || 50,
-            is_active: true,
+            type: season.type || "high",
           });
 
         if (error) throw error;
-        setSuccess("✅ Säsong skapad!");
+        setSuccess("Säsong skapad!");
       }
 
       setEditingSeason(null);
       loadData();
-      setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       console.error("Fel vid sparande:", err);
       setError(err.message);
@@ -296,110 +294,6 @@ export default function PriserPage() {
           </Link>
         </div>
 
-        {/* INFO-RUTA: Hur prissättningen fungerar */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg p-6 mb-6 shadow-sm">
-          <div className="flex items-start gap-3">
-            <div className="text-3xl">💡</div>
-            <div className="flex-1">
-              <h2 className="text-lg font-bold text-gray-900 mb-3">
-                Hur prissättningen fungerar
-              </h2>
-
-              <div className="space-y-3 text-sm text-gray-700">
-                <div className="bg-white bg-opacity-60 rounded-lg p-3">
-                  <h3 className="font-semibold text-blue-900 mb-1">
-                    📋 Steg-för-steg guide:
-                  </h3>
-                  <ol className="list-decimal list-inside space-y-1 ml-2">
-                    <li>
-                      <strong>Lägg till grundpriser</strong> för alla tre
-                      hundstorlekar (liten/mellan/stor)
-                    </li>
-                    <li>
-                      <strong>Sätt helgtillägg</strong> om du tar extra betalt
-                      fredag-söndag (valfritt)
-                    </li>
-                    <li>
-                      <strong>Skapa specialdatum</strong> för röda dagar och
-                      högtider med högre priser
-                    </li>
-                    <li>
-                      <strong>Definiera säsonger</strong> för högsäsong,
-                      sportlov etc. (valfritt)
-                    </li>
-                  </ol>
-                </div>
-
-                <div className="bg-white bg-opacity-60 rounded-lg p-3">
-                  <h3 className="font-semibold text-blue-900 mb-2">
-                    🧮 Hur priset beräknas automatiskt:
-                  </h3>
-                  <div className="bg-blue-100 bg-opacity-50 rounded px-3 py-2 font-mono text-xs mb-2">
-                    SLUTPRIS = (Grundpris + Helgtillägg*) × Säsong ×
-                    Specialdatum
-                    <div className="text-xs text-gray-600 mt-1">
-                      *Helgtillägg gäller endast fredag-söndag
-                    </div>
-                  </div>
-
-                  <div className="space-y-1 text-xs">
-                    <p>
-                      <span className="font-semibold">Exempel 1:</span> Liten
-                      hund, vardag normalsäsong → 300 kr
-                    </p>
-                    <p>
-                      <span className="font-semibold">Exempel 2:</span> Liten
-                      hund, helg normalsäsong → 300 kr + 50 kr helgtillägg = 350
-                      kr
-                    </p>
-                    <p>
-                      <span className="font-semibold">Exempel 3:</span> Liten
-                      hund, midsommar (specialdatum +400 kr) → (300 + 400) × 1.0
-                      = 700 kr
-                    </p>
-                    <p>
-                      <span className="font-semibold">Exempel 4:</span> Liten
-                      hund, högsäsong (×1.3) → 300 × 1.3 = 390 kr
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-white bg-opacity-60 rounded-lg p-3">
-                  <h3 className="font-semibold text-blue-900 mb-1">
-                    ⚠️ Viktigt att veta:
-                  </h3>
-                  <ul className="list-disc list-inside space-y-1 ml-2 text-xs">
-                    <li>
-                      <strong>Grundpriser krävs</strong> - Du kan inte ta emot
-                      bokningar utan grundpriser!
-                    </li>
-                    <li>
-                      <strong>Specialdatum prioriteras</strong> - Om ett datum
-                      finns i både specialdatum och helgtillägg används
-                      specialdatum
-                    </li>
-                    <li>
-                      <strong>Säsonger kan överlappa</strong> - Vid överlapp
-                      används den med högst prioritet
-                    </li>
-                    <li>
-                      <strong>Priser visas automatiskt</strong> - Kunden ser
-                      automatisk priskalkyl vid bokning
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 text-xs">
-                  <strong>💭 Tips:</strong> Börja med att lägga in grundpriser
-                  för alla tre hundstorlekar. Lägg sedan till specialdatum för
-                  alla röda dagar under året (jul, nyår, påsk, midsommar osv) så
-                  slipper du tänka på det löpande!
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Status messages */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 text-sm">
@@ -424,100 +318,125 @@ export default function PriserPage() {
                 <button
                   onClick={() =>
                     setEditingPrice({
-                      dog_size: "medium",
+                      id: "",
+                      org_id: "",
+                      size_category: "medium",
                       base_price: 300,
-                      weekend_surcharge: 0,
-                    } as BoardingPrice)
+                      weekend_multiplier: 1.2,
+                      holiday_multiplier: 1.5,
+                      high_season_multiplier: 1.3,
+                      created_at: "",
+                    })
                   }
                   className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm"
                 >
                   <Plus size={16} />
-                  Lägg till grundpris
+                  Lägg till
                 </button>
               </div>
 
               {prices.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <p className="mb-2">Inga grundpriser ännu.</p>
-                  <p className="text-sm">
-                    ⚠️ Du måste lägga till grundpriser för att kunna ta emot
-                    bokningar!
-                  </p>
-                </div>
+                <p className="text-gray-500 py-8 text-sm">
+                  Inga priser ännu. Klicka på "Lägg till" för att skapa.
+                </p>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-4">
                   {prices.map((price) => (
                     <div
                       key={price.id}
-                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                      className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h3 className="font-semibold text-gray-900">
-                            {SIZE_LABELS[price.dog_size]}
+                          <h3 className="font-semibold text-gray-900 text-sm">
+                            {price.size_category
+                              ? SIZE_LABELS[price.size_category]
+                              : "Allmänt"}
                           </h3>
-                          <p className="text-2xl font-bold text-[#2c7a4c] mt-1">
-                            {price.base_price} kr
-                            <span className="text-sm font-normal text-gray-600">
-                              /natt
-                            </span>
+                          <p className="text-sm text-gray-600">
+                            Grundpris: {price.base_price} kr/natt
                           </p>
                         </div>
                         <div className="flex gap-2">
                           <button
                             onClick={() => setEditingPrice(price)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
                           >
                             <Edit2 size={16} />
                           </button>
                           <button
                             onClick={() => deletePrice(price.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-md"
                           >
                             <Trash2 size={16} />
                           </button>
                         </div>
                       </div>
-
-                      {price.weekend_surcharge > 0 && (
-                        <div className="mt-2 pt-2 border-t border-gray-200">
-                          <div className="text-sm text-gray-600">
-                            Helgtillägg:
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div className="bg-orange-50 px-2 py-1 rounded-md">
+                          <div className="text-gray-600 text-xs">Helg</div>
+                          <div className="font-semibold text-gray-900">
+                            {Math.round(
+                              price.base_price * price.weekend_multiplier
+                            )}{" "}
+                            kr
                           </div>
-                          <div className="font-semibold text-orange-600">
-                            +{price.weekend_surcharge} kr
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            = {price.base_price + price.weekend_surcharge} kr på
-                            helger
+                          <div className="text-xs text-gray-500">
+                            ({price.weekend_multiplier}x)
                           </div>
                         </div>
-                      )}
+                        <div className="bg-red-50 px-2 py-1 rounded-md">
+                          <div className="text-gray-600 text-xs">Högtid</div>
+                          <div className="font-semibold text-gray-900">
+                            {Math.round(
+                              price.base_price * price.holiday_multiplier
+                            )}{" "}
+                            kr
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            ({price.holiday_multiplier}x)
+                          </div>
+                        </div>
+                        <div className="bg-yellow-50 px-2 py-1 rounded-md">
+                          <div className="text-gray-600 text-xs">
+                            Högssäsong
+                          </div>
+                          <div className="font-semibold text-gray-900">
+                            {Math.round(
+                              price.base_price * price.high_season_multiplier
+                            )}{" "}
+                            kr
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            ({price.high_season_multiplier}x)
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
               )}
 
-              {/* Edit Form för Grundpris */}
+              {/* Edit Form */}
               {editingPrice && (
                 <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="font-semibold mb-4">
-                    {editingPrice.id ? "Redigera grundpris" : "Nytt grundpris"}
+                  <h3 className="font-semibold mb-4 text-sm">
+                    {editingPrice.id ? "Redigera pris" : "Nytt pris"}
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-3">
                     <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Hundstorlek
+                      <label className="block text-sm font-medium mb-1">
+                        Storlek
                       </label>
                       <select
-                        value={editingPrice.dog_size || ""}
+                        value={editingPrice.size_category || ""}
                         onChange={(e) =>
                           setEditingPrice({
                             ...editingPrice,
-                            dog_size: e.target.value as SizeCategory,
+                            size_category: e.target.value as SizeCategory,
                           })
                         }
-                        className="w-full px-3 py-2 border rounded-md"
+                        className="w-full px-3 py-2 border rounded-md text-sm"
                       >
                         <option value="">Välj storlek</option>
                         {Object.entries(SIZE_LABELS).map(([key, label]) => (
@@ -528,54 +447,91 @@ export default function PriserPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Grundpris (kr/natt, vardag)
+                      <label className="block text-sm font-medium mb-1">
+                        Grundpris (kr/natt)
                       </label>
                       <input
                         type="number"
-                        value={editingPrice.base_price || ""}
+                        value={editingPrice.base_price}
                         onChange={(e) =>
                           setEditingPrice({
                             ...editingPrice,
                             base_price: parseFloat(e.target.value),
                           })
                         }
-                        placeholder="300"
-                        className="w-full px-3 py-2 border rounded-md"
+                        className="w-full px-3 py-2 border rounded-md text-sm"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Helgtillägg (kr, fredag-söndag)
-                      </label>
-                      <input
-                        type="number"
-                        value={editingPrice.weekend_surcharge ?? ""}
-                        onChange={(e) =>
-                          setEditingPrice({
-                            ...editingPrice,
-                            weekend_surcharge: parseFloat(e.target.value) || 0,
-                          })
-                        }
-                        placeholder="0"
-                        className="w-full px-3 py-2 border rounded-md"
-                      />
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Helg (x)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={editingPrice.weekend_multiplier}
+                          onChange={(e) =>
+                            setEditingPrice({
+                              ...editingPrice,
+                              weekend_multiplier: parseFloat(e.target.value),
+                            })
+                          }
+                          className="w-full px-3 py-2 border rounded-md text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Högtid (x)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={editingPrice.holiday_multiplier}
+                          onChange={(e) =>
+                            setEditingPrice({
+                              ...editingPrice,
+                              holiday_multiplier: parseFloat(e.target.value),
+                            })
+                          }
+                          className="w-full px-3 py-2 border rounded-md text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Säsong (x)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={editingPrice.high_season_multiplier}
+                          onChange={(e) =>
+                            setEditingPrice({
+                              ...editingPrice,
+                              high_season_multiplier: parseFloat(
+                                e.target.value
+                              ),
+                            })
+                          }
+                          className="w-full px-3 py-2 border rounded-md text-sm"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2 mt-4">
-                    <button
-                      onClick={() => savePrice(editingPrice)}
-                      className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm flex items-center gap-2"
-                    >
-                      <Save size={16} />
-                      Spara
-                    </button>
-                    <button
-                      onClick={() => setEditingPrice(null)}
-                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 font-semibold text-sm"
-                    >
-                      Avbryt
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => savePrice(editingPrice)}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
+                      >
+                        <Save size={16} />
+                        Spara
+                      </button>
+                      <button
+                        onClick={() => setEditingPrice(null)}
+                        className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
+                      >
+                        Avbryt
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -593,12 +549,14 @@ export default function PriserPage() {
                 <button
                   onClick={() =>
                     setEditingSeason({
+                      id: "",
+                      org_id: "",
                       name: "",
                       start_date: "",
                       end_date: "",
-                      price_multiplier: 1.0,
-                      priority: 50,
-                    } as BoardingSeason)
+                      type: "high",
+                      created_at: "",
+                    })
                   }
                   className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm"
                 >
@@ -617,9 +575,9 @@ export default function PriserPage() {
                     <div
                       key={season.id}
                       className={`border rounded-lg p-4 hover:bg-gray-50 transition-colors ${
-                        season.price_multiplier >= 1.4
+                        season.type === "holiday"
                           ? "border-red-200 bg-red-50"
-                          : season.price_multiplier >= 1.2
+                          : season.type === "high"
                             ? "border-yellow-200 bg-yellow-50"
                             : "border-blue-200 bg-blue-50"
                       }`}
@@ -654,26 +612,21 @@ export default function PriserPage() {
                           </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                            season.price_multiplier >= 1.4
-                              ? "bg-red-200 text-red-800"
-                              : season.price_multiplier >= 1.2
-                                ? "bg-yellow-200 text-yellow-800"
-                                : "bg-blue-200 text-blue-800"
-                          }`}
-                        >
-                          {season.price_multiplier >= 1.4
-                            ? "🎉 Högtid"
-                            : season.price_multiplier >= 1.2
-                              ? "☀️ Högsäsong"
-                              : "❄️ Lågsäsong"}
-                        </span>
-                        <span className="text-sm font-semibold text-gray-700">
-                          ×{season.price_multiplier}
-                        </span>
-                      </div>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                          season.type === "holiday"
+                            ? "bg-red-200 text-red-800"
+                            : season.type === "high"
+                              ? "bg-yellow-200 text-yellow-800"
+                              : "bg-blue-200 text-blue-800"
+                        }`}
+                      >
+                        {season.type === "holiday"
+                          ? "🎉 Högtid"
+                          : season.type === "high"
+                            ? "☀️ Högsäsong"
+                            : "❄️ Lågsäsong"}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -737,51 +690,24 @@ export default function PriserPage() {
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Prismultiplikator
-                        </label>
-                        <input
-                          type="number"
-                          step="0.1"
-                          min="0.5"
-                          max="3.0"
-                          value={editingSeason.price_multiplier || 1.0}
-                          onChange={(e) =>
-                            setEditingSeason({
-                              ...editingSeason,
-                              price_multiplier:
-                                parseFloat(e.target.value) || 1.0,
-                            })
-                          }
-                          className="w-full px-3 py-2 border rounded-md text-sm"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                          1.0 = normalpris, 1.3 = +30%, 0.8 = -20%
-                        </p>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Prioritet
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={editingSeason.priority || 50}
-                          onChange={(e) =>
-                            setEditingSeason({
-                              ...editingSeason,
-                              priority: parseInt(e.target.value) || 50,
-                            })
-                          }
-                          className="w-full px-3 py-2 border rounded-md text-sm"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                          Högre värde = högre prioritet vid överlapp
-                        </p>
-                      </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Typ
+                      </label>
+                      <select
+                        value={editingSeason.type}
+                        onChange={(e) =>
+                          setEditingSeason({
+                            ...editingSeason,
+                            type: e.target.value as "high" | "low" | "holiday",
+                          })
+                        }
+                        className="w-full px-3 py-2 border rounded-md text-sm"
+                      >
+                        <option value="high">☀️ Högsäsong</option>
+                        <option value="low">❄️ Lågsäsong</option>
+                        <option value="holiday">🎉 Högtid</option>
+                      </select>
                     </div>
                     <div className="flex gap-2">
                       <button

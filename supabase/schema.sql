@@ -1,9 +1,28 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-17 (Faktura-system bugfixar)
+-- Uppdaterad 2025-11-19 (Pensionatsbokningar + alla tabeller)
 -- ========================================
 --
--- === SENASTE ÄNDRINGAR (2025-11-17 kväll) ===
+-- === SENASTE ÄNDRINGAR (2025-11-19) ===
+--
+-- ✅ KOMPLETT SCHEMA-UPPDATERING:
+--   • Alla tabeller som används i appen är nu dokumenterade
+--   • Tillagd: consent_logs (GDPR samtycken med digital/fysisk tracking)
+--   • Tillagd: pension_stays (alternativ till bookings för pensionat - används i månadsvis fakturering)
+--   • Tillagd: customer_discounts (kundrabatter per organisation)
+--   • Tillagd: owner_discounts (ägarspecifika rabatter)
+--   • Tillagd: function_logs (Edge Functions loggning för månadsvis fakturering)
+--   • Tillagd: daily_schedule (dagens schema för hunddagis)
+--   • Tillagd: prices (äldre prishantering)
+--   • Tillagd: booking_services (tjänster utförda under pensionatsvistelse)
+--   • Tillagd: pensionat_services (tjänstekatalog för pensionat)
+--   • Tillagd: pension_calendar_full_view (VIEW för pensionatskalender)
+--   • PENSIONATSBOKNINGAR: Använder BOOKINGS-tabellen (inte egen tabell)
+--     - bookings.status: pending → confirmed → checked_in → checked_out
+--     - bookings används för BÅDE dagis och pensionat (room_type styr)
+--     - extra_services och booking_services för tilläggstjänster
+--
+-- === TIDIGARE ÄNDRINGAR (2025-11-17 kväll) ===
 --
 -- 🔧 KRITISKA FAKTURA-SYSTEM BUGFIXAR:
 --   • generate_invoices Edge Function: Använder nu dogs.owner_id (inte user_id som inte finns)
@@ -918,6 +937,221 @@ CREATE TABLE IF NOT EXISTS grooming_services (
 );
 COMMENT ON TABLE grooming_services IS 'Frisörtjänster och priser per organisation';
 CREATE INDEX IF NOT EXISTS idx_grooming_services_org ON grooming_services(org_id);
+
+-- === PENSIONATSBOKNINGAR - TJÄNSTEUTFÖRANDEN ===
+-- Används för att logga extra tjänster som utförts under vistelse (t.ex. kloklipp, bad)
+-- OBS: Denna är kopplad till booking_id (inte dog_id direkt)
+CREATE TABLE IF NOT EXISTS booking_services (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  booking_id uuid REFERENCES bookings(id) ON DELETE CASCADE,
+  service_id uuid REFERENCES extra_services(id) ON DELETE SET NULL, -- Referens till tjänstekatalogen
+  quantity integer DEFAULT 1,
+  unit_price numeric(10,2),
+  total_price numeric(10,2),
+  staff_notes text,
+  performed_at timestamptz DEFAULT now(),
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_booking_services_booking ON booking_services(booking_id);
+CREATE INDEX IF NOT EXISTS idx_booking_services_org ON booking_services(org_id);
+COMMENT ON TABLE booking_services IS 'Tjänster utförda under pensionatsvistelse (kopplade till bokningar)';
+
+-- === PENSIONATSBOKNINGAR - ALTERNATIV TABELL (pension_stays) ===
+-- OBS: pension_stays är ett ALTERNATIV till bookings-tabellen för pensionat
+-- Systemet använder huvudsakligen BOOKINGS för pensionat, men pension_stays
+-- används i månadsvis fakturering (generate_invoices Edge Function)
+CREATE TABLE IF NOT EXISTS pension_stays (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  dog_id uuid REFERENCES dogs(id) ON DELETE CASCADE,
+  owner_id uuid REFERENCES owners(id) ON DELETE CASCADE,
+  start_date date NOT NULL,
+  end_date date NOT NULL,
+  base_price numeric(10,2) DEFAULT 0,
+  addons jsonb, -- JSON array av tillägg: [{name: 'Bad', price: 150, qty: 1}, ...]
+  total_amount numeric(10,2) DEFAULT 0,
+  status text CHECK (status IN ('pending', 'confirmed', 'checked_in', 'checked_out', 'cancelled')) DEFAULT 'pending',
+  notes text,
+  last_updated timestamptz DEFAULT now(),
+  created_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_pension_stays_dog ON pension_stays(dog_id);
+CREATE INDEX IF NOT EXISTS idx_pension_stays_owner ON pension_stays(owner_id);
+CREATE INDEX IF NOT EXISTS idx_pension_stays_org_dates ON pension_stays(org_id, start_date, end_date);
+COMMENT ON TABLE pension_stays IS 'Alternativ pensionatsbokningstabell (används i månadsvis fakturering). Huvudsystem använder bookings-tabellen.';
+
+-- === PENSIONAT TJÄNSTEKATALOG (pensionat_services) ===
+-- Katalog över tjänster som kan utföras (skiljer sig från extra_services)
+-- Används för att definiera vilka tjänster som FINNS, medan booking_services loggar vad som UTFÖRDES
+CREATE TABLE IF NOT EXISTS pensionat_services (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  label text NOT NULL, -- T.ex. "Kloklipp", "Bad", "Tandborstning"
+  price numeric(10,2) NOT NULL,
+  description text,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_pensionat_services_org ON pensionat_services(org_id);
+COMMENT ON TABLE pensionat_services IS 'Tjänstekatalog för pensionat (används av booking_services)';
+
+-- === GDPR SAMTYCKEN (consent_logs) ===
+-- Loggning av alla kundsamtycken enligt GDPR Artikel 7
+-- Används i kundportalsregistrering och pensionatsansökningar
+CREATE TABLE IF NOT EXISTS consent_logs (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  owner_id uuid REFERENCES owners(id) ON DELETE CASCADE,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE NOT NULL,
+  consent_type text NOT NULL CHECK (consent_type IN ('digital_email', 'physical_form', 'phone_verbal', 'in_person')),
+  consent_given boolean NOT NULL,
+  consent_text text NOT NULL, -- Exakt text som kunden såg när samtycke gavs
+  consent_version text DEFAULT '1.0',
+  ip_address inet,
+  user_agent text,
+  signed_document_url text, -- Supabase Storage URL till uppladdad blankett
+  witness_staff_id uuid REFERENCES auth.users(id),
+  witness_notes text,
+  given_at timestamptz NOT NULL DEFAULT now(),
+  withdrawn_at timestamptz, -- När kund återkallade samtycke (GDPR Art. 7.3)
+  expires_at timestamptz,
+  created_by uuid REFERENCES auth.users(id),
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_consent_logs_owner ON consent_logs(owner_id);
+CREATE INDEX IF NOT EXISTS idx_consent_logs_org ON consent_logs(org_id);
+CREATE INDEX IF NOT EXISTS idx_consent_logs_active ON consent_logs(owner_id) WHERE consent_given = true AND withdrawn_at IS NULL;
+COMMENT ON TABLE consent_logs IS 'GDPR Art. 7: Dokumentation av kundsamtycken. Varje samtycke loggas med typ, tid, och ursprung.';
+COMMENT ON COLUMN consent_logs.consent_type IS 'Hur samtycke gavs: digital_email, physical_form, phone_verbal, in_person';
+COMMENT ON COLUMN consent_logs.consent_text IS 'Exakt text som kunden såg/läste när samtycke gavs. Versioneras för juridisk dokumentation.';
+COMMENT ON COLUMN consent_logs.withdrawn_at IS 'När kund återkallade samtycke (GDPR Art. 7.3 - rätt att återkalla).';
+
+-- === KUNDRABATTER (customer_discounts) ===
+-- Rabatter som gäller för specifika kunder
+CREATE TABLE IF NOT EXISTS customer_discounts (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  owner_id uuid REFERENCES owners(id) ON DELETE CASCADE,
+  discount_type text CHECK (discount_type IN ('percentage', 'fixed_amount', 'custom')),
+  discount_value numeric NOT NULL,
+  discount_name text,
+  valid_from date,
+  valid_to date,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_customer_discounts_owner ON customer_discounts(owner_id);
+CREATE INDEX IF NOT EXISTS idx_customer_discounts_org ON customer_discounts(org_id);
+COMMENT ON TABLE customer_discounts IS 'Kundspecifika rabatter (ersätter position_share)';
+
+-- === ÄGARRABATTER (owner_discounts) ===
+-- Alternativt namn för samma funktionalitet som customer_discounts
+-- (Vissa delar av appen använder owner_discounts istället)
+CREATE TABLE IF NOT EXISTS owner_discounts (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  owner_id uuid REFERENCES owners(id) ON DELETE CASCADE,
+  discount_type text CHECK (discount_type IN ('percentage', 'fixed_amount')),
+  discount_value numeric NOT NULL,
+  valid_from date,
+  valid_to date,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_owner_discounts_owner ON owner_discounts(owner_id);
+CREATE INDEX IF NOT EXISTS idx_owner_discounts_org ON owner_discounts(org_id);
+COMMENT ON TABLE owner_discounts IS 'Ägarrabatter (synonym till customer_discounts, används av vissa hundpensionatsidor)';
+
+-- === EDGE FUNCTIONS LOGGNING (function_logs) ===
+-- Används för att logga Edge Functions (t.ex. månadsvis fakturagenerering)
+CREATE TABLE IF NOT EXISTS function_logs (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  function_name text NOT NULL,
+  status text CHECK (status IN ('success', 'error', 'running', 'pending')),
+  execution_time_ms integer,
+  error_message text,
+  metadata jsonb,
+  created_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_function_logs_function ON function_logs(function_name);
+CREATE INDEX IF NOT EXISTS idx_function_logs_status ON function_logs(status);
+CREATE INDEX IF NOT EXISTS idx_function_logs_created ON function_logs(created_at DESC);
+COMMENT ON TABLE function_logs IS 'Loggning av Edge Functions (t.ex. månadsvis fakturagenerering via generate_invoices)';
+
+-- === DAGENS SCHEMA (daily_schedule) ===
+-- Schema för hunddagis - vem som är på plats vilken dag
+CREATE TABLE IF NOT EXISTS daily_schedule (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  dog_id uuid REFERENCES dogs(id) ON DELETE CASCADE,
+  schedule_date date NOT NULL,
+  is_present boolean DEFAULT true,
+  checkin_time time,
+  checkout_time time,
+  notes text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE(org_id, dog_id, schedule_date)
+);
+CREATE INDEX IF NOT EXISTS idx_daily_schedule_date ON daily_schedule(schedule_date);
+CREATE INDEX IF NOT EXISTS idx_daily_schedule_dog ON daily_schedule(dog_id);
+CREATE INDEX IF NOT EXISTS idx_daily_schedule_org ON daily_schedule(org_id, schedule_date);
+COMMENT ON TABLE daily_schedule IS 'Dagens schema för hunddagis - närvaroregistrering per dag';
+
+-- === ÄLDRE PRISHANTERING (prices) ===
+-- Används av äldre admin-sidor för prissättning
+-- (Ny kod använder boarding_prices, daycare_pricing, grooming_services istället)
+CREATE TABLE IF NOT EXISTS prices (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  org_id uuid REFERENCES orgs(id) ON DELETE CASCADE,
+  service_type text NOT NULL,
+  price_category text,
+  amount numeric(10,2) NOT NULL,
+  description text,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_prices_org ON prices(org_id);
+CREATE INDEX IF NOT EXISTS idx_prices_service ON prices(service_type);
+COMMENT ON TABLE prices IS 'Äldre prishantering (används av /admin/priser). Nyare kod använder boarding_prices, daycare_pricing, grooming_services.';
+
+-- === PENSIONAT KALENDER VIEW ===
+-- VIEW för att visa pensionatskalendern med alla bokningar
+CREATE OR REPLACE VIEW pension_calendar_full_view AS
+SELECT 
+  b.id,
+  b.org_id,
+  b.dog_id,
+  b.owner_id,
+  b.room_id,
+  b.start_date,
+  b.end_date,
+  b.status,
+  b.base_price,
+  b.total_price,
+  b.belongings,
+  b.bed_location,
+  d.name as dog_name,
+  d.breed as dog_breed,
+  d.heightcm as dog_height,
+  o.full_name as owner_name,
+  o.phone as owner_phone,
+  o.email as owner_email,
+  r.name as room_name
+FROM bookings b
+LEFT JOIN dogs d ON b.dog_id = d.id
+LEFT JOIN owners o ON b.owner_id = o.id
+LEFT JOIN rooms r ON b.room_id = r.id
+WHERE b.status IN ('confirmed', 'checked_in', 'checked_out')
+ORDER BY b.start_date DESC;
+
+COMMENT ON VIEW pension_calendar_full_view IS 'Komplett vy för pensionatskalender med alla detaljer';
 
 -- === NÄRVAROLOGGAR ===
 CREATE TABLE IF NOT EXISTS attendence_logs (
@@ -1931,6 +2165,16 @@ ALTER TABLE grooming_bookings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE grooming_journal ENABLE ROW LEVEL SECURITY;
 ALTER TABLE booking_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE migrations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE consent_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pension_stays ENABLE ROW LEVEL SECURITY;
+ALTER TABLE booking_services ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pensionat_services ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customer_discounts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE owner_discounts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE function_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_schedule ENABLE ROW LEVEL SECURITY;
+ALTER TABLE prices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE grooming_services ENABLE ROW LEVEL SECURITY;
 
 -- =======================================
 -- COMPREHENSIVE RLS POLICIES
@@ -2115,6 +2359,70 @@ CREATE POLICY "Authenticated users can view migrations" ON migrations
   FOR SELECT
   USING (auth.role() = 'authenticated');
 
+-- === CONSENT_LOGS POLICIES (GDPR compliance) ===
+-- Public kan INSERT (för ansökningar), authenticated kan se sin org
+CREATE POLICY "consent_public_insert" ON consent_logs
+  FOR INSERT TO anon, authenticated
+  WITH CHECK (true);
+
+CREATE POLICY "consent_org_select" ON consent_logs
+  FOR SELECT TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+-- === PENSION_STAYS POLICIES ===
+CREATE POLICY "Allow all for authenticated users" ON pension_stays
+  FOR ALL TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+-- === BOOKING_SERVICES POLICIES ===
+CREATE POLICY "Allow all for authenticated users" ON booking_services
+  FOR ALL TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+-- === PENSIONAT_SERVICES POLICIES ===
+CREATE POLICY "Allow all for authenticated users" ON pensionat_services
+  FOR ALL TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+-- === CUSTOMER_DISCOUNTS POLICIES ===
+CREATE POLICY "Allow all for authenticated users" ON customer_discounts
+  FOR ALL TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+-- === OWNER_DISCOUNTS POLICIES ===
+CREATE POLICY "Allow all for authenticated users" ON owner_discounts
+  FOR ALL TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+-- === FUNCTION_LOGS POLICIES ===
+-- Endast service role kan skriva, authenticated kan läsa
+CREATE POLICY "Anyone can view function logs" ON function_logs
+  FOR SELECT TO authenticated
+  USING (true);
+
+-- === DAILY_SCHEDULE POLICIES ===
+CREATE POLICY "Allow all for authenticated users" ON daily_schedule
+  FOR ALL TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+-- === PRICES POLICIES ===
+CREATE POLICY "Allow all for authenticated users" ON prices
+  FOR ALL TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
+-- === GROOMING_SERVICES POLICIES ===
+CREATE POLICY "Allow all for authenticated users" ON grooming_services
+  FOR ALL TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+
 -- =======================================
 -- TESTDATA (Valfritt)
 -- =======================================
@@ -2144,14 +2452,122 @@ ON CONFLICT DO NOTHING;
 COMMENT ON TABLE orgs IS 'Organisationer/företag som använder systemet';
 COMMENT ON TABLE profiles IS 'Användarprofiler kopplade till auth.users';
 COMMENT ON TABLE owners IS 'Hundägare/kunder';
-COMMENT ON TABLE rooms IS 'Rum för dagis och pensionat - SKAPAD OCH FUNKTIONELL';
+COMMENT ON TABLE rooms IS 'Rum för dagis och pensionat';
 COMMENT ON TABLE dogs IS 'Hundar med all info och status';
-COMMENT ON TABLE bookings IS 'Pensionatbokningar';
+COMMENT ON TABLE bookings IS 'Bokningar för både dagis och pensionat (room_type styr)';
 COMMENT ON TABLE extra_service IS 'Extra tjänster (frisör, medicin, etc)';
 COMMENT ON TABLE dog_journal IS 'Journal/anteckningar för hundar';
+COMMENT ON TABLE consent_logs IS 'GDPR samtycken - digital och fysisk dokumentation';
+COMMENT ON TABLE pension_stays IS 'Alternativ pensionatsbokningar (används i månadsfakturering)';
+COMMENT ON TABLE booking_services IS 'Tjänster utförda under vistelse (kopplade till bookings)';
+COMMENT ON TABLE customer_discounts IS 'Kundspecifika rabatter';
+COMMENT ON TABLE function_logs IS 'Edge Functions loggning (t.ex. månadsvis fakturering)';
+COMMENT ON TABLE daily_schedule IS 'Dagens schema för hunddagis';
 
 -- Schema version
-COMMENT ON SCHEMA public IS 'DogPlanner Schema v2.1 - Uppdaterad 2024-12-19 - ROOMS TABELL SKAPAD OCH FUNKTIONELL';[
+COMMENT ON SCHEMA public IS 'DogPlanner Schema v3.0 - Uppdaterad 2025-11-19 - KOMPLETT PENSIONATSBOKNING + ALLA TABELLER DOKUMENTERADE';
+
+-- =======================================
+-- SLUTKOMMENTARER
+-- =======================================
+
+-- 📊 TOTALT ANTAL TABELLER: ~45 (inkl. auth.users och storage-tabeller)
+--
+-- 🎯 HUVUDTABELLER (obligatoriska):
+--   1. orgs - Organisationer
+--   2. profiles - Användarprofiler
+--   3. owners - Hundägare/kunder
+--   4. dogs - Hundar
+--   5. rooms - Rum (dagis + pensionat)
+--   6. bookings - Bokningar (BÅDE dagis och pensionat!)
+--
+-- 💰 EKONOMI & FAKTURERING:
+--   7. invoices - Fakturor
+--   8. invoice_items - Fakturarader
+--   9. invoice_logs - Äldre fakturaloggar
+--   10. function_logs - Edge Functions loggning
+--
+-- 🏨 PENSIONAT-SPECIFIKT:
+--   11. boarding_prices - Grundpriser per hundstorlek
+--   12. boarding_seasons - Säsonger med multiplikatorer
+--   13. special_dates - Specialdatum (röda dagar, högtider)
+--   14. pension_stays - Alternativ bokningstabell (månadsvis fakturering)
+--   15. booking_services - Tjänster utförda under vistelse
+--   16. pensionat_services - Tjänstekatalog
+--   17. pension_calendar_full_view - VIEW för kalender
+--
+-- 🐕 HUNDDAGIS-SPECIFIKT:
+--   18. subscription_types - Abonnemangstyper & priser
+--   19. subscriptions - Hundabonnemang
+--   20. daycare_pricing - Dagis-priser per org
+--   21. interest_applications - Intresseanmälningar
+--   22. daycare_service_completions - Tjänsteutföranden
+--   23. daily_schedule - Dagens schema
+--
+-- ✂️ FRISÖR-SPECIFIKT:
+--   24. grooming_services - Tjänster & priser
+--   25. grooming_bookings - Frisörbokningar
+--   26. grooming_journal - Frisörjournal
+--   27. grooming_logs - Äldre frisörloggar
+--
+-- 💳 RABATTER & TILLÄGG:
+--   28. extra_services - Tjänstekatalog (alla typer)
+--   29. extra_service - Hundspecifika tillägg
+--   30. customer_discounts - Kundrabatter
+--   31. owner_discounts - Ägarrabatter (synonym)
+--   32. position_share - Äldre rabattsystem
+--   33. price_lists - Prislistor
+--   34. prices - Äldre priser
+--
+-- 📝 JOURNAL & LOGGNING:
+--   35. dog_journal - Hundjournal
+--   36. staff_notes - Personalanteckningar
+--   37. attendence_logs - Närvarologgar
+--   38. booking_events - Bokningshändelser (GDPR Art. 30)
+--   39. consent_logs - GDPR samtycken
+--   40. error_logs - Felloggar
+--
+-- 👥 PERSONAL & ORG:
+--   41. responsibilities - Ansvarsområden
+--   42. org_subscriptions - Organisationens plan/billing
+--
+-- 🔧 SYSTEM:
+--   43. migrations - Schema versionshantering
+--   44. services - Generiska tjänster
+--
+-- ⚙️ VIKTIGA FUNKTIONER:
+--   • handle_new_user() - Skapar org + profil vid registrering
+--   • create_invoice_on_checkout() - Skapar faktura vid utcheckning
+--   • calculate_cancellation_fee() - Beräknar avbokningsavgift
+--   • anonymize_owner() - GDPR anonymisering
+--   • calculate_data_retention_date() - GDPR datalagringstid
+--
+-- 🔐 RLS POLICIES:
+--   • Public INSERT: owners, dogs, bookings, interest_applications, consent_logs
+--   • Org-scoped: Alla andra tabeller (via profiles.org_id match)
+--
+-- 🚀 EDGE FUNCTIONS:
+--   • generate_invoices - Månadsvis fakturagenerering (körs 1:a varje månad)
+--   • Använder: dogs, owners, subscriptions, extra_service, pension_stays
+--
+-- 📱 KUNDPORTAL:
+--   • Använder owner_id som primary key (inte profiles.id)
+--   • Ett kundkonto fungerar hos ALLA pensionat (Scandic-modellen)
+--   • customer_number följer med överallt (org-oberoende)
+--
+-- 🏷️ NAMNKONVENTIONER:
+--   • Lowercase kolumnnamn (heightcm, inte height_cm)
+--   • Timestamps: created_at, updated_at (inte createdAt)
+--   • Foreign keys: org_id, dog_id, owner_id (inte organisation_id)
+--
+-- ❗ KRITISKT ATT VETA:
+--   • BOOKINGS används för BÅDE dagis och pensionat (room.room_type styr)
+--   • pension_stays är ALTERNATIV tabell (används i månadsfakturering)
+--   • Triggers är DISABLED i dev (complete_testdata.sql)
+--   • Triggers är ENABLED i prod (fix_registration_triggers.sql)
+--   • RLS är ENABLED överallt (även i dev efter 2025-11-17)
+
+-- EOF[
   {
     "trigger_name": "on_insert_set_org_id_for_boarding_prices",
     "table_name": "boarding_prices",
