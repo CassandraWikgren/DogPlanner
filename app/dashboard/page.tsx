@@ -37,8 +37,8 @@ export default function Dashboard() {
 
       {/* Stats overview - om org finns */}
       {currentOrgId && (
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
             <div className="lg:col-span-2">
               <DashboardWidgets />
             </div>
@@ -50,8 +50,8 @@ export default function Dashboard() {
       )}
 
       {/* Modulkort - Kompakta och professionella */}
-      <div className="max-w-7xl mx-auto px-6 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="max-w-7xl mx-auto px-6 pb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Hunddagis */}
           <Link href="/hunddagis" className="group">
             <StandardCard
@@ -59,12 +59,12 @@ export default function Dashboard() {
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center h-full min-h-[140px] py-4">
-                <div className="text-4xl mb-3">🐕</div>
-                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
+              <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
+                <div className="text-3xl mb-2">🐕</div>
+                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                   Hunddagis
                 </h2>
-                <p className="text-sm text-gray-600 leading-relaxed px-2">
+                <p className="text-xs text-gray-600 leading-relaxed px-2">
                   Dagishundar, schema och verksamhet
                 </p>
               </div>
@@ -78,12 +78,12 @@ export default function Dashboard() {
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center h-full min-h-[140px] py-4">
-                <div className="text-4xl mb-3">🏨</div>
-                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
+              <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
+                <div className="text-3xl mb-2">🏨</div>
+                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                   Hundpensionat
                 </h2>
-                <p className="text-sm text-gray-600 leading-relaxed px-2">
+                <p className="text-xs text-gray-600 leading-relaxed px-2">
                   Bokningar och in-/utcheckning
                 </p>
               </div>
@@ -97,12 +97,12 @@ export default function Dashboard() {
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center h-full min-h-[140px] py-4">
-                <div className="text-4xl mb-3">✂️</div>
-                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
+              <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
+                <div className="text-3xl mb-2">✂️</div>
+                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                   Hundfrisör
                 </h2>
-                <p className="text-sm text-gray-600 leading-relaxed px-2">
+                <p className="text-xs text-gray-600 leading-relaxed px-2">
                   Bokningar och hundtrimning
                 </p>
               </div>
@@ -116,12 +116,12 @@ export default function Dashboard() {
               rounded="lg"
               className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
-              <div className="flex flex-col items-center justify-center text-center h-full min-h-[140px] py-4">
-                <div className="text-4xl mb-3">⚙️</div>
-                <h2 className="text-lg font-semibold text-[#2c7a4c] mb-2">
+              <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
+                <div className="text-3xl mb-2">⚙️</div>
+                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                   Admin
                 </h2>
-                <p className="text-sm text-gray-600 leading-relaxed px-2">
+                <p className="text-xs text-gray-600 leading-relaxed px-2">
                   Ekonomi, priser och hantering
                 </p>
               </div>

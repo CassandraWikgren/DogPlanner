@@ -651,6 +651,7 @@ export default function EditDogModal({
         notes: null,
         owner_id: ownerId, // ✅ dogs.owner_id → owners.id
         org_id: currentOrgId, // ✅ Lägg alltid till org_id (viktigt när triggers är disabled)
+        waitlist: false, // ✅ KRITISKT: Alla hundar som sparas via EditDogModal är antagna (inte intresse)
         // Hälsofält i separata kolumner
         allergies: allergies || null,
         medications: medications || null,
