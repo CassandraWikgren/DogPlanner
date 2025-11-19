@@ -34,23 +34,25 @@ CREATE INDEX IF NOT EXISTS idx_interest_priority ON interest_applications(priori
 COMMIT;
 
 -- ============================================================
--- EXEMPEL PÅ ANVÄNDNING:
+-- EXEMPEL PÅ ANVÄNDNING (KÖR EJ - BARA FÖR REFERENS):
 -- ============================================================
+-- KOMMENTERADE EXEMPEL - Kopiera och ändra UUID när du använder dem
 
+/*
 -- Uppdatera när man kontaktar någon första gången:
 UPDATE interest_applications
 SET 
   first_contact_date = '2025-11-19',
   first_contact_notes = 'Ringde upp, lämnade meddelande',
   status = 'contacted'
-WHERE id = 'xxx-uuid-here';
+WHERE id = 'BYT-UT-MOT-RIKTIG-UUID';
 
 -- Boka in visning:
 UPDATE interest_applications
 SET 
   visit_booked_date = '2025-11-25',
   visit_status = 'booked'
-WHERE id = 'xxx-uuid-here';
+WHERE id = 'BYT-UT-MOT-RIKTIG-UUID';
 
 -- Efter visning:
 UPDATE interest_applications
@@ -58,7 +60,7 @@ SET
   visit_completed_date = '2025-11-25',
   visit_status = 'completed',
   visit_result = 'approved'
-WHERE id = 'xxx-uuid-here';
+WHERE id = 'BYT-UT-MOT-RIKTIG-UUID';
 
 -- Lägg till fler kontakter i historiken:
 UPDATE interest_applications
@@ -69,6 +71,7 @@ SET contact_history = contact_history || jsonb_build_array(
     'note', 'Ringde igen, ska fundera'
   )
 )
-WHERE id = 'xxx-uuid-here';
+WHERE id = 'BYT-UT-MOT-RIKTIG-UUID';
+*/
 
 -- ============================================================
