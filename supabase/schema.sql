@@ -1001,68 +1001,81 @@ CREATE TABLE IF NOT EXISTS error_logs (
 -- ============================================================================
 -- === ROW LEVEL SECURITY (RLS) POLICIES ===
 -- ============================================================================
--- Added: 2025-11-17
+-- Added: 2025-11-17, Updated: 2025-11-19
 -- Purpose: Allow public applications while securing org data
 -- Note: These policies are CRITICAL for public-facing application forms
+-- IMPORTANT: Separate UPDATE/DELETE policies to avoid "ALL" conflicts with INSERT
 
 -- ORGS: Public can read, members can manage
 ALTER TABLE orgs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public to view orgs" ON orgs FOR SELECT TO anon, authenticated USING (true);
-CREATE POLICY "Allow org members to manage their org" ON orgs FOR ALL TO authenticated
+CREATE POLICY "orgs_public_select" ON orgs FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "orgs_members_update" ON orgs FOR UPDATE TO authenticated
   USING (id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
   WITH CHECK (id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+CREATE POLICY "orgs_members_delete" ON orgs FOR DELETE TO authenticated
+  USING (id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
 -- OWNERS: Public can create (applications), members can manage
 ALTER TABLE owners ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public to create owners" ON owners FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "Allow org members to view their owners" ON owners FOR SELECT TO authenticated
+CREATE POLICY "owners_public_insert" ON owners FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "owners_org_select" ON owners FOR SELECT TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
-CREATE POLICY "Allow org members to manage their owners" ON owners FOR ALL TO authenticated
+CREATE POLICY "owners_org_update" ON owners FOR UPDATE TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
   WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+CREATE POLICY "owners_org_delete" ON owners FOR DELETE TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
 -- DOGS: Public can create (applications), members can manage
 ALTER TABLE dogs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public to create dogs" ON dogs FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "Allow org members to view their dogs" ON dogs FOR SELECT TO authenticated
+CREATE POLICY "dogs_public_insert" ON dogs FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "dogs_org_select" ON dogs FOR SELECT TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
-CREATE POLICY "Allow org members to manage their dogs" ON dogs FOR ALL TO authenticated
+CREATE POLICY "dogs_org_update" ON dogs FOR UPDATE TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
   WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+CREATE POLICY "dogs_org_delete" ON dogs FOR DELETE TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
 -- BOOKINGS: Public can create (pension applications), members can manage
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public to create bookings" ON bookings FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "Allow org members to view their bookings" ON bookings FOR SELECT TO authenticated
+CREATE POLICY "bookings_public_insert" ON bookings FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "bookings_org_select" ON bookings FOR SELECT TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
-CREATE POLICY "Allow org members to manage their bookings" ON bookings FOR ALL TO authenticated
+CREATE POLICY "bookings_org_update" ON bookings FOR UPDATE TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
   WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+CREATE POLICY "bookings_org_delete" ON bookings FOR DELETE TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
 -- INTEREST_APPLICATIONS: Public can create (daycare applications), members can manage
 ALTER TABLE interest_applications ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public to submit daycare applications" ON interest_applications FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "Allow org members to view their applications" ON interest_applications FOR SELECT TO authenticated
+CREATE POLICY "interest_public_insert" ON interest_applications FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "interest_org_select" ON interest_applications FOR SELECT TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
-CREATE POLICY "Allow org members to update their applications" ON interest_applications FOR UPDATE TO authenticated
+CREATE POLICY "interest_org_update" ON interest_applications FOR UPDATE TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
   WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
-CREATE POLICY "Allow org members to delete their applications" ON interest_applications FOR DELETE TO authenticated
+CREATE POLICY "interest_org_delete" ON interest_applications FOR DELETE TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
 -- CONSENT_LOGS: Public can create (GDPR logging), members can view
 ALTER TABLE consent_logs ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public to log consent" ON consent_logs FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "Allow org members to view consent logs" ON consent_logs FOR SELECT TO authenticated
+CREATE POLICY "consent_public_insert" ON consent_logs FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "consent_org_select" ON consent_logs FOR SELECT TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
 -- DOG_JOURNAL: Only authenticated members (not public)
 ALTER TABLE dog_journal ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow org members to view dog journals" ON dog_journal FOR SELECT TO authenticated
+CREATE POLICY "journal_org_select" ON dog_journal FOR SELECT TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
-CREATE POLICY "Allow org members to manage dog journals" ON dog_journal FOR ALL TO authenticated
+CREATE POLICY "journal_org_insert" ON dog_journal FOR INSERT TO authenticated
+  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+CREATE POLICY "journal_org_update" ON dog_journal FOR UPDATE TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
   WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+CREATE POLICY "journal_org_delete" ON dog_journal FOR DELETE TO authenticated
+  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
 -- ============================================================================
 
