@@ -81,24 +81,70 @@ export default function HundpensionatPage() {
     try {
       console.log("🔍 Laddar statistik...");
 
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayStr = today.toISOString().split("T")[0];
+
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().split("T")[0];
+
+      // Hämta ALLA confirmed bookings för beräkningar
+      const { data: allBookings } = await supabase
+        .from("bookings")
+        .select("start_date, end_date, status")
+        .eq("org_id", currentOrgId as string)
+        .eq("status", "confirmed");
+
+      // Hundar som är här IDAG (startdatum <= idag OCH slutdatum >= idag)
+      const hundarIdag = (allBookings || []).filter((b) => {
+        return b.start_date <= todayStr && b.end_date >= todayStr;
+      }).length;
+
+      // Incheckning IDAG (startdatum === idag)
+      const incheckIdag = (allBookings || []).filter((b) => {
+        return b.start_date === todayStr;
+      }).length;
+
+      // Utcheckning IDAG (slutdatum === idag)
+      const utcheckIdag = (allBookings || []).filter((b) => {
+        return b.end_date === todayStr;
+      }).length;
+
+      // Incheckning IMORGON (startdatum === imorgon)
+      const incheckImorgon = (allBookings || []).filter((b) => {
+        return b.start_date === tomorrowStr;
+      }).length;
+
+      // Utcheckning IMORGON (slutdatum === imorgon)
+      const utcheckImorgon = (allBookings || []).filter((b) => {
+        return b.end_date === tomorrowStr;
+      }).length;
+
       // Hämta antal pending bookings
-      const { count } = await supabase
+      const { count: pendingCount } = await supabase
         .from("bookings")
         .select("id", { count: "exact", head: true })
         .eq("org_id", currentOrgId as string)
         .eq("status", "pending");
 
-      // Beräkna riktiga statistik baserat på data
       setLiveStats({
-        hundarIdag: 5,
-        incheckIdag: 2,
-        utcheckIdag: 1,
-        incheckImorgon: 4,
-        utcheckImorgon: 2,
-        pendingBookings: count || 0,
+        hundarIdag,
+        incheckIdag,
+        utcheckIdag,
+        incheckImorgon,
+        utcheckImorgon,
+        pendingBookings: pendingCount || 0,
       });
 
-      console.log("✅ Statistik laddad");
+      console.log("✅ Statistik laddad:", {
+        hundarIdag,
+        incheckIdag,
+        utcheckIdag,
+        incheckImorgon,
+        utcheckImorgon,
+        pendingBookings: pendingCount || 0,
+      });
     } catch (error) {
       console.error("Fel vid laddning av statistik:", error);
       setLiveStats({
