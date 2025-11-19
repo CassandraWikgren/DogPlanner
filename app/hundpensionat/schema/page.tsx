@@ -63,9 +63,9 @@ export default function PensionatSchemaPage() {
         `
         )
         .eq("org_id", currentOrgId as string)
+        .eq("status", "confirmed") // ✅ Visa ENDAST bekräftade bokningar i schemat
         .lte("start_date", endDate.toISOString().split("T")[0])
-        .gte("end_date", startDate.toISOString().split("T")[0])
-        .neq("status", "rejected");
+        .gte("end_date", startDate.toISOString().split("T")[0]);
 
       if (bookingsError) throw bookingsError;
       setBookings((bookingsData as any) || []);

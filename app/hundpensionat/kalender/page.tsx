@@ -133,6 +133,7 @@ export default function KalenderPage() {
           `
           )
           .eq("org_id", currentOrgId)
+          .eq("status", "confirmed") // ✅ Visa ENDAST bekräftade bokningar i kalendern
           .gte("start_date", startOfMonth.toISOString())
           .lte("end_date", endOfMonth.toISOString())
           .order("start_date"),
