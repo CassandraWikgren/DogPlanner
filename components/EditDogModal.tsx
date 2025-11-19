@@ -703,7 +703,9 @@ export default function EditDogModal({
           .from("dog_journal")
           .insert([
             {
+              org_id: currentOrgId, // ✅ VIKTIGT: Lägg till org_id
               dog_id: dogId,
+              user_id: user?.id || null, // ✅ VIKTIGT: Lägg till user_id
               content: journalText.trim(),
               entry_type: "note",
             },
