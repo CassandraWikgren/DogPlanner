@@ -322,6 +322,7 @@ export interface Database {
           total_price: number | null;
           discount_amount: number | null;
           notes: string | null;
+          special_requests: string | null;
           created_at: string | null;
           updated_at: string | null;
         };
@@ -337,6 +338,7 @@ export interface Database {
           total_price?: number | null;
           discount_amount?: number | null;
           notes?: string | null;
+          special_requests?: string | null;
           created_at?: string | null;
           updated_at?: string | null;
         };
@@ -352,6 +354,7 @@ export interface Database {
           total_price?: number | null;
           discount_amount?: number | null;
           notes?: string | null;
+          special_requests?: string | null;
           created_at?: string | null;
           updated_at?: string | null;
         };
