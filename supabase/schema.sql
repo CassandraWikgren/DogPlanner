@@ -1,9 +1,37 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-19 (Pensionatsbokningar + alla tabeller)
+-- Uppdaterad 2025-11-20 (Väntelista tracking + waitlist fix)
 -- ========================================
 --
--- === SENASTE ÄNDRINGAR (2025-11-19) ===
+-- === SENASTE ÄNDRINGAR (2025-11-20) ===
+--
+-- 🎯 VÄNTELISTA TRACKING SYSTEM:
+--   • interest_applications: Tillagt 8 nya tracking-fält
+--     - first_contact_date, first_contact_notes (första kontakt)
+--     - visit_booked_date, visit_status (booked/completed/cancelled/no_show)
+--     - visit_completed_date, visit_result (approved/declined/waiting/not_suitable)
+--     - contact_history (JSONB array för kontaktlogg)
+--     - priority (integer: -1 låg, 0 normal, 1 hög)
+--     - expected_start_month (text: "2025-12" format)
+--   • Nya index: idx_interest_visit_booked, idx_interest_status, idx_interest_priority
+--   • Ny komponent: ApplicationCard.tsx (timeline-baserad vy)
+--   • Nya utilities: lib/applicationUtils.ts (formatering)
+--   • Migration: add_waitlist_tracking_fields.sql
+--
+-- 🔧 DOGS WAITLIST FIX:
+--   • dogs.waitlist (boolean) - Separerar godkända hundar från väntelista
+--   • Automatisk fix via fix_waitlist_status.sql:
+--     - waitlist=false: Hundar med startdatum OCH is_active=true
+--     - waitlist=true: Hundar utan startdatum ELLER is_active=false
+--   • Filtrering i hunddagis-sidan uppdaterad:
+--     - "Våra hundar": waitlist=false
+--     - "Väntelistan": waitlist=true
+--
+-- ✨ KAPITALISERING:
+--   • lib/textUtils.ts: capitalize() funktion
+--   • Används överallt för namn, raser, ägare
+--
+-- === TIDIGARE ÄNDRINGAR (2025-11-19) ===
 --
 -- ✅ KOMPLETT SCHEMA-UPPDATERING:
 --   • Alla tabeller som används i appen är nu dokumenterade
@@ -593,9 +621,24 @@ CREATE TABLE IF NOT EXISTS interest_applications (
   gdpr_consent boolean DEFAULT false,
   status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'contacted', 'accepted', 'declined')),
   notes text,
+  -- Nya tracking-fält (2025-11-20)
+  first_contact_date date,
+  first_contact_notes text,
+  visit_booked_date date,
+  visit_status text CHECK (visit_status IN ('booked', 'completed', 'cancelled', 'no_show')),
+  visit_completed_date date,
+  visit_result text CHECK (visit_result IN ('approved', 'declined', 'waiting', 'not_suitable')),
+  contact_history jsonb DEFAULT '[]'::jsonb,
+  priority integer DEFAULT 0, -- -1 (låg), 0 (normal), 1 (hög)
+  expected_start_month text, -- Format: "2025-12", "2026-01"
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
+
+-- Index för tracking-fält
+CREATE INDEX IF NOT EXISTS idx_interest_visit_booked ON interest_applications(visit_booked_date) WHERE visit_booked_date IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_interest_status ON interest_applications(status);
+CREATE INDEX IF NOT EXISTS idx_interest_priority ON interest_applications(priority);
 
 -- RLS for interest_applications
 ALTER TABLE interest_applications ENABLE ROW LEVEL SECURITY;
