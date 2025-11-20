@@ -632,6 +632,41 @@ export default function EditDogModal({
       };
 
       // 3) Insert eller Update hund (dogs) — små bokstäver + rätt relationer
+
+      // ✅ AUTOMATISK WAITLIST-BERÄKNING baserat på datum
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalisera till midnatt
+
+      let calculatedWaitlist = true; // Default: väntelista
+
+      if (subStart) {
+        const startDate = new Date(subStart);
+        startDate.setHours(0, 0, 0, 0);
+
+        if (today >= startDate) {
+          // Hunden har börjat
+          if (subEnd) {
+            const endDate = new Date(subEnd);
+            endDate.setHours(0, 0, 0, 0);
+
+            if (today > endDate) {
+              // Hunden är avslutad (slutdatum passerat)
+              calculatedWaitlist = true; // Flyttas tillbaka till väntelista
+            } else {
+              // Hunden är aktiv (startdatum passerat, slutdatum ej passerat)
+              calculatedWaitlist = false;
+            }
+          } else {
+            // Hunden är aktiv (startdatum passerat, inget slutdatum)
+            calculatedWaitlist = false;
+          }
+        } else {
+          // Hunden har inte börjat än (framtida startdatum)
+          calculatedWaitlist = true;
+        }
+      }
+      // Om inget startdatum: waitlist = true (default)
+
       const dogPayload: any = {
         name: name.trim(),
         breed: breed.trim() || null,
@@ -651,7 +686,7 @@ export default function EditDogModal({
         notes: null,
         owner_id: ownerId, // ✅ dogs.owner_id → owners.id
         org_id: currentOrgId, // ✅ Lägg alltid till org_id (viktigt när triggers är disabled)
-        waitlist: initialDog ? initialDog.waitlist : true, // ✅ NYA hundar → väntelista, befintliga behåller status
+        waitlist: calculatedWaitlist, // ✅ AUTOMATISK baserat på start/slutdatum
         // Hälsofält i separata kolumner
         allergies: allergies || null,
         medications: medications || null,

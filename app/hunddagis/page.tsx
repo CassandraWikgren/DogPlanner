@@ -303,13 +303,20 @@ export default function HunddagisPage() {
         dog.owners?.phone?.includes(searchTerm) ||
         dog.subscription?.toLowerCase().includes(searchTerm.toLowerCase());
 
+      // ✅ KOLLA OM HUND ÄR AVSLUTAD (slutdatum passerat)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const isEnded = dog.enddate && new Date(dog.enddate) < today;
+
       // Ny filterlogik för Våra hundar / Tjänster / Väntelistan
       const matchesView =
-        (filterSubscription === "all" && dog.waitlist !== true) || // Våra hundar = endast antagna (ej väntelista)
+        (filterSubscription === "all" && dog.waitlist !== true && !isEnded) || // Våra hundar = antagna OCH ej avslutade
         (filterSubscription === "services" &&
           dog.subscription &&
-          dog.waitlist !== true) || // Tjänster = har abonnemang och ej väntelista
-        (filterSubscription === "vantelista" && dog.waitlist === true); // Väntelistan = endast de på väntelista
+          dog.waitlist !== true &&
+          !isEnded) || // Tjänster = har abonnemang, ej väntelista, ej avslutade
+        (filterSubscription === "vantelista" &&
+          (dog.waitlist === true || isEnded)); // Väntelistan = väntelista ELLER avslutade
 
       const matchesMonth =
         filterMonth === "all" ||
