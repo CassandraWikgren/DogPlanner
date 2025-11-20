@@ -1,9 +1,36 @@
 -- ========================================
 -- DOGPLANNER - KOMPLETT SUPABASE SCHEMA
--- Uppdaterad 2025-11-20 (Väntelista tracking + waitlist fix)
+-- Uppdaterad 2025-11-20 (Interest applications RLS fix + alfabetisk sortering)
 -- ========================================
 --
--- === SENASTE ÄNDRINGAR (2025-11-20) ===
+-- === SENASTE ÄNDRINGAR (2025-11-20 kväll) ===
+--
+-- 🔒 INTEREST_APPLICATIONS RLS FIX:
+--   • Problem: Publika ansökningar kunde inte skapas (RLS-policy violation)
+--   • Lösning 1: Lagt till anonym INSERT-policy för publika formulär
+--     CREATE POLICY "Allow anonymous insert for public applications"
+--     ON interest_applications FOR INSERT TO anon WITH CHECK (true)
+--   • Lösning 2: Aktiverat databas-insättning i app/ansokan/page.tsx (var utkommenterad)
+--   • Lösning 3: Lagt till interest_applications i types/database.ts (saknades helt)
+--   • Resultat: Publika ansökningar fungerar nu utan inloggning
+--   • Migration: fix_public_interest_applications.sql
+--
+-- 📝 HUNDRASER ALFABETISK SORTERING:
+--   • lib/dogBreeds.ts: Alla 466 hundraser sorterade i alfabetisk ordning (a-ö)
+--   • Blandras-prefixade raser flyttade till rätt position (B-sektion)
+--   • Fixade dubbletter (ex Podenco canario)
+--   • Schweiziska stövare-varianter i rätt ordning
+--   • Perfekt sorterad enligt svenska alfabetet (å, ä, ö sist)
+--
+-- 🐕 BLANDRAS-MÄRKNING:
+--   • 19 designer/mixed breeds prefixade med "Blandras":
+--     aussiedoodle, australian cobberdog, australian labradoodle, bernedoodle,
+--     cavachon, cavapoo, cockerpoo, goldador, goldendoodle, havapoo,
+--     labradoodle, maltichon, maltipoo, pomchi, pomsky, schabrador,
+--     shih-poo, shiloh shepherd, tamaskan dog
+--   • Syfte: Tydliggöra vilka raser som inte är SKK-registrerade
+--
+-- === ÄNDRINGAR (2025-11-20 morgon) ===
 --
 -- 🎯 VÄNTELISTA TRACKING SYSTEM:
 --   • interest_applications: Tillagt 8 nya tracking-fält
