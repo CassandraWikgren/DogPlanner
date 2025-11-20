@@ -17,6 +17,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { capitalize } from "@/lib/textUtils";
+import InterestApplicationModal from "./InterestApplicationModal";
 
 type InterestApplication =
   Database["public"]["Tables"]["interest_applications"]["Row"];
@@ -32,6 +33,9 @@ export default function WaitlistView({
   const [applications, setApplications] = useState<InterestApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedApplication, setSelectedApplication] =
+    useState<InterestApplication | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (currentOrgId) {
@@ -157,7 +161,10 @@ export default function WaitlistView({
             <div
               key={app.id}
               className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => onApplicationClick?.(app)}
+              onClick={() => {
+                setSelectedApplication(app);
+                setShowModal(true);
+              }}
             >
               <div className="p-4">
                 {/* Header Row */}
@@ -281,6 +288,23 @@ export default function WaitlistView({
             </div>
           ))}
         </div>
+      )}
+
+      {/* Modal for editing application */}
+      {selectedApplication && (
+        <InterestApplicationModal
+          open={showModal}
+          onClose={() => {
+            setShowModal(false);
+            setSelectedApplication(null);
+          }}
+          application={selectedApplication}
+          onSaved={() => {
+            loadApplications(); // Refresh the list
+            setShowModal(false);
+            setSelectedApplication(null);
+          }}
+        />
       )}
     </div>
   );
