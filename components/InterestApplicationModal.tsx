@@ -371,9 +371,9 @@ export default function InterestApplicationModal({
                     onChange={(e) => setDogSize(e.target.value as any)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   >
-                    <option value="small">Liten (under 15kg)</option>
-                    <option value="medium">Medium (15-30kg)</option>
-                    <option value="large">Stor (över 30kg)</option>
+                    <option value="small">Liten (under 35cm mankhöjd)</option>
+                    <option value="medium">Medium (35-54cm mankhöjd)</option>
+                    <option value="large">Stor (över 55cm mankhöjd)</option>
                   </select>
                 </div>
               </div>

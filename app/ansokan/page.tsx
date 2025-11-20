@@ -70,9 +70,9 @@ export default function AnsokanPage() {
   ];
 
   const sizeOptions = [
-    { value: "small", label: "Liten (under 15kg)" },
-    { value: "medium", label: "Medium (15-30kg)" },
-    { value: "large", label: "Stor (över 30kg)" },
+    { value: "small", label: "Liten (under 35cm mankhöjd)" },
+    { value: "medium", label: "Medium (35-54cm mankhöjd)" },
+    { value: "large", label: "Stor (över 55cm mankhöjd)" },
   ];
 
   useEffect(() => {

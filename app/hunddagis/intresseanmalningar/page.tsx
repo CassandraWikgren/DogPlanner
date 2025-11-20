@@ -113,9 +113,9 @@ export default function HunddagisIntresseanmalningarPage() {
   ];
 
   const dogSizes = {
-    small: "Liten (under 15kg)",
-    medium: "Medium (15-30kg)",
-    large: "Stor (över 30kg)",
+    small: "Liten (under 35cm mankhöjd)",
+    medium: "Medium (35-54cm mankhöjd)",
+    large: "Stor (över 55cm mankhöjd)",
   };
 
   useEffect(() => {
