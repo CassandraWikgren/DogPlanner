@@ -425,6 +425,100 @@ export interface Database {
           },
         ];
       };
+      interest_applications: {
+        Row: {
+          id: string;
+          org_id: string;
+          parent_name: string;
+          parent_email: string;
+          parent_phone: string;
+          dog_name: string;
+          dog_breed: string | null;
+          dog_age: number | null;
+          dog_size: "small" | "medium" | "large";
+          preferred_start_date: string | null;
+          preferred_days: string[] | null;
+          special_needs: string | null;
+          previous_daycare_experience: boolean;
+          status: string;
+          notes: string | null;
+          first_contact_date: string | null;
+          first_contact_notes: string | null;
+          visit_booked_date: string | null;
+          visit_status: string | null;
+          visit_completed_date: string | null;
+          visit_result: string | null;
+          contact_history: any | null;
+          priority: number | null;
+          expected_start_month: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          parent_name: string;
+          parent_email: string;
+          parent_phone: string;
+          dog_name: string;
+          dog_breed?: string | null;
+          dog_age?: number | null;
+          dog_size: "small" | "medium" | "large";
+          preferred_start_date?: string | null;
+          preferred_days?: string[] | null;
+          special_needs?: string | null;
+          previous_daycare_experience?: boolean;
+          status?: string;
+          notes?: string | null;
+          first_contact_date?: string | null;
+          first_contact_notes?: string | null;
+          visit_booked_date?: string | null;
+          visit_status?: string | null;
+          visit_completed_date?: string | null;
+          visit_result?: string | null;
+          contact_history?: any | null;
+          priority?: number | null;
+          expected_start_month?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          parent_name?: string;
+          parent_email?: string;
+          parent_phone?: string;
+          dog_name?: string;
+          dog_breed?: string | null;
+          dog_age?: number | null;
+          dog_size?: "small" | "medium" | "large";
+          preferred_start_date?: string | null;
+          preferred_days?: string[] | null;
+          special_needs?: string | null;
+          previous_daycare_experience?: boolean;
+          status?: string;
+          notes?: string | null;
+          first_contact_date?: string | null;
+          first_contact_notes?: string | null;
+          visit_booked_date?: string | null;
+          visit_status?: string | null;
+          visit_completed_date?: string | null;
+          visit_result?: string | null;
+          contact_history?: any | null;
+          priority?: number | null;
+          expected_start_month?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "interest_applications_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: { [key: string]: never };
     Functions: {

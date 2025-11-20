@@ -192,10 +192,7 @@ export default function AnsokanPage() {
         status: "pending",
       });
 
-      // Simulera API-anrop
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      /* TODO: Aktivera när databasen är korrekt konfigurerad
+      // Skicka till databasen
       const applicationData: Database["public"]["Tables"]["interest_applications"]["Insert"] = {
         org_id: formData.selected_org_id,
         parent_name: formData.parent_name.trim(),
@@ -220,7 +217,6 @@ export default function AnsokanPage() {
       if (error) {
         throw new Error(`[ERR-4001] Kunde inte skicka ansökan: ${error.message}`);
       }
-      */
 
       setSubmitted(true);
     } catch (err: any) {
