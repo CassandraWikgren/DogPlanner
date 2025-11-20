@@ -506,6 +506,7 @@ export interface Database {
           first_contact_date: string | null;
           first_contact_notes: string | null;
           visit_booked_date: string | null;
+          visit_booked_time: string | null;
           visit_status: string | null;
           visit_completed_date: string | null;
           visit_result: string | null;
@@ -546,6 +547,7 @@ export interface Database {
           first_contact_date?: string | null;
           first_contact_notes?: string | null;
           visit_booked_date?: string | null;
+          visit_booked_time?: string | null;
           visit_status?: string | null;
           visit_completed_date?: string | null;
           visit_result?: string | null;
@@ -586,6 +588,7 @@ export interface Database {
           first_contact_date?: string | null;
           first_contact_notes?: string | null;
           visit_booked_date?: string | null;
+          visit_booked_time?: string | null;
           visit_status?: string | null;
           visit_completed_date?: string | null;
           visit_result?: string | null;

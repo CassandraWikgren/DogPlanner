@@ -652,6 +652,7 @@ CREATE TABLE IF NOT EXISTS interest_applications (
   first_contact_date date,
   first_contact_notes text,
   visit_booked_date date,
+  visit_booked_time time, -- Tid för bokat besök (2025-11-20)
   visit_status text CHECK (visit_status IN ('booked', 'completed', 'cancelled', 'no_show')),
   visit_completed_date date,
   visit_result text CHECK (visit_result IN ('approved', 'declined', 'waiting', 'not_suitable')),

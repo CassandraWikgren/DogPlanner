@@ -46,6 +46,7 @@ export default function InterestApplicationModal({
   const [firstContactDate, setFirstContactDate] = useState("");
   const [firstContactNotes, setFirstContactNotes] = useState("");
   const [visitBookedDate, setVisitBookedDate] = useState("");
+  const [visitBookedTime, setVisitBookedTime] = useState(""); // ✅ NY: Tid för besök
   const [visitStatus, setVisitStatus] = useState("");
   const [visitCompletedDate, setVisitCompletedDate] = useState("");
   const [visitResult, setVisitResult] = useState("");
@@ -76,6 +77,7 @@ export default function InterestApplicationModal({
       setFirstContactDate(application.first_contact_date || "");
       setFirstContactNotes(application.first_contact_notes || "");
       setVisitBookedDate(application.visit_booked_date || "");
+      setVisitBookedTime(application.visit_booked_time || ""); // ✅ Ladda tid
       setVisitStatus(application.visit_status || "");
       setVisitCompletedDate(application.visit_completed_date || "");
       setVisitResult(application.visit_result || "");
@@ -110,6 +112,7 @@ export default function InterestApplicationModal({
           first_contact_date: firstContactDate || null,
           first_contact_notes: firstContactNotes || null,
           visit_booked_date: visitBookedDate || null,
+          visit_booked_time: visitBookedTime || null, // ✅ Spara tid
           visit_status: visitStatus || null,
           visit_completed_date: visitCompletedDate || null,
           visit_result: visitResult || null,
@@ -428,6 +431,18 @@ export default function InterestApplicationModal({
                     value={visitBookedDate}
                     onChange={(e) => setVisitBookedDate(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tid för besök
+                  </label>
+                  <input
+                    type="time"
+                    value={visitBookedTime}
+                    onChange={(e) => setVisitBookedTime(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                    placeholder="13:00"
                   />
                 </div>
                 <div>
