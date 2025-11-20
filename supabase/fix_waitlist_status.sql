@@ -1,112 +1,94 @@
 -- ============================================================
--- FIXA VÄNTELISTA-STATUS FÖR BEFINTLIGA HUNDAR
+-- FIXA VÄNTELISTA-STATUS FÖR ALLA ORGANISATIONER
 -- ============================================================
--- Detta script hjälper dig att sätta rätt waitlist-status
--- på hundar som redan finns i systemet
+-- Automatisk fix för alla organisationer
+-- Regler:
+-- 1. Hundar MED startdatum OCH abonnemang = GODKÄNDA (waitlist=false)
+-- 2. Hundar UTAN startdatum ELLER utan abonnemang = VÄNTELISTA (waitlist=true)
 -- 
 -- KÖR I: Supabase SQL Editor
 -- ============================================================
 
--- STEG 1: Se alla hundar och deras nuvarande waitlist-status
+BEGIN;
+
+-- STEG 1: Se nuvarande status för ALLA organisationer
 SELECT 
-  id,
-  name,
-  breed,
-  waitlist,
-  subscription,
-  startdate,
-  owners.full_name as owner_name
+  dogs.org_id,
+  organisations.name as org_name,
+  COUNT(*) as totalt_hundar,
+  COUNT(CASE WHEN dogs.waitlist = true THEN 1 END) as pa_vantelista,
+  COUNT(CASE WHEN dogs.waitlist = false THEN 1 END) as godkanda,
+  COUNT(CASE WHEN dogs.waitlist IS NULL THEN 1 END) as ej_satta
 FROM dogs
-LEFT JOIN owners ON dogs.owner_id = owners.id
-WHERE org_id = 'DIN-ORG-ID-HÄR' -- Byt ut mot din organisation ID
-ORDER BY name;
+LEFT JOIN organisations ON dogs.org_id = organisations.id
+GROUP BY dogs.org_id, organisations.name
+ORDER BY organisations.name;
 
--- ============================================================
--- STEG 2: SÄTT WAITLIST=TRUE FÖR SPECIFIKA HUNDAR
--- ============================================================
--- Kopiera och ändra detta för varje hund som SKA vara på väntelistan
-
-/*
--- Exempel: Sätt Bella på väntelistan
-UPDATE dogs
-SET waitlist = true
-WHERE name = 'Bella' 
-  AND org_id = 'DIN-ORG-ID-HÄR';
-
--- Exempel: Sätt flera hundar på väntelistan samtidigt
-UPDATE dogs
-SET waitlist = true
-WHERE name IN ('Bella', 'Bonnie', 'Klark')
-  AND org_id = 'DIN-ORG-ID-HÄR';
-*/
-
--- ============================================================
--- STEG 3: SÄTT WAITLIST=FALSE FÖR GODKÄNDA HUNDAR
--- ============================================================
--- Om några hundar felaktigt är markerade som väntelista
-
-/*
--- Ta bort från väntelistan (sätt till godkänd)
+-- STEG 2: AUTOMATISK FIX - Sätt godkända hundar (har startdatum OCH aktiva)
+-- Regel: Om hund har startdatum OCH is_active=true → Godkänd
 UPDATE dogs
 SET waitlist = false
-WHERE name = 'Joy'
-  AND org_id = 'DIN-ORG-ID-HÄR';
-*/
+WHERE is_active = true 
+  AND startdate IS NOT NULL
+  AND (waitlist IS NULL OR waitlist = true);
+
+-- STEG 3: AUTOMATISK FIX - Sätt väntelista-hundar (saknar startdatum ELLER ej aktiva)
+-- Regel: Om hund saknar startdatum ELLER is_active=false → Väntelista
+UPDATE dogs
+SET waitlist = true
+WHERE (startdate IS NULL OR is_active = false)
+  AND (waitlist IS NULL OR waitlist = false);
+
+COMMIT;
 
 -- ============================================================
--- STEG 4: VERIFIERA ÄNDRINGARNA
+-- STEG 4: VERIFIERA ÄNDRINGARNA FÖR ALLA ORGANISATIONER
 -- ============================================================
--- Kör detta för att se uppdateringarna
-
 SELECT 
+  organisations.name as organisation,
   CASE 
-    WHEN waitlist = true THEN '🟠 VÄNTELISTA'
+    WHEN dogs.waitlist = true THEN '🟠 VÄNTELISTA'
     ELSE '✅ GODKÄND'
   END as status,
-  name,
-  breed,
-  owners.full_name as owner_name,
-  subscription
+  dogs.name,
+  dogs.breed,
+  dogs.startdate,
+  dogs.subscription,
+  dogs.is_active,
+  owners.full_name as agare
 FROM dogs
 LEFT JOIN owners ON dogs.owner_id = owners.id
-WHERE org_id = 'DIN-ORG-ID-HÄR'
-ORDER BY waitlist DESC, name;
+LEFT JOIN organisations ON dogs.org_id = organisations.id
+ORDER BY organisations.name, dogs.waitlist DESC, dogs.name;
 
 -- ============================================================
--- SNABBKOMMANDO: Sätt ALLA hundar som GODKÄNDA (ej väntelista)
--- ============================================================
--- OBS: Använd bara detta om du vill nollställa alla
-
-/*
-UPDATE dogs
-SET waitlist = false
-WHERE org_id = 'DIN-ORG-ID-HÄR'
-  AND waitlist IS NULL;
-*/
-
--- ============================================================
--- AUTOMATISK REGEL: Hundar utan startdatum = väntelista?
--- ============================================================
--- Detta sätter automatiskt waitlist=true för hundar utan startdatum
-
-/*
-UPDATE dogs
-SET waitlist = true
-WHERE org_id = 'DIN-ORG-ID-HÄR'
-  AND startdate IS NULL
-  AND waitlist IS NULL;
-*/
-
--- ============================================================
--- DEBUG: Kolla om det finns duplicerade hundar
+-- SAMMANFATTNING AV ÄNDRINGAR
 -- ============================================================
 SELECT 
-  name,
-  breed,
-  COUNT(*) as antal_kopior,
-  ARRAY_AGG(id) as dog_ids
+  organisations.name as organisation,
+  COUNT(*) as totalt,
+  COUNT(CASE WHEN dogs.waitlist = true THEN 1 END) as vantelista,
+  COUNT(CASE WHEN dogs.waitlist = false THEN 1 END) as godkanda
 FROM dogs
-WHERE org_id = 'DIN-ORG-ID-HÄR'
-GROUP BY name, breed
-HAVING COUNT(*) > 1
-ORDER BY antal_kopior DESC;
+LEFT JOIN organisations ON dogs.org_id = organisations.id
+GROUP BY organisations.name
+ORDER BY organisations.name;
+
+-- ============================================================
+-- MANUELLA JUSTERINGAR (OM BEHÖVS)
+-- ============================================================
+-- Om du vill manuellt ändra specifika hundar:
+
+/*
+-- Flytta specifik hund till väntelista
+UPDATE dogs SET waitlist = true WHERE name = 'HundNamn' AND org_id = 'org-id';
+
+-- Flytta specifik hund till godkända
+UPDATE dogs SET waitlist = false WHERE name = 'HundNamn' AND org_id = 'org-id';
+
+-- Se alla hundar för en specifik organisation
+SELECT name, breed, waitlist, startdate, subscription
+FROM dogs
+WHERE org_id = 'org-id'
+ORDER BY waitlist DESC, name;
+*/
