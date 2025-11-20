@@ -193,29 +193,33 @@ export default function AnsokanPage() {
       });
 
       // Skicka till databasen
-      const applicationData: Database["public"]["Tables"]["interest_applications"]["Insert"] = {
-        org_id: formData.selected_org_id,
-        parent_name: formData.parent_name.trim(),
-        parent_email: formData.parent_email.trim().toLowerCase(),
-        parent_phone: formData.parent_phone.trim(),
-        dog_name: formData.dog_name.trim(),
-        dog_breed: formData.dog_breed.trim() || null,
-        dog_age: formData.dog_age || null,
-        dog_size: formData.dog_size as "small" | "medium" | "large",
-        preferred_start_date: formData.preferred_start_date || null,
-        preferred_days: formData.preferred_days.length > 0 ? formData.preferred_days : null,
-        special_needs: formData.special_needs.trim() || null,
-        previous_daycare_experience: formData.previous_daycare_experience,
-        status: "pending",
-        notes: null
-      };
+      const applicationData: Database["public"]["Tables"]["interest_applications"]["Insert"] =
+        {
+          org_id: formData.selected_org_id,
+          parent_name: formData.parent_name.trim(),
+          parent_email: formData.parent_email.trim().toLowerCase(),
+          parent_phone: formData.parent_phone.trim(),
+          dog_name: formData.dog_name.trim(),
+          dog_breed: formData.dog_breed.trim() || null,
+          dog_age: formData.dog_age || null,
+          dog_size: formData.dog_size as "small" | "medium" | "large",
+          preferred_start_date: formData.preferred_start_date || null,
+          preferred_days:
+            formData.preferred_days.length > 0 ? formData.preferred_days : null,
+          special_needs: formData.special_needs.trim() || null,
+          previous_daycare_experience: formData.previous_daycare_experience,
+          status: "pending",
+          notes: null,
+        };
 
       const { error } = await supabase
         .from("interest_applications")
         .insert(applicationData);
 
       if (error) {
-        throw new Error(`[ERR-4001] Kunde inte skicka ansökan: ${error.message}`);
+        throw new Error(
+          `[ERR-4001] Kunde inte skicka ansökan: ${error.message}`
+        );
       }
 
       setSubmitted(true);
