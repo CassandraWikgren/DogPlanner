@@ -26,6 +26,7 @@ import {
 import EditDogModal from "@/components/EditDogModal";
 import TjansterView from "@/components/TjansterView";
 import HundrumView from "@/components/HundrumView";
+import WaitlistView from "@/components/WaitlistView";
 
 /* ===========================
  * Types & Constants
@@ -862,6 +863,8 @@ export default function HunddagisPage() {
           <TjansterView />
         ) : filterSubscription === "hundrum" ? (
           <HundrumView />
+        ) : filterSubscription === "vantelista" ? (
+          <WaitlistView />
         ) : (
           /* Dogs Table - ENLIGT STILGUIDE: rounded-lg, shadow-sm */
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
