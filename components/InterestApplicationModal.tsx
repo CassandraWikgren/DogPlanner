@@ -129,9 +129,95 @@ export default function InterestApplicationModal({
   };
 
   const handleApprove = async () => {
-    // TODO: Skapa hund och ägare i dogs/owners tabeller
-    // Flytta data från interest_application → dogs
-    alert("Funktionen 'Godkänn och skapa hund' kommer snart!");
+    if (!application || !currentOrgId) return;
+
+    // Validera att obligatoriska fält är ifyllda
+    if (!parentName || !parentEmail || !dogName) {
+      setError("Namn, email och hundnamn måste vara ifyllda");
+      return;
+    }
+
+    const confirmApprove = window.confirm(
+      `Godkänn ${dogName} och skapa som hund i systemet?\n\nDetta kommer att:\n1. Skapa ägare: ${parentName}\n2. Skapa hund: ${dogName}\n3. Markera ansökan som godkänd`
+    );
+
+    if (!confirmApprove) return;
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      // 1. Skapa ägare
+      const { data: ownerData, error: ownerError } = await supabase
+        .from("owners")
+        .insert({
+          org_id: currentOrgId,
+          full_name: parentName,
+          email: parentEmail,
+          phone: parentPhone,
+          city: application.owner_city || null,
+          address: application.owner_address || null,
+        })
+        .select()
+        .single();
+
+      if (ownerError) throw ownerError;
+
+      // 2. Beräkna waitlist baserat på preferred_start_date
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      let calculatedWaitlist = true; // Default: väntelista
+
+      if (preferredStartDate) {
+        const startDate = new Date(preferredStartDate);
+        startDate.setHours(0, 0, 0, 0);
+        if (today >= startDate) {
+          calculatedWaitlist = false; // Kan börja direkt
+        }
+      }
+
+      // 3. Skapa hund
+      const { error: dogError } = await supabase.from("dogs").insert({
+        org_id: currentOrgId,
+        owner_id: ownerData.id,
+        name: dogName,
+        breed: dogBreed || null,
+        birth: application.dog_birth || null,
+        heightcm: application.dog_height_cm || null,
+        gender: application.dog_gender || null,
+        subscription: application.subscription_type || null,
+        startdate: preferredStartDate || null,
+        days: preferredDays.length > 0 ? preferredDays.join(",") : null,
+        notes: specialNeeds || null,
+        waitlist: calculatedWaitlist,
+      });
+
+      if (dogError) throw dogError;
+
+      // 4. Uppdatera intresseanmälan till "accepted"
+      const { error: updateError } = await supabase
+        .from("interest_applications")
+        .update({
+          status: "accepted",
+          visit_result: "approved",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", application.id);
+
+      if (updateError) throw updateError;
+
+      // 5. Success
+      alert(
+        `✅ ${dogName} är nu godkänd och skapad som hund!\n\nÄgare: ${parentName}\nStatus: ${calculatedWaitlist ? "Väntelista" : "Antagen"}`
+      );
+      onSaved();
+      onClose();
+    } catch (err: any) {
+      console.error("Error approving application:", err);
+      setError(err.message || "Kunde inte godkänna ansökan");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!open || !application) return null;
