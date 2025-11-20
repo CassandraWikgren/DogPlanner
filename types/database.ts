@@ -309,6 +309,55 @@ export interface Database {
           },
         ];
       };
+      dog_journal: {
+        Row: {
+          id: string;
+          org_id: string | null;
+          dog_id: string | null;
+          user_id: string | null;
+          entry_type: string | null;
+          content: string;
+          is_important: boolean | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id?: string | null;
+          dog_id?: string | null;
+          user_id?: string | null;
+          entry_type?: string | null;
+          content: string;
+          is_important?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string | null;
+          dog_id?: string | null;
+          user_id?: string | null;
+          entry_type?: string | null;
+          content?: string;
+          is_important?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "dog_journal_dog_id_fkey";
+            columns: ["dog_id"];
+            referencedRelation: "dogs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "dog_journal_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       bookings: {
         Row: {
           id: string;
