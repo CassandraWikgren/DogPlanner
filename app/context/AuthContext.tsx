@@ -93,11 +93,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         setUser(u);
 
-        // Snabb fallback: använd org_id från user_metadata direkt om den finns
-        // (profile-uppslag kan vara segt eller saknas temporärt)
+        // ✅ SNABB FALLBACK: Sätt org_id direkt från user_metadata
+        // Detta gör att sidor kan börja ladda data omedelbart
         const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
-        if (metaOrg && !currentOrgId) {
+        if (metaOrg) {
           setCurrentOrgId(metaOrg);
+          console.log("AuthContext: Quick org_id set from metadata:", metaOrg);
         }
 
         if (u && session?.access_token) {
@@ -105,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await safeAutoOnboarding(session.access_token);
           await refreshProfile(u.id);
           // Om profilen fortfarande saknar org, gör en sista retry
-          if (!currentOrgId) {
+          if (!currentOrgId && !metaOrg) {
             console.warn(
               "AuthContext: Ingen org efter första onboarding, försöker igen..."
             );
@@ -198,17 +199,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const u = session?.user || null;
       console.log("AuthContext: Session loaded, user:", u?.id || "none");
       setUser(u);
-      // Snabb fallback innan profile laddas
+
+      // ✅ KRITISK FIX: Sätt org_id DIREKT från metadata innan profile-uppslag
       const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
-      if (metaOrg && !currentOrgId) {
+      if (metaOrg) {
         setCurrentOrgId(metaOrg);
+        console.log("AuthContext: Quick org_id set in init:", metaOrg);
       }
-      setLoading(false);
+
+      setLoading(false); // ⬆️ Sätt loading=false tidigt så sidor kan börja rendera
 
       if (u && session?.access_token) {
-        await safeAutoOnboarding(session.access_token);
-        await refreshProfile(u.id);
-        await refreshSubscription(session.access_token);
+        // Kör dessa i bakgrunden utan att blockera rendering
+        safeAutoOnboarding(session.access_token)
+          .then(() => refreshProfile(u.id))
+          .then(() => refreshSubscription(session.access_token));
       }
     } catch (error) {
       console.error("AuthContext: Unexpected error in init:", error);

@@ -44,6 +44,9 @@ type Owner = Database["public"]["Tables"]["owners"]["Row"];
 
 export default function HundpensionatPage() {
   const { user, currentOrgId, loading } = useAuth();
+  // ✅ FIX: Fallback till metadata om AuthContext inte hunnit sätta currentOrgId
+  const effectiveOrgId =
+    currentOrgId || (user as any)?.user_metadata?.org_id || null;
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<string>("start_date");
@@ -78,6 +81,8 @@ export default function HundpensionatPage() {
 
   // Ladda live-statistik
   const loadLiveStats = async () => {
+    if (!effectiveOrgId) return;
+
     try {
       console.log("🔍 Laddar statistik...");
 
@@ -93,7 +98,7 @@ export default function HundpensionatPage() {
       const { data: allBookings } = await supabase
         .from("bookings")
         .select("start_date, end_date, status")
-        .eq("org_id", currentOrgId as string)
+        .eq("org_id", effectiveOrgId)
         .eq("status", "confirmed");
 
       // Hundar som är här IDAG (startdatum <= idag OCH slutdatum >= idag)
@@ -125,7 +130,7 @@ export default function HundpensionatPage() {
       const { count: pendingCount } = await supabase
         .from("bookings")
         .select("id", { count: "exact", head: true })
-        .eq("org_id", currentOrgId as string)
+        .eq("org_id", effectiveOrgId)
         .eq("status", "pending");
 
       setLiveStats({
@@ -160,7 +165,7 @@ export default function HundpensionatPage() {
 
   // Ladda bokningar från Supabase
   const loadBookings = async () => {
-    if (!currentOrgId || !supabase) {
+    if (!effectiveOrgId || !supabase) {
       console.log(
         "Ingen organisation hittad för användaren eller ingen databaskoppling"
       );
@@ -183,7 +188,7 @@ export default function HundpensionatPage() {
           )
         `
         )
-        .eq("org_id", currentOrgId as string)
+        .eq("org_id", effectiveOrgId)
         .order("start_date", { ascending: false });
 
       if (dbError) throw dbError;
@@ -199,11 +204,21 @@ export default function HundpensionatPage() {
   };
 
   useEffect(() => {
-    if (currentOrgId) {
+    if (effectiveOrgId) {
       loadBookings();
       loadLiveStats();
+    } else {
+      // ✅ FIX: Sätt loading state korrekt medan vi väntar på org_id
+      setIsLoading(true);
+      const timer = setTimeout(() => {
+        if (!effectiveOrgId) {
+          setError("Ingen organisation tilldelad");
+          setIsLoading(false);
+        }
+      }, 5000); // Vänta 5 sekunder innan error
+      return () => clearTimeout(timer);
     }
-  }, [currentOrgId]);
+  }, [effectiveOrgId]);
 
   // Filtrering och sökning
   const filtered = useMemo(() => {

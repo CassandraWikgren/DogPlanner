@@ -359,6 +359,7 @@ export default function HunddagisPage() {
   // Setup subscriptions and fetch data
   useEffect(() => {
     if (!effectiveOrgId) {
+      // ✅ FIX: Vänta längre innan vi visar error (AuthContext kan fortfarande ladda)
       const timer = setTimeout(() => {
         setLoading(false);
         if (!user) {
@@ -366,7 +367,7 @@ export default function HunddagisPage() {
         } else if (!effectiveOrgId) {
           setError("Ingen organisation tilldelad användaren");
         }
-      }, 3000);
+      }, 5000); // ⬆️ Ökat från 3 till 5 sekunder
 
       return () => clearTimeout(timer);
     }

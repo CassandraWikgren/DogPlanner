@@ -32,6 +32,7 @@ export default function InterestApplicationModal({
   const [dogName, setDogName] = useState("");
   const [dogBreed, setDogBreed] = useState("");
   const [dogAge, setDogAge] = useState<number | null>(null);
+  const [dogBirth, setDogBirth] = useState(""); // ✅ NY: Födelsedatum
   const [dogSize, setDogSize] = useState<"small" | "medium" | "large">(
     "medium"
   );
@@ -63,6 +64,7 @@ export default function InterestApplicationModal({
       setDogName(application.dog_name || "");
       setDogBreed(application.dog_breed || "");
       setDogAge(application.dog_age);
+      setDogBirth(application.dog_birth || ""); // ✅ Ladda födelsedatum
       setDogSize(application.dog_size);
       setPreferredStartDate(application.preferred_start_date || "");
       setPreferredDays(application.preferred_days || []);
@@ -98,6 +100,7 @@ export default function InterestApplicationModal({
           dog_name: dogName,
           dog_breed: dogBreed || null,
           dog_age: dogAge,
+          dog_birth: dogBirth || null, // ✅ Spara födelsedatum
           dog_size: dogSize,
           preferred_start_date: preferredStartDate || null,
           preferred_days: preferredDays.length > 0 ? preferredDays : null,
@@ -182,7 +185,7 @@ export default function InterestApplicationModal({
         owner_id: ownerData.id,
         name: dogName,
         breed: dogBreed || null,
-        birth: application.dog_birth || null,
+        birth: dogBirth || application.dog_birth || null, // ✅ Använd uppdaterat födelsedatum
         heightcm: application.dog_height_cm || null,
         gender: application.dog_gender || null,
         subscription: application.subscription_type || null,
@@ -342,6 +345,17 @@ export default function InterestApplicationModal({
                         e.target.value ? parseInt(e.target.value) : null
                       )
                     }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Födelsedatum
+                  </label>
+                  <input
+                    type="date"
+                    value={dogBirth}
+                    onChange={(e) => setDogBirth(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   />
                 </div>

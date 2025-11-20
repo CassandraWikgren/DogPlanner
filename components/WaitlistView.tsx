@@ -198,7 +198,7 @@ export default function WaitlistView({
                 </div>
 
                 {/* Details Row */}
-                <div className="grid grid-cols-4 gap-4 text-sm border-t pt-3">
+                <div className="grid grid-cols-5 gap-4 text-sm border-t pt-3">
                   <div>
                     <span className="text-gray-500 font-medium">Storlek:</span>
                     <p className="text-gray-900 mt-1">
@@ -220,6 +220,23 @@ export default function WaitlistView({
                             "sv-SE"
                           )
                         : app.expected_start_month || "Ej angivet"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 font-medium">
+                      Besök bokat:
+                    </span>
+                    <p className="text-gray-900 mt-1 font-medium">
+                      {app.visit_booked_date ? (
+                        <span className="text-blue-600">
+                          📅{" "}
+                          {new Date(app.visit_booked_date).toLocaleDateString(
+                            "sv-SE"
+                          )}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">Ej bokat</span>
+                      )}
                     </p>
                   </div>
                   <div>
