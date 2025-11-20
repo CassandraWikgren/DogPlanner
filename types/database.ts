@@ -607,6 +607,146 @@ export interface Database {
           },
         ];
       };
+      grooming_bookings: {
+        Row: {
+          id: string;
+          org_id: string | null;
+          dog_id: string | null;
+          appointment_date: string;
+          appointment_time: string | null;
+          service_type: string;
+          estimated_price: number | null;
+          status: "confirmed" | "completed" | "cancelled" | "no_show";
+          notes: string | null;
+          external_customer_name: string | null;
+          external_customer_phone: string | null;
+          external_dog_name: string | null;
+          external_dog_breed: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id?: string | null;
+          dog_id?: string | null;
+          appointment_date: string;
+          appointment_time?: string | null;
+          service_type: string;
+          estimated_price?: number | null;
+          status?: "confirmed" | "completed" | "cancelled" | "no_show";
+          notes?: string | null;
+          external_customer_name?: string | null;
+          external_customer_phone?: string | null;
+          external_dog_name?: string | null;
+          external_dog_breed?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string | null;
+          dog_id?: string | null;
+          appointment_date?: string;
+          appointment_time?: string | null;
+          service_type?: string;
+          estimated_price?: number | null;
+          status?: "confirmed" | "completed" | "cancelled" | "no_show";
+          notes?: string | null;
+          external_customer_name?: string | null;
+          external_customer_phone?: string | null;
+          external_dog_name?: string | null;
+          external_dog_breed?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "grooming_bookings_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "grooming_bookings_dog_id_fkey";
+            columns: ["dog_id"];
+            referencedRelation: "dogs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      grooming_journal: {
+        Row: {
+          id: string;
+          org_id: string | null;
+          dog_id: string | null;
+          appointment_date: string;
+          service_type: string;
+          clip_length: string | null;
+          shampoo_type: string | null;
+          special_treatments: string | null;
+          final_price: number;
+          duration_minutes: number | null;
+          notes: string | null;
+          before_photos: string[] | null;
+          after_photos: string[] | null;
+          next_appointment_recommended: string | null;
+          external_customer_name: string | null;
+          external_dog_name: string | null;
+          external_dog_breed: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id?: string | null;
+          dog_id?: string | null;
+          appointment_date: string;
+          service_type: string;
+          clip_length?: string | null;
+          shampoo_type?: string | null;
+          special_treatments?: string | null;
+          final_price?: number;
+          duration_minutes?: number | null;
+          notes?: string | null;
+          before_photos?: string[] | null;
+          after_photos?: string[] | null;
+          next_appointment_recommended?: string | null;
+          external_customer_name?: string | null;
+          external_dog_name?: string | null;
+          external_dog_breed?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          org_id?: string | null;
+          dog_id?: string | null;
+          appointment_date?: string;
+          service_type?: string;
+          clip_length?: string | null;
+          shampoo_type?: string | null;
+          special_treatments?: string | null;
+          final_price?: number;
+          duration_minutes?: number | null;
+          notes?: string | null;
+          before_photos?: string[] | null;
+          after_photos?: string[] | null;
+          next_appointment_recommended?: string | null;
+          external_customer_name?: string | null;
+          external_dog_name?: string | null;
+          external_dog_breed?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "grooming_journal_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "grooming_journal_dog_id_fkey";
+            columns: ["dog_id"];
+            referencedRelation: "dogs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: { [key: string]: never };
     Functions: {

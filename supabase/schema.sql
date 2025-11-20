@@ -947,6 +947,11 @@ CREATE TABLE IF NOT EXISTS grooming_bookings (
   estimated_price numeric,
   status text NOT NULL CHECK (status IN ('confirmed','completed','cancelled','no_show')) DEFAULT 'confirmed',
   notes text,
+  -- Fält för utomstående kunder (2025-11-20)
+  external_customer_name text,
+  external_customer_phone text,
+  external_dog_name text,
+  external_dog_breed text,
   created_at timestamptz DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_grooming_bookings_org_date ON grooming_bookings(org_id, appointment_date);
@@ -967,6 +972,10 @@ CREATE TABLE IF NOT EXISTS grooming_journal (
   before_photos text[],
   after_photos text[],
   next_appointment_recommended text,
+  -- Fält för utomstående kunder (2025-11-20)
+  external_customer_name text,
+  external_dog_name text,
+  external_dog_breed text,
   created_at timestamptz DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_grooming_journal_org_date ON grooming_journal(org_id, appointment_date);
