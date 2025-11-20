@@ -14,15 +14,15 @@ BEGIN;
 -- STEG 1: Se nuvarande status för ALLA organisationer
 SELECT 
   dogs.org_id,
-  organisations.name as org_name,
+  orgs.name as org_name,
   COUNT(*) as totalt_hundar,
   COUNT(CASE WHEN dogs.waitlist = true THEN 1 END) as pa_vantelista,
   COUNT(CASE WHEN dogs.waitlist = false THEN 1 END) as godkanda,
   COUNT(CASE WHEN dogs.waitlist IS NULL THEN 1 END) as ej_satta
 FROM dogs
-LEFT JOIN organisations ON dogs.org_id = organisations.id
-GROUP BY dogs.org_id, organisations.name
-ORDER BY organisations.name;
+LEFT JOIN orgs ON dogs.org_id = orgs.id
+GROUP BY dogs.org_id, orgs.name
+ORDER BY orgs.name;
 
 -- STEG 2: AUTOMATISK FIX - Sätt godkända hundar (har startdatum OCH aktiva)
 -- Regel: Om hund har startdatum OCH is_active=true → Godkänd
@@ -45,7 +45,7 @@ COMMIT;
 -- STEG 4: VERIFIERA ÄNDRINGARNA FÖR ALLA ORGANISATIONER
 -- ============================================================
 SELECT 
-  organisations.name as organisation,
+  orgs.name as organisation,
   CASE 
     WHEN dogs.waitlist = true THEN '🟠 VÄNTELISTA'
     ELSE '✅ GODKÄND'
@@ -58,21 +58,21 @@ SELECT
   owners.full_name as agare
 FROM dogs
 LEFT JOIN owners ON dogs.owner_id = owners.id
-LEFT JOIN organisations ON dogs.org_id = organisations.id
-ORDER BY organisations.name, dogs.waitlist DESC, dogs.name;
+LEFT JOIN orgs ON dogs.org_id = orgs.id
+ORDER BY orgs.name, dogs.waitlist DESC, dogs.name;
 
 -- ============================================================
 -- SAMMANFATTNING AV ÄNDRINGAR
 -- ============================================================
 SELECT 
-  organisations.name as organisation,
+  orgs.name as organisation,
   COUNT(*) as totalt,
   COUNT(CASE WHEN dogs.waitlist = true THEN 1 END) as vantelista,
   COUNT(CASE WHEN dogs.waitlist = false THEN 1 END) as godkanda
 FROM dogs
-LEFT JOIN organisations ON dogs.org_id = organisations.id
-GROUP BY organisations.name
-ORDER BY organisations.name;
+LEFT JOIN orgs ON dogs.org_id = orgs.id
+GROUP BY orgs.name
+ORDER BY orgs.name;
 
 -- ============================================================
 -- MANUELLA JUSTERINGAR (OM BEHÖVS)
