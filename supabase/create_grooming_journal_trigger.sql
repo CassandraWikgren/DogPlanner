@@ -39,7 +39,7 @@ BEGIN
         dog_id,
         owner_id,
         booking_id,
-        visit_date,
+        appointment_date,
         clip_length,
         shampoo_type,
         special_treatments,
@@ -69,7 +69,7 @@ BEGIN
       INSERT INTO grooming_journal (
         org_id,
         booking_id,
-        visit_date,
+        appointment_date,
         external_customer_name,
         external_customer_phone,
         external_dog_name,
