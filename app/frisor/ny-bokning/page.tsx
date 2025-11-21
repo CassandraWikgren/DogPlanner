@@ -41,6 +41,17 @@ interface Dog {
   } | null;
 }
 
+interface GroomingHistory {
+  id: string;
+  visit_date: string;
+  clip_length: string | null;
+  shampoo_type: string | null;
+  special_treatments: string | null;
+  notes: string | null;
+  duration_minutes: number | null;
+  total_price: number | null;
+}
+
 interface ServiceOption {
   value: string;
   label: string;
@@ -129,6 +140,23 @@ export default function NyBokning() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Customer type: 'existing' or 'walkin'
+  const [customerType, setCustomerType] = useState<"existing" | "walkin">(
+    "existing"
+  );
+
+  // Walk-in customer data
+  const [walkinData, setWalkinData] = useState({
+    customer_name: "",
+    customer_phone: "",
+    dog_name: "",
+    dog_breed: "",
+  });
+
+  // Grooming history for selected dog
+  const [groomingHistory, setGroomingHistory] = useState<GroomingHistory[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+
   const [formData, setFormData] = useState({
     dog_id: "",
     appointment_date: "",
@@ -136,6 +164,8 @@ export default function NyBokning() {
     service_type: "",
     estimated_price: 0,
     notes: "",
+    clip_length: "",
+    shampoo_type: "",
   });
 
   const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
@@ -209,10 +239,57 @@ export default function NyBokning() {
     }
   };
 
-  const handleDogSelect = (dog: Dog) => {
+  const handleDogSelect = async (dog: Dog) => {
     setSelectedDog(dog);
     setFormData((prev) => ({ ...prev, dog_id: dog.id }));
     setSearchTerm("");
+
+    // Load grooming history for this dog
+    await loadGroomingHistory(dog.id);
+  };
+
+  const loadGroomingHistory = async (dogId: string) => {
+    if (!currentOrgId) return;
+
+    setLoadingHistory(true);
+    try {
+      const { data, error: historyError } = await supabase
+        .from("grooming_journal")
+        .select("*")
+        .eq("org_id", currentOrgId)
+        .eq("dog_id", dogId)
+        .order("visit_date", { ascending: false })
+        .limit(5);
+
+      if (historyError) throw historyError;
+      setGroomingHistory(data || []);
+    } catch (err: any) {
+      console.error("Fel vid laddning av klipphistorik:", err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const copyFromLastVisit = () => {
+    if (groomingHistory.length === 0) return;
+
+    const lastVisit = groomingHistory[0];
+    setFormData((prev) => ({
+      ...prev,
+      clip_length: lastVisit.clip_length || "",
+      shampoo_type: lastVisit.shampoo_type || "",
+      notes: lastVisit.notes || "",
+    }));
+
+    // Try to match service type from notes or special treatments
+    if (lastVisit.special_treatments) {
+      const matchedService = SERVICE_OPTIONS.find((s) =>
+        lastVisit.special_treatments?.toLowerCase().includes(s.value)
+      );
+      if (matchedService) {
+        handleServiceSelect(matchedService);
+      }
+    }
   };
 
   const handleServiceSelect = (service: ServiceOption) => {
@@ -225,7 +302,16 @@ export default function NyBokning() {
   };
 
   const validate = (): string | null => {
-    if (!formData.dog_id) return "Du måste välja en hund";
+    if (customerType === "existing") {
+      if (!formData.dog_id) return "Du måste välja en hund";
+    } else {
+      if (!walkinData.customer_name.trim()) return "Kundnamn krävs för walk-in";
+      if (!walkinData.customer_phone.trim())
+        return "Telefonnummer krävs för walk-in";
+      if (!walkinData.dog_name.trim()) return "Hundnamn krävs för walk-in";
+      if (!walkinData.dog_breed.trim()) return "Ras krävs för walk-in";
+    }
+
     if (!formData.appointment_date) return "Välj ett datum för bokningen";
     if (!formData.appointment_time) return "Välj en tid för bokningen";
     if (!formData.service_type) return "Välj typ av behandling";
@@ -260,18 +346,29 @@ export default function NyBokning() {
     setSubmitting(true);
 
     try {
+      const bookingData: any = {
+        org_id: currentOrgId,
+        appointment_date: formData.appointment_date,
+        appointment_time: formData.appointment_time,
+        service_type: formData.service_type,
+        estimated_price: formData.estimated_price,
+        notes: formData.notes || null,
+        status: "confirmed",
+      };
+
+      // Add dog_id for existing customers OR external fields for walk-ins
+      if (customerType === "existing") {
+        bookingData.dog_id = formData.dog_id;
+      } else {
+        bookingData.external_customer_name = walkinData.customer_name;
+        bookingData.external_customer_phone = walkinData.customer_phone;
+        bookingData.external_dog_name = walkinData.dog_name;
+        bookingData.external_dog_breed = walkinData.dog_breed;
+      }
+
       const { error: insertError } = await supabase
         .from("grooming_bookings")
-        .insert({
-          org_id: currentOrgId,
-          dog_id: formData.dog_id,
-          appointment_date: formData.appointment_date,
-          appointment_time: formData.appointment_time,
-          service_type: formData.service_type,
-          estimated_price: formData.estimated_price,
-          notes: formData.notes || null,
-          status: "confirmed",
-        });
+        .insert(bookingData);
 
       if (insertError) throw insertError;
 
@@ -321,8 +418,13 @@ export default function NyBokning() {
               Bokning skapad!
             </h2>
             <p className="text-gray-600 mb-6">
-              Frisörbokningen för <strong>{selectedDog?.name}</strong> har
-              sparats.
+              Frisörbokningen för{" "}
+              <strong>
+                {customerType === "existing"
+                  ? selectedDog?.name
+                  : walkinData.dog_name}
+              </strong>{" "}
+              har sparats.
               <br />
               Du omdirigeras till översikten...
             </p>
@@ -384,109 +486,324 @@ export default function NyBokning() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Välj Hund */}
+          {/* Customer Type Selection */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />
-                1. Välj Hund
+                Välj Kundtyp
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {!selectedDog ? (
-                <div className="space-y-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Sök på hundnamn, ägare eller ras..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-
-                  <div className="grid gap-2 max-h-96 overflow-y-auto">
-                    {filteredDogs.length === 0 ? (
-                      <p className="text-center text-gray-500 py-8">
-                        {searchTerm
-                          ? "Inga hundar matchade din sökning"
-                          : "Inga aktiva hundar hittades"}
-                      </p>
-                    ) : (
-                      filteredDogs.map((dog) => (
-                        <button
-                          key={dog.id}
-                          type="button"
-                          onClick={() => handleDogSelect(dog)}
-                          className="flex items-center gap-4 p-4 bg-white border border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-left shadow-sm"
-                        >
-                          <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-                            <span className="text-orange-600 font-bold text-lg">
-                              {dog.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-semibold text-gray-900">
-                              {dog.name}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              {dog.breed || "Blandras"} •{" "}
-                              {dog.heightcm
-                                ? `${dog.heightcm} cm`
-                                : "Okänd höjd"}
-                            </p>
-                            {dog.owners && (
-                              <p className="text-sm text-gray-500">
-                                Ägare: {dog.owners.full_name}
-                                {dog.owners.phone && ` • ${dog.owners.phone}`}
-                              </p>
-                            )}
-                          </div>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                  <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center">
-                    <span className="text-orange-600 font-bold text-2xl">
-                      {selectedDog.name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-gray-900 text-lg">
-                      {selectedDog.name}
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCustomerType("existing");
+                    setSelectedDog(null);
+                    setFormData((prev) => ({ ...prev, dog_id: "" }));
+                  }}
+                  className={`p-6 border-2 rounded-lg transition-all ${
+                    customerType === "existing"
+                      ? "border-orange-500 bg-orange-50"
+                      : "border-gray-300 hover:border-orange-300"
+                  }`}
+                >
+                  <div className="text-center">
+                    <div
+                      className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 ${
+                        customerType === "existing"
+                          ? "bg-orange-500 text-white"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      <User className="h-8 w-8" />
+                    </div>
+                    <p className="font-semibold text-gray-900 mb-1">
+                      Befintlig Hund
                     </p>
                     <p className="text-sm text-gray-600">
-                      {selectedDog.breed || "Blandras"} •{" "}
-                      {selectedDog.heightcm
-                        ? `${selectedDog.heightcm} cm`
-                        : "Okänd höjd"}
+                      Välj från hunddagis-registret
                     </p>
-                    {selectedDog.owners && (
-                      <p className="text-sm text-gray-600">
-                        Ägare: {selectedDog.owners.full_name}
-                      </p>
-                    )}
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedDog(null);
-                      setFormData((prev) => ({ ...prev, dog_id: "" }));
-                    }}
-                  >
-                    Ändra
-                  </Button>
-                </div>
-              )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCustomerType("walkin");
+                    setSelectedDog(null);
+                    setFormData((prev) => ({ ...prev, dog_id: "" }));
+                  }}
+                  className={`p-6 border-2 rounded-lg transition-all ${
+                    customerType === "walkin"
+                      ? "border-orange-500 bg-orange-50"
+                      : "border-gray-300 hover:border-orange-300"
+                  }`}
+                >
+                  <div className="text-center">
+                    <div
+                      className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 ${
+                        customerType === "walkin"
+                          ? "bg-orange-500 text-white"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      <AlertCircle className="h-8 w-8" />
+                    </div>
+                    <p className="font-semibold text-gray-900 mb-1">
+                      Walk-in Kund
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Ny kund som ringde in
+                    </p>
+                  </div>
+                </button>
+              </div>
             </CardContent>
           </Card>
 
+          {/* Välj Hund (Existing Customer) */}
+          {customerType === "existing" && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  1. Välj Hund
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!selectedDog ? (
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Sök på hundnamn, ägare eller ras..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+
+                    <div className="grid gap-2 max-h-96 overflow-y-auto">
+                      {filteredDogs.length === 0 ? (
+                        <p className="text-center text-gray-500 py-8">
+                          {searchTerm
+                            ? "Inga hundar matchade din sökning"
+                            : "Inga aktiva hundar hittades"}
+                        </p>
+                      ) : (
+                        filteredDogs.map((dog) => (
+                          <button
+                            key={dog.id}
+                            type="button"
+                            onClick={() => handleDogSelect(dog)}
+                            className="flex items-center gap-4 p-4 bg-white border border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-left shadow-sm"
+                          >
+                            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                              <span className="text-orange-600 font-bold text-lg">
+                                {dog.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-semibold text-gray-900">
+                                {dog.name}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {dog.breed || "Blandras"} •{" "}
+                                {dog.heightcm
+                                  ? `${dog.heightcm} cm`
+                                  : "Okänd höjd"}
+                              </p>
+                              {dog.owners && (
+                                <p className="text-sm text-gray-500">
+                                  Ägare: {dog.owners.full_name}
+                                  {dog.owners.phone && ` • ${dog.owners.phone}`}
+                                </p>
+                              )}
+                            </div>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                    <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center">
+                      <span className="text-orange-600 font-bold text-2xl">
+                        {selectedDog.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-gray-900 text-lg">
+                        {selectedDog.name}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {selectedDog.breed || "Blandras"} •{" "}
+                        {selectedDog.heightcm
+                          ? `${selectedDog.heightcm} cm`
+                          : "Okänd höjd"}
+                      </p>
+                      {selectedDog.owners && (
+                        <p className="text-sm text-gray-600">
+                          Ägare: {selectedDog.owners.full_name}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedDog(null);
+                        setFormData((prev) => ({ ...prev, dog_id: "" }));
+                        setGroomingHistory([]);
+                      }}
+                    >
+                      Ändra
+                    </Button>
+                  </div>
+                )}
+
+                {/* Grooming History & Copy Feature */}
+                {selectedDog && groomingHistory.length > 0 && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="font-semibold text-gray-900">
+                        Tidigare klippningar ({groomingHistory.length})
+                      </p>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={copyFromLastVisit}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        Kopiera från senaste
+                      </Button>
+                    </div>
+                    <div className="bg-white p-3 rounded border border-blue-200">
+                      <p className="text-sm text-gray-600 mb-1">
+                        <strong>Senaste besök:</strong>{" "}
+                        {new Date(
+                          groomingHistory[0].visit_date
+                        ).toLocaleDateString("sv-SE")}
+                      </p>
+                      {groomingHistory[0].clip_length && (
+                        <p className="text-sm text-gray-600">
+                          <strong>Klipplängd:</strong>{" "}
+                          {groomingHistory[0].clip_length}
+                        </p>
+                      )}
+                      {groomingHistory[0].shampoo_type && (
+                        <p className="text-sm text-gray-600">
+                          <strong>Schampo:</strong>{" "}
+                          {groomingHistory[0].shampoo_type}
+                        </p>
+                      )}
+                      {groomingHistory[0].duration_minutes && (
+                        <p className="text-sm text-gray-600">
+                          <strong>Tid:</strong>{" "}
+                          {groomingHistory[0].duration_minutes} min
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Walk-in Customer Form */}
+          {customerType === "walkin" && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  1. Kunduppgifter
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Kundnamn *
+                      </label>
+                      <Input
+                        placeholder="Anna Andersson"
+                        value={walkinData.customer_name}
+                        onChange={(e) =>
+                          setWalkinData((prev) => ({
+                            ...prev,
+                            customer_name: e.target.value,
+                          }))
+                        }
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Telefonnummer *
+                      </label>
+                      <Input
+                        placeholder="070-123 45 67"
+                        value={walkinData.customer_phone}
+                        onChange={(e) =>
+                          setWalkinData((prev) => ({
+                            ...prev,
+                            customer_phone: e.target.value,
+                          }))
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Hundnamn *
+                      </label>
+                      <Input
+                        placeholder="Bella"
+                        value={walkinData.dog_name}
+                        onChange={(e) =>
+                          setWalkinData((prev) => ({
+                            ...prev,
+                            dog_name: e.target.value,
+                          }))
+                        }
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Ras *
+                      </label>
+                      <Input
+                        placeholder="Golden Retriever"
+                        value={walkinData.dog_breed}
+                        onChange={(e) =>
+                          setWalkinData((prev) => ({
+                            ...prev,
+                            dog_breed: e.target.value,
+                          }))
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    * Inget GDPR-samtycke krävs för walk-in kunder
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Välj Datum och Tid */}
-          {selectedDog && (
+          {(selectedDog ||
+            (customerType === "walkin" &&
+              walkinData.customer_name &&
+              walkinData.dog_name)) && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -542,7 +859,10 @@ export default function NyBokning() {
           )}
 
           {/* Välj Behandling */}
-          {selectedDog &&
+          {(selectedDog ||
+            (customerType === "walkin" &&
+              walkinData.customer_name &&
+              walkinData.dog_name)) &&
             formData.appointment_date &&
             formData.appointment_time && (
               <Card>
@@ -622,6 +942,50 @@ export default function NyBokning() {
                           placeholder="0"
                         />
                       </div>
+                    </div>
+                  )}
+
+                  {/* Additional Treatment Details */}
+                  {selectedService && (
+                    <div className="mt-6 p-4 bg-gray-50 rounded-lg space-y-4">
+                      <p className="font-medium text-gray-900 mb-3">
+                        Behandlingsdetaljer (Rekommenderas)
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Klipplängd
+                          </label>
+                          <Input
+                            placeholder="t.ex. 5mm, kort, lång..."
+                            value={formData.clip_length}
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                clip_length: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Schampo
+                          </label>
+                          <Input
+                            placeholder="t.ex. Volym, Allergivänlig..."
+                            value={formData.shampoo_type}
+                            onChange={(e) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                shampoo_type: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Dessa uppgifter sparas i journalen när bokningen är klar
+                      </p>
                     </div>
                   )}
                 </CardContent>
