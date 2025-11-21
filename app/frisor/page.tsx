@@ -290,6 +290,12 @@ export default function FrisorDashboard() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <Link href="/frisor/kalender">
+                <button className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  <span className="hidden sm:inline">Kalender</span>
+                </button>
+              </Link>
               <button
                 onClick={loadData}
                 className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition"
