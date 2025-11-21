@@ -32,9 +32,21 @@ type Dog = {
   breed: string | null;
   heightcm: number | null;
   birth: string | null;
-  gender: string | null;
+  gender?: string | null;
   owner_id: string | null;
   owner?: Owner | null;
+  // Additional fields from database (optional)
+  org_id?: string | null;
+  room_id?: string | null;
+  subscription?: string | null;
+  days?: string | null;
+  price?: number | null;
+  is_active?: boolean | null;
+  notes?: string | null;
+  allergies?: string | null;
+  medical_info?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 };
 
 type JournalEntry = {
