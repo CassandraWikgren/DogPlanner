@@ -253,29 +253,29 @@ export default function PriserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header med Hunddagis-struktur */}
+      {/* Header - Compact & Professional */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-start">
-            <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
-                💰 Priser & Säsonger
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-[#2c7a4c]">
+                Priser & Säsonger
               </h1>
-              <p className="mt-1 text-base text-gray-600">
+              <p className="mt-1 text-sm text-gray-600">
                 Hantera grundpriser per storlek och säsongstillägg för
                 pensionatet
               </p>
             </div>
-            <div className="flex gap-3 ml-4">
-              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+            <div className="flex gap-4">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200">
                 <div className="text-xs text-gray-600">Prismodeller</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
+                <div className="text-lg font-bold text-[#2c7a4c]">
                   {prices.length}
                 </div>
               </div>
-              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200">
                 <div className="text-xs text-gray-600">Säsonger</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
+                <div className="text-lg font-bold text-[#2c7a4c]">
                   {seasons.length}
                 </div>
               </div>
@@ -285,116 +285,38 @@ export default function PriserPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-8 py-6">
         {/* Back button */}
         <div className="mb-6">
           <Link
             href="/hundpensionat"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-semibold text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm"
           >
             ← Tillbaka
           </Link>
         </div>
 
-        {/* INFO-RUTA: Hur prissättningen fungerar */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg p-6 mb-6 shadow-sm">
+        {/* INFO-RUTA: Hur prissättningen fungerar - Simplified */}
+        <div className="bg-white border border-gray-200 rounded-lg p-5 mb-6 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="text-3xl">💡</div>
+            <div className="text-xl">💡</div>
             <div className="flex-1">
-              <h2 className="text-lg font-bold text-gray-900 mb-3">
+              <h2 className="text-base font-bold text-gray-900 mb-2">
                 Hur prissättningen fungerar
               </h2>
-
-              <div className="space-y-3 text-sm text-gray-700">
-                <div className="bg-white bg-opacity-60 rounded-lg p-3">
-                  <h3 className="font-semibold text-blue-900 mb-1">
-                    📋 Steg-för-steg guide:
-                  </h3>
-                  <ol className="list-decimal list-inside space-y-1 ml-2">
-                    <li>
-                      <strong>Lägg till grundpriser</strong> för alla tre
-                      hundstorlekar (liten/mellan/stor)
-                    </li>
-                    <li>
-                      <strong>Sätt helgtillägg</strong> om du tar extra betalt
-                      fredag-söndag (valfritt)
-                    </li>
-                    <li>
-                      <strong>Skapa specialdatum</strong> för röda dagar och
-                      högtider med högre priser
-                    </li>
-                    <li>
-                      <strong>Definiera säsonger</strong> för högsäsong,
-                      sportlov etc. (valfritt)
-                    </li>
-                  </ol>
-                </div>
-
-                <div className="bg-white bg-opacity-60 rounded-lg p-3">
-                  <h3 className="font-semibold text-blue-900 mb-2">
-                    🧮 Hur priset beräknas automatiskt:
-                  </h3>
-                  <div className="bg-blue-100 bg-opacity-50 rounded px-3 py-2 font-mono text-xs mb-2">
-                    SLUTPRIS = (Grundpris + Helgtillägg*) × Säsong ×
-                    Specialdatum
-                    <div className="text-xs text-gray-600 mt-1">
-                      *Helgtillägg gäller endast fredag-söndag
-                    </div>
-                  </div>
-
-                  <div className="space-y-1 text-xs">
-                    <p>
-                      <span className="font-semibold">Exempel 1:</span> Liten
-                      hund, vardag normalsäsong → 300 kr
-                    </p>
-                    <p>
-                      <span className="font-semibold">Exempel 2:</span> Liten
-                      hund, helg normalsäsong → 300 kr + 50 kr helgtillägg = 350
-                      kr
-                    </p>
-                    <p>
-                      <span className="font-semibold">Exempel 3:</span> Liten
-                      hund, midsommar (specialdatum +400 kr) → (300 + 400) × 1.0
-                      = 700 kr
-                    </p>
-                    <p>
-                      <span className="font-semibold">Exempel 4:</span> Liten
-                      hund, högsäsong (×1.3) → 300 × 1.3 = 390 kr
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-white bg-opacity-60 rounded-lg p-3">
-                  <h3 className="font-semibold text-blue-900 mb-1">
-                    ⚠️ Viktigt att veta:
-                  </h3>
-                  <ul className="list-disc list-inside space-y-1 ml-2 text-xs">
-                    <li>
-                      <strong>Grundpriser krävs</strong> - Du kan inte ta emot
-                      bokningar utan grundpriser!
-                    </li>
-                    <li>
-                      <strong>Specialdatum prioriteras</strong> - Om ett datum
-                      finns i både specialdatum och helgtillägg används
-                      specialdatum
-                    </li>
-                    <li>
-                      <strong>Säsonger kan överlappa</strong> - Vid överlapp
-                      används den med högst prioritet
-                    </li>
-                    <li>
-                      <strong>Priser visas automatiskt</strong> - Kunden ser
-                      automatisk priskalkyl vid bokning
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 text-xs">
-                  <strong>💭 Tips:</strong> Börja med att lägga in grundpriser
-                  för alla tre hundstorlekar. Lägg sedan till specialdatum för
-                  alla röda dagar under året (jul, nyår, påsk, midsommar osv) så
-                  slipper du tänka på det löpande!
-                </div>
+              <div className="text-sm text-gray-700 space-y-2">
+                <p>
+                  <strong>Steg 1:</strong> Lägg till grundpriser för alla tre
+                  hundstorlekar (liten/mellan/stor)
+                </p>
+                <p>
+                  <strong>Steg 2:</strong> Skapa säsonger för högsäsong,
+                  sportlov etc. (valfritt)
+                </p>
+                <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                  <strong>Prisberäkning:</strong> SLUTPRIS = Grundpris ×
+                  Säsongsmultiplikator
+                </p>
               </div>
             </div>
           </div>
@@ -407,7 +329,7 @@ export default function PriserPage() {
           </div>
         )}
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6 text-sm">
+          <div className="bg-white border border-gray-300 text-gray-900 px-4 py-3 rounded-lg mb-6 text-sm">
             {success}
           </div>
         )}
@@ -429,7 +351,7 @@ export default function PriserPage() {
                       weekend_surcharge: 0,
                     } as BoardingPrice)
                   }
-                  className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors text-sm"
                 >
                   <Plus size={16} />
                   Lägg till grundpris
@@ -449,43 +371,43 @@ export default function PriserPage() {
                   {prices.map((price) => (
                     <div
                       key={price.id}
-                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                      className="border border-gray-200 rounded-lg p-4 bg-white hover:shadow-md transition-shadow"
                     >
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h3 className="font-semibold text-gray-900">
+                          <h3 className="font-semibold text-gray-900 text-sm">
                             {SIZE_LABELS[price.dog_size]}
                           </h3>
-                          <p className="text-2xl font-bold text-[#2c7a4c] mt-1">
+                          <p className="text-xl font-bold text-[#2c7a4c] mt-1">
                             {price.base_price} kr
                             <span className="text-sm font-normal text-gray-600">
                               /natt
                             </span>
                           </p>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
                           <button
                             onClick={() => setEditingPrice(price)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
                           >
-                            <Edit2 size={16} />
+                            <Edit2 size={14} />
                           </button>
                           <button
                             onClick={() => deletePrice(price.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       </div>
 
                       {price.weekend_surcharge > 0 && (
                         <div className="mt-2 pt-2 border-t border-gray-200">
-                          <div className="text-sm text-gray-600">
-                            Helgtillägg:
-                          </div>
-                          <div className="font-semibold text-orange-600">
-                            +{price.weekend_surcharge} kr
+                          <div className="text-xs text-gray-600">
+                            Helgtillägg:{" "}
+                            <span className="font-semibold text-gray-900">
+                              +{price.weekend_surcharge} kr
+                            </span>
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
                             = {price.base_price + price.weekend_surcharge} kr på
@@ -498,10 +420,10 @@ export default function PriserPage() {
                 </div>
               )}
 
-              {/* Edit Form för Grundpris */}
+              {/* Edit Form för Grundpris - Simplified */}
               {editingPrice && (
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="font-semibold mb-4">
+                <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <h3 className="font-semibold mb-4 text-sm">
                     {editingPrice.id ? "Redigera grundpris" : "Nytt grundpris"}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -600,7 +522,7 @@ export default function PriserPage() {
                       priority: 50,
                     } as BoardingSeason)
                   }
-                  className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors text-sm"
                 >
                   <Plus size={16} />
                   Lägg till
@@ -612,24 +534,18 @@ export default function PriserPage() {
                   Inga säsonger ännu. Klicka på "Lägg till" för att skapa.
                 </p>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {seasons.map((season) => (
                     <div
                       key={season.id}
-                      className={`border rounded-lg p-4 hover:bg-gray-50 transition-colors ${
-                        season.price_multiplier >= 1.4
-                          ? "border-red-200 bg-red-50"
-                          : season.price_multiplier >= 1.2
-                            ? "border-yellow-200 bg-yellow-50"
-                            : "border-blue-200 bg-blue-50"
-                      }`}
+                      className="border border-gray-200 rounded-lg p-4 bg-white hover:shadow-md transition-shadow"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h3 className="font-semibold text-gray-900 text-sm">
                             {season.name}
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-xs text-gray-600">
                             {new Date(season.start_date).toLocaleDateString(
                               "sv-SE"
                             )}{" "}
@@ -639,38 +555,30 @@ export default function PriserPage() {
                             )}
                           </p>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
                           <button
                             onClick={() => setEditingSeason(season)}
-                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-md"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md"
                           >
-                            <Edit2 size={16} />
+                            <Edit2 size={14} />
                           </button>
                           <button
                             onClick={() => deleteSeason(season.id)}
-                            className="p-2 text-red-600 hover:bg-red-100 rounded-md"
+                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                            season.price_multiplier >= 1.4
-                              ? "bg-red-200 text-red-800"
-                              : season.price_multiplier >= 1.2
-                                ? "bg-yellow-200 text-yellow-800"
-                                : "bg-blue-200 text-blue-800"
-                          }`}
-                        >
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-semibold text-gray-900">
                           {season.price_multiplier >= 1.4
-                            ? "🎉 Högtid"
+                            ? "Högtid"
                             : season.price_multiplier >= 1.2
-                              ? "☀️ Högsäsong"
-                              : "❄️ Lågsäsong"}
+                              ? "Högsäsong"
+                              : "Lågsäsong"}
                         </span>
-                        <span className="text-sm font-semibold text-gray-700">
+                        <span className="text-gray-600">
                           ×{season.price_multiplier}
                         </span>
                       </div>
@@ -679,9 +587,9 @@ export default function PriserPage() {
                 </div>
               )}
 
-              {/* Edit Form */}
+              {/* Edit Form - Simplified */}
               {editingSeason && (
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                   <h3 className="font-semibold mb-4 text-sm">
                     {editingSeason.id ? "Redigera säsong" : "Ny säsong"}
                   </h3>

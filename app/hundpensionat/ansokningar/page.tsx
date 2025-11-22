@@ -446,9 +446,9 @@ export default function PensionatAnsokningarPage() {
       }
 
       alert(
-        `✅ Bokning godkänd!\n\nSlutpris: ${finalPrice.toFixed(
-          2
-        )} kr\nRabatt: ${finalDiscountAmount.toFixed(2)} kr${
+        `✅ Bokning godkänd!\n\nSlutpris: ${Math.round(
+          finalPrice
+        )} kr\nRabatt: ${Math.round(finalDiscountAmount)} kr${
           discountDescription ? `\n${discountDescription}` : ""
         }${invoiceMessage}\n\n📧 Bekräftelsemail skickat till kund!`
       );
@@ -567,28 +567,28 @@ export default function PensionatAnsokningarPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header med Hunddagis-struktur */}
+      {/* Header - Compact & Professional */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-start">
-            <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-[#2c7a4c]">
                 Bokningsansökningar
               </h1>
-              <p className="mt-1 text-base text-gray-600">
+              <p className="mt-1 text-sm text-gray-600">
                 Granska och godkänn nya pensionatbokningar
               </p>
             </div>
-            <div className="flex gap-3 ml-4">
-              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+            <div className="flex gap-4">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200">
                 <div className="text-xs text-gray-600">Väntande</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
+                <div className="text-lg font-bold text-[#2c7a4c]">
                   {bookings.length}
                 </div>
               </div>
-              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200">
                 <div className="text-xs text-gray-600">Totalt värde</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
+                <div className="text-lg font-bold text-[#2c7a4c]">
                   {bookings
                     .reduce((sum, b) => sum + (b.total_price || 0), 0)
                     .toFixed(0)}{" "}
@@ -601,52 +601,52 @@ export default function PensionatAnsokningarPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-8 py-6">
         <Link
           href="/hundpensionat"
-          className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-semibold text-sm"
+          className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm"
         >
           <ArrowLeft size={16} />
           Tillbaka till Pensionat
         </Link>
 
-        {/* Statistik */}
+        {/* Statistik - Simplified */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-            <div className="flex items-center">
-              <Clock className="h-8 w-8 text-yellow-600" />
-              <div className="ml-4">
-                <p className="text-2xl font-bold text-gray-900">
+          <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-3">
+              <Clock className="h-6 w-6 text-gray-600" />
+              <div>
+                <p className="text-xl font-bold text-gray-900">
                   {bookings.length}
                 </p>
-                <p className="text-sm text-gray-600">Väntande ansökningar</p>
+                <p className="text-xs text-gray-600">Väntande ansökningar</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-            <div className="flex items-center">
-              <DollarSign className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-2xl font-bold text-gray-900">
+          <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-3">
+              <DollarSign className="h-6 w-6 text-gray-600" />
+              <div>
+                <p className="text-xl font-bold text-gray-900">
                   {bookings
                     .reduce((sum, b) => sum + (b.total_price || 0), 0)
                     .toFixed(0)}{" "}
                   kr
                 </p>
-                <p className="text-sm text-gray-600">Totalt bokningsvärde</p>
+                <p className="text-xs text-gray-600">Totalt bokningsvärde</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-            <div className="flex items-center">
-              <Dog className="h-8 w-8 text-blue-600" />
-              <div className="ml-4">
-                <p className="text-2xl font-bold text-gray-900">
+          <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-3">
+              <Dog className="h-6 w-6 text-gray-600" />
+              <div>
+                <p className="text-xl font-bold text-gray-900">
                   {new Set(bookings.map((b) => b.dogs?.id)).size}
                 </p>
-                <p className="text-sm text-gray-600">Unika hundar</p>
+                <p className="text-xs text-gray-600">Unika hundar</p>
               </div>
             </div>
           </div>
@@ -722,26 +722,26 @@ export default function PensionatAnsokningarPage() {
                       </div>
 
                       <div className="text-right">
-                        <p className="text-sm text-gray-600">Totalpris</p>
-                        <p className="text-3xl font-bold text-blue-600">
-                          {booking.total_price?.toFixed(2) || 0} kr
+                        <p className="text-xs text-gray-600">Totalpris</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {Math.round(booking.total_price || 0)} kr
                         </p>
                         {booking.discount_amount &&
                           booking.discount_amount > 0 && (
-                            <p className="text-sm text-green-600">
-                              Rabatt: -{booking.discount_amount.toFixed(2)} kr
+                            <p className="text-xs text-gray-600">
+                              Rabatt: -{Math.round(booking.discount_amount)} kr
                             </p>
                           )}
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-6 space-y-6">
-                    {/* Extra tjänster */}
+                  <div className="p-5 space-y-5">
+                    {/* Extra tjänster - Simplified */}
                     {services.length > 0 && (
-                      <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <h4 className="font-semibold mb-2 flex items-center gap-2 text-sm">
-                          <FileText className="h-4 w-4" />
+                          <FileText className="h-4 w-4 text-gray-600" />
                           Valda tillvalstjänster
                         </h4>
                         <div className="space-y-1 text-sm">
@@ -762,7 +762,7 @@ export default function PensionatAnsokningarPage() {
 
                     {/* Kundanteckningar */}
                     {booking.notes && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <h4 className="font-semibold mb-2 text-sm">
                           Anteckningar från kund
                         </h4>
@@ -775,7 +775,7 @@ export default function PensionatAnsokningarPage() {
                     {/* Rabattval */}
                     <div className="border-t pt-4">
                       <h4 className="font-semibold mb-3 flex items-center gap-2 text-sm">
-                        <Percent className="h-5 w-5" />
+                        <Percent className="h-4 w-4 text-gray-600" />
                         Applicera rabatter
                       </h4>
 
@@ -877,12 +877,12 @@ export default function PensionatAnsokningarPage() {
                       />
                     </div>
 
-                    {/* Åtgärdsknappar */}
+                    {/* Åtgärdsknappar - Clean design, no colored icons on colored buttons */}
                     <div className="flex gap-3 pt-4 border-t">
                       <button
                         onClick={() => handleApprove(booking.id)}
                         disabled={processing === booking.id}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold text-sm disabled:opacity-50"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md font-semibold text-sm disabled:opacity-50 transition-colors"
                       >
                         {processing === booking.id ? (
                           <Clock className="h-4 w-4 animate-spin" />
@@ -894,7 +894,7 @@ export default function PensionatAnsokningarPage() {
                       <button
                         onClick={() => handleReject(booking.id)}
                         disabled={processing === booking.id}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md font-semibold text-sm disabled:opacity-50"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-md font-semibold text-sm disabled:opacity-50 transition-colors"
                       >
                         <XCircle className="h-4 w-4" />
                         Avslå
