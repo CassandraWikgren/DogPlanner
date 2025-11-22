@@ -11,6 +11,8 @@
 --   1. Öppna Supabase Dashboard → SQL Editor
 --   2. Kör: pg_dump --schema-only --no-owner --no-acl
 --   3. Eller använd: supabase db pull
+eller kolla filen detta är_min_supabase_just_nu.sql den är uppdaterad men de senaste.
+
 --
 -- Använd INTE denna fil för att återskapa databasen blindt.
 -- Använd migrations/ mappen istället för att förstå ändringshistoriken.

@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "@/app/context/AuthContext";
 import { NotificationProvider } from "@/app/context/NotificationContext";
 import Navbar from "@/components/Navbar";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Script from "next/script";
 
 /**
@@ -59,11 +60,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen font-sans antialiased selection:bg-[#2c7a4c]/20 selection:text-[#2c7a4c]">
-        <AuthProvider>
-          <NotificationProvider>
-            <LayoutContent>{children}</LayoutContent>
-          </NotificationProvider>
-        </AuthProvider>
+        <ErrorBoundary>
+          <AuthProvider>
+            <NotificationProvider>
+              <LayoutContent>{children}</LayoutContent>
+            </NotificationProvider>
+          </AuthProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

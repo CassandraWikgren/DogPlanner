@@ -1,7 +1,101 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export function middleware(request: Request) {
-  // No-op middleware, skickar bara vidare requesten
+// ============================================
+// RATE LIMITING
+// ============================================
+// In-memory rate limit store (använd Redis i högtrafikscenarios)
+const rateLimit = new Map<string, { count: number; resetTime: number }>();
+
+interface RateLimitConfig {
+  windowMs: number;
+  maxRequests: number;
+}
+
+const RATE_LIMITS: Record<string, RateLimitConfig> = {
+  "/api/register": { windowMs: 60000, maxRequests: 3 },
+  "/api/onboarding": { windowMs: 60000, maxRequests: 5 },
+  "/ansokan": { windowMs: 60000, maxRequests: 5 },
+  "/api/auth": { windowMs: 60000, maxRequests: 10 },
+  "/api": { windowMs: 60000, maxRequests: 60 },
+};
+
+function checkRateLimit(request: NextRequest): NextResponse | null {
+  const { pathname } = request.nextUrl;
+
+  // Hitta matchande rate limit
+  let config: RateLimitConfig | null = null;
+  let matchedPath = "";
+
+  for (const [path, limit] of Object.entries(RATE_LIMITS)) {
+    if (pathname.startsWith(path) && path.length > matchedPath.length) {
+      config = limit;
+      matchedPath = path;
+    }
+  }
+
+  if (!config) return null;
+
+  // Identifiera klient
+  const forwarded = request.headers.get("x-forwarded-for");
+  const ip =
+    forwarded?.split(",")[0].trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+  const userAgent =
+    request.headers.get("user-agent")?.slice(0, 50) || "unknown";
+  const identifier = `${ip}:${userAgent}:${matchedPath}`;
+
+  const now = Date.now();
+  const record = rateLimit.get(identifier);
+
+  if (!record || now > record.resetTime) {
+    rateLimit.set(identifier, { count: 1, resetTime: now + config.windowMs });
+    return null;
+  }
+
+  if (record.count >= config.maxRequests) {
+    console.warn(`[RATE_LIMIT] ${ip} exceeded limit on ${pathname}`);
+    return new NextResponse(
+      JSON.stringify({
+        error: "För många förfrågningar. Försök igen om en stund.",
+        retryAfter: Math.ceil((record.resetTime - now) / 1000),
+      }),
+      {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": Math.ceil((record.resetTime - now) / 1000).toString(),
+          "X-RateLimit-Limit": config.maxRequests.toString(),
+          "X-RateLimit-Remaining": "0",
+        },
+      }
+    );
+  }
+
+  record.count += 1;
+  return null;
+}
+
+// Cleanup gamla entries
+if (typeof setInterval !== "undefined") {
+  setInterval(() => {
+    const now = Date.now();
+    for (const [key, record] of rateLimit.entries()) {
+      if (now > record.resetTime + 60000) {
+        rateLimit.delete(key);
+      }
+    }
+  }, 300000);
+}
+
+export function middleware(request: NextRequest) {
+  // Rate limiting check
+  const rateLimitResponse = checkRateLimit(request);
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   return NextResponse.next();
 }
 

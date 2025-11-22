@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PawPrint, User, Users, AlertCircle, CheckCircle } from "lucide-react";
 import { DOG_BREEDS } from "@/lib/dogBreeds";
+import { FormErrorBoundary } from "@/components/ErrorBoundaries";
 
 // Felkoder enligt systemet
 const ERROR_CODES = {
@@ -307,755 +308,774 @@ export default function CustomerRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/">
-            <Button variant="ghost" className="mb-4">
-              ← Tillbaka till startsidan
-            </Button>
-          </Link>
-          <div className="flex items-center justify-center mb-4">
-            <PawPrint className="h-10 w-10 text-[#2c7a4c] mr-3" />
-            <h1 className="text-3xl font-bold text-gray-800">
-              Skapa konto som hundägare
-            </h1>
-          </div>
-          <p className="text-gray-600 mb-2">
-            Skapa ett gratis konto för att boka hunddagis och hundpensionat
-          </p>
-          <p className="text-sm text-gray-500">
-            Driver du ett hundföretag?{" "}
-            <Link
-              href="/register"
-              className="text-[#2c7a4c] hover:underline font-medium"
-            >
-              Registrera företag här
+    <FormErrorBoundary>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8">
+        <div className="container mx-auto px-4">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <Link href="/">
+              <Button variant="ghost" className="mb-4">
+                ← Tillbaka till startsidan
+              </Button>
             </Link>
-          </p>
-        </div>
+            <div className="flex items-center justify-center mb-4">
+              <PawPrint className="h-10 w-10 text-[#2c7a4c] mr-3" />
+              <h1 className="text-3xl font-bold text-gray-800">
+                Skapa konto som hundägare
+              </h1>
+            </div>
+            <p className="text-gray-600 mb-2">
+              Skapa ett gratis konto för att boka hunddagis och hundpensionat
+            </p>
+            <p className="text-sm text-gray-500">
+              Driver du ett hundföretag?{" "}
+              <Link
+                href="/register"
+                className="text-[#2c7a4c] hover:underline font-medium"
+              >
+                Registrera företag här
+              </Link>
+            </p>
+          </div>
 
-        {/* Progress */}
-        <div className="max-w-3xl mx-auto mb-8">
-          <div className="flex items-center justify-center">
-            {[1, 2, 3].map((step) => (
-              <div key={step} className="flex items-center">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                      currentStep > step
-                        ? "bg-green-600 text-white"
-                        : currentStep === step
-                          ? "bg-[#2c7a4c] text-white ring-4 ring-[#2c7a4c]/20 scale-110"
-                          : "bg-gray-200 text-gray-500"
-                    }`}
-                  >
-                    {currentStep > step ? "✓" : step}
+          {/* Progress */}
+          <div className="max-w-3xl mx-auto mb-8">
+            <div className="flex items-center justify-center">
+              {[1, 2, 3].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                        currentStep > step
+                          ? "bg-green-600 text-white"
+                          : currentStep === step
+                            ? "bg-[#2c7a4c] text-white ring-4 ring-[#2c7a4c]/20 scale-110"
+                            : "bg-gray-200 text-gray-500"
+                      }`}
+                    >
+                      {currentStep > step ? "✓" : step}
+                    </div>
+                    <span
+                      className={`mt-2 text-xs font-medium transition-colors ${
+                        currentStep >= step ? "text-[#2c7a4c]" : "text-gray-400"
+                      }`}
+                    >
+                      {step === 1 && "Ägaruppgifter"}
+                      {step === 2 && "Kontaktperson"}
+                      {step === 3 && "Hunduppgifter"}
+                    </span>
                   </div>
-                  <span
-                    className={`mt-2 text-xs font-medium transition-colors ${
-                      currentStep >= step ? "text-[#2c7a4c]" : "text-gray-400"
-                    }`}
-                  >
-                    {step === 1 && "Ägaruppgifter"}
-                    {step === 2 && "Kontaktperson"}
-                    {step === 3 && "Hunduppgifter"}
-                  </span>
+                  {step < 3 && (
+                    <div
+                      className={`w-20 h-1 mx-2 rounded transition-colors duration-300 ${
+                        currentStep > step ? "bg-green-600" : "bg-gray-200"
+                      }`}
+                    />
+                  )}
                 </div>
-                {step < 3 && (
-                  <div
-                    className={`w-20 h-1 mx-2 rounded transition-colors duration-300 ${
-                      currentStep > step ? "bg-green-600" : "bg-gray-200"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className="text-center mt-4">
+              <p className="text-sm text-gray-600">Steg {currentStep} av 3</p>
+            </div>
           </div>
-          <div className="text-center mt-4">
-            <p className="text-sm text-gray-600">Steg {currentStep} av 3</p>
-          </div>
-        </div>
 
-        <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
+          <div className="max-w-2xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  {currentStep === 1 && (
+                    <>
+                      <User className="mr-2" /> Ägaruppgifter
+                    </>
+                  )}
+                  {currentStep === 2 && (
+                    <>
+                      <Users className="mr-2" /> Kontaktperson
+                    </>
+                  )}
+                  {currentStep === 3 && (
+                    <>
+                      <PawPrint className="mr-2" /> Hunduppgifter
+                    </>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Steg 1: Ägaruppgifter */}
                 {currentStep === 1 && (
-                  <>
-                    <User className="mr-2" /> Ägaruppgifter
-                  </>
-                )}
-                {currentStep === 2 && (
-                  <>
-                    <Users className="mr-2" /> Kontaktperson
-                  </>
-                )}
-                {currentStep === 3 && (
-                  <>
-                    <PawPrint className="mr-2" /> Hunduppgifter
-                  </>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Steg 1: Ägaruppgifter */}
-              {currentStep === 1 && (
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Förnamn <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={ownerData.firstName}
-                      onChange={(e) =>
-                        handleOwnerChange("firstName", e.target.value)
-                      }
-                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                      placeholder="Anna"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Efternamn <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={ownerData.lastName}
-                      onChange={(e) =>
-                        handleOwnerChange("lastName", e.target.value)
-                      }
-                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                      placeholder="Andersson"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Personnummer <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={ownerData.personalNumber}
-                      onChange={(e) =>
-                        handleOwnerChange("personalNumber", e.target.value)
-                      }
-                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                      placeholder="YYYYMMDD-XXXX"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      E-postadress <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      value={ownerData.email}
-                      onChange={(e) =>
-                        handleOwnerChange("email", e.target.value)
-                      }
-                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                      placeholder="anna@exempel.se"
-                      required
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Ange en giltig e-postadress (t.ex. namn@example.com)
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Telefonnummer <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      value={ownerData.phone}
-                      onChange={(e) =>
-                        handleOwnerChange("phone", e.target.value)
-                      }
-                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                      placeholder="070-123 45 67"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Adress
-                    </label>
-                    <input
-                      type="text"
-                      value={ownerData.address}
-                      onChange={(e) =>
-                        handleOwnerChange("address", e.target.value)
-                      }
-                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                      placeholder="Exempelgatan 123"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Postnummer
-                    </label>
-                    <input
-                      type="text"
-                      value={ownerData.zipCode}
-                      onChange={(e) =>
-                        handleOwnerChange("zipCode", e.target.value)
-                      }
-                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                      placeholder="123 45"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Ort
-                    </label>
-                    <input
-                      type="text"
-                      value={ownerData.city}
-                      onChange={(e) =>
-                        handleOwnerChange("city", e.target.value)
-                      }
-                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                      placeholder="Stockholm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Lösenord <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="password"
-                      value={ownerData.password}
-                      onChange={(e) =>
-                        handleOwnerChange("password", e.target.value)
-                      }
-                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                      placeholder="Minst 6 tecken"
-                      minLength={6}
-                      required
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Minst 6 tecken långt
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Bekräfta lösenord <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="password"
-                      value={ownerData.confirmPassword}
-                      onChange={(e) =>
-                        handleOwnerChange("confirmPassword", e.target.value)
-                      }
-                      className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                      placeholder="Samma som ovan"
-                      minLength={6}
-                      required
-                    />
-                  </div>
-
-                  {/* GDPR och villkor */}
-                  <div className="md:col-span-2 space-y-3 mt-4 pt-4 border-t">
-                    <div className="flex items-start">
-                      <input
-                        type="checkbox"
-                        id="gdprConsent"
-                        checked={ownerData.gdprConsent}
-                        onChange={(e) =>
-                          handleOwnerChange(
-                            "gdprConsent",
-                            e.target.checked.toString()
-                          )
-                        }
-                        className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
-                      />
-                      <label
-                        htmlFor="gdprConsent"
-                        className="ml-2 text-sm text-gray-700"
-                      >
-                        Jag godkänner att mina personuppgifter behandlas enligt{" "}
-                        <Link
-                          href="/gdpr"
-                          className="text-[#2c7a4c] underline hover:text-[#245a3e]"
-                          target="_blank"
-                        >
-                          GDPR
-                        </Link>{" "}
-                        och{" "}
-                        <Link
-                          href="/terms"
-                          className="text-[#2c7a4c] underline hover:text-[#245a3e]"
-                          target="_blank"
-                        >
-                          användarvillkoren
-                        </Link>
-                        . *
-                      </label>
-                    </div>
-
-                    <div className="flex items-start">
-                      <input
-                        type="checkbox"
-                        id="marketingConsent"
-                        checked={ownerData.marketingConsent}
-                        onChange={(e) =>
-                          handleOwnerChange(
-                            "marketingConsent",
-                            e.target.checked.toString()
-                          )
-                        }
-                        className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
-                      />
-                      <label
-                        htmlFor="marketingConsent"
-                        className="ml-2 text-sm text-gray-700"
-                      >
-                        Jag vill ta emot nyheter och erbjudanden via e-post
-                        (valfritt)
-                      </label>
-                    </div>
-
-                    <p className="text-xs text-gray-500 italic">
-                      * Obligatoriska fält måste fyllas i för att kunna
-                      fortsätta
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Steg 2: Kontaktperson */}
-              {currentStep === 2 && (
-                <div>
-                  <p className="text-gray-600 mb-4">
-                    Valfritt: Lägg till en extra kontaktperson som kan nås vid
-                    behov.
-                  </p>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-1">
-                        Förnamn
+                        Förnamn <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
-                        value={contactData.firstName}
+                        value={ownerData.firstName}
                         onChange={(e) =>
-                          handleContactChange("firstName", e.target.value)
+                          handleOwnerChange("firstName", e.target.value)
                         }
-                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                        placeholder="Erik"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
+                        placeholder="Anna"
+                        required
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-1">
-                        Efternamn
+                        Efternamn <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
-                        value={contactData.lastName}
+                        value={ownerData.lastName}
                         onChange={(e) =>
-                          handleContactChange("lastName", e.target.value)
+                          handleOwnerChange("lastName", e.target.value)
                         }
-                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="Andersson"
+                        required
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium mb-1">
-                        Telefonnummer
+                        Personnummer <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={ownerData.personalNumber}
+                        onChange={(e) =>
+                          handleOwnerChange("personalNumber", e.target.value)
+                        }
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
+                        placeholder="YYYYMMDD-XXXX"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        E-postadress <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        value={ownerData.email}
+                        onChange={(e) =>
+                          handleOwnerChange("email", e.target.value)
+                        }
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
+                        placeholder="anna@exempel.se"
+                        required
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Ange en giltig e-postadress (t.ex. namn@example.com)
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Telefonnummer <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="tel"
-                        value={contactData.phone}
+                        value={ownerData.phone}
                         onChange={(e) =>
-                          handleContactChange("phone", e.target.value)
+                          handleOwnerChange("phone", e.target.value)
                         }
-                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                        placeholder="070-987 65 43"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
+                        placeholder="070-123 45 67"
+                        required
                       />
                     </div>
-                  </div>
-                </div>
-              )}
 
-              {/* Steg 3: Hunduppgifter */}
-              {currentStep === 3 && (
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-lg font-semibold mb-3">
-                      Grunduppgifter
-                    </h4>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Hundens namn *
-                        </label>
-                        <input
-                          type="text"
-                          value={dogData.name}
-                          onChange={(e) =>
-                            handleDogChange("name", e.target.value)
-                          }
-                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                          placeholder="Bella"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Ras <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          value={dogData.breed}
-                          onChange={(e) =>
-                            handleDogChange("breed", e.target.value)
-                          }
-                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                          required
-                        >
-                          <option value="">Välj hundras...</option>
-                          {DOG_BREEDS.map((breed) => (
-                            <option key={breed} value={breed}>
-                              {breed}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Födelsedatum <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="date"
-                          value={dogData.birthDate}
-                          onChange={(e) =>
-                            handleDogChange("birthDate", e.target.value)
-                          }
-                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Kön <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          value={dogData.gender}
-                          onChange={(e) =>
-                            handleDogChange("gender", e.target.value)
-                          }
-                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                          required
-                        >
-                          <option value="">Välj kön</option>
-                          <option value="hane">Hane</option>
-                          <option value="tik">Tik</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Mankhöjd (cm) <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="number"
-                          value={dogData.shoulderHeight}
-                          onChange={(e) =>
-                            handleDogChange("shoulderHeight", e.target.value)
-                          }
-                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                          placeholder="55"
-                          min="1"
-                          max="150"
-                          required
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                          Mankhöjden mäts från marken till ovansidan av
-                          skulderbladen
-                        </p>
-                      </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Adress
+                      </label>
+                      <input
+                        type="text"
+                        value={ownerData.address}
+                        onChange={(e) =>
+                          handleOwnerChange("address", e.target.value)
+                        }
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
+                        placeholder="Exempelgatan 123"
+                      />
                     </div>
-                  </div>
 
-                  {/* Hälsa & Beteende - MATCHAR bokningsflödet */}
-                  <div>
-                    <h4 className="text-lg font-semibold mb-3">
-                      Hälsa & Beteende
-                    </h4>
-                    <div className="space-y-3">
-                      <label className="flex items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={dogData.isCastrated}
-                          onChange={(e) =>
-                            handleDogChange("isCastrated", e.target.checked)
-                          }
-                          className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          Kastrerad/Steriliserad
-                        </span>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Postnummer
                       </label>
+                      <input
+                        type="text"
+                        value={ownerData.zipCode}
+                        onChange={(e) =>
+                          handleOwnerChange("zipCode", e.target.value)
+                        }
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
+                        placeholder="123 45"
+                      />
+                    </div>
 
-                      <label className="flex items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={dogData.escapeTendency}
-                          onChange={(e) =>
-                            handleDogChange("escapeTendency", e.target.checked)
-                          }
-                          className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          Rymningsbenägen / Klättrar över staket
-                        </span>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Ort
                       </label>
+                      <input
+                        type="text"
+                        value={ownerData.city}
+                        onChange={(e) =>
+                          handleOwnerChange("city", e.target.value)
+                        }
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
+                        placeholder="Stockholm"
+                      />
+                    </div>
 
-                      <label className="flex items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={dogData.bitesSeparates}
-                          onChange={(e) =>
-                            handleDogChange("bitesSeparates", e.target.checked)
-                          }
-                          className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          Biter sönder saker
-                        </span>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Lösenord <span className="text-red-500">*</span>
                       </label>
+                      <input
+                        type="password"
+                        value={ownerData.password}
+                        onChange={(e) =>
+                          handleOwnerChange("password", e.target.value)
+                        }
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
+                        placeholder="Minst 6 tecken"
+                        minLength={6}
+                        required
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Minst 6 tecken långt
+                      </p>
+                    </div>
 
-                      <label className="flex items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={dogData.notHousebroken}
-                          onChange={(e) =>
-                            handleDogChange("notHousebroken", e.target.checked)
-                          }
-                          className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">
-                          Ej rumsren
-                        </span>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Bekräfta lösenord{" "}
+                        <span className="text-red-500">*</span>
                       </label>
+                      <input
+                        type="password"
+                        value={ownerData.confirmPassword}
+                        onChange={(e) =>
+                          handleOwnerChange("confirmPassword", e.target.value)
+                        }
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
+                        placeholder="Samma som ovan"
+                        minLength={6}
+                        required
+                      />
+                    </div>
 
-                      <label className="flex items-start gap-3">
+                    {/* GDPR och villkor */}
+                    <div className="md:col-span-2 space-y-3 mt-4 pt-4 border-t">
+                      <div className="flex items-start">
                         <input
                           type="checkbox"
-                          checked={dogData.allergies}
+                          id="gdprConsent"
+                          checked={ownerData.gdprConsent}
                           onChange={(e) =>
-                            handleDogChange("allergies", e.target.checked)
-                          }
-                          className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">Allergier</span>
-                      </label>
-
-                      <label className="flex items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={dogData.takingMedication}
-                          onChange={(e) =>
-                            handleDogChange(
-                              "takingMedication",
-                              e.target.checked
+                            handleOwnerChange(
+                              "gdprConsent",
+                              e.target.checked.toString()
                             )
                           }
                           className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
                         />
-                        <span className="text-sm text-gray-700">
-                          Tar medicin
-                        </span>
-                      </label>
+                        <label
+                          htmlFor="gdprConsent"
+                          className="ml-2 text-sm text-gray-700"
+                        >
+                          Jag godkänner att mina personuppgifter behandlas
+                          enligt{" "}
+                          <Link
+                            href="/gdpr"
+                            className="text-[#2c7a4c] underline hover:text-[#245a3e]"
+                            target="_blank"
+                          >
+                            GDPR
+                          </Link>{" "}
+                          och{" "}
+                          <Link
+                            href="/terms"
+                            className="text-[#2c7a4c] underline hover:text-[#245a3e]"
+                            target="_blank"
+                          >
+                            användarvillkoren
+                          </Link>
+                          . *
+                        </label>
+                      </div>
+
+                      <div className="flex items-start">
+                        <input
+                          type="checkbox"
+                          id="marketingConsent"
+                          checked={ownerData.marketingConsent}
+                          onChange={(e) =>
+                            handleOwnerChange(
+                              "marketingConsent",
+                              e.target.checked.toString()
+                            )
+                          }
+                          className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
+                        />
+                        <label
+                          htmlFor="marketingConsent"
+                          className="ml-2 text-sm text-gray-700"
+                        >
+                          Jag vill ta emot nyheter och erbjudanden via e-post
+                          (valfritt)
+                        </label>
+                      </div>
+
+                      <p className="text-xs text-gray-500 italic">
+                        * Obligatoriska fält måste fyllas i för att kunna
+                        fortsätta
+                      </p>
                     </div>
                   </div>
+                )}
 
-                  {/* Medicinska anteckningar */}
+                {/* Steg 2: Kontaktperson */}
+                {currentStep === 2 && (
                   <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Medicinska anteckningar
-                    </label>
-                    <textarea
-                      value={dogData.careNotes || ""}
-                      onChange={(e) =>
-                        handleDogChange("careNotes", e.target.value)
-                      }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                      placeholder="T.ex. allergier, mediciner, särskilda behov..."
-                      rows={3}
-                    />
-                  </div>
-
-                  {/* Försäkring */}
-                  <div>
-                    <h4 className="text-lg font-semibold mb-3">Försäkring</h4>
+                    <p className="text-gray-600 mb-4">
+                      Valfritt: Lägg till en extra kontaktperson som kan nås vid
+                      behov.
+                    </p>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium mb-1">
-                          Försäkringsbolag
+                          Förnamn
                         </label>
                         <input
                           type="text"
-                          value={dogData.insuranceCompany}
+                          value={contactData.firstName}
                           onChange={(e) =>
-                            handleDogChange("insuranceCompany", e.target.value)
+                            handleContactChange("firstName", e.target.value)
                           }
                           className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                          placeholder="Folksam"
+                          placeholder="Erik"
                         />
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium mb-1">
-                          Försäkringsnummer
+                          Efternamn
                         </label>
                         <input
                           type="text"
-                          value={dogData.insuranceNumber}
+                          value={contactData.lastName}
                           onChange={(e) =>
-                            handleDogChange("insuranceNumber", e.target.value)
+                            handleContactChange("lastName", e.target.value)
                           }
                           className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                          placeholder="123456789"
+                          placeholder="Andersson"
                         />
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium mb-1">
-                          Vaccination DHP (giltigt till)
+                          Telefonnummer
                         </label>
                         <input
-                          type="date"
-                          value={dogData.vaccinationDHP}
+                          type="tel"
+                          value={contactData.phone}
                           onChange={(e) =>
-                            handleDogChange("vaccinationDHP", e.target.value)
+                            handleContactChange("phone", e.target.value)
                           }
                           className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Vaccination Pi (giltigt till)
-                        </label>
-                        <input
-                          type="date"
-                          value={dogData.vaccinationPi}
-                          onChange={(e) =>
-                            handleDogChange("vaccinationPi", e.target.value)
-                          }
-                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                          placeholder="070-987 65 43"
                         />
                       </div>
                     </div>
                   </div>
-
-                  {/* Specialbehov/Beteende */}
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Vård/Medicin (fritext)
-                    </label>
-                    <textarea
-                      value={dogData.specialNotes || ""}
-                      onChange={(e) =>
-                        handleDogChange("specialNotes", e.target.value)
-                      }
-                      className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
-                      placeholder="Inga mediciner"
-                      rows={3}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg shadow-sm flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="font-medium">
-                      Det gick inte att slutföra registreringen
-                    </p>
-                    <p className="text-sm mt-1">{error}</p>
-                  </div>
-                </div>
-              )}
-
-              {success && (
-                <div className="bg-green-50 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-lg shadow-sm flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="whitespace-pre-line">{success}</p>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex justify-between pt-6 border-t">
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    currentStep > 1 && setCurrentStep(currentStep - 1)
-                  }
-                  disabled={currentStep === 1 || loading}
-                  className="px-6"
-                >
-                  Föregående
-                </Button>
-
-                {currentStep < 3 ? (
-                  <Button
-                    onClick={() => {
-                      if (currentStep === 1) {
-                        const error = validateStep1();
-                        if (error) {
-                          setError(error);
-                          return;
-                        }
-                      }
-                      setError(null);
-                      setCurrentStep(currentStep + 1);
-                    }}
-                    className="bg-[#2c7a4c] hover:bg-[#245a3e] px-8"
-                  >
-                    Nästa →
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className="bg-[#2c7a4c] hover:bg-[#245a3e] px-8 min-w-[160px]"
-                  >
-                    {loading ? (
-                      <span className="flex items-center gap-2">
-                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Skapar...
-                      </span>
-                    ) : (
-                      "Skapa konto"
-                    )}
-                  </Button>
                 )}
-              </div>
-            </CardContent>
-          </Card>
+
+                {/* Steg 3: Hunduppgifter */}
+                {currentStep === 3 && (
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3">
+                        Grunduppgifter
+                      </h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Hundens namn *
+                          </label>
+                          <input
+                            type="text"
+                            value={dogData.name}
+                            onChange={(e) =>
+                              handleDogChange("name", e.target.value)
+                            }
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                            placeholder="Bella"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Ras <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            value={dogData.breed}
+                            onChange={(e) =>
+                              handleDogChange("breed", e.target.value)
+                            }
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                            required
+                          >
+                            <option value="">Välj hundras...</option>
+                            {DOG_BREEDS.map((breed) => (
+                              <option key={breed} value={breed}>
+                                {breed}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Födelsedatum <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="date"
+                            value={dogData.birthDate}
+                            onChange={(e) =>
+                              handleDogChange("birthDate", e.target.value)
+                            }
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Kön <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            value={dogData.gender}
+                            onChange={(e) =>
+                              handleDogChange("gender", e.target.value)
+                            }
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                            required
+                          >
+                            <option value="">Välj kön</option>
+                            <option value="hane">Hane</option>
+                            <option value="tik">Tik</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Mankhöjd (cm){" "}
+                            <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="number"
+                            value={dogData.shoulderHeight}
+                            onChange={(e) =>
+                              handleDogChange("shoulderHeight", e.target.value)
+                            }
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                            placeholder="55"
+                            min="1"
+                            max="150"
+                            required
+                          />
+                          <p className="text-xs text-gray-500 mt-1">
+                            Mankhöjden mäts från marken till ovansidan av
+                            skulderbladen
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Hälsa & Beteende - MATCHAR bokningsflödet */}
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3">
+                        Hälsa & Beteende
+                      </h4>
+                      <div className="space-y-3">
+                        <label className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={dogData.isCastrated}
+                            onChange={(e) =>
+                              handleDogChange("isCastrated", e.target.checked)
+                            }
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">
+                            Kastrerad/Steriliserad
+                          </span>
+                        </label>
+
+                        <label className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={dogData.escapeTendency}
+                            onChange={(e) =>
+                              handleDogChange(
+                                "escapeTendency",
+                                e.target.checked
+                              )
+                            }
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">
+                            Rymningsbenägen / Klättrar över staket
+                          </span>
+                        </label>
+
+                        <label className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={dogData.bitesSeparates}
+                            onChange={(e) =>
+                              handleDogChange(
+                                "bitesSeparates",
+                                e.target.checked
+                              )
+                            }
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">
+                            Biter sönder saker
+                          </span>
+                        </label>
+
+                        <label className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={dogData.notHousebroken}
+                            onChange={(e) =>
+                              handleDogChange(
+                                "notHousebroken",
+                                e.target.checked
+                              )
+                            }
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">
+                            Ej rumsren
+                          </span>
+                        </label>
+
+                        <label className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={dogData.allergies}
+                            onChange={(e) =>
+                              handleDogChange("allergies", e.target.checked)
+                            }
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">
+                            Allergier
+                          </span>
+                        </label>
+
+                        <label className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={dogData.takingMedication}
+                            onChange={(e) =>
+                              handleDogChange(
+                                "takingMedication",
+                                e.target.checked
+                              )
+                            }
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">
+                            Tar medicin
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Medicinska anteckningar */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Medicinska anteckningar
+                      </label>
+                      <textarea
+                        value={dogData.careNotes || ""}
+                        onChange={(e) =>
+                          handleDogChange("careNotes", e.target.value)
+                        }
+                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                        placeholder="T.ex. allergier, mediciner, särskilda behov..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Försäkring */}
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3">Försäkring</h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Försäkringsbolag
+                          </label>
+                          <input
+                            type="text"
+                            value={dogData.insuranceCompany}
+                            onChange={(e) =>
+                              handleDogChange(
+                                "insuranceCompany",
+                                e.target.value
+                              )
+                            }
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                            placeholder="Folksam"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Försäkringsnummer
+                          </label>
+                          <input
+                            type="text"
+                            value={dogData.insuranceNumber}
+                            onChange={(e) =>
+                              handleDogChange("insuranceNumber", e.target.value)
+                            }
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                            placeholder="123456789"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Vaccination DHP (giltigt till)
+                          </label>
+                          <input
+                            type="date"
+                            value={dogData.vaccinationDHP}
+                            onChange={(e) =>
+                              handleDogChange("vaccinationDHP", e.target.value)
+                            }
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Vaccination Pi (giltigt till)
+                          </label>
+                          <input
+                            type="date"
+                            value={dogData.vaccinationPi}
+                            onChange={(e) =>
+                              handleDogChange("vaccinationPi", e.target.value)
+                            }
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Specialbehov/Beteende */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Vård/Medicin (fritext)
+                      </label>
+                      <textarea
+                        value={dogData.specialNotes || ""}
+                        onChange={(e) =>
+                          handleDogChange("specialNotes", e.target.value)
+                        }
+                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                        placeholder="Inga mediciner"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg shadow-sm flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="font-medium">
+                        Det gick inte att slutföra registreringen
+                      </p>
+                      <p className="text-sm mt-1">{error}</p>
+                    </div>
+                  </div>
+                )}
+
+                {success && (
+                  <div className="bg-green-50 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-lg shadow-sm flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="whitespace-pre-line">{success}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-between pt-6 border-t">
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      currentStep > 1 && setCurrentStep(currentStep - 1)
+                    }
+                    disabled={currentStep === 1 || loading}
+                    className="px-6"
+                  >
+                    Föregående
+                  </Button>
+
+                  {currentStep < 3 ? (
+                    <Button
+                      onClick={() => {
+                        if (currentStep === 1) {
+                          const error = validateStep1();
+                          if (error) {
+                            setError(error);
+                            return;
+                          }
+                        }
+                        setError(null);
+                        setCurrentStep(currentStep + 1);
+                      }}
+                      className="bg-[#2c7a4c] hover:bg-[#245a3e] px-8"
+                    >
+                      Nästa →
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={loading}
+                      className="bg-[#2c7a4c] hover:bg-[#245a3e] px-8 min-w-[160px]"
+                    >
+                      {loading ? (
+                        <span className="flex items-center gap-2">
+                          <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Skapar...
+                        </span>
+                      ) : (
+                        "Skapa konto"
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </FormErrorBoundary>
   );
 }
