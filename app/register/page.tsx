@@ -90,8 +90,20 @@ export default function RegisterCompanyPage() {
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-white flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
         <h1 className="text-3xl font-bold text-[#2c7a4c] text-center mb-2">
-          Registrera dig
+          Registrera ditt hundföretag
         </h1>
+        <p className="text-center text-gray-600 text-sm mb-2">
+          För hunddagis, hundpensionat och hundfrisörer
+        </p>
+        <p className="text-center text-xs text-gray-500 mb-6 pb-4 border-b">
+          Är du hundägare?{" "}
+          <Link
+            href="/kundportal/registrera"
+            className="text-[#2c7a4c] hover:underline font-medium"
+          >
+            Skapa kundkonto här
+          </Link>
+        </p>
 
         {err && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700 text-sm">

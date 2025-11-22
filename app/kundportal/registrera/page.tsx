@@ -315,14 +315,30 @@ export default function CustomerRegisterPage() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="flex items-center mb-8">
-          <Link href="/kundportal">
-            <Button variant="ghost" className="mr-4">
-              ← Tillbaka
+        <div className="text-center mb-8">
+          <Link href="/">
+            <Button variant="ghost" className="mb-4">
+              ← Tillbaka till startsidan
             </Button>
           </Link>
-          <PawPrint className="h-8 w-8 text-[#2c7a4c] mr-3" />
-          <h1 className="text-3xl font-bold text-gray-800">Skapa konto</h1>
+          <div className="flex items-center justify-center mb-4">
+            <PawPrint className="h-10 w-10 text-[#2c7a4c] mr-3" />
+            <h1 className="text-3xl font-bold text-gray-800">
+              Skapa konto som hundägare
+            </h1>
+          </div>
+          <p className="text-gray-600 mb-2">
+            Skapa ett gratis konto för att boka hunddagis och hundpensionat
+          </p>
+          <p className="text-sm text-gray-500">
+            Driver du ett hundföretag?{" "}
+            <Link
+              href="/register"
+              className="text-[#2c7a4c] hover:underline font-medium"
+            >
+              Registrera företag här
+            </Link>
+          </p>
         </div>
 
         {/* Progress */}

@@ -4,13 +4,16 @@ import Link from "next/link";
 import Image from "next/image";
 import Head from "next/head";
 import { useAuth } from "@/app/context/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PublicNav from "@/components/PublicNav";
+import BookingOptionsModal from "@/components/BookingOptionsModal";
 
 export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [bookingType, setBookingType] = useState<"hunddagis" | "pensionat">("pensionat");
 
   // Inloggade användare ska redirecta till dashboard
   useEffect(() => {
@@ -63,19 +66,32 @@ export default function HomePage() {
               och professionellt.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              <Link
-                href="/ansokan/hunddagis"
+              <button
+                onClick={() => {
+                  setBookingType("hunddagis");
+                  setShowBookingModal(true);
+                }}
                 className="px-8 py-4 bg-white text-primary rounded-lg hover:bg-gray-50 font-bold text-lg transition-all shadow-lg hover:shadow-xl text-center"
               >
                 🐕 Boka hunddagis
-              </Link>
-              <Link
-                href="/ansokan/pensionat"
+              </button>
+              <button
+                onClick={() => {
+                  setBookingType("pensionat");
+                  setShowBookingModal(true);
+                }}
                 className="px-8 py-4 border-2 border-white text-white rounded-lg hover:bg-white/10 font-semibold text-lg transition-all backdrop-blur text-center"
               >
                 🏠 Boka pensionat
-              </Link>
+              </button>
             </div>
+
+            {/* Bokningsmodal */}
+            <BookingOptionsModal
+              isOpen={showBookingModal}
+              onClose={() => setShowBookingModal(false)}
+              bookingType={bookingType}
+            />
             <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm">
               <span className="flex items-center gap-2">
                 <svg

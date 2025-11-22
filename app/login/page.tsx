@@ -117,9 +117,21 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-10 border border-gray-100">
-        <h1 className="text-3xl font-bold text-[#2c7a4c] text-center mb-8">
-          {resetMode ? "Återställ lösenord" : "Logga in till DogPlanner"}
+        <h1 className="text-3xl font-bold text-[#2c7a4c] text-center mb-2">
+          {resetMode ? "Återställ lösenord" : "Logga in som företag"}
         </h1>
+        <p className="text-center text-gray-600 text-sm mb-6">
+          För hundföretag och verksamheter
+        </p>
+        <p className="text-center text-xs text-gray-500 mb-8 pb-4 border-b">
+          Hundägare?{" "}
+          <a
+            href="/kundportal/login"
+            className="text-[#2c7a4c] hover:underline font-medium"
+          >
+            Logga in här istället
+          </a>
+        </p>
 
         <form
           onSubmit={resetMode ? handleResetPassword : handleLogin}

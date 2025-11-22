@@ -108,7 +108,7 @@ function LoginPageContent() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/kundportal">
+          <Link href="/">
             <Button variant="ghost" className="mb-4">
               ← Tillbaka till startsidan
             </Button>
@@ -116,11 +116,22 @@ function LoginPageContent() {
 
           <div className="flex items-center justify-center mb-4">
             <PawPrint className="h-10 w-10 text-[#2c7a4c] mr-3" />
-            <h1 className="text-4xl font-bold text-gray-800">Logga in</h1>
+            <h1 className="text-4xl font-bold text-gray-800">
+              Logga in som hundägare
+            </h1>
           </div>
 
-          <p className="text-gray-600">
+          <p className="text-gray-600 mb-2">
             Välkommen tillbaka! Logga in för att hantera dina bokningar.
+          </p>
+          <p className="text-sm text-gray-500">
+            Driver du ett hundföretag?{" "}
+            <Link
+              href="/login"
+              className="text-[#2c7a4c] hover:underline font-medium"
+            >
+              Logga in här istället
+            </Link>
           </p>
         </div>
 
@@ -199,10 +210,12 @@ function LoginPageContent() {
               </Link>
 
               <div className="border-t pt-3">
-                <p className="text-sm text-white">Har du inget konto än?</p>
+                <p className="text-sm text-gray-600 mb-2">
+                  Har du inget konto än?
+                </p>
                 <Link href="/kundportal/registrera">
                   <Button variant="outline" className="w-full">
-                    Skapa nytt konto
+                    Skapa konto som hundägare
                   </Button>
                 </Link>
               </div>
