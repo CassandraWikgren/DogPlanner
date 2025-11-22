@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import PDFDocument from "pdfkit";
+import QRCode from "qrcode";
+import { generateOCR, formatOCR, generateSwishURL } from "@/lib/ocrGenerator";
 
 export async function GET(
   request: NextRequest,
@@ -23,7 +25,8 @@ export async function GET(
           phone,
           address,
           city,
-          postal_code
+          postal_code,
+          customer_number
         ),
         org:orgs!invoices_org_id_fkey(
           name,
@@ -33,7 +36,13 @@ export async function GET(
           city,
           phone,
           email,
-          website
+          website,
+          bankgiro,
+          plusgiro,
+          swish_number,
+          payment_terms_days,
+          late_fee_amount,
+          interest_rate
         )
       `
       )
@@ -320,22 +329,186 @@ export async function GET(
 
     // --- BETALNINGSINFORMATION ---
     const paymentY = totalsY + 100;
+
+    // Box för betalningsinformation
+    doc
+      .rect(50, paymentY - 10, 250, 160)
+      .fillOpacity(0.05)
+      .fillAndStroke("#2c7a4c", "#2c7a4c")
+      .fillOpacity(1);
+
     doc
       .fontSize(11)
       .font("Helvetica-Bold")
+      .fillColor("#2c7a4c")
+      .text("Betalningsinformation", 60, paymentY);
+
+    let currentPaymentY = paymentY + 25;
+    doc.fontSize(9).font("Helvetica").fillColor("#333");
+
+    // Bankgiro + OCR
+    if (invoice.org?.bankgiro) {
+      doc.font("Helvetica-Bold").text("Bankgiro:", 60, currentPaymentY);
+      doc.font("Helvetica").text(invoice.org.bankgiro, 140, currentPaymentY);
+      currentPaymentY += 15;
+
+      // Generera OCR-nummer
+      const ocrNumber = generateOCR(
+        invoice.owner?.customer_number,
+        invoice.invoice_number
+      );
+      const formattedOCR = formatOCR(ocrNumber);
+
+      doc.font("Helvetica-Bold").text("OCR-nummer:", 60, currentPaymentY);
+      doc
+        .font("Helvetica-Bold")
+        .fillColor("#2c7a4c")
+        .text(formattedOCR, 140, currentPaymentY);
+      currentPaymentY += 20;
+      doc.fillColor("#333");
+    }
+
+    // Plusgiro (om det finns)
+    if (invoice.org?.plusgiro) {
+      doc.font("Helvetica-Bold").text("Plusgiro:", 60, currentPaymentY);
+      doc.font("Helvetica").text(invoice.org.plusgiro, 140, currentPaymentY);
+      currentPaymentY += 15;
+    }
+
+    // Swish
+    if (invoice.org?.swish_number) {
+      doc.font("Helvetica-Bold").text("Swish:", 60, currentPaymentY);
+      doc.font("Helvetica").text(invoice.org.swish_number, 140, currentPaymentY);
+      currentPaymentY += 20;
+    }
+
+    // Betalningsvillkor
+    doc
+      .fontSize(9)
+      .font("Helvetica")
+      .fillColor("#666")
+      .text("Betalningsvillkor:", 60, currentPaymentY);
+    doc
+      .font("Helvetica-Bold")
       .fillColor("#000")
-      .text("Betalningsinformation", 50, paymentY);
+      .text(
+        `${invoice.org?.payment_terms_days || 14} dagar netto`,
+        140,
+        currentPaymentY
+      );
+    currentPaymentY += 15;
 
-    doc.fontSize(9).font("Helvetica").fillColor("#666");
-    doc.text(
-      `Fakturan förfaller: ${new Date(invoice.due_date).toLocaleDateString("sv-SE")}`,
-      50,
-      paymentY + 20
-    );
-    doc.text("Betalningsvillkor: 30 dagar netto", 50, paymentY + 35);
+    // Förfallodatum
+    doc.font("Helvetica").fillColor("#666").text("Förfallodatum:", 60, currentPaymentY);
+    doc
+      .font("Helvetica-Bold")
+      .fillColor("#d32f2f")
+      .text(
+        new Date(invoice.due_date).toLocaleDateString("sv-SE"),
+        140,
+        currentPaymentY
+      );
+    currentPaymentY += 10;
 
+    // Swish QR-kod (höger sida)
+    if (invoice.org?.swish_number) {
+      try {
+        const swishURL = generateSwishURL(
+          invoice.org.swish_number,
+          invoice.total_amount,
+          invoice.invoice_number || invoice.id.slice(0, 8)
+        );
+        const qrDataURL = await QRCode.toDataURL(swishURL, {
+          width: 120,
+          margin: 1,
+        });
+
+        // Konvertera Data URL till Buffer
+        const qrBuffer = Buffer.from(qrDataURL.split(",")[1], "base64");
+
+        doc.image(qrBuffer, 330, paymentY + 10, { width: 100 });
+
+        doc
+          .fontSize(8)
+          .font("Helvetica")
+          .fillColor("#666")
+          .text("Scanna för Swish", 330, paymentY + 115, {
+            width: 100,
+            align: "center",
+          });
+      } catch (qrError) {
+        console.error("QR code generation error:", qrError);
+      }
+    }
+
+    // Dröjsmålsränta och avgifter
+    const feeY = paymentY + 165;
+    doc
+      .fontSize(8)
+      .font("Helvetica")
+      .fillColor("#999")
+      .text(
+        `Vid försenad betalning tillkommer påminnelseavgift (${
+          invoice.org?.late_fee_amount || 60
+        } kr) samt dröjsmålsränta (${invoice.org?.interest_rate || 8}% per år).`,
+        50,
+        feeY,
+        { width: 500 }
+      );
+
+    // Påminnelsenotis (om fakturan är en påminnelse)
+    if (invoice.status === "reminder_1" || invoice.status === "reminder_2") {
+      const reminderY = feeY + 30;
+      doc
+        .rect(50, reminderY - 10, 500, 60)
+        .fillOpacity(0.1)
+        .fillAndStroke("#d32f2f", "#d32f2f")
+        .fillOpacity(1);
+
+      doc
+        .fontSize(12)
+        .font("Helvetica-Bold")
+        .fillColor("#d32f2f")
+        .text(
+          invoice.status === "reminder_1"
+            ? "BETALNINGSPÅMINNELSE"
+            : "ANDRA BETALNINGSPÅMINNELSE",
+          60,
+          reminderY
+        );
+
+      doc.fontSize(9).font("Helvetica").fillColor("#333");
+
+      if (invoice.status === "reminder_1") {
+        doc.text(
+          "Vi har inte mottagit betalning för denna faktura. Vänligen betala snarast för att undvika påminnelseavgift.",
+          60,
+          reminderY + 20,
+          { width: 480 }
+        );
+      } else {
+        doc.text(
+          `Påminnelseavgift (${invoice.reminder_2_fee || 60} kr) och dröjsmålsränta har lagts till. Vid utebliven betalning överlämnas ärendet till inkasso.`,
+          60,
+          reminderY + 20,
+          { width: 480 }
+        );
+      }
+    }
+
+    // Kontaktinformation
     if (invoice.org?.email) {
-      doc.text(`Vid frågor, kontakta: ${invoice.org.email}`, 50, paymentY + 50);
+      const contactY = invoice.status === "reminder_1" || invoice.status === "reminder_2" ? feeY + 100 : feeY + 30;
+      doc
+        .fontSize(9)
+        .font("Helvetica")
+        .fillColor("#666")
+        .text(`Vid frågor, kontakta: `, 50, contactY);
+      doc
+        .fillColor("#2c7a4c")
+        .text(invoice.org.email, 140, contactY, {
+          link: `mailto:${invoice.org.email}`,
+        });
     }
 
     // --- FOOTER ---

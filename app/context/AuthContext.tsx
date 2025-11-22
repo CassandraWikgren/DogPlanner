@@ -50,12 +50,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     null
   );
 
-  // Safety timeout för loading
+  // Safety timeout för loading (kortare för bättre UX)
   useEffect(() => {
     const timeout = setTimeout(() => {
       console.warn("AuthContext: Loading timeout reached, forcing false");
       setLoading(false);
-    }, 10000); // 10 sekunder max
+    }, 1500); // 1.5 sekunder max för snabbare sida
 
     return () => clearTimeout(timeout);
   }, []);
@@ -102,18 +102,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (u && session?.access_token) {
-          // Försök auto-onboarding först, läs sedan profil
-          await safeAutoOnboarding(session.access_token);
-          await refreshProfile(u.id);
-          // Om profilen fortfarande saknar org, gör en sista retry
-          if (!currentOrgId && !metaOrg) {
-            console.warn(
-              "AuthContext: Ingen org efter första onboarding, försöker igen..."
+          // Endast kör API-anrop för business users (med org_id eller role)
+          // Kundportal-användare behöver inte onboarding/subscription
+          const hasBusinessRole = metaOrg || (u as any)?.app_metadata?.role;
+          
+          if (hasBusinessRole) {
+            // Försök auto-onboarding i bakgrunden utan att blockera
+            safeAutoOnboarding(session.access_token)
+              .then(() => refreshProfile(u.id))
+              .catch((err) => console.error("Background onboarding failed:", err));
+            
+            refreshSubscription(session.access_token).catch((err) =>
+              console.error("Background subscription check failed:", err)
             );
-            await safeAutoOnboarding(session.access_token);
-            await refreshProfile(u.id);
+          } else {
+            // Kundportal-användare: Läs bara profil (snabbt) i bakgrunden
+            refreshProfile(u.id).catch((err) =>
+              console.error("Profile refresh failed:", err)
+            );
           }
-          await refreshSubscription(session.access_token);
         } else {
           setProfile(null);
           setCurrentOrgId(null);
@@ -211,9 +218,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (u && session?.access_token) {
         // Kör dessa i bakgrunden utan att blockera rendering
-        safeAutoOnboarding(session.access_token)
-          .then(() => refreshProfile(u.id))
-          .then(() => refreshSubscription(session.access_token));
+        // Men hoppa över för publika användare (om de inte har org_id i metadata)
+        if (metaOrg || (u as any)?.app_metadata?.role) {
+          safeAutoOnboarding(session.access_token)
+            .then(() => refreshProfile(u.id))
+            .then(() => refreshSubscription(session.access_token));
+        }
       }
     } catch (error) {
       console.error("AuthContext: Unexpected error in init:", error);

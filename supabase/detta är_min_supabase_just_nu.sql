@@ -1,18 +1,206 @@
-jag körde precis:
-SELECT 
-  t.tgname AS trigger_name,
-  c.relname AS table_name,
-  p.proname AS function_name,
-  pg_get_functiondef(t.tgfoid) AS function_definition,
-  pg_get_triggerdef(t.oid) AS trigger_definition
-FROM pg_trigger t
-JOIN pg_class c ON c.oid = t.tgrelid
-JOIN pg_proc p ON p.oid = t.tgfoid
-WHERE NOT t.tgisinternal
-ORDER BY c.relname, t.tgname;
+[
+  {
+    "column_name": "id",
+    "data_type": "uuid",
+    "column_default": "gen_random_uuid()",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "column_default": "now()",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "org_id",
+    "data_type": "uuid",
+    "column_default": null,
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "owner_id",
+    "data_type": "uuid",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "invoice_date",
+    "data_type": "date",
+    "column_default": "now()",
+    "is_nullable": "NO"
+  },
+  {
+    "column_name": "status",
+    "data_type": "text",
+    "column_default": "'draft'::text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "total_amount",
+    "data_type": "numeric",
+    "column_default": "0",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "billed_name",
+    "data_type": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "billed_email",
+    "data_type": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "billed_address",
+    "data_type": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "deleted_at",
+    "data_type": "timestamp with time zone",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "invoice_type",
+    "data_type": "text",
+    "column_default": "'full'::text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "due_date",
+    "data_type": "date",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "invoice_number",
+    "data_type": "text",
+    "column_default": null,
+    "is_nullable": "YES"
+  },
+  {
+    "column_name": "sent_at",
+    "data_type": "timestamp with time zone",
+    "column_default": null,
+    "is_nullable": "YES"
+  }
+]
 
-och fick svaret som ligger i denna fil. uppdaterat precis nu 2025-11-22 klockan 13:28
-
+[
+  {
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "column_name": "name",
+    "data_type": "text"
+  },
+  {
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "column_name": "subscription_plan",
+    "data_type": "text"
+  },
+  {
+    "column_name": "trial_ends_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "column_name": "subscription_status",
+    "data_type": "text"
+  },
+  {
+    "column_name": "org_number",
+    "data_type": "text"
+  },
+  {
+    "column_name": "status",
+    "data_type": "text"
+  },
+  {
+    "column_name": "warning_sent",
+    "data_type": "boolean"
+  },
+  {
+    "column_name": "pending_plan_change",
+    "data_type": "text"
+  },
+  {
+    "column_name": "user_id",
+    "data_type": "uuid"
+  },
+  {
+    "column_name": "email",
+    "data_type": "text"
+  },
+  {
+    "column_name": "phone",
+    "data_type": "text"
+  },
+  {
+    "column_name": "address",
+    "data_type": "text"
+  },
+  {
+    "column_name": "vat_included",
+    "data_type": "boolean"
+  },
+  {
+    "column_name": "vat_rate",
+    "data_type": "numeric"
+  },
+  {
+    "column_name": "pricing_currency",
+    "data_type": "text"
+  },
+  {
+    "column_name": "contact_email",
+    "data_type": "text"
+  },
+  {
+    "column_name": "invoice_email",
+    "data_type": "text"
+  },
+  {
+    "column_name": "reply_to_email",
+    "data_type": "text"
+  },
+  {
+    "column_name": "email_sender_name",
+    "data_type": "text"
+  },
+  {
+    "column_name": "slug",
+    "data_type": "text"
+  },
+  {
+    "column_name": "cancellation_policy",
+    "data_type": "jsonb"
+  },
+  {
+    "column_name": "lan",
+    "data_type": "text"
+  },
+  {
+    "column_name": "kommun",
+    "data_type": "text"
+  },
+  {
+    "column_name": "service_types",
+    "data_type": "ARRAY"
+  },
+  {
+    "column_name": "is_visible_to_customers",
+    "data_type": "boolean"
+  }
+]
 [
   {
     "trigger_name": "on_insert_set_org_id_for_boarding_seasons",
@@ -1311,5 +1499,1154 @@ och fick svaret som ligger i denna fil. uppdaterat precis nu 2025-11-22 klockan 
     "cmd": "SELECT",
     "qual": "((bucket_id = 'documents'::text) AND ((storage.foldername(name))[1] = 'documents'::text) AND (auth.role() = 'authenticated'::text))",
     "with_check": null
+  }
+]
+
+[
+  {
+    "routine_schema": "public",
+    "routine_name": "current_org_id",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "pgbouncer",
+    "routine_name": "get_auth",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "remove_staff_member",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "json_text",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "generate_invoice_number",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_invoice_number",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "create_invoice_on_checkout",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "auto_generate_customer_number",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "gen_salt",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "encrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "decrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pg_stat_statements_info",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "gen_salt",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "update_updated_at_column",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_org_id_for_pension_stays",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pg_stat_statements_reset",
+    "routine_type": "FUNCTION",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_org_id_for_grooming",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_default_role",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "auto_create_grooming_journal",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "uuid_nil",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "uuid_ns_dns",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "uuid_ns_url",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "uuid_ns_oid",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "update_external_customers_updated_at",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "update_external_customer_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "auth",
+    "routine_name": "uid",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "auth",
+    "routine_name": "role",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "auth",
+    "routine_name": "email",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "uuid_ns_x500",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "uuid_generate_v1",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "match_owners_to_dogs",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "touch_bookings_updated_at",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "cron",
+    "routine_name": "schedule",
+    "routine_type": "FUNCTION",
+    "data_type": "bigint"
+  },
+  {
+    "routine_schema": "cron",
+    "routine_name": "unschedule",
+    "routine_type": "FUNCTION",
+    "data_type": "boolean"
+  },
+  {
+    "routine_schema": "cron",
+    "routine_name": "job_cache_invalidate",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "cron",
+    "routine_name": "schedule",
+    "routine_type": "FUNCTION",
+    "data_type": "bigint"
+  },
+  {
+    "routine_schema": "cron",
+    "routine_name": "alter_job",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "cron",
+    "routine_name": "schedule_in_database",
+    "routine_type": "FUNCTION",
+    "data_type": "bigint"
+  },
+  {
+    "routine_schema": "cron",
+    "routine_name": "unschedule",
+    "routine_type": "FUNCTION",
+    "data_type": "boolean"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_org_id_for_subscription",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "check_worker_is_up",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "_await_response",
+    "routine_type": "FUNCTION",
+    "data_type": "boolean"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "_urlencode_string",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "_encode_url_with_params_array",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "worker_restart",
+    "routine_type": "FUNCTION",
+    "data_type": "boolean"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "wait_until_running",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "wake",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "http_get",
+    "routine_type": "FUNCTION",
+    "data_type": "bigint"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "has_valid_consent",
+    "routine_type": "FUNCTION",
+    "data_type": "boolean"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "uuid_generate_v1mc",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "uuid_generate_v3",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "uuid_generate_v4",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "uuid_generate_v5",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "digest",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "digest",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "hmac",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "hmac",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "crypt",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "encrypt_iv",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "decrypt_iv",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_trial_end_for_org",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "http_post",
+    "routine_type": "FUNCTION",
+    "data_type": "bigint"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "http_delete",
+    "routine_type": "FUNCTION",
+    "data_type": "bigint"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "withdraw_consent",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "update_owner_consent_status",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "log_booking_status_change",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "calculate_cancellation_fee",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "calculate_data_retention_date",
+    "routine_type": "FUNCTION",
+    "data_type": "date"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "anonymize_owner",
+    "routine_type": "FUNCTION",
+    "data_type": "boolean"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_dog_org_id",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_booking_org_id",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_extra_service_org_id",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_dog_journal_org_id",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "auto_checkout_dogs",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_pension_stay_org_id",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_org_id_for_invoices",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "_http_collect_response",
+    "routine_type": "FUNCTION",
+    "data_type": "USER-DEFINED"
+  },
+  {
+    "routine_schema": "net",
+    "routine_name": "http_collect_response",
+    "routine_type": "FUNCTION",
+    "data_type": "USER-DEFINED"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgrst_ddl_watch",
+    "routine_type": "FUNCTION",
+    "data_type": "event_trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "send_invoice_email",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "trigger_invoice_generation",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "lock_expired_trials",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "grant_pg_graphql_access",
+    "routine_type": "FUNCTION",
+    "data_type": "event_trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "activate_paid_subscription",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "create_prepayment_invoice",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "update_waitlist_status",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "log_trigger_execution",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "cleanup_old_trigger_logs",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "graphql",
+    "routine_name": "get_schema_version",
+    "routine_type": "FUNCTION",
+    "data_type": "integer"
+  },
+  {
+    "routine_schema": "vault",
+    "routine_name": "create_secret",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "vault",
+    "routine_name": "update_secret",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "graphql",
+    "routine_name": "exception",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "graphql",
+    "routine_name": "_internal_resolve",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "graphql",
+    "routine_name": "resolve",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "calc_total_amount",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_org_id_for_dogs",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_org_id_from_dog",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "vault",
+    "routine_name": "_crypto_aead_det_decrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "gen_random_bytes",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "gen_random_uuid",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_sym_encrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_sym_encrypt_bytea",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_sym_encrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_sym_encrypt_bytea",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_sym_decrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_sym_decrypt_bytea",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_sym_decrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_sym_decrypt_bytea",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_pub_encrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_pub_encrypt_bytea",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_pub_encrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_pub_encrypt_bytea",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_pub_decrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_pub_decrypt_bytea",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_pub_decrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_pub_decrypt_bytea",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_pub_decrypt",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_pub_decrypt_bytea",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_key_id",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "armor",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "armor",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "dearmor",
+    "routine_type": "FUNCTION",
+    "data_type": "bytea"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgp_armor_headers",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pg_stat_statements",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "pgrst_drop_watch",
+    "routine_type": "FUNCTION",
+    "data_type": "event_trigger"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "set_graphql_placeholder",
+    "routine_type": "FUNCTION",
+    "data_type": "event_trigger"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "grant_pg_net_access",
+    "routine_type": "FUNCTION",
+    "data_type": "event_trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "handle_new_user",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "notify_admin_on_lock",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "create_org_and_admin",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "graphql_public",
+    "routine_name": "graphql",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "graphql",
+    "routine_name": "comment_directive",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "graphql",
+    "routine_name": "increment_schema_version",
+    "routine_type": "FUNCTION",
+    "data_type": "event_trigger"
+  },
+  {
+    "routine_schema": "extensions",
+    "routine_name": "grant_pg_cron_access",
+    "routine_type": "FUNCTION",
+    "data_type": "event_trigger"
+  },
+  {
+    "routine_schema": "auth",
+    "routine_name": "jwt",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "filename",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_special_date_org_id",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "heal_user_missing_org",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "prefixes_insert_trigger",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "delete_prefix",
+    "routine_type": "FUNCTION",
+    "data_type": "boolean"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "objects_insert_prefix_trigger",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "delete_prefix_hierarchy_trigger",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "ensure_org_has_admin",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "foldername",
+    "routine_type": "FUNCTION",
+    "data_type": "ARRAY"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "heal_all_users_missing_org",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "update_updated_at_column",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "can_insert_object",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "list_objects_with_delimiter",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "list_multipart_uploads_with_delimiter",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "prefixes_delete_cleanup",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "operation",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "get_level",
+    "routine_type": "FUNCTION",
+    "data_type": "integer"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "get_prefix",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "get_prefixes",
+    "routine_type": "FUNCTION",
+    "data_type": "ARRAY"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "add_prefixes",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "objects_update_level_trigger",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "search_v1_optimised",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "search_legacy_v1",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "search",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "extension",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "get_size_by_bucket",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "objects_update_prefix_trigger",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "enforce_bucket_name_length",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "search_v2",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "lock_top_prefixes",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "auto_match_owner_trigger",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "objects_delete_cleanup",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "objects_update_cleanup",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "update_last_updated",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "create_dog_journal_on_new_dog",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "storage",
+    "routine_name": "delete_leaf_prefixes",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_org_id_for_owners",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "gdpr_delete_user_data",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "quote_wal2json",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "cast",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "delete_org_if_no_admins",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_org_id_for_rooms",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "to_regrole",
+    "routine_type": "FUNCTION",
+    "data_type": "regrole"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "add_staff_member",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "build_prepared_statement_sql",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "send_trial_warning_emails",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "apply_rls",
+    "routine_type": "FUNCTION",
+    "data_type": "USER-DEFINED"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "set_customer_number_per_org",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "check_equality_op",
+    "routine_type": "FUNCTION",
+    "data_type": "boolean"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "list_changes",
+    "routine_type": "FUNCTION",
+    "data_type": "USER-DEFINED"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "is_visible_through_filters",
+    "routine_type": "FUNCTION",
+    "data_type": "boolean"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "subscription_check_filters",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "topic",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "send",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "realtime",
+    "routine_name": "broadcast_changes",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_schema": "public",
+    "routine_name": "add_default_special_dates_for_org",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
   }
 ]

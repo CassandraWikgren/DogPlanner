@@ -1,6 +1,3 @@
-Läs supabase/detta är_min_supabase_just_nu.sql om du inte hittar de du söker i texten nedan.
-
-
 # Schema-uppdatering: Fakturaunderlag
 
 **Datum:** 2025-11-22  
