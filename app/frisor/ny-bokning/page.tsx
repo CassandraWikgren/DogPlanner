@@ -435,14 +435,14 @@ export default function NyBokning() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-[1600px] mx-auto">
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-5xl mx-auto">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-64 mb-6"></div>
-            <div className="bg-white rounded-lg p-8">
-              <div className="space-y-4">
+            <div className="h-6 bg-gray-200 rounded w-48 mb-4"></div>
+            <div className="bg-white rounded-lg p-6">
+              <div className="space-y-3">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-16 bg-gray-200 rounded"></div>
+                  <div key={i} className="h-12 bg-gray-200 rounded"></div>
                 ))}
               </div>
             </div>
@@ -454,16 +454,16 @@ export default function NyBokning() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
-          <CardContent className="p-8 text-center">
-            <div className="mb-6">
-              <CheckCircle2 className="h-16 w-16 text-green-600 mx-auto" />
+          <CardContent className="p-6 text-center">
+            <div className="mb-4">
+              <CheckCircle2 className="h-12 w-12 text-green-600 mx-auto" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
               Bokning skapad!
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 text-sm mb-4">
               Frisörbokningen för{" "}
               <strong>
                 {customerType === "existing"
@@ -477,6 +477,7 @@ export default function NyBokning() {
             <Button
               onClick={() => router.push("/frisor")}
               className="bg-orange-600 hover:bg-orange-700"
+              size="sm"
             >
               Gå till frisör
             </Button>
@@ -488,11 +489,11 @@ export default function NyBokning() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Tillbaka-knapp ovanför hero */}
-      <div className="bg-gray-50 pt-6 px-6">
-        <div className="max-w-7xl mx-auto">
+      {/* Tillbaka-knapp */}
+      <div className="bg-gray-50 pt-4 px-4">
+        <div className="max-w-5xl mx-auto">
           <Link href="/frisor">
-            <Button variant="outline" className="mb-4">
+            <Button variant="outline" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Tillbaka till frisör
             </Button>
@@ -500,48 +501,44 @@ export default function NyBokning() {
         </div>
       </div>
 
-      {/* Hero-sektion med orange gradient */}
-      <div className="relative bg-gradient-to-br from-orange-600 to-orange-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative max-w-7xl mx-auto px-6 py-12 text-center">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <Scissors className="h-10 w-10" />
-            <h1 className="text-3xl font-bold">Ny Frisörbokning</h1>
+      {/* Hero-sektion - kompakt */}
+      <div className="relative bg-gradient-to-br from-orange-600 to-orange-700 text-white">
+        <div className="max-w-5xl mx-auto px-4 py-8 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Scissors className="h-7 w-7" />
+            <h1 className="text-2xl font-bold">Ny Frisörbokning</h1>
           </div>
-          <p className="text-white/90 text-lg">
+          <p className="text-white/90">
             Skapa en ny frisörtid för en av dina hundar
           </p>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      {/* Main Content - kompaktare */}
+      <div className="max-w-5xl mx-auto px-4 py-6">
         {/* Error Display */}
         {error && (
-          <Card className="mb-6 border-red-200 bg-red-50">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
-                <div>
-                  <p className="text-red-800 font-medium">Fel</p>
-                  <p className="text-red-700 text-sm">{error}</p>
-                </div>
+          <Card className="mb-4 border-red-200 bg-red-50">
+            <CardContent className="p-3">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                <p className="text-red-700 text-sm">{error}</p>
               </div>
             </CardContent>
           </Card>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Customer Type Selection */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Customer Type Selection - kompakt */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <User className="h-5 w-5" />
                 Välj Kundtyp
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -549,7 +546,7 @@ export default function NyBokning() {
                     setSelectedDog(null);
                     setFormData((prev) => ({ ...prev, dog_id: "" }));
                   }}
-                  className={`p-6 border-2 rounded-lg transition-all ${
+                  className={`p-4 border-2 rounded-lg transition-all ${
                     customerType === "existing"
                       ? "border-orange-500 bg-orange-50"
                       : "border-gray-300 hover:border-orange-300"
@@ -557,18 +554,18 @@ export default function NyBokning() {
                 >
                   <div className="text-center">
                     <div
-                      className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 ${
+                      className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 ${
                         customerType === "existing"
                           ? "bg-orange-500 text-white"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      <User className="h-8 w-8" />
+                      <User className="h-6 w-6" />
                     </div>
-                    <p className="font-semibold text-gray-900 mb-1">
+                    <p className="font-semibold text-gray-900 text-sm mb-0.5">
                       Befintlig Hund
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs text-gray-600">
                       Välj från hunddagis-registret
                     </p>
                   </div>
@@ -581,7 +578,7 @@ export default function NyBokning() {
                     setSelectedDog(null);
                     setFormData((prev) => ({ ...prev, dog_id: "" }));
                   }}
-                  className={`p-6 border-2 rounded-lg transition-all ${
+                  className={`p-4 border-2 rounded-lg transition-all ${
                     customerType === "walkin"
                       ? "border-orange-500 bg-orange-50"
                       : "border-gray-300 hover:border-orange-300"
@@ -589,15 +586,15 @@ export default function NyBokning() {
                 >
                   <div className="text-center">
                     <div
-                      className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 ${
+                      className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 ${
                         customerType === "walkin"
                           ? "bg-orange-500 text-white"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      <AlertCircle className="h-8 w-8" />
+                      <AlertCircle className="h-6 w-6" />
                     </div>
-                    <p className="font-semibold text-gray-900 mb-1">
+                    <p className="font-semibold text-gray-900 text-sm mb-0.5">
                       Walk-in Kund
                     </p>
                     <p className="text-sm text-gray-600">
@@ -758,24 +755,24 @@ export default function NyBokning() {
             </Card>
           )}
 
-          {/* Walk-in Customer Form */}
+          {/* Walk-in Customer Form - kompakt */}
           {customerType === "walkin" && (
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <User className="h-5 w-5" />
                   1. Kunduppgifter
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {/* Search for existing external customers */}
+                <div className="space-y-3">
+                  {/* Search for existing external customers - kompakt */}
                   {externalCustomers.length > 0 && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
                         Sök tidigare kunder
                       </label>
-                      <div className="relative mb-4">
+                      <div className="relative mb-3">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
                           placeholder="Sök på namn, telefon eller hundnamn..."
@@ -783,13 +780,13 @@ export default function NyBokning() {
                           onChange={(e) =>
                             setExternalSearchTerm(e.target.value)
                           }
-                          className="pl-10"
+                          className="pl-10 text-sm h-9"
                         />
                       </div>
 
                       {externalSearchTerm &&
                         filteredExternalCustomers.length > 0 && (
-                          <div className="grid gap-2 max-h-64 overflow-y-auto mb-4">
+                          <div className="grid gap-2 max-h-48 overflow-y-auto mb-3">
                             {filteredExternalCustomers.map((customer) => (
                               <button
                                 key={customer.id}
@@ -803,23 +800,23 @@ export default function NyBokning() {
                                   });
                                   setExternalSearchTerm("");
                                 }}
-                                className="flex items-center gap-4 p-4 bg-white border border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-left shadow-sm"
+                                className="flex items-center gap-3 p-3 bg-white border border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-left"
                               >
-                                <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-                                  <span className="text-orange-600 font-bold text-lg">
+                                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                                  <span className="text-orange-600 font-bold text-sm">
                                     {customer.dog_name.charAt(0).toUpperCase()}
                                   </span>
                                 </div>
-                                <div className="flex-1">
-                                  <p className="font-semibold text-gray-900">
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-semibold text-gray-900 text-sm truncate">
                                     {customer.dog_name} (
                                     {customer.dog_breed || "Blandras"})
                                   </p>
-                                  <p className="text-sm text-gray-600">
-                                    Ägare: {customer.customer_name}
+                                  <p className="text-xs text-gray-600 truncate">
+                                    {customer.customer_name} •{" "}
+                                    {customer.customer_phone}
                                   </p>
-                                  <p className="text-sm text-gray-500">
-                                    {customer.customer_phone} •{" "}
+                                  <p className="text-xs text-gray-500">
                                     {customer.total_visits} tidigare besök
                                   </p>
                                 </div>
@@ -828,9 +825,9 @@ export default function NyBokning() {
                           </div>
                         )}
 
-                      <div className="flex items-center gap-2 my-4">
+                      <div className="flex items-center gap-2 my-3">
                         <div className="flex-1 border-t border-gray-300"></div>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-xs text-gray-500">
                           eller ange ny kund
                         </span>
                         <div className="flex-1 border-t border-gray-300"></div>
@@ -838,9 +835,9 @@ export default function NyBokning() {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
                         Kundnamn *
                       </label>
                       <Input
@@ -853,10 +850,11 @@ export default function NyBokning() {
                           }))
                         }
                         required
+                        className="text-sm h-9"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
                         Telefonnummer *
                       </label>
                       <Input
@@ -869,12 +867,13 @@ export default function NyBokning() {
                           }))
                         }
                         required
+                        className="text-sm h-9"
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
                         Hundnamn *
                       </label>
                       <Input
@@ -887,10 +886,11 @@ export default function NyBokning() {
                           }))
                         }
                         required
+                        className="text-sm h-9"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
                         Ras *
                       </label>
                       <Input
@@ -903,10 +903,11 @@ export default function NyBokning() {
                           }))
                         }
                         required
+                        className="text-sm h-9"
                       />
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 italic">
                     * Inget GDPR-samtycke krävs för walk-in kunder
                   </p>
                 </div>
@@ -914,22 +915,22 @@ export default function NyBokning() {
             </Card>
           )}
 
-          {/* Välj Datum och Tid */}
+          {/* Välj Datum och Tid - kompakt */}
           {(selectedDog ||
             (customerType === "walkin" &&
               walkinData.customer_name &&
               walkinData.dog_name)) && (
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <Calendar className="h-5 w-5" />
                   2. Välj Datum och Tid
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
                       Datum
                     </label>
                     <Input
@@ -943,10 +944,11 @@ export default function NyBokning() {
                       }
                       min={new Date().toISOString().split("T")[0]}
                       required
+                      className="text-sm h-9"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
                       Tid
                     </label>
                     <select
@@ -957,7 +959,7 @@ export default function NyBokning() {
                           appointment_time: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm h-9 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                       required
                     >
                       <option value="">Välj tid...</option>
@@ -973,7 +975,7 @@ export default function NyBokning() {
             </Card>
           )}
 
-          {/* Välj Behandling */}
+          {/* Välj Behandling - kompakt */}
           {(selectedDog ||
             (customerType === "walkin" &&
               walkinData.customer_name &&
@@ -981,54 +983,54 @@ export default function NyBokning() {
             formData.appointment_date &&
             formData.appointment_time && (
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-lg">
                     <Scissors className="h-5 w-5" />
                     3. Välj Behandling
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-3">
+                  <div className="grid gap-2">
                     {SERVICE_OPTIONS.map((service) => (
                       <button
                         key={service.value}
                         type="button"
                         onClick={() => handleServiceSelect(service)}
-                        className={`flex items-start gap-4 p-4 border rounded-lg transition-all text-left ${
+                        className={`flex items-start gap-3 p-3 border rounded-lg transition-all text-left ${
                           selectedService?.value === service.value
                             ? "border-orange-500 bg-orange-50 shadow-sm"
                             : "hover:border-orange-300 hover:bg-orange-50/50"
                         }`}
                       >
                         <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                             selectedService?.value === service.value
                               ? "bg-orange-500 text-white"
                               : "bg-gray-100 text-gray-600"
                           }`}
                         >
-                          <Scissors className="h-5 w-5" />
+                          <Scissors className="h-4 w-4" />
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-1">
-                            <p className="font-semibold text-gray-900">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <p className="font-semibold text-gray-900 text-sm">
                               {service.label}
                             </p>
                             <Badge
                               variant="outline"
-                              className="bg-emerald-50 text-emerald-700 border-emerald-200"
+                              className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs"
                             >
                               {service.basePrice > 0
                                 ? `${service.basePrice} kr`
-                                : "Anpassat pris"}
+                                : "Anpassat"}
                             </Badge>
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">
+                          <p className="text-xs text-gray-600 mb-0.5">
                             {service.description}
                           </p>
                           <p className="text-xs text-gray-500">
                             <Clock className="h-3 w-3 inline mr-1" />
-                            {service.duration} minuter
+                            {service.duration} min
                           </p>
                         </div>
                       </button>
@@ -1036,8 +1038,8 @@ export default function NyBokning() {
                   </div>
 
                   {selectedService && selectedService.value === "custom" && (
-                    <div className="mt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="mt-3">
+                      <label className="block text-xs font-medium text-gray-700 mb-1.5">
                         Ange pris
                       </label>
                       <div className="relative">
@@ -1053,22 +1055,22 @@ export default function NyBokning() {
                               estimated_price: Number(e.target.value),
                             }))
                           }
-                          className="pl-10"
+                          className="pl-10 text-sm h-9"
                           placeholder="0"
                         />
                       </div>
                     </div>
                   )}
 
-                  {/* Additional Treatment Details */}
+                  {/* Additional Treatment Details - kompakt */}
                   {selectedService && (
-                    <div className="mt-6 p-4 bg-gray-50 rounded-lg space-y-4">
-                      <p className="font-medium text-gray-900 mb-3">
+                    <div className="mt-3 p-3 bg-gray-50 rounded-lg space-y-3">
+                      <p className="font-medium text-gray-900 text-sm mb-2">
                         Behandlingsdetaljer (Rekommenderas)
                       </p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-xs font-medium text-gray-700 mb-1.5">
                             Klipplängd
                           </label>
                           <Input
@@ -1080,10 +1082,11 @@ export default function NyBokning() {
                                 clip_length: e.target.value,
                               }))
                             }
+                            className="text-sm h-9"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-xs font-medium text-gray-700 mb-1.5">
                             Schampo
                           </label>
                           <Input
@@ -1095,10 +1098,11 @@ export default function NyBokning() {
                                 shampoo_type: e.target.value,
                               }))
                             }
+                            className="text-sm h-9"
                           />
                         </div>
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 italic">
                         Dessa uppgifter sparas i journalen när bokningen är klar
                       </p>
                     </div>
@@ -1107,11 +1111,13 @@ export default function NyBokning() {
               </Card>
             )}
 
-          {/* Anteckningar */}
+          {/* Anteckningar - kompakt */}
           {selectedService && (
             <Card>
-              <CardHeader>
-                <CardTitle>4. Anteckningar (Valfritt)</CardTitle>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">
+                  4. Anteckningar (Valfritt)
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <Textarea
@@ -1120,21 +1126,22 @@ export default function NyBokning() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, notes: e.target.value }))
                   }
-                  rows={4}
-                  className="resize-none"
+                  rows={3}
+                  className="resize-none text-sm"
                 />
               </CardContent>
             </Card>
           )}
 
-          {/* Submit */}
+          {/* Submit - kompakt */}
           {selectedService && (
-            <div className="flex gap-4">
+            <div className="flex gap-3 pb-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.push("/frisor")}
                 className="flex-1"
+                size="sm"
               >
                 Avbryt
               </Button>
@@ -1142,6 +1149,7 @@ export default function NyBokning() {
                 type="submit"
                 disabled={submitting}
                 className="flex-1 bg-orange-600 hover:bg-orange-700"
+                size="sm"
               >
                 {submitting ? "Sparar..." : "Skapa Bokning"}
               </Button>

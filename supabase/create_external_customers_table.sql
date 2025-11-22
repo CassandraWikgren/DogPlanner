@@ -8,7 +8,7 @@
 -- Create external_customers table
 CREATE TABLE IF NOT EXISTS external_customers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
   customer_name TEXT NOT NULL,
   customer_phone TEXT NOT NULL,
   dog_name TEXT NOT NULL,
