@@ -145,8 +145,8 @@ export default function DogJournalPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Scissors className="h-12 w-12 text-orange-600 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-600">Laddar journal...</p>
+          <Scissors className="h-10 w-10 text-[#2c7a4c] mx-auto mb-3 animate-pulse" />
+          <p className="text-gray-600 text-sm">Laddar journal...</p>
         </div>
       </div>
     );
@@ -154,15 +154,17 @@ export default function DogJournalPage() {
 
   if (error || !dog) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <div className="bg-white rounded-lg shadow-sm p-8 max-w-md w-full text-center">
-          <AlertCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-md w-full text-center">
+          <AlertCircle className="h-10 w-10 text-red-600 mx-auto mb-3" />
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Kunde inte ladda journal
           </h2>
-          <p className="text-gray-600 mb-6">{error || "Hund hittades inte"}</p>
+          <p className="text-sm text-gray-600 mb-4">
+            {error || "Hund hittades inte"}
+          </p>
           <Link href="/frisor">
-            <button className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md transition">
+            <button className="h-10 px-4 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition font-semibold text-[15px]">
               Tillbaka till översikt
             </button>
           </Link>
@@ -173,21 +175,22 @@ export default function DogJournalPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero */}
-      <div className="relative bg-gradient-to-br from-orange-600 to-orange-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative max-w-[1600px] mx-auto px-6 py-6">
+      {/* Header - INGEN HERO enligt Design System V2 */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <Link href="/frisor">
-            <button className="mb-4 flex items-center gap-2 text-white/90 hover:text-white transition">
+            <button className="mb-3 flex items-center gap-2 text-gray-600 hover:text-[#2c7a4c] transition text-sm">
               <ArrowLeft className="h-4 w-4" />
               Tillbaka till översikt
             </button>
           </Link>
-          <div className="flex items-center gap-4">
-            <Scissors className="h-12 w-12" />
+          <div className="flex items-center gap-3">
+            <Scissors className="h-8 w-8 text-[#2c7a4c]" />
             <div>
-              <h1 className="text-3xl font-bold">{dog.name}</h1>
-              <p className="text-white/90">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c]">
+                {dog.name}
+              </h1>
+              <p className="text-base text-gray-600">
                 {dog.breed || "Okänd ras"} •{" "}
                 {dog.owner?.full_name || "Ingen ägare"}
               </p>
@@ -196,34 +199,34 @@ export default function DogJournalPage() {
         </div>
       </div>
 
-      {/* Innehåll */}
-      <div className="max-w-[1600px] mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Innehåll - kompaktare */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Vänster: Hundens info */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 sticky top-6">
+              <h2 className="text-lg font-semibold text-[#2c7a4c] mb-4">
                 Hundens information
               </h2>
 
-              <div className="space-y-3 text-sm">
+              <div className="space-y-2.5 text-sm">
                 <div>
-                  <p className="text-gray-500">Namn</p>
+                  <p className="text-xs text-gray-500">Namn</p>
                   <p className="text-gray-900 font-medium">{dog.name}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Ras</p>
+                  <p className="text-xs text-gray-500">Ras</p>
                   <p className="text-gray-900">{dog.breed || "-"}</p>
                 </div>
                 {dog.heightcm && (
                   <div>
-                    <p className="text-gray-500">Mankhöjd</p>
+                    <p className="text-xs text-gray-500">Mankhöjd</p>
                     <p className="text-gray-900">{dog.heightcm} cm</p>
                   </div>
                 )}
                 {dog.birth && (
                   <div>
-                    <p className="text-gray-500">Född</p>
+                    <p className="text-xs text-gray-500">Född</p>
                     <p className="text-gray-900">
                       {new Date(dog.birth).toLocaleDateString("sv-SE")}
                     </p>
@@ -231,7 +234,7 @@ export default function DogJournalPage() {
                 )}
                 {dog.gender && (
                   <div>
-                    <p className="text-gray-500">Kön</p>
+                    <p className="text-xs text-gray-500">Kön</p>
                     <p className="text-gray-900">
                       {dog.gender === "hane" ? "Hane" : "Tik"}
                     </p>
@@ -239,8 +242,8 @@ export default function DogJournalPage() {
                 )}
               </div>
 
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">
+              <div className="mt-5 pt-5 border-t border-gray-200">
+                <h3 className="text-sm font-semibold text-[#2c7a4c] mb-3">
                   Ägare
                 </h3>
                 <div className="space-y-2 text-sm">
@@ -262,8 +265,8 @@ export default function DogJournalPage() {
               </div>
 
               {needsReminder && (
-                <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <p className="text-sm font-medium text-yellow-800 mb-1">
+                <div className="mt-5 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm font-medium text-yellow-800 mb-0.5">
                     ⚠️ Påminnelse
                   </p>
                   <p className="text-xs text-yellow-700">
@@ -273,10 +276,10 @@ export default function DogJournalPage() {
                 </div>
               )}
 
-              <div className="mt-6">
+              <div className="mt-5">
                 <button
                   onClick={() => router.push(`/hunddagis/${dog.id}`)}
-                  className="w-full px-4 py-2 bg-[#2c7a4c] hover:bg-[#245c3a] text-white rounded-md transition text-sm"
+                  className="w-full h-10 px-4 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition text-sm font-semibold"
                 >
                   Visa i Hunddagis
                 </button>
@@ -284,16 +287,16 @@ export default function DogJournalPage() {
             </div>
           </div>
 
-          {/* Höger: Journalhistorik */}
+          {/* Höger: Journalhistorik - kompaktare */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm">
-              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-[#2c7a4c]">
                   Klipphistorik ({journals.length})
                 </h2>
                 <button
                   onClick={() => router.push("/frisor/ny-bokning")}
-                  className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md transition text-sm"
+                  className="flex items-center gap-2 h-9 px-3 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition text-sm font-semibold"
                 >
                   <Plus className="h-4 w-4" />
                   Ny bokning
@@ -313,15 +316,15 @@ export default function DogJournalPage() {
                   {journals.map((entry) => (
                     <div
                       key={entry.id}
-                      className="p-6 hover:bg-gray-50 transition"
+                      className="p-4 hover:bg-gray-50 transition"
                     >
-                      <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h3 className="font-semibold text-gray-900">
+                          <h3 className="font-semibold text-gray-900 text-sm">
                             {SERVICE_LABELS[entry.service_type] ||
                               entry.service_type}
                           </h3>
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-xs text-gray-500 mt-0.5">
                             {new Date(
                               entry.appointment_date
                             ).toLocaleDateString("sv-SE", {
@@ -331,40 +334,42 @@ export default function DogJournalPage() {
                             })}
                           </p>
                         </div>
-                        <p className="text-lg font-semibold text-gray-900">
+                        <p className="text-base font-semibold text-[#2c7a4c]">
                           {entry.final_price} kr
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mb-3">
                         {entry.clip_length && (
                           <div>
-                            <p className="text-gray-500">Klipplängd</p>
-                            <p className="text-gray-900 font-medium">
+                            <p className="text-xs text-gray-500">Klipplängd</p>
+                            <p className="text-gray-900 font-medium text-sm">
                               {entry.clip_length}
                             </p>
                           </div>
                         )}
                         {entry.shampoo_type && (
                           <div>
-                            <p className="text-gray-500">Schampo</p>
-                            <p className="text-gray-900">
+                            <p className="text-xs text-gray-500">Schampo</p>
+                            <p className="text-gray-900 text-sm">
                               {entry.shampoo_type}
                             </p>
                           </div>
                         )}
                         {entry.duration_minutes && (
                           <div>
-                            <p className="text-gray-500">Tid</p>
-                            <p className="text-gray-900">
+                            <p className="text-xs text-gray-500">Tid</p>
+                            <p className="text-gray-900 text-sm">
                               {entry.duration_minutes} min
                             </p>
                           </div>
                         )}
                         {entry.special_treatments && (
                           <div className="col-span-2 md:col-span-4">
-                            <p className="text-gray-500">Specialbehandlingar</p>
-                            <p className="text-gray-900">
+                            <p className="text-xs text-gray-500">
+                              Specialbehandlingar
+                            </p>
+                            <p className="text-gray-900 text-sm">
                               {entry.special_treatments}
                             </p>
                           </div>
@@ -372,7 +377,7 @@ export default function DogJournalPage() {
                       </div>
 
                       {entry.notes && (
-                        <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                        <div className="mb-3 p-2.5 bg-gray-50 rounded-lg">
                           <p className="text-sm text-gray-700">{entry.notes}</p>
                         </div>
                       )}

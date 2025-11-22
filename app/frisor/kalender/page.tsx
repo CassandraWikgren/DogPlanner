@@ -214,14 +214,14 @@ export default function GroomingCalendar() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-[1800px] mx-auto">
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-64 mb-6"></div>
-            <div className="bg-white rounded-lg p-8">
-              <div className="grid grid-cols-7 gap-4">
+            <div className="h-6 bg-gray-200 rounded w-48 mb-4"></div>
+            <div className="bg-white rounded-lg p-6">
+              <div className="grid grid-cols-7 gap-3">
                 {[...Array(7)].map((_, i) => (
-                  <div key={i} className="h-64 bg-gray-200 rounded"></div>
+                  <div key={i} className="h-48 bg-gray-200 rounded"></div>
                 ))}
               </div>
             </div>
@@ -237,71 +237,63 @@ export default function GroomingCalendar() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gray-50 pt-6 px-6">
-        <div className="max-w-[1800px] mx-auto">
-          <Link href="/frisor">
-            <Button variant="outline" className="mb-4">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Tillbaka till frisör
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {/* Hero */}
-      <div className="relative bg-gradient-to-br from-orange-600 to-orange-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative max-w-[1800px] mx-auto px-6 py-12">
+      {/* Header - INGEN HERO enligt Design System V2 */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-3 mb-3">
-                <Calendar className="h-10 w-10" />
-                <h1 className="text-3xl font-bold">Frisörkalender</h1>
-              </div>
-              <p className="text-white/90 text-lg">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] flex items-center gap-3">
+                <Calendar className="h-8 w-8" />
+                Frisörkalender
+              </h1>
+              <p className="text-base text-gray-600 mt-1">
                 Veckoöversikt av alla bokningar
               </p>
             </div>
-            <Link href="/frisor/ny-bokning">
-              <Button
-                size="lg"
-                className="bg-white text-orange-600 hover:bg-gray-100"
-              >
-                <Scissors className="h-5 w-5 mr-2" />
-                Ny Bokning
-              </Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/frisor">
+                <Button variant="outline" size="sm">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Tillbaka
+                </Button>
+              </Link>
+              <Link href="/frisor/ny-bokning">
+                <Button
+                  size="sm"
+                  className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+                >
+                  <Scissors className="h-4 w-4 mr-2" />
+                  Ny Bokning
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-[1800px] mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {error && (
-          <Card className="mb-6 border-red-200 bg-red-50">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
-                <div>
-                  <p className="text-red-800 font-medium">Fel</p>
-                  <p className="text-red-700 text-sm">{error}</p>
-                </div>
+          <Card className="mb-4 border-red-200 bg-red-50">
+            <CardContent className="p-3">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                <p className="text-red-700 text-sm">{error}</p>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Week Navigation */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
+        {/* Week Navigation - kompaktare */}
+        <Card className="mb-5 border border-gray-200">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <Button onClick={goToPreviousWeek} variant="outline">
-                <ChevronLeft className="h-5 w-5" />
+              <Button onClick={goToPreviousWeek} variant="outline" size="sm">
+                <ChevronLeft className="h-4 w-4" />
               </Button>
 
               <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-lg font-semibold text-[#2c7a4c]">
                   Vecka{" "}
                   {Math.ceil(
                     (weekStart.getTime() -
@@ -309,7 +301,7 @@ export default function GroomingCalendar() {
                       (7 * 24 * 60 * 60 * 1000)
                   )}
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-sm text-gray-600">
                   {weekStart.getDate()} {MONTHS[weekStart.getMonth()]} -{" "}
                   {weekEnd.getDate()} {MONTHS[weekEnd.getMonth()]}{" "}
                   {weekEnd.getFullYear()}
@@ -317,19 +309,19 @@ export default function GroomingCalendar() {
               </div>
 
               <div className="flex gap-2">
-                <Button onClick={goToToday} variant="outline">
+                <Button onClick={goToToday} variant="outline" size="sm">
                   Idag
                 </Button>
-                <Button onClick={goToNextWeek} variant="outline">
-                  <ChevronRight className="h-5 w-5" />
+                <Button onClick={goToNextWeek} variant="outline" size="sm">
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Week Grid */}
-        <div className="grid grid-cols-7 gap-4">
+        {/* Week Grid - kompaktare */}
+        <div className="grid grid-cols-7 gap-3">
           {weekDates.map((date, index) => {
             const dayBookings = getBookingsForDate(date);
             const today = isToday(date);
@@ -337,33 +329,35 @@ export default function GroomingCalendar() {
             return (
               <Card
                 key={index}
-                className={`${
-                  today ? "border-orange-500 border-2 bg-orange-50/30" : ""
+                className={`border ${
+                  today
+                    ? "border-[#2c7a4c] border-2 bg-[#e6f4ea]/30"
+                    : "border-gray-200"
                 }`}
               >
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-2 p-3">
                   <div className="text-center">
-                    <p className="text-sm font-semibold text-gray-600">
+                    <p className="text-xs font-semibold text-gray-600">
                       {DAYS[index]}
                     </p>
                     <p
-                      className={`text-2xl font-bold ${
-                        today ? "text-orange-600" : "text-gray-900"
+                      className={`text-xl font-bold ${
+                        today ? "text-[#2c7a4c]" : "text-gray-900"
                       }`}
                     >
                       {date.getDate()}
                     </p>
                     {today && (
-                      <Badge className="mt-1 bg-orange-600 text-white text-xs">
+                      <Badge className="mt-1 bg-[#2c7a4c] text-white text-xs py-0.5">
                         Idag
                       </Badge>
                     )}
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-2 min-h-[300px]">
+                <CardContent className="pt-0 p-2">
+                  <div className="space-y-1.5 min-h-[240px]">
                     {dayBookings.length === 0 ? (
-                      <p className="text-center text-gray-400 text-sm mt-4">
+                      <p className="text-center text-gray-400 text-xs mt-4">
                         Inga bokningar
                       </p>
                     ) : (
@@ -371,11 +365,11 @@ export default function GroomingCalendar() {
                         <button
                           key={booking.id}
                           onClick={() => setSelectedBooking(booking)}
-                          className={`w-full p-3 rounded-lg border-2 text-left transition-all hover:shadow-md ${getStatusColor(
+                          className={`w-full p-2 rounded-md border text-left transition-all hover:shadow-sm ${getStatusColor(
                             booking.status
                           )}`}
                         >
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-1.5 mb-0.5">
                             <Clock className="h-3 w-3" />
                             <span className="text-xs font-bold">
                               {booking.appointment_time}
@@ -384,14 +378,14 @@ export default function GroomingCalendar() {
                               {getStatusIcon(booking.status)}
                             </div>
                           </div>
-                          <p className="text-sm font-semibold truncate">
+                          <p className="text-xs font-semibold truncate">
                             {booking.dogs?.name || booking.external_dog_name}
                           </p>
                           <p className="text-xs truncate opacity-75">
                             {booking.dogs?.owners?.full_name ||
                               booking.external_customer_name}
                           </p>
-                          <p className="text-xs font-medium mt-1">
+                          <p className="text-xs font-medium mt-0.5">
                             {booking.estimated_price} kr
                           </p>
                         </button>
