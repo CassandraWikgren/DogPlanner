@@ -1332,33 +1332,75 @@ CREATE POLICY "orgs_members_delete" ON orgs FOR DELETE TO authenticated
 -- OWNERS: Public can create (applications), members can manage
 ALTER TABLE owners ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "owners_public_insert" ON owners FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "owners_org_select" ON owners FOR SELECT TO authenticated
-  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
-CREATE POLICY "owners_org_update" ON owners FOR UPDATE TO authenticated
-  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
-  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+-- Företag kan se sina org-kopplade owners, hundägare kan se sin egen profil
+CREATE POLICY "owners_select_by_org_or_self" ON owners FOR SELECT TO authenticated
+  USING (
+    org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid())
+    OR
+    id = auth.uid()
+  );
+-- Företag kan uppdatera sina org owners, hundägare kan uppdatera sin egen profil
+CREATE POLICY "owners_update_by_org_or_self" ON owners FOR UPDATE TO authenticated
+  USING (
+    org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid())
+    OR
+    id = auth.uid()
+  )
+  WITH CHECK (
+    org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid())
+    OR
+    id = auth.uid()
+  );
 CREATE POLICY "owners_org_delete" ON owners FOR DELETE TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
 -- DOGS: Public can create (applications), members can manage
 ALTER TABLE dogs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "dogs_public_insert" ON dogs FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "dogs_org_select" ON dogs FOR SELECT TO authenticated
-  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
-CREATE POLICY "dogs_org_update" ON dogs FOR UPDATE TO authenticated
-  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
-  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+-- Företag kan se sina org-hundar, hundägare kan se sina egna hundar
+CREATE POLICY "dogs_select_by_org_or_owner" ON dogs FOR SELECT TO authenticated
+  USING (
+    org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid())
+    OR
+    owner_id IN (SELECT id FROM owners WHERE id = auth.uid())
+  );
+-- Företag kan uppdatera sina org-hundar, hundägare kan uppdatera sina egna hundar
+CREATE POLICY "dogs_update_by_org_or_owner" ON dogs FOR UPDATE TO authenticated
+  USING (
+    org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid())
+    OR
+    owner_id IN (SELECT id FROM owners WHERE id = auth.uid())
+  )
+  WITH CHECK (
+    org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid())
+    OR
+    owner_id IN (SELECT id FROM owners WHERE id = auth.uid())
+  );
 CREATE POLICY "dogs_org_delete" ON dogs FOR DELETE TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
 -- BOOKINGS: Public can create (pension applications), members can manage
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "bookings_public_insert" ON bookings FOR INSERT TO anon, authenticated WITH CHECK (true);
-CREATE POLICY "bookings_org_select" ON bookings FOR SELECT TO authenticated
-  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
-CREATE POLICY "bookings_org_update" ON bookings FOR UPDATE TO authenticated
-  USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()))
-  WITH CHECK (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
+-- Tillåt både företag (via org_id) och hundägare (via owner_id) att se bookings
+CREATE POLICY "bookings_select_by_org_or_owner" ON bookings FOR SELECT TO authenticated
+  USING (
+    org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid())
+    OR
+    owner_id IN (SELECT id FROM owners WHERE id = auth.uid())
+  );
+-- Företag kan uppdatera alla sina bookings, hundägare kan endast uppdatera pending bookings
+CREATE POLICY "bookings_update_by_org_or_owner" ON bookings FOR UPDATE TO authenticated
+  USING (
+    org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid())
+    OR
+    (owner_id IN (SELECT id FROM owners WHERE id = auth.uid()) AND status = 'pending')
+  )
+  WITH CHECK (
+    org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid())
+    OR
+    (owner_id IN (SELECT id FROM owners WHERE id = auth.uid()) AND status = 'pending')
+  );
 CREATE POLICY "bookings_org_delete" ON bookings FOR DELETE TO authenticated
   USING (org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid()));
 
@@ -1879,15 +1921,15 @@ EXECUTE FUNCTION set_owner_org_id();
 -- =======================================
 -- Funktion för att automatiskt generera kundnummer vid INSERT
 -- Kundnummer är globalt över alla pensionat (inte org_id-bundet)
+-- Använder PostgreSQL sequence för att garantera unicitet även vid concurrent inserts
 CREATE OR REPLACE FUNCTION auto_generate_customer_number()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Om customer_number inte redan är satt, generera automatiskt
+  -- Om customer_number inte redan är satt, hämta nästa värde från sekvensen
   IF NEW.customer_number IS NULL THEN
-    -- Hämta nästa värde från sekvensen
-    SELECT COALESCE(MAX(customer_number), 0) + 1 
-    INTO NEW.customer_number 
-    FROM owners;
+    -- SERIAL skapar automatiskt sekvensen owners_customer_number_seq
+    -- Vi använder nextval() för att garantera unika värden även vid race conditions
+    NEW.customer_number := nextval('owners_customer_number_seq');
   END IF;
   
   RETURN NEW;

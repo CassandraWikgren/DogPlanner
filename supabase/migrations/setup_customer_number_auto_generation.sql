@@ -20,16 +20,16 @@ END $$;
 -- =====================================================
 -- 2. Skapa funktion för att auto-generera customer_number
 -- =====================================================
+-- Använder PostgreSQL sequence för att garantera unicitet även vid concurrent inserts
 
 CREATE OR REPLACE FUNCTION auto_generate_customer_number()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Om customer_number inte redan är satt, generera automatiskt
+  -- Om customer_number inte redan är satt, hämta nästa värde från sekvensen
   IF NEW.customer_number IS NULL THEN
-    -- Hämta nästa värde från sekvensen
-    SELECT COALESCE(MAX(customer_number), 0) + 1 
-    INTO NEW.customer_number 
-    FROM owners;
+    -- SERIAL skapar automatiskt sekvensen owners_customer_number_seq
+    -- Vi använder nextval() för att garantera unika värden även vid race conditions
+    NEW.customer_number := nextval('owners_customer_number_seq');
   END IF;
   
   RETURN NEW;
