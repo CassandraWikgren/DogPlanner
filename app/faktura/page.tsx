@@ -130,6 +130,15 @@ const FakturorPage = () => {
   // Hydration-säker initialisering
   useEffect(() => {
     setMounted(true);
+    
+    // Öppna "Ny faktura"-modal om ?new=true finns i URL
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('new') === 'true') {
+      setCreating(true);
+      // Ta bort parametern från URL utan att ladda om sidan
+      window.history.replaceState({}, '', '/faktura');
+    }
+    
     // Läs localStorage efter mount för att undvika hydration errors
     try {
       const saved = localStorage.getItem("faktura-visible-columns");

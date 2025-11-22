@@ -410,7 +410,7 @@ export default function FakturaPage() {
           </Link>
           <div className="flex gap-3">
             <Link
-              href="/faktura/new"
+              href="/faktura?new=true"
               className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors"
             >
               <Plus className="h-4 w-4 mr-2" />
