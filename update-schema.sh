@@ -15,11 +15,10 @@ if ! command -v supabase &> /dev/null; then
     exit 1
 fi
 
-# Kolla om projektet är länkat
-if [ ! -f ".supabase/config.toml" ]; then
-    echo "⚠️  Projektet är inte länkat till Supabase"
-    echo "Länka projektet först med:"
-    echo "  supabase link --project-ref [din-project-ref]"
+# Kolla om config finns (antingen .supabase eller supabase)
+if [ ! -f ".supabase/config.toml" ] && [ ! -f "supabase/config.toml" ]; then
+    echo "⚠️  Supabase config saknas"
+    echo "Kör först: supabase init"
     exit 1
 fi
 

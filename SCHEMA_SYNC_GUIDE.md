@@ -83,7 +83,7 @@ Detta gör att jag kan:
 
 ```bash
 cd /Users/cassandrawikgren/Desktop/Dogplanner/dogplanner-backup-20251031_075031
-supabase link --project-ref [din-ref]
+supabase link --project-ref [fhdkkkujnhteetllxypg]
 ```
 
 2. Exportera schemat första gången:

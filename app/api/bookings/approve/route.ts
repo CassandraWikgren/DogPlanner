@@ -28,14 +28,21 @@ export async function POST(request: NextRequest) {
       .eq("id", user.id)
       .single();
 
-    if (profileError || !profile || !profile.org_id) {
+    if (profileError || !profile) {
       return NextResponse.json(
         { error: "User not associated with organization" },
         { status: 403 }
       );
     }
 
-    const userOrgId = profile.org_id;
+    const userOrgId = (profile as any).org_id as string;
+
+    if (!userOrgId) {
+      return NextResponse.json(
+        { error: "User not associated with organization" },
+        { status: 403 }
+      );
+    }
 
     // Läs request body
     const body = await request.json();
