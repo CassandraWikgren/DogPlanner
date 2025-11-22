@@ -290,9 +290,91 @@ function BookingPageContent() {
   }, [selectedDog, selectedPensionat, checkinDate, checkoutDate]);
 
   const handleBooking = async () => {
-    // Här skulle vi skicka bokningen till backend
-    alert("Bokning skickad! Du kommer få en bekräftelse via e-post.");
-    router.push("/kundportal/dashboard");
+    if (
+      !selectedDog ||
+      !selectedPensionat ||
+      !checkinDate ||
+      !checkoutDate ||
+      !priceCalculation
+    ) {
+      alert("Vänligen fyll i alla obligatoriska fält");
+      return;
+    }
+
+    try {
+      const supabase = createClientComponentClient();
+
+      // Hämta hundens ägare för bokningen
+      const { data: dogData, error: dogError } = await supabase
+        .from("dogs")
+        .select("owner_id, heightcm")
+        .eq("id", selectedDog)
+        .single();
+
+      if (dogError || !dogData) {
+        console.error("Fel vid hämtning av hund:", dogError);
+        alert("Kunde inte hitta hundinformation");
+        return;
+      }
+
+      // Hämta pensionatets org_id
+      const { data: pensionatData, error: pensionatError } = await supabase
+        .from("pensionat")
+        .select("org_id")
+        .eq("id", selectedPensionat)
+        .single();
+
+      if (pensionatError || !pensionatData) {
+        console.error("Fel vid hämtning av pensionat:", pensionatError);
+        alert("Kunde inte hitta pensionat");
+        return;
+      }
+
+      // Beräkna pris med calculateBookingPrice från boardingPriceCalculator
+      const { calculateBookingPrice } = await import(
+        "@/lib/boardingPriceCalculator"
+      );
+      const priceData = await calculateBookingPrice(
+        checkinDate,
+        checkoutDate,
+        dogData.heightcm || 35,
+        pensionatData.org_id
+      );
+
+      // Skapa bokningen med status "pending" för godkännande
+      const { data: bookingData, error: bookingError } = await supabase
+        .from("bookings")
+        .insert([
+          {
+            dog_id: selectedDog,
+            owner_id: dogData.owner_id,
+            org_id: pensionatData.org_id,
+            start_date: checkinDate.toISOString().split("T")[0],
+            end_date: checkoutDate.toISOString().split("T")[0],
+            service_type: "hundpensionat",
+            status: "pending", // Väntar på godkännande från pensionat
+            total_price: priceData.totalPrice,
+            discount_amount: 0,
+            notes: null,
+          },
+        ])
+        .select()
+        .single();
+
+      if (bookingError) {
+        console.error("Fel vid skapande av bokning:", bookingError);
+        alert("Kunde inte skapa bokning. Vänligen försök igen.");
+        return;
+      }
+
+      alert(
+        "Bokning skickad! Du kommer få en bekräftelse via e-post när pensionatet godkänt din ansökan."
+      );
+      router.push("/kundportal/dashboard");
+    } catch (error) {
+      console.error("Oväntat fel vid bokning:", error);
+      alert("Ett oväntat fel inträffade. Vänligen försök igen.");
+    }
   };
 
   const selectedDogData = dogs.find((d) => d.id === selectedDog);

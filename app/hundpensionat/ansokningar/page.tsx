@@ -152,8 +152,52 @@ export default function PensionatAnsokningarPage() {
 
       setBookings(data || []);
 
-      // Ladda rabatter för varje ägare
+      // Beräkna om priser för bokningar som har 0 eller null som total_price
       if (data && data.length > 0) {
+        const { calculateBookingPrice } = await import(
+          "@/lib/boardingPriceCalculator"
+        );
+
+        const updatedBookings = await Promise.all(
+          data.map(async (booking: PendingBooking) => {
+            if (
+              (!booking.total_price || booking.total_price === 0) &&
+              booking.dogs?.heightcm
+            ) {
+              try {
+                const startDate = new Date(booking.start_date);
+                const endDate = new Date(booking.end_date);
+
+                const priceData = await calculateBookingPrice(
+                  startDate,
+                  endDate,
+                  booking.dogs.heightcm,
+                  currentOrgId
+                );
+
+                console.log(
+                  `✅ Beräknat pris för bokning ${booking.id}: ${priceData.totalPrice} kr (${priceData.nights} nätter)`
+                );
+
+                return {
+                  ...booking,
+                  total_price: priceData.totalPrice,
+                };
+              } catch (error) {
+                console.error(
+                  `Fel vid prisberäkning för bokning ${booking.id}:`,
+                  error
+                );
+                return booking;
+              }
+            }
+            return booking;
+          })
+        );
+
+        setBookings(updatedBookings);
+
+        // Ladda rabatter för varje ägare
         const ownerIds = data
           .map((b: any) => b.dogs?.owners?.id)
           .filter(Boolean);
@@ -242,6 +286,37 @@ export default function PensionatAnsokningarPage() {
 
     try {
       let finalPrice = booking.total_price;
+
+      // Om priset är 0 eller null, beräkna om priset från grundpriserna
+      if (!finalPrice || finalPrice === 0) {
+        if (!booking.dogs?.heightcm || !currentOrgId) {
+          alert(
+            "Kunde inte beräkna pris - saknar hundinformation eller organisation"
+          );
+          setProcessing(null);
+          return;
+        }
+
+        const { calculateBookingPrice } = await import(
+          "@/lib/boardingPriceCalculator"
+        );
+        const startDate = new Date(booking.start_date);
+        const endDate = new Date(booking.end_date);
+
+        const priceData = await calculateBookingPrice(
+          startDate,
+          endDate,
+          booking.dogs.heightcm,
+          currentOrgId
+        );
+
+        finalPrice = priceData.totalPrice;
+
+        console.log(
+          `✅ Omberäknat pris för bokning ${bookingId}: ${finalPrice} kr (${priceData.nights} nätter)`
+        );
+      }
+
       let finalDiscountAmount = booking.discount_amount || 0;
       let discountDescription = "";
 
