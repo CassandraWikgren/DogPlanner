@@ -1501,28 +1501,107 @@ $$ LANGUAGE plpgsql;
 -- === ANVÄNDARHANTERING ===
 
 -- Hantera nya användare vid registrering
--- ⚠️ VIKTIG TRIGGER - Aktiveras med: fix_registration_triggers.sql
--- Skapar automatiskt: organisation + profil + 3 månaders gratis prenumeration
+-- ⚠️ VIKTIG TRIGGER - Skapar automatiskt: organisation + profil + 3 månaders gratis prenumeration
+-- Del av 3-layer org_id assignment system (se PERMANENT_FIX_org_assignment.sql)
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS trigger AS $$
 DECLARE
-  org_name text;
+  v_org_name text;
+  v_org_number text;
+  v_full_name text;
+  v_phone text;
+  v_lan text;
+  v_kommun text;
+  v_service_types text[];
+  v_org_id uuid;
 BEGIN
-  -- Skapa organisationsnamn från e-post
-  org_name := split_part(NEW.email, '@', 1) || 's Hunddagis';
+  -- Extract values from user_metadata (from registration form)
+  v_org_name := COALESCE(
+    NEW.raw_user_meta_data->>'org_name',
+    split_part(NEW.email, '@', 1) || 's Hunddagis'
+  );
+  v_org_number := NEW.raw_user_meta_data->>'org_number';
+  v_full_name := COALESCE(
+    NEW.raw_user_meta_data->>'full_name',
+    split_part(NEW.email, '@', 1)
+  );
+  v_phone := NEW.raw_user_meta_data->>'phone';
+  v_lan := NEW.raw_user_meta_data->>'lan';
+  v_kommun := NEW.raw_user_meta_data->>'kommun';
   
-  -- Skapa ny organisation
-  INSERT INTO orgs (name, email) 
-  VALUES (org_name, NEW.email);
-  
-  -- Skapa profil som admin
-  INSERT INTO profiles (id, org_id, role, email, full_name)
-  SELECT NEW.id, orgs.id, 'admin', NEW.email, NEW.raw_user_meta_data->>'full_name'
-  FROM orgs WHERE email = NEW.email;
-  
+  -- Parse service_types array from JSONB
+  IF NEW.raw_user_meta_data ? 'service_types' THEN
+    v_service_types := ARRAY(
+      SELECT jsonb_array_elements_text(NEW.raw_user_meta_data->'service_types')
+    );
+  END IF;
+
+  -- Create organization with proper values
+  INSERT INTO orgs (
+    name,
+    org_number,
+    email,
+    phone,
+    lan,
+    kommun,
+    service_types,
+    created_at
+  )
+  VALUES (
+    v_org_name,
+    v_org_number,
+    NEW.email,
+    v_phone,
+    v_lan,
+    v_kommun,
+    v_service_types,
+    now()
+  )
+  RETURNING id INTO v_org_id;
+
+  -- Create profile with org_id
+  INSERT INTO profiles (
+    id,
+    org_id,
+    role,
+    email,
+    full_name,
+    phone,
+    created_at
+  )
+  VALUES (
+    NEW.id,
+    v_org_id,
+    'admin', -- First user is always admin
+    NEW.email,
+    v_full_name,
+    v_phone,
+    now()
+  );
+
+  -- Create 3-month trial subscription
+  INSERT INTO org_subscriptions (
+    org_id,
+    status,
+    trial_ends_at,
+    created_at
+  )
+  VALUES (
+    v_org_id,
+    'trialing',
+    now() + interval '3 months',
+    now()
+  );
+
   RETURN NEW;
+
+EXCEPTION
+  WHEN OTHERS THEN
+    -- Don't block registration if trigger fails (Layer 2 API will catch this)
+    RAISE WARNING 'handle_new_user failed for %: %', NEW.email, SQLERRM;
+    RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Tilldela organisation till nya användare
 CREATE OR REPLACE FUNCTION assign_org_to_new_user()
