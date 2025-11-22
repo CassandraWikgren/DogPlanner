@@ -546,6 +546,11 @@ export default function OwnersPage() {
                           <p className="font-medium text-gray-900">
                             {owner.full_name}
                           </p>
+                          {owner.customer_number && (
+                            <p className="text-xs text-gray-600 font-mono">
+                              Kund #{owner.customer_number}
+                            </p>
+                          )}
                           {owner.address && (
                             <p className="text-sm text-gray-500">
                               {owner.address}
@@ -597,7 +602,7 @@ export default function OwnersPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => startEditing(owner)}
-                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                            className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -605,7 +610,7 @@ export default function OwnersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                              className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                             >
                               <FileText className="h-4 w-4" />
                             </Button>
@@ -614,7 +619,7 @@ export default function OwnersPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => deleteOwner(owner)}
-                            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                            className="bg-red-600 hover:bg-red-700 text-white"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
