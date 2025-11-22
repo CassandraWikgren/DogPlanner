@@ -15,6 +15,7 @@ import {
 } from "@/lib/emailSender";
 import { calculatePensionatPrice } from "@/lib/pensionatCalculations";
 import type { PriceBreakdown } from "@/types/hundpensionat";
+import CreateAccountOffer from "@/components/CreateAccountOffer";
 
 export default function PensionatAnsokanPage() {
   const supabase = createClientComponentClient();
@@ -204,39 +205,54 @@ export default function PensionatAnsokanPage() {
   if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#2c7a4c]/10 to-white flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="mb-6">
-            <CheckCircle className="h-16 w-16 text-[#2c7a4c] mx-auto" />
+        <div className="max-w-2xl w-full space-y-6">
+          {/* Success meddelande */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div className="mb-6">
+              <CheckCircle className="h-16 w-16 text-[#2c7a4c] mx-auto" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-3">
+              Tack för din ansökan till {orgName}!
+            </h1>
+            <p className="text-gray-600 mb-6">
+              Vi har mottagit din bokningsförfrågan för{" "}
+              <strong>{formData.dog_name}</strong>.
+              <br />
+              <br />
+              <strong>Incheckning:</strong>{" "}
+              {new Date(formData.checkin_date).toLocaleDateString("sv-SE")}
+              <br />
+              <strong>Utcheckning:</strong>{" "}
+              {new Date(formData.checkout_date).toLocaleDateString("sv-SE")}
+              <br />
+              <br />
+              Du kommer att få en bekräftelse via e-post till{" "}
+              <strong>{formData.owner_email}</strong> inom kort.
+              <br />
+              <br />
+              <strong>{orgName}</strong> kommer att kontakta dig så snart de har
+              gått igenom din ansökan och kan bekräfta din bokning! Detta är
+              vanligtvis inom 1-2 arbetsdagar.
+            </p>
+            <Link
+              href="/"
+              className="inline-block px-6 py-3 bg-[#2c7a4c] text-white font-semibold rounded-lg hover:bg-[#236139] transition"
+            >
+              Tillbaka till startsidan
+            </Link>
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-3">
-            Tack för din ansökan till {orgName}!
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Vi har mottagit din bokningsförfrågan för{" "}
-            <strong>{formData.dog_name}</strong>.
-            <br />
-            <br />
-            <strong>Incheckning:</strong>{" "}
-            {new Date(formData.checkin_date).toLocaleDateString("sv-SE")}
-            <br />
-            <strong>Utcheckning:</strong>{" "}
-            {new Date(formData.checkout_date).toLocaleDateString("sv-SE")}
-            <br />
-            <br />
-            Du kommer att få en bekräftelse via e-post till{" "}
-            <strong>{formData.owner_email}</strong> inom kort.
-            <br />
-            <br />
-            <strong>{orgName}</strong> kommer att kontakta dig så snart de har
-            gått igenom din ansökan och kan bekräfta din bokning! Detta är
-            vanligtvis inom 1-2 arbetsdagar.
-          </p>
-          <Link
-            href="/"
-            className="inline-block px-6 py-3 bg-[#2c7a4c] text-white font-semibold rounded-lg hover:bg-[#236139] transition"
-          >
-            Tillbaka till startsidan
-          </Link>
+
+          {/* Erbjudande att skapa konto */}
+          <CreateAccountOffer
+            ownerName={formData.owner_name}
+            ownerEmail={formData.owner_email}
+            ownerPhone={formData.owner_phone}
+            dogName={formData.dog_name}
+            dogBreed={formData.dog_breed}
+            dogBirth={formData.dog_birth}
+            dogGender={formData.dog_gender}
+            dogHeightCm={formData.dog_height_cm}
+          />
         </div>
       </div>
     );

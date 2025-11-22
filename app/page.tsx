@@ -13,7 +13,9 @@ export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [bookingType, setBookingType] = useState<"hunddagis" | "pensionat">("pensionat");
+  const [bookingType, setBookingType] = useState<"hunddagis" | "pensionat">(
+    "pensionat"
+  );
 
   // Inloggade användare ska redirecta till dashboard
   useEffect(() => {
