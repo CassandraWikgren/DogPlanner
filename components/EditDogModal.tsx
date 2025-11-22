@@ -1471,11 +1471,14 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-[#2c7a4c]">Rumsnummer</label>
+                  <label className="text-xs text-[#2c7a4c] font-semibold">Rumsnummer</label>
                   <select
-                    className="w-full border rounded-lg px-3 py-2 bg-white"
+                    className="w-full border-2 rounded-lg px-3 py-2 bg-white focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                     value={roomId}
-                    onChange={(e) => setRoomId(e.target.value)}
+                    onChange={(e) => {
+                      console.log("🏠 Rum valt:", e.target.value);
+                      setRoomId(e.target.value);
+                    }}
                   >
                     <option value="">Välj rum…</option>
                     {rooms.length === 0 && (
@@ -1485,10 +1488,15 @@ export default function EditDogModal({
                     )}
                     {rooms.map((r) => (
                       <option key={r.id} value={r.id}>
-                        {r.name ?? r.id}
+                        {r.name ?? `Rum ${r.id}`}
                       </option>
                     ))}
                   </select>
+                  {roomId && (
+                    <p className="text-xs text-[#2c7a4c] mt-1 font-semibold">
+                      ✅ Valt rum: {rooms.find(r => r.id === roomId)?.name || roomId}
+                    </p>
+                  )}
                   {rooms.length === 0 && (
                     <p className="text-xs text-blue-600 mt-1">
                       💡 Inga rum hittades. Skapa rum under{" "}
@@ -1501,12 +1509,17 @@ export default function EditDogModal({
                       </span>
                     </p>
                   )}
+                  {rooms.length > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {rooms.length} rum tillgängliga
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Veckodagar */}
               <div className="mt-3">
-                <label className="block text-xs text-[#2c7a4c] mb-2">
+                <label className="block text-xs text-[#2c7a4c] mb-2 font-semibold">
                   Veckodagar
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -1515,19 +1528,25 @@ export default function EditDogModal({
                       key={d}
                       type="button"
                       onClick={() => toggleDay(d)}
-                      className={`rounded-full border px-3 py-1 text-sm ${
+                      className={`rounded-lg border-2 px-4 py-2 text-sm font-semibold transition-all ${
                         days.includes(d)
-                          ? "border-emerald-600 bg-emerald-50 text-emerald-700"
-                          : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                          ? "border-[#2c7a4c] bg-[#2c7a4c] text-white shadow-md scale-105"
+                          : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400"
                       }`}
                     >
                       {d}
                     </button>
                   ))}
                 </div>
+                {days.length > 0 && (
+                  <p className="text-xs text-gray-600 mt-2">
+                    Valda dagar: <span className="font-semibold text-[#2c7a4c]">{days.join(", ")}</span>
+                  </p>
+                )}
               </div>
             </div>
           )}
+
 
           {activeTab === "tillägg" && (
             <div className="rounded-xl border p-4">
