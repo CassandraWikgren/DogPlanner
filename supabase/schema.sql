@@ -3,6 +3,19 @@
 -- Uppdaterad 2025-11-20 (Interest applications RLS fix + alfabetisk sortering)
 -- ========================================
 --
+-- ⚠️  VARNING: Denna fil kan vara föråldrad
+-- 
+-- Detta schema genererades 2025-11-20. Sedan dess har flera migrations körts
+-- i produktion. För att få det aktuella schemat, kör:
+--
+--   1. Öppna Supabase Dashboard → SQL Editor
+--   2. Kör: pg_dump --schema-only --no-owner --no-acl
+--   3. Eller använd: supabase db pull
+--
+-- Använd INTE denna fil för att återskapa databasen blindt.
+-- Använd migrations/ mappen istället för att förstå ändringshistoriken.
+-- ========================================
+--
 -- === SENASTE ÄNDRINGAR (2025-11-20 kväll) ===
 --
 -- 🔒 INTEREST_APPLICATIONS RLS FIX:

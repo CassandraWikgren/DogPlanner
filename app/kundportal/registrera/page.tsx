@@ -231,16 +231,12 @@ export default function CustomerRegisterPage() {
       if (dogData.insuranceCompany)
         dogData_insert.insurance_company = dogData.insuranceCompany;
 
-      // Personlighetsdrag som array baserat på checkboxes (för bakåtkompatibilitet)
+      // Personlighetsdrag baserat på nya checkboxes
       const personality = [];
-      if (dogData.bites) personality.push("Biter på saker");
-      if (dogData.peesInside) personality.push("Kissar inne");
-      if (dogData.isStaffDog) personality.push("Personalhund");
-      if (dogData.allowsPhotos)
-        personality.push("Tillåter fotos på sociala medier");
-      if (dogData.allowsPlayWithOthers) personality.push("Hund sköter");
-      if (dogData.isBoardingDog) personality.push("Pensionatshund");
-      if (dogData.barks) personality.push("Skäller mycket");
+      if (dogData.bitesSeparates) personality.push("Biter/sliter sönder saker");
+      if (dogData.notHousebroken) personality.push("Ej rumsren");
+      if (dogData.escapeTendency) personality.push("Rymningsbenägen");
+      if (dogData.isCastrated) personality.push("Kastrerad");
 
       // Om specialNotes finns, lägg till det i personality_traits också
       if (dogData.specialNotes && personality.length === 0) {

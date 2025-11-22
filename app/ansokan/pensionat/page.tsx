@@ -13,8 +13,6 @@ import {
   sendApplicationConfirmationEmail,
   sendApplicationNotificationEmail,
 } from "@/lib/emailSender";
-import { calculatePensionatPrice } from "@/lib/pensionatCalculations";
-import type { PriceBreakdown } from "@/types/hundpensionat";
 import CreateAccountOffer from "@/components/CreateAccountOffer";
 
 export default function PensionatAnsokanPage() {
@@ -26,12 +24,6 @@ export default function PensionatAnsokanPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Prisberäkning
-  const [priceBreakdown, setPriceBreakdown] = useState<PriceBreakdown | null>(
-    null
-  );
-  const [calculatingPrice, setCalculatingPrice] = useState(false);
 
   // Formulärdata
   const [formData, setFormData] = useState({

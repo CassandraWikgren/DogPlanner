@@ -751,7 +751,7 @@ export interface Database {
     Views: { [key: string]: never };
     Functions: {
       heal_user_missing_org: {
-        Args: { user_id: string };
+        Args: { p_user_id: string };
         Returns: {
           success: boolean;
           message: string;
