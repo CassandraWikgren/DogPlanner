@@ -35,7 +35,7 @@ interface OrgSettings {
 }
 
 export default function ForetagsInfoPage() {
-  const { currentOrgId } = useAuth();
+  const { currentOrgId, loading: authLoading } = useAuth();
   const supabase = createClientComponentClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -44,10 +44,18 @@ export default function ForetagsInfoPage() {
   const [settings, setSettings] = useState<OrgSettings | null>(null);
 
   useEffect(() => {
+    if (authLoading) return; // Vänta tills auth är klart
+
     if (currentOrgId) {
       loadSettings();
+    } else {
+      // ✅ FIX: Stoppa loading spinner även om currentOrgId saknas
+      setLoading(false);
+      setError(
+        "Du måste vara inloggad som företag för att se företagsinformation"
+      );
     }
-  }, [currentOrgId]);
+  }, [currentOrgId, authLoading]);
 
   const loadSettings = async () => {
     if (!currentOrgId) return;

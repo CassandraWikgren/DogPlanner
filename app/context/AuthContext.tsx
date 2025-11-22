@@ -307,8 +307,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log("🔧 Försöker heala användare med saknad org_id...");
 
       // Anropa healing-funktionen i databasen
+      // VIKTIGT: Parametern heter p_user_id, inte user_id (se PERMANENT_FIX_org_assignment.sql)
       const { data, error } = await supabase.rpc("heal_user_missing_org", {
-        user_id: userId,
+        p_user_id: userId,
       });
 
       if (error) {
