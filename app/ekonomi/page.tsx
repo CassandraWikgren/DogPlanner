@@ -32,6 +32,8 @@ interface Invoice {
   paid_amount?: number;
   status: "draft" | "sent" | "paid" | "overdue";
   notes?: string;
+  sent_at?: string;
+  paid_date?: string;
   owner?: {
     full_name: string;
     customer_number?: number;
@@ -56,19 +58,27 @@ export default function FakturaPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [dateFilter, setDateFilter] = useState<string>("all"); // all, this-month, last-month, this-year
+  const [dateFilter, setDateFilter] = useState<string>("all");
   const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null);
   const [sendingInvoice, setSendingInvoice] = useState<string | null>(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const itemsPerPage = 50;
 
   const statusTypes = ["all", "draft", "sent", "paid", "overdue"];
 
   useEffect(() => {
     fetchInvoices();
-  }, []);
+  }, [currentPage, statusFilter, dateFilter]);
 
   const fetchInvoices = async () => {
     try {
-      const { data, error } = await supabase
+      setLoading(true);
+      
+      // Bygg query med filter
+      let query = supabase
         .from("invoices")
         .select(
           `
@@ -78,20 +88,46 @@ export default function FakturaPage() {
             customer_number,
             phone,
             email
-          ),
-          invoice_lines(
-            id,
-            description,
-            quantity,
-            unit_price,
-            total_price
           )
-        `
-        )
-        .order("invoice_date", { ascending: false });
+        `,
+          { count: 'exact' }
+        );
+
+      // Applicera statusfilter
+      if (statusFilter !== "all") {
+        query = query.eq("status", statusFilter);
+      }
+
+      // Applicera datumfilter
+      if (dateFilter !== "all") {
+        const now = new Date();
+        const startDate = new Date();
+        
+        if (dateFilter === "this-month") {
+          startDate.setDate(1);
+        } else if (dateFilter === "last-month") {
+          startDate.setMonth(now.getMonth() - 1);
+          startDate.setDate(1);
+        } else if (dateFilter === "this-year") {
+          startDate.setMonth(0);
+          startDate.setDate(1);
+        }
+        
+        query = query.gte("invoice_date", startDate.toISOString());
+      }
+
+      // Paginering
+      const from = (currentPage - 1) * itemsPerPage;
+      const to = from + itemsPerPage - 1;
+
+      const { data, error, count } = await query
+        .order("invoice_date", { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
+      
       setInvoices(data || []);
+      setTotalCount(count || 0);
     } catch (error) {
       console.error("Fel vid hämtning av fakturor:", error);
     } finally {
@@ -104,7 +140,6 @@ export default function FakturaPage() {
       const updates: any = { status };
       if (status === "paid") {
         updates.paid_date = new Date().toISOString();
-        // Om det inte finns paid_amount, sätt det till total_amount
         const invoice = invoices.find((inv) => inv.id === id);
         if (invoice && !invoice.paid_amount) {
           updates.paid_amount = invoice.total_amount;
@@ -117,9 +152,17 @@ export default function FakturaPage() {
         .eq("id", id);
 
       if (error) throw error;
-      await fetchInvoices();
+      
+      // Optimistisk UI update istället för att refetcha
+      setInvoices(prevInvoices =>
+        prevInvoices.map(inv =>
+          inv.id === id ? { ...inv, ...updates } : inv
+        )
+      );
     } catch (error) {
       console.error("Fel vid uppdatering av faktura:", error);
+      // Vid fel, refetcha för att få korrekt state
+      await fetchInvoices();
     }
   };
 
@@ -131,13 +174,11 @@ export default function FakturaPage() {
       return;
     }
 
-    // Kontrollera att ägaren har email
     if (!invoice.owner?.email) {
       alert("❌ Ägaren har ingen registrerad email-adress. Lägg till email för att kunna skicka faktura.");
       return;
     }
 
-    // Bekräftelse
     const confirmed = confirm(
       `Skicka faktura ${invoice.invoice_number} till ${invoice.owner.full_name} (${invoice.owner.email})?\n\n` +
       `Belopp: ${invoice.total_amount.toLocaleString("sv-SE")} kr\n` +
@@ -149,12 +190,9 @@ export default function FakturaPage() {
     try {
       setSendingInvoice(id);
 
-      // Anropa Edge Function
       const { data, error } = await supabase.functions.invoke(
         "send_invoice_email",
-        { 
-          body: { invoice_id: id }
-        }
+        { body: { invoice_id: id } }
       );
 
       if (error) {
@@ -163,7 +201,15 @@ export default function FakturaPage() {
       }
 
       alert(`✅ Faktura skickad till ${invoice.owner.email}!`);
-      await fetchInvoices(); // Uppdatera listan (status ändras till 'sent')
+      
+      // Optimistisk UI update istället för att refetcha
+      setInvoices(prevInvoices =>
+        prevInvoices.map(inv =>
+          inv.id === id 
+            ? { ...inv, status: 'sent' as const, sent_at: new Date().toISOString() } 
+            : inv
+        )
+      );
     } catch (error: any) {
       console.error("Fel vid skickning av faktura:", error);
       alert(`❌ Kunde inte skicka faktura: ${error.message}`);
@@ -642,6 +688,61 @@ export default function FakturaPage() {
                   Skapa första fakturan
                 </Button>
               </Link>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Paginering */}
+        {filteredInvoices.length > 0 && totalCount > itemsPerPage && (
+          <Card className="mt-6">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-600">
+                  Visar {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalCount)} av {totalCount} fakturor
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Föregående
+                  </Button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.ceil(totalCount / itemsPerPage) }, (_, i) => i + 1)
+                      .filter(page => 
+                        page === 1 || 
+                        page === Math.ceil(totalCount / itemsPerPage) ||
+                        Math.abs(page - currentPage) <= 2
+                      )
+                      .map((page, index, array) => (
+                        <React.Fragment key={page}>
+                          {index > 0 && array[index - 1] !== page - 1 && (
+                            <span className="px-2 text-gray-400">...</span>
+                          )}
+                          <Button
+                            variant={currentPage === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(page)}
+                            className={currentPage === page ? "bg-[#2c7a4c] hover:bg-[#236139]" : ""}
+                          >
+                            {page}
+                          </Button>
+                        </React.Fragment>
+                      ))
+                    }
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.min(Math.ceil(totalCount / itemsPerPage), p + 1))}
+                    disabled={currentPage >= Math.ceil(totalCount / itemsPerPage)}
+                  >
+                    Nästa
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
