@@ -224,8 +224,8 @@ export default function FrisorDashboard() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Scissors className="h-12 w-12 text-orange-600 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-600">Laddar...</p>
+          <Scissors className="h-10 w-10 text-[#2c7a4c] mx-auto mb-3 animate-pulse" />
+          <p className="text-gray-600 text-sm">Laddar...</p>
         </div>
       </div>
     );
@@ -233,13 +233,13 @@ export default function FrisorDashboard() {
 
   if (!effectiveOrgId) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <div className="bg-white rounded-lg shadow-sm p-8 max-w-md w-full text-center">
-          <AlertTriangle className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-md w-full text-center">
+          <AlertTriangle className="h-10 w-10 text-yellow-600 mx-auto mb-3" />
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Ingen organisation hittades
           </h2>
-          <p className="text-gray-600">
+          <p className="text-sm text-gray-600">
             Du är inte kopplad till någon organisation. Kontakta
             administratören.
           </p>
@@ -275,36 +275,36 @@ export default function FrisorDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero med orange gradient */}
-      <div className="relative bg-gradient-to-br from-orange-600 to-orange-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative max-w-[1600px] mx-auto px-6 py-8">
+      {/* Header - INGEN HERO enligt Design System V2 */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Scissors className="h-10 w-10" />
-              <div>
-                <h1 className="text-3xl font-bold">Frisör</h1>
-                <p className="text-white/90 text-sm">
-                  Dagens bokningar & journal
-                </p>
-              </div>
+            <div>
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] flex items-center gap-3">
+                <Scissors className="h-8 w-8" />
+                Frisör
+              </h1>
+              <p className="text-base text-gray-600 mt-1">
+                Dagens bokningar & klippjournal
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <Link href="/frisor/kalender">
-                <button className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
+                <button className="h-10 px-4 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center gap-2 font-semibold text-[15px] shadow-sm">
+                  <Calendar className="h-4 w-4" />
                   <span className="hidden sm:inline">Kalender</span>
                 </button>
               </Link>
               <button
                 onClick={loadData}
-                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition"
+                className="h-10 w-10 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-md transition flex items-center justify-center"
+                title="Uppdatera"
               >
-                <RefreshCcw className="h-5 w-5" />
+                <RefreshCcw className="h-4 w-4" />
               </button>
               <Link href="/admin/priser/frisor">
-                <button className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition">
-                  <Settings2 className="h-5 w-5" />
+                <button className="h-10 w-10 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-md transition flex items-center justify-center">
+                  <Settings2 className="h-4 w-4" />
                 </button>
               </Link>
             </div>
@@ -312,19 +312,19 @@ export default function FrisorDashboard() {
         </div>
       </div>
 
-      {/* Huvudinnehåll */}
-      <div className="max-w-[1600px] mx-auto px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Vänster kolumn: Mina bokningar (dagens) */}
+      {/* Huvudinnehåll - kompaktare layout */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* Vänster kolumn: Dagens bokningar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 sticky top-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-orange-600" />
+                <h2 className="text-lg font-semibold text-[#2c7a4c] flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
                   Mina bokningar idag
                 </h2>
                 <Link href="/frisor/ny-bokning">
-                  <button className="p-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition">
+                  <button className="h-8 w-8 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center justify-center">
                     <Plus className="h-4 w-4" />
                   </button>
                 </Link>
@@ -336,7 +336,7 @@ export default function FrisorDashboard() {
                   <p className="text-gray-500 text-sm">Inga bokningar idag</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {todaysBookings.map((booking) => (
                     <button
                       key={booking.id}
@@ -345,32 +345,32 @@ export default function FrisorDashboard() {
                           router.push(`/frisor/${booking.dog_id}`);
                         }
                       }}
-                      className="w-full text-left p-4 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-200 transition group"
+                      className="w-full text-left p-3 border border-gray-200 rounded-md hover:bg-[#e6f4ea] hover:border-[#2c7a4c] transition group"
                     >
                       <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900 group-hover:text-orange-600 flex items-center gap-2">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 group-hover:text-[#2c7a4c] flex items-center gap-1 text-sm">
                             {getDogDisplayName(booking)}
                             {booking.dog_id && (
-                              <ChevronRight className="h-4 w-4" />
+                              <ChevronRight className="h-3 w-3" />
                             )}
                           </h3>
-                          <p className="text-sm text-gray-600 mt-1">
+                          <p className="text-xs text-gray-600 mt-0.5">
                             {booking.dog?.owner?.full_name ||
                               booking.external_customer_name}
                           </p>
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-xs text-gray-500 mt-0.5">
                             {SERVICE_LABELS[booking.service_type] ||
                               booking.service_type}
                           </p>
                         </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium text-orange-600">
+                        <div className="text-right flex-shrink-0 ml-2">
+                          <p className="text-sm font-medium text-[#2c7a4c]">
                             {booking.appointment_time?.slice(0, 5) ||
                               "Ej angiven"}
                           </p>
                           <span
-                            className={`text-xs px-2 py-1 rounded-full mt-1 inline-block ${
+                            className={`text-xs px-2 py-0.5 rounded-full mt-1 inline-block ${
                               booking.status === "completed"
                                 ? "bg-green-100 text-green-800"
                                 : "bg-blue-100 text-blue-800"
@@ -389,32 +389,32 @@ export default function FrisorDashboard() {
             </div>
           </div>
 
-          {/* Höger kolumn: Sök & Lista */}
+          {/* Höger kolumn: Sök & Journal */}
           <div className="lg:col-span-2">
-            {/* Sökruta */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            {/* Sökruta - kompaktare */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-5">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Sök på hundnamn, ägare eller kundnummer..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-lg"
+                  className="w-full pl-10 pr-4 py-2 h-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-sm"
                 />
               </div>
               {searchTerm && (
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 mt-2">
                   {searchResults.length} resultat
                 </p>
               )}
             </div>
 
-            {/* Sökresultat eller lista */}
-            <div className="bg-white rounded-lg shadow-sm">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-orange-600" />
+            {/* Journal-lista - kompaktare */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div className="p-4 border-b border-gray-200">
+                <h2 className="text-lg font-semibold text-[#2c7a4c] flex items-center gap-2">
+                  <BookOpen className="h-5 w-5" />
                   {searchResults.length > 0
                     ? "Sökresultat"
                     : "Alla klippta hundar"}
@@ -435,26 +435,26 @@ export default function FrisorDashboard() {
                           }
                         }}
                         disabled={!dogId}
-                        className="w-full text-left p-4 hover:bg-gray-50 transition group disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full text-left p-3 hover:bg-gray-50 transition group disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 group-hover:text-orange-600 flex items-center gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-900 group-hover:text-[#2c7a4c] flex items-center gap-1 text-sm">
                               {getDogDisplayName(entry)}
-                              {dogId && <ChevronRight className="h-4 w-4" />}
+                              {dogId && <ChevronRight className="h-3 w-3" />}
                             </h3>
-                            <div className="flex items-center gap-4 mt-1">
-                              <p className="text-sm text-gray-600 flex items-center gap-1">
+                            <div className="flex items-center gap-3 mt-1">
+                              <p className="text-xs text-gray-600 flex items-center gap-1">
                                 <User className="h-3 w-3" />
                                 {getOwnerDisplayName(entry)}
                               </p>
                               {entry.dog?.breed && (
-                                <p className="text-sm text-gray-500">
+                                <p className="text-xs text-gray-500">
                                   • {entry.dog.breed}
                                 </p>
                               )}
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-gray-500 mt-0.5">
                               Senast:{" "}
                               {new Date(
                                 entry.appointment_date
