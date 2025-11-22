@@ -68,15 +68,12 @@ export default function HomePage() {
               och professionellt.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              <button
-                onClick={() => {
-                  setBookingType("hunddagis");
-                  setShowBookingModal(true);
-                }}
+              <Link
+                href="/ansokan/hunddagis"
                 className="px-8 py-4 bg-white text-primary rounded-lg hover:bg-gray-50 font-bold text-lg transition-all shadow-lg hover:shadow-xl text-center"
               >
                 🐕 Boka hunddagis
-              </button>
+              </Link>
               <button
                 onClick={() => {
                   setBookingType("pensionat");

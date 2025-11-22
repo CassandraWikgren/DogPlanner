@@ -1490,8 +1490,15 @@ export default function EditDogModal({
                     ))}
                   </select>
                   {rooms.length === 0 && (
-                    <p className="text-xs text-orange-600 mt-1">
-                      💡 Skapa rum under Admin → Rum & Platser först
+                    <p className="text-xs text-blue-600 mt-1">
+                      💡 Inga rum hittades. Skapa rum under{" "}
+                      <strong>Admin → Rum & Platser</strong> (menyn till
+                      vänster).
+                      <br />
+                      <span className="text-xs text-gray-500">
+                        Om du redan skapat rum, kontrollera att de är markerade
+                        som "aktiva" och tilldelade rätt organisation.
+                      </span>
                     </p>
                   )}
                 </div>
@@ -1572,11 +1579,16 @@ export default function EditDogModal({
 
               {/* Formulär för att lägga till nytt addon */}
               {availableServices.length === 0 && (
-                <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm text-orange-800">
-                  <strong>💡 Inga tilläggtjänster hittades.</strong>
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                  <strong>💡 Inga tilläggtjänster konfigurerade.</strong>
                   <p className="mt-1">
-                    Skapa tilläggtjänster under{" "}
-                    <strong>Admin → Priser → Tillval</strong> först.
+                    Tilläggstjänster (som foder, medicin, extra promenader)
+                    konfigureras i databasen under tabellen{" "}
+                    <code>extra_services</code>.
+                  </p>
+                  <p className="mt-1 text-xs text-blue-600">
+                    Detta är inte kritiskt - du kan fortfarande använda
+                    standardfunktioner för hunddagis och pensionat.
                   </p>
                 </div>
               )}

@@ -1132,7 +1132,7 @@ export default function NyBokning() {
           )}
 
           {/* Submit - kompakt */}
-          {selectedService && (
+          {(selectedDog || customerType === "walkin") && (
             <div className="flex gap-3 pb-4">
               <Button
                 type="button"

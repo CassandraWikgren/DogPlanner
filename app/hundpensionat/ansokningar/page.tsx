@@ -361,29 +361,36 @@ export default function PensionatAnsokningarPage() {
           : `Custom ${customValue}${customType === "percentage" ? "%" : " kr"}`;
       }
 
-      // Uppdatera bokning till confirmed
-      const updateData: any = {
-        status: "confirmed",
-        total_price: finalPrice,
-        discount_amount: finalDiscountAmount,
-      };
-
       // Lägg till admin notes om finns
+      let notesToSave = undefined;
       if (adminNotes[bookingId]) {
         const existingNotes = booking.notes || "";
-        updateData.notes = existingNotes
+        notesToSave = existingNotes
           ? `${existingNotes}\n\n[Admin]: ${adminNotes[bookingId]}`
           : `[Admin]: ${adminNotes[bookingId]}`;
       }
 
-      const { error } = await (supabase as any)
-        .from("bookings")
-        .update(updateData)
-        .eq("id", bookingId);
+      // Använd API route för att bypassa RLS
+      const response = await fetch("/api/bookings/approve", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          bookingId,
+          totalPrice: finalPrice,
+          discountAmount: finalDiscountAmount,
+          notes: notesToSave,
+        }),
+      });
 
-      if (error) {
-        console.error("Fel vid godkännande:", error);
-        alert("Kunde inte godkänna bokningen. Se konsolen.");
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        console.error("Fel vid godkännande:", result);
+        alert(
+          `Kunde inte godkänna bokningen. ${result.details || result.error || "Se konsolen."}`
+        );
         return;
       }
 

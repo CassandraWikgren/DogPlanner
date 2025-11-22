@@ -56,7 +56,7 @@ export default function PublicNav({ currentPage }: PublicNavProps) {
             </Link>
             <div className="h-6 w-px bg-gray-300"></div>
             <Link
-              href="/login"
+              href={currentPage === "customer" ? "/kundportal/login" : "/login"}
               className="text-gray-700 hover:text-primary font-medium transition-colors"
             >
               Logga in
@@ -116,7 +116,9 @@ export default function PublicNav({ currentPage }: PublicNavProps) {
                 För företag
               </Link>
               <Link
-                href="/login"
+                href={
+                  currentPage === "customer" ? "/kundportal/login" : "/login"
+                }
                 className="block py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
