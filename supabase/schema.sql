@@ -1874,7 +1874,27 @@ BEFORE INSERT ON owners
 FOR EACH ROW
 EXECUTE FUNCTION set_owner_org_id();
 
--- Customer number trigger (behållen från original)
+-- =======================================
+-- CUSTOMER NUMBER AUTO-GENERATION
+-- =======================================
+-- Funktion för att automatiskt generera kundnummer vid INSERT
+-- Kundnummer är globalt över alla pensionat (inte org_id-bundet)
+CREATE OR REPLACE FUNCTION auto_generate_customer_number()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Om customer_number inte redan är satt, generera automatiskt
+  IF NEW.customer_number IS NULL THEN
+    -- Hämta nästa värde från sekvensen
+    SELECT COALESCE(MAX(customer_number), 0) + 1 
+    INTO NEW.customer_number 
+    FROM owners;
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger som kör funktionen vid INSERT eller UPDATE
 CREATE TRIGGER trigger_auto_customer_number
 BEFORE INSERT OR UPDATE ON owners
 FOR EACH ROW
