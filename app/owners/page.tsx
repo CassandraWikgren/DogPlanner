@@ -656,27 +656,29 @@ export default function OwnersPage() {
 
         {/* Add/Edit Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <Card className="w-full max-w-md mx-4">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>{editingOwner ? "Redigera ägare" : "Ny ägare"}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setShowAddModal(false);
-                      setEditingOwner(null);
-                      resetForm();
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="w-full max-w-md bg-white rounded-lg shadow-xl">
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <h2 className="text-xl font-semibold text-[#2c7a4c]">
+                  {editingOwner ? "Redigera ägare" : "Ny ägare"}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setEditingOwner(null);
+                    resetForm();
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="px-6 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Fullständigt namn *
                   </label>
                   <Input
@@ -689,11 +691,12 @@ export default function OwnersPage() {
                     }
                     placeholder="Anna Andersson"
                     required
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     E-postadress
                   </label>
                   <Input
@@ -706,11 +709,12 @@ export default function OwnersPage() {
                       }))
                     }
                     placeholder="anna@exempel.se"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Telefonnummer
                   </label>
                   <Input
@@ -723,11 +727,12 @@ export default function OwnersPage() {
                       }))
                     }
                     placeholder="070-123 45 67"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Adress
                   </label>
                   <Input
@@ -738,12 +743,62 @@ export default function OwnersPage() {
                         address: e.target.value,
                       }))
                     }
-                    placeholder="Storgatan 123, 123 45 Stockholm"
+                    placeholder="Storgatan 123"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
+                    Kontaktperson 2
+                  </label>
+                  <Input
+                    value={formData.notes}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        notes: e.target.value,
+                      }))
+                    }
+                    placeholder="Namn på extra kontaktperson"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
+                    Telefon (kontakt 2)
+                  </label>
+                  <Input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        phone: e.target.value,
+                      }))
+                    }
+                    placeholder="070-987 65 43"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
+                    Kundnummer
+                  </label>
+                  <Input
+                    type="text"
+                    value=""
+                    onChange={() => {}}
+                    placeholder="Genereras automatiskt"
+                    disabled
+                    className="h-10 border-2 border-gray-300 bg-gray-50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Anteckningar
                   </label>
                   <Textarea
@@ -756,29 +811,31 @@ export default function OwnersPage() {
                     }
                     placeholder="Särskilda önskemål eller anteckningar..."
                     rows={3}
+                    className="border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
+              </div>
 
-                <div className="flex justify-end gap-3 pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowAddModal(false);
-                      setEditingOwner(null);
-                      resetForm();
-                    }}
-                  >
-                    Avbryt
-                  </Button>
-                  <Button
-                    onClick={saveOwner}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    {editingOwner ? "Uppdatera" : "Skapa"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+              {/* Footer */}
+              <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <button
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setEditingOwner(null);
+                    resetForm();
+                  }}
+                  className="px-4 py-2 h-10 rounded-md border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 transition-colors"
+                >
+                  Avbryt
+                </button>
+                <button
+                  onClick={saveOwner}
+                  className="px-4 py-2 h-10 rounded-md bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold shadow-sm transition-colors"
+                >
+                  {editingOwner ? "Spara ändringar" : "Skapa ägare"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
