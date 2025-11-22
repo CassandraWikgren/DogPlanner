@@ -3,32 +3,29 @@ import * as Sentry from "@sentry/nextjs";
 Sentry.init({
   dsn: "https://a16e34b82b60e6b0b9ac2b442db5f7d6@o4510409076899840.ingest.de.sentry.io/4510409081815120",
 
-  // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1.0,
+  // Only trace 1% of requests in production (reduces overhead dramatically)
+  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.01 : 0,
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
+  // Disable debug logging in production
   debug: false,
 
-  // Enable logging
-  enableLogs: true,
+  // Disable automatic log sending (too much overhead)
+  enableLogs: false,
 
   integrations: [
-    // Send console.log, console.warn, and console.error calls as logs to Sentry
-    Sentry.consoleLoggingIntegration({ levels: ["warn", "error"] }),
+    // Only send critical errors to Sentry
+    Sentry.consoleLoggingIntegration({ levels: ["error"] }),
 
-    // Replay integration for user session recording
-    Sentry.replayIntegration({
-      // Mask all text content, useful for privacy
-      maskAllText: true,
-      // Block all media (images, videos, etc)
-      blockAllMedia: true,
-    }),
+    // Disable replay integration - too heavy for performance
+    // Sentry.replayIntegration({
+    //   maskAllText: true,
+    //   blockAllMedia: true,
+    // }),
   ],
 
-  // Capture Replay for 10% of all sessions,
-  // plus 100% of sessions with an error
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
+  // Disable session replay (major performance impact)
+  replaysSessionSampleRate: 0,
+  replaysOnErrorSampleRate: 0,
 
   // Environment
   environment: process.env.NODE_ENV || "development",

@@ -103,23 +103,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (u && session?.access_token) {
           // Endast kör API-anrop för business users (med org_id eller role)
-          // Kundportal-användare behöver inte onboarding/subscription
+          // Kundportal-användare och offentliga besökare behöver inte onboarding/subscription
           const hasBusinessRole = metaOrg || (u as any)?.app_metadata?.role;
           
           if (hasBusinessRole) {
-            // Försök auto-onboarding i bakgrunden utan att blockera
-            safeAutoOnboarding(session.access_token)
-              .then(() => refreshProfile(u.id))
-              .catch((err) => console.error("Background onboarding failed:", err));
-            
-            refreshSubscription(session.access_token).catch((err) =>
-              console.error("Background subscription check failed:", err)
-            );
+            // Kör queries i bakgrunden UTAN att blockera rendering
+            // Använd setTimeout för att släppa igenom första render
+            setTimeout(() => {
+              // Försök auto-onboarding i bakgrunden
+              safeAutoOnboarding(session.access_token)
+                .then(() => refreshProfile(u.id))
+                .catch((err) => console.error("Background onboarding failed:", err));
+              
+              refreshSubscription(session.access_token).catch((err) =>
+                console.error("Background subscription check failed:", err)
+              );
+            }, 100); // 100ms delay för att släppa igenom initial render
           } else {
-            // Kundportal-användare: Läs bara profil (snabbt) i bakgrunden
-            refreshProfile(u.id).catch((err) =>
-              console.error("Profile refresh failed:", err)
-            );
+            // Kundportal-användare: Läs profil i bakgrunden med delay
+            setTimeout(() => {
+              refreshProfile(u.id).catch((err) =>
+                console.error("Profile refresh failed:", err)
+              );
+            }, 100);
           }
         } else {
           setProfile(null);
@@ -237,76 +243,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // 1) Hämta minsta gemensamma nämnare (id, org_id) för att tåla schema‑skillnader
-    const baseRes: any = await supabase
-      .from("profiles")
-      .select("id, org_id")
-      .eq("id", userId)
-      .single();
-
-    let base = baseRes.data as { id: string; org_id: string } | null;
-
-    // 2) Försök läsa extra fält, men fall tillbaka om kolumner saknas i DB
-    let extra: Partial<UserProfile> = {};
-    if (base) {
-      const extraRes: any = await supabase
+    try {
+      // Optimerad: Gör EN query istället för 2-3
+      const { data: profileData, error } = await supabase
         .from("profiles")
-        .select("role, full_name, email, phone")
+        .select("id, org_id, role, full_name, email, phone")
         .eq("id", userId)
         .single();
 
-      // Ignorera fel här – vissa kolumner kan saknas i en äldre databas
-      if (extraRes.data) {
-        extra = extraRes.data as Partial<UserProfile>;
+      if (error) {
+        console.error("Error fetching profile:", error);
+        return;
       }
-    }
 
-    // 🔧 LAGER 3: Automatisk healing om org_id saknas
-    if (base && !base.org_id) {
-      console.warn(
-        "⚠️ AuthContext: Användare saknar org_id, försöker heala..."
-      );
-      const healed = await healMissingOrg(userId);
-      if (healed) {
-        // Läs om profilen efter healing
-        const healedRes: any = await supabase
-          .from("profiles")
-          .select("id, org_id, role, full_name, email, phone")
-          .eq("id", userId)
-          .single();
+      if (!profileData) {
+        console.warn("No profile found for user:", userId);
+        return;
+      }
 
-        if (healedRes.data) {
-          base = { id: healedRes.data.id, org_id: healedRes.data.org_id };
-          extra = healedRes.data;
-          console.log(
-            "✅ AuthContext: Användare healad med org_id:",
-            base.org_id
-          );
+      // 🔧 LAGER 3: Automatisk healing om org_id saknas
+      if (!profileData.org_id) {
+        console.warn(
+          "⚠️ AuthContext: Användare saknar org_id, försöker heala..."
+        );
+        const healed = await healMissingOrg(userId);
+        if (healed) {
+          // Läs om profilen efter healing (rekursivt, men bara EN gång)
+          return refreshProfile(userId);
         }
       }
-    }
 
-    if (base && base.org_id) {
-      const merged: UserProfile = {
-        id: base.id,
-        org_id: base.org_id,
-        role: extra.role || "admin", // defaulta försiktigt till admin om roll saknas
-        full_name: extra.full_name,
-        email: extra.email,
-        phone: extra.phone,
-      };
+      if (profileData.org_id) {
+        const merged: UserProfile = {
+          id: profileData.id,
+          org_id: profileData.org_id,
+          role: profileData.role || "admin",
+          full_name: profileData.full_name || undefined,
+          email: profileData.email || undefined,
+          phone: profileData.phone || undefined,
+        };
 
-      setProfile(merged);
-      setCurrentOrgId(merged.org_id);
-      setRole(merged.role);
-    } else {
-      console.error(
-        "❌ AuthContext: Kunde inte ladda profil med org_id för användare:",
-        userId
-      );
-      setProfile(null);
-      setCurrentOrgId(null);
-      setRole(null);
+        setProfile(merged);
+        setCurrentOrgId(merged.org_id);
+        setRole(merged.role);
+      } else {
+        console.error(
+          "❌ AuthContext: Kunde inte ladda profil med org_id för användare:",
+          userId
+        );
+        setProfile(null);
+        setCurrentOrgId(null);
+        setRole(null);
+      }
+    } catch (error) {
+      console.error("Error in refreshProfile:", error);
     }
   }
 
