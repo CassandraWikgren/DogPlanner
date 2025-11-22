@@ -145,6 +145,13 @@ export default function NyBokning() {
     "existing"
   );
 
+  // External customers (walk-ins from database)
+  const [externalCustomers, setExternalCustomers] = useState<any[]>([]);
+  const [filteredExternalCustomers, setFilteredExternalCustomers] = useState<
+    any[]
+  >([]);
+  const [externalSearchTerm, setExternalSearchTerm] = useState("");
+
   // Walk-in customer data
   const [walkinData, setWalkinData] = useState({
     customer_name: "",
@@ -176,6 +183,7 @@ export default function NyBokning() {
   useEffect(() => {
     if (currentOrgId && !authLoading) {
       loadDogs();
+      loadExternalCustomers();
     }
   }, [currentOrgId, authLoading]);
 
@@ -194,6 +202,24 @@ export default function NyBokning() {
       setFilteredDogs(dogs);
     }
   }, [searchTerm, dogs]);
+
+  useEffect(() => {
+    if (externalSearchTerm) {
+      const filtered = externalCustomers.filter(
+        (customer) =>
+          customer.customer_name
+            .toLowerCase()
+            .includes(externalSearchTerm.toLowerCase()) ||
+          customer.customer_phone.includes(externalSearchTerm) ||
+          customer.dog_name
+            .toLowerCase()
+            .includes(externalSearchTerm.toLowerCase())
+      );
+      setFilteredExternalCustomers(filtered);
+    } else {
+      setFilteredExternalCustomers(externalCustomers);
+    }
+  }, [externalSearchTerm, externalCustomers]);
 
   const loadDogs = async () => {
     if (!currentOrgId) return;
@@ -236,6 +262,26 @@ export default function NyBokning() {
       setError(`Kunde inte ladda hundar: ${err.message}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadExternalCustomers = async () => {
+    if (!currentOrgId) return;
+
+    try {
+      const { data, error: dbError } = await supabase
+        .from("external_customers")
+        .select("*")
+        .eq("org_id", currentOrgId)
+        .order("last_visit_date", { ascending: false });
+
+      if (dbError) throw dbError;
+
+      setExternalCustomers(data || []);
+      setFilteredExternalCustomers(data || []);
+    } catch (err: any) {
+      console.error("Fel vid laddning av externa kunder:", err);
+      // Don't show error to user, just log it
     }
   };
 
@@ -723,6 +769,75 @@ export default function NyBokning() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
+                  {/* Search for existing external customers */}
+                  {externalCustomers.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Sök tidigare kunder
+                      </label>
+                      <div className="relative mb-4">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          placeholder="Sök på namn, telefon eller hundnamn..."
+                          value={externalSearchTerm}
+                          onChange={(e) =>
+                            setExternalSearchTerm(e.target.value)
+                          }
+                          className="pl-10"
+                        />
+                      </div>
+
+                      {externalSearchTerm &&
+                        filteredExternalCustomers.length > 0 && (
+                          <div className="grid gap-2 max-h-64 overflow-y-auto mb-4">
+                            {filteredExternalCustomers.map((customer) => (
+                              <button
+                                key={customer.id}
+                                type="button"
+                                onClick={() => {
+                                  setWalkinData({
+                                    customer_name: customer.customer_name,
+                                    customer_phone: customer.customer_phone,
+                                    dog_name: customer.dog_name,
+                                    dog_breed: customer.dog_breed || "",
+                                  });
+                                  setExternalSearchTerm("");
+                                }}
+                                className="flex items-center gap-4 p-4 bg-white border border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-left shadow-sm"
+                              >
+                                <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                                  <span className="text-orange-600 font-bold text-lg">
+                                    {customer.dog_name.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-semibold text-gray-900">
+                                    {customer.dog_name} (
+                                    {customer.dog_breed || "Blandras"})
+                                  </p>
+                                  <p className="text-sm text-gray-600">
+                                    Ägare: {customer.customer_name}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    {customer.customer_phone} •{" "}
+                                    {customer.total_visits} tidigare besök
+                                  </p>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                      <div className="flex items-center gap-2 my-4">
+                        <div className="flex-1 border-t border-gray-300"></div>
+                        <span className="text-sm text-gray-500">
+                          eller ange ny kund
+                        </span>
+                        <div className="flex-1 border-t border-gray-300"></div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
