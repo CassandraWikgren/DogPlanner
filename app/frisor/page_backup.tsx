@@ -35,9 +35,9 @@ type Dog = {
   name: string;
   breed: string | null;
   heightcm: number | null;
-  owner_id: string | null;
-  org_id: string | null;
-  is_active: boolean | null;
+  owner_id?: string | null;
+  org_id?: string | null;
+  is_active?: boolean | null;
   owner?: {
     full_name: string | null;
     phone: string | null;
@@ -46,7 +46,7 @@ type Dog = {
 
 type GroomingBooking = {
   id: string;
-  org_id: string;
+  org_id: string | null;
   dog_id: string | null;
   appointment_date: string;
   appointment_time: string | null;
@@ -65,7 +65,7 @@ type GroomingBooking = {
 
 type GroomingJournal = {
   id: string;
-  org_id: string;
+  org_id: string | null;
   dog_id: string | null;
   appointment_date: string;
   service_type: string;
@@ -114,7 +114,7 @@ export default function FrisorPage() {
   const [journals, setJournals] = useState<GroomingJournal[]>([]);
   const [dogs, setDogs] = useState<Dog[]>([]);
 
-  const [timeout, setTimeoutReached] = useState(false);
+  const [timeoutReached, setTimeoutReached] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -193,12 +193,10 @@ export default function FrisorPage() {
           heightcm,
           owner_id,
           org_id,
-          is_active,
           owner:owners(full_name, phone)
         `
         )
         .eq("org_id", effectiveOrgId)
-        .eq("is_active", true)
         .order("name");
 
       if (dogsError) throw dogsError;
