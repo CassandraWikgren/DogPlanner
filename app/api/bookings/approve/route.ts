@@ -8,18 +8,32 @@ import { Database } from "@/types/database";
  */
 export async function POST(request: NextRequest) {
   try {
-    // Hämta access token från cookies
+    // Hämta alla cookies och leta efter Supabase auth token
     const cookies = request.cookies;
-    const accessToken = cookies.get('sb-access-token')?.value || 
-                       cookies.get('sb-fhdkkkujnhteetllxypg-auth-token')?.value;
+    let accessToken: string | undefined;
+    
+    // Supabase auth-helpers sparar tokens i JSON-format i en cookie
+    const authCookie = cookies.get('sb-fhdkkkujnhteetllxypg-auth-token');
+    
+    if (authCookie) {
+      try {
+        const authData = JSON.parse(authCookie.value);
+        accessToken = authData?.access_token || authData?.[0]?.access_token;
+      } catch (e) {
+        console.error("❌ Failed to parse auth cookie:", e);
+      }
+    }
     
     if (!accessToken) {
       console.error("❌ No access token found in cookies");
+      console.error("Available cookies:", Array.from(cookies.getAll()).map(c => c.name));
       return NextResponse.json({ 
         error: "Unauthorized", 
         details: "No authentication token found" 
       }, { status: 401 });
     }
+
+    console.log("✅ Found access token");
 
     // Skapa Supabase client med access token
     const supabase = createClient<Database>(

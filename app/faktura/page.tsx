@@ -449,7 +449,7 @@ const FakturorPage = () => {
   }
 
   // ➕ Skapa ny faktura (manuell)
-  async function createInvoice(ownerId: string, belopp: number) {
+  async function createInvoice(ownerId: string, belopp: number, description: string) {
     try {
       setCreating(true);
       logDebug(
@@ -463,22 +463,48 @@ const FakturorPage = () => {
         );
       }
 
+      if (!description || description.trim() === "") {
+        throw new Error(
+          `${ERROR_CODES.VALIDATION} Beskrivning måste anges`
+        );
+      }
+
       const dueDate = new Date();
       dueDate.setDate(dueDate.getDate() + 30);
 
-      // 🔔 org_id (och user_id) sätts av triggers i databasen
-      const { error } = await supabase.from("invoices").insert({
-        owner_id: ownerId,
-        invoice_date: new Date().toISOString(),
-        due_date: dueDate.toISOString(),
-        total_amount: belopp,
-        status: "draft",
-      });
+      // Skapa fakturan
+      const { data: invoice, error: invoiceError } = await supabase
+        .from("invoices")
+        .insert({
+          owner_id: ownerId,
+          invoice_date: new Date().toISOString(),
+          due_date: dueDate.toISOString(),
+          total_amount: belopp,
+          status: "draft",
+        })
+        .select()
+        .single();
 
-      if (error) {
+      if (invoiceError || !invoice) {
         throw new Error(
-          `${ERROR_CODES.DATABASE} Kunde inte skapa faktura: ${error.message}`
+          `${ERROR_CODES.DATABASE} Kunde inte skapa faktura: ${invoiceError?.message}`
         );
+      }
+
+      // Lägg till fakturarad med beskrivning
+      const { error: itemError } = await supabase
+        .from("invoice_items")
+        .insert({
+          invoice_id: invoice.id,
+          description: description.trim(),
+          quantity: 1,
+          unit_price: belopp,
+          total_amount: belopp,
+        });
+
+      if (itemError) {
+        console.error("Kunde inte skapa fakturarad:", itemError);
+        // Fortsätt ändå - fakturan är skapad
       }
 
       toast("Faktura skapad framgångsrikt", "success");
@@ -1428,12 +1454,18 @@ const FakturorPage = () => {
               </div>
               <div className="p-6 space-y-4">
                 <p className="text-sm text-gray-500">
-                  Ange kund-ID och belopp för den nya fakturan.
+                  Ange kund-ID, belopp och beskrivning för den nya fakturan.
                 </p>
                 <input
                   type="text"
                   placeholder="Kund-ID"
                   id="ownerId"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
+                />
+                <input
+                  type="text"
+                  placeholder="Beskrivning (t.ex. 'Hunddagis November 2025')"
+                  id="description"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
                 />
                 <input
@@ -1455,11 +1487,14 @@ const FakturorPage = () => {
                     const ownerId = (
                       document.getElementById("ownerId") as HTMLInputElement
                     ).value;
+                    const description = (
+                      document.getElementById("description") as HTMLInputElement
+                    ).value;
                     const belopp = parseFloat(
                       (document.getElementById("amount") as HTMLInputElement)
                         .value
                     );
-                    await createInvoice(ownerId, belopp);
+                    await createInvoice(ownerId, belopp, description);
                     // Modal stängs efter skapande
                   }}
                   className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
