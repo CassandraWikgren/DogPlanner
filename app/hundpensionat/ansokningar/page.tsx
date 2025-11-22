@@ -610,50 +610,8 @@ export default function PensionatAnsokningarPage() {
           Tillbaka till Pensionat
         </Link>
 
-        {/* Statistik - Simplified */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-            <div className="flex items-center gap-3">
-              <Clock className="h-6 w-6 text-gray-600" />
-              <div>
-                <p className="text-xl font-bold text-gray-900">
-                  {bookings.length}
-                </p>
-                <p className="text-xs text-gray-600">Väntande ansökningar</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-            <div className="flex items-center gap-3">
-              <DollarSign className="h-6 w-6 text-gray-600" />
-              <div>
-                <p className="text-xl font-bold text-gray-900">
-                  {bookings
-                    .reduce((sum, b) => sum + (b.total_price || 0), 0)
-                    .toFixed(0)}{" "}
-                  kr
-                </p>
-                <p className="text-xs text-gray-600">Totalt bokningsvärde</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-            <div className="flex items-center gap-3">
-              <Dog className="h-6 w-6 text-gray-600" />
-              <div>
-                <p className="text-xl font-bold text-gray-900">
-                  {new Set(bookings.map((b) => b.dogs?.id)).size}
-                </p>
-                <p className="text-xs text-gray-600">Unika hundar</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Bokningslista */}
-        <div className="space-y-6">
+        <div className="space-y-6 mt-6">
           {bookings.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
               <CheckCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
