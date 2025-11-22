@@ -130,6 +130,9 @@ CREATE TRIGGER on_auth_user_created
 -- LAYER 3: Healing RPC Function
 -- =====================================================
 
+-- Drop existing function if it exists (allows parameter name change)
+DROP FUNCTION IF EXISTS heal_user_missing_org(uuid);
+
 CREATE OR REPLACE FUNCTION heal_user_missing_org(p_user_id uuid)
 RETURNS jsonb AS $$
 DECLARE
