@@ -26,9 +26,9 @@ export async function POST(request: NextRequest) {
       .from("profiles")
       .select("org_id")
       .eq("id", user.id)
-      .maybeSingle();
+      .single();
 
-    if (profileError || !profile?.org_id) {
+    if (profileError || !profile || !profile.org_id) {
       return NextResponse.json(
         { error: "User not associated with organization" },
         { status: 403 }
