@@ -22,8 +22,7 @@ SELECT
   sequencename,
   last_value,
   max_value,
-  increment_by,
-  is_called
+  increment_by
 FROM pg_sequences
 WHERE sequencename LIKE '%owner%' OR sequencename LIKE '%customer%';
 
