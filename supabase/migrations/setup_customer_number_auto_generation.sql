@@ -57,6 +57,8 @@ CREATE TRIGGER trigger_auto_customer_number
 DO $$
 DECLARE
   next_number INTEGER;
+  owner_record RECORD;
+  counter INTEGER := 0;
 BEGIN
   -- Hitta högsta befintliga customer_number
   SELECT COALESCE(MAX(customer_number), 0) + 1 
@@ -65,9 +67,20 @@ BEGIN
   WHERE customer_number IS NOT NULL;
   
   -- Uppdatera alla NULL customer_number med sekventiella nummer
-  UPDATE owners 
-  SET customer_number = next_number + (ROW_NUMBER() OVER (ORDER BY created_at)) - 1
-  WHERE customer_number IS NULL;
+  -- Använd en loop istället för window function
+  FOR owner_record IN 
+    SELECT id FROM owners 
+    WHERE customer_number IS NULL 
+    ORDER BY created_at
+  LOOP
+    UPDATE owners 
+    SET customer_number = next_number + counter
+    WHERE id = owner_record.id;
+    
+    counter := counter + 1;
+  END LOOP;
+  
+  RAISE NOTICE 'Updated % owners with new customer numbers starting from %', counter, next_number;
 END $$;
 
 -- =====================================================
