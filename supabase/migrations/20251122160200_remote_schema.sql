@@ -5772,6 +5772,23 @@ CREATE POLICY "update_invoices_in_org" ON "public"."invoices" FOR UPDATE TO "aut
 
 
 
+CREATE POLICY "admin_can_send_invoices" ON "public"."invoices" FOR UPDATE TO "authenticated" USING ((
+  -- Endast admin i organisationen kan skicka fakturor
+  EXISTS (
+    SELECT 1 
+    FROM "public"."profiles"
+    WHERE "profiles"."id" = "auth"."uid"()
+      AND "profiles"."org_id" = "invoices"."org_id"
+      AND "profiles"."role" = 'admin'
+  )
+  -- OCH fakturan måste vara draft
+  AND "invoices"."status" = 'draft'
+));
+
+COMMENT ON POLICY "admin_can_send_invoices" ON "public"."invoices" IS 'Endast admin kan uppdatera fakturor från draft till sent';
+
+
+
 CREATE POLICY "update_own_org" ON "public"."extra_service" FOR UPDATE TO "authenticated" USING (("org_id" = ( SELECT "profiles"."org_id"
    FROM "public"."profiles"
   WHERE ("profiles"."id" = "auth"."uid"())))) WITH CHECK (("org_id" = ( SELECT "profiles"."org_id"

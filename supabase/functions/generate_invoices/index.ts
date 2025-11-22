@@ -104,6 +104,22 @@ serve(async (req) => {
       dogCount += dogsList.length;
       const lines = [];
       let total = 0;
+      
+      // === RABATTER: Hämta daycare_pricing för syskonrabatt ===
+      let siblingDiscountPercent = 0;
+      if (orgId) {
+        const { data: pricingData } = await supabase
+          .from("daycare_pricing")
+          .select("sibling_discount_percent")
+          .eq("org_id", orgId)
+          .maybeSingle();
+        
+        if (pricingData) {
+          siblingDiscountPercent = pricingData.sibling_discount_percent || 0;
+        }
+      }
+      
+      console.log(`👨‍👩‍👧 ${dogsList.length} hundar för ${ownerName}, syskonrabatt: ${siblingDiscountPercent}%`);
 
       for (const d of dogsList) {
         const sub = d.subscription?.toLowerCase();
@@ -120,7 +136,59 @@ serve(async (req) => {
           total += priceVal;
         }
 
-        // === Extra services ===
+        // === Extra services för HUNDDAGIS (återkommande månadstillägg) ===
+        // Viktigt: För hunddagis måste vi läsa extra_service baserat på is_active och date-range
+        const { data: daycareExtras, error: daycareExtErr } = await supabase
+          .from("extra_service")
+          .select("*")
+          .eq("dogs_id", d.id)
+          .eq("org_id", orgId)
+          .eq("is_active", true)
+          .lte("start_date", endOfMonth.toISOString().split("T")[0]) // Startat före/under månaden
+          .or(`end_date.is.null,end_date.gte.${startOfMonth.toISOString().split("T")[0]}`); // Inget slutdatum ELLER slutar efter/under månadens start
+
+        if (daycareExtErr) {
+          console.warn(
+            `⚠️ Daycare extra fetch error for dog ${d.id}: ${daycareExtErr.message}`
+          );
+        } else if (daycareExtras && daycareExtras.length > 0) {
+          console.log(
+            `🔧 Found ${daycareExtras.length} active extra services for ${d.name} (daycare)`
+          );
+
+          for (const extra of daycareExtras) {
+            let quantity = 1;
+
+            // Beräkna antal baserat på frequency
+            if (extra.frequency === "daily") {
+              // Om hunden har "days" fält, beräkna faktiska dagar i månaden
+              // Annars approximera baserat på subscription
+              const daysInCurrentMonth =
+                new Date(year, month, 0).getDate() - 1; // Approximate working days
+              quantity = Math.ceil(daysInCurrentMonth * 0.8); // ~80% av dagarna (approximation)
+            } else if (extra.frequency === "weekly") {
+              quantity = 4; // 4 veckor per månad
+            } else if (extra.frequency === "monthly") {
+              quantity = 1;
+            }
+
+            const serviceTotal = quantity * (extra.price || 0);
+
+            lines.push({
+              description: `${d.name} – ${extra.service_type} (${extra.frequency}, ${quantity}x)`,
+              quantity: quantity,
+              unit_price: extra.price || 0,
+              total: serviceTotal,
+            });
+            total += serviceTotal;
+
+            console.log(
+              `  ✅ Added ${extra.service_type}: ${quantity}x ${extra.price} kr = ${serviceTotal} kr`
+            );
+          }
+        }
+
+        // === Extra services för PENSIONAT (från performed_at i period) ===
         const { data: extras, error: extraErr } = await supabase
           .from("extra_service")
           .select("*")
@@ -191,6 +259,22 @@ serve(async (req) => {
           });
           total += stayTotal;
         }
+      }
+      
+      // === RABATTER: Applicera syskonrabatt om flera hundar ===
+      if (dogsList.length > 1 && siblingDiscountPercent > 0) {
+        const discountAmount = total * (siblingDiscountPercent / 100);
+        lines.push({
+          description: `Syskonrabatt (${dogsList.length} hundar, -${siblingDiscountPercent}%)`,
+          quantity: 1,
+          unit_price: -discountAmount,
+          total: -discountAmount,
+        });
+        total -= discountAmount;
+        
+        console.log(
+          `💰 Syskonrabatt applicerad: -${discountAmount.toFixed(2)} kr (${siblingDiscountPercent}%)`
+        );
       }
 
       invoices.push({
@@ -264,47 +348,12 @@ serve(async (req) => {
           );
         }
 
-        // 🔥 NYA FÖRBÄTTRINGAR:
-
-        // 1. Sätt status till 'sent' istället för 'draft'
-        const { error: updateErr } = await supabase
-          .from("invoices")
-          .update({
-            status: "sent",
-            sent_at: new Date().toISOString(),
-          })
-          .eq("id", insertedInvoice.id);
-
-        if (updateErr) {
-          console.warn(
-            `⚠️ Failed to update invoice status: ${updateErr.message}`
-          );
-        } else {
-          console.log(
-            `✅ Invoice ${insertedInvoice.invoice_number} marked as sent`
-          );
-        }
-
-        // 2. Skicka email till kund (via RPC function)
-        try {
-          const { data: emailResult, error: emailErr } = await supabase.rpc(
-            "send_invoice_email",
-            { p_invoice_id: insertedInvoice.id }
-          );
-
-          if (emailErr) {
-            console.warn(
-              `⚠️ Email send failed for invoice ${insertedInvoice.invoice_number}: ${emailErr.message}`
-            );
-          } else {
-            console.log(
-              `✅ Email sent for invoice ${insertedInvoice.invoice_number} to ${inv.billed_email}`
-            );
-          }
-        } catch (emailException) {
-          console.warn(`⚠️ Email send exception: ${emailException.message}`);
-          // Fortsätt trots email-fel
-        }
+        // ✅ FAKTURAUNDERLAG - Status förblir 'draft'
+        // Ingen email skickas automatiskt - företaget hanterar detta manuellt i systemet
+        
+        console.log(
+          `✅ Fakturaunderlag skapat: ${insertedInvoice.invoice_number} (${inv.billed_name})`
+        );
 
         invoiceCount++;
       }

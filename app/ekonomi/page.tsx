@@ -19,6 +19,7 @@ import {
   ArrowLeft,
   TrendingUp,
   Receipt,
+  Send,
 } from "lucide-react";
 
 interface Invoice {
@@ -57,6 +58,7 @@ export default function FakturaPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<string>("all"); // all, this-month, last-month, this-year
   const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null);
+  const [sendingInvoice, setSendingInvoice] = useState<string | null>(null);
 
   const statusTypes = ["all", "draft", "sent", "paid", "overdue"];
 
@@ -118,6 +120,55 @@ export default function FakturaPage() {
       await fetchInvoices();
     } catch (error) {
       console.error("Fel vid uppdatering av faktura:", error);
+    }
+  };
+
+  const sendInvoiceEmail = async (id: string) => {
+    const invoice = invoices.find((inv) => inv.id === id);
+    
+    if (!invoice) {
+      alert("❌ Faktura hittades inte");
+      return;
+    }
+
+    // Kontrollera att ägaren har email
+    if (!invoice.owner?.email) {
+      alert("❌ Ägaren har ingen registrerad email-adress. Lägg till email för att kunna skicka faktura.");
+      return;
+    }
+
+    // Bekräftelse
+    const confirmed = confirm(
+      `Skicka faktura ${invoice.invoice_number} till ${invoice.owner.full_name} (${invoice.owner.email})?\n\n` +
+      `Belopp: ${invoice.total_amount.toLocaleString("sv-SE")} kr\n` +
+      `Förfallodatum: ${new Date(invoice.due_date).toLocaleDateString("sv-SE")}`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setSendingInvoice(id);
+
+      // Anropa Edge Function
+      const { data, error } = await supabase.functions.invoke(
+        "send_invoice_email",
+        { 
+          body: { invoice_id: id }
+        }
+      );
+
+      if (error) {
+        console.error("Error from Edge Function:", error);
+        throw new Error(error.message || "Kunde inte skicka faktura");
+      }
+
+      alert(`✅ Faktura skickad till ${invoice.owner.email}!`);
+      await fetchInvoices(); // Uppdatera listan (status ändras till 'sent')
+    } catch (error: any) {
+      console.error("Fel vid skickning av faktura:", error);
+      alert(`❌ Kunde inte skicka faktura: ${error.message}`);
+    } finally {
+      setSendingInvoice(null);
     }
   };
 
@@ -534,6 +585,19 @@ export default function FakturaPage() {
                       ? "Genererar..."
                       : "Ladda ner PDF"}
                   </Button>
+                  {invoice.status === "draft" && (
+                    <Button
+                      onClick={() => sendInvoiceEmail(invoice.id)}
+                      disabled={sendingInvoice === invoice.id}
+                      className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+                      size="sm"
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      {sendingInvoice === invoice.id
+                        ? "Skickar..."
+                        : "Skicka faktura"}
+                    </Button>
+                  )}
                   {invoice.status === "sent" && (
                     <Button
                       onClick={() => updateInvoiceStatus(invoice.id, "paid")}
