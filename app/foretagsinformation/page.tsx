@@ -32,6 +32,17 @@ interface OrgSettings {
   vat_included?: boolean;
   vat_rate?: number;
   pricing_currency?: string;
+  // Betalningsinformation (fakturor)
+  bankgiro?: string;
+  plusgiro?: string;
+  swish_number?: string;
+  bank_name?: string;
+  iban?: string;
+  bic_swift?: string;
+  payment_terms_days?: number;
+  late_fee_amount?: number;
+  interest_rate?: number;
+  invoice_prefix?: string;
 }
 
 export default function ForetagsInfoPage() {
@@ -104,6 +115,17 @@ export default function ForetagsInfoPage() {
           vat_included: settings.vat_included,
           vat_rate: settings.vat_rate,
           pricing_currency: settings.pricing_currency,
+          // Betalningsinformation
+          bankgiro: settings.bankgiro,
+          plusgiro: settings.plusgiro,
+          swish_number: settings.swish_number,
+          bank_name: settings.bank_name,
+          iban: settings.iban,
+          bic_swift: settings.bic_swift,
+          payment_terms_days: settings.payment_terms_days,
+          late_fee_amount: settings.late_fee_amount,
+          interest_rate: settings.interest_rate,
+          invoice_prefix: settings.invoice_prefix,
           updated_at: new Date().toISOString(),
         })
         .eq("id", currentOrgId);
@@ -425,72 +447,276 @@ export default function ForetagsInfoPage() {
 
           {/* Fakturering */}
           <TabsContent value="billing">
-            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <h2 className="text-lg font-semibold text-[#333333] mb-4">
-                Faktureringsinställningar
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="pricing_currency" className="text-sm">
-                    Valuta
-                  </Label>
-                  <Input
-                    id="pricing_currency"
-                    value={settings.pricing_currency || "SEK"}
-                    onChange={(e) =>
-                      updateField("pricing_currency", e.target.value)
-                    }
-                    placeholder="SEK"
-                    className="text-sm"
-                  />
-                </div>
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm space-y-6">
+              {/* Momsinställningar */}
+              <div>
+                <h2 className="text-lg font-semibold text-[#333333] mb-4">
+                  Moms och valuta
+                </h2>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="pricing_currency" className="text-sm">
+                      Valuta
+                    </Label>
+                    <Input
+                      id="pricing_currency"
+                      value={settings.pricing_currency || "SEK"}
+                      onChange={(e) =>
+                        updateField("pricing_currency", e.target.value)
+                      }
+                      placeholder="SEK"
+                      className="text-sm"
+                    />
+                  </div>
 
-                <div>
-                  <Label htmlFor="vat_rate" className="text-sm">
-                    Momssats (%)
-                  </Label>
-                  <Input
-                    id="vat_rate"
-                    type="number"
-                    value={settings.vat_rate || 25}
-                    onChange={(e) =>
-                      updateField("vat_rate", parseFloat(e.target.value))
-                    }
-                    placeholder="25"
-                    className="text-sm"
-                  />
-                </div>
+                  <div>
+                    <Label htmlFor="vat_rate" className="text-sm">
+                      Momssats (%)
+                    </Label>
+                    <Input
+                      id="vat_rate"
+                      type="number"
+                      value={settings.vat_rate || 25}
+                      onChange={(e) =>
+                        updateField("vat_rate", parseFloat(e.target.value))
+                      }
+                      placeholder="25"
+                      className="text-sm"
+                    />
+                  </div>
 
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="vat_included"
-                    checked={settings.vat_included || false}
-                    onChange={(e) =>
-                      updateField("vat_included", e.target.checked)
-                    }
-                    className="h-4 w-4"
-                  />
-                  <Label htmlFor="vat_included" className="text-sm">
-                    Priser inkluderar moms
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="vat_included"
+                      checked={settings.vat_included || false}
+                      onChange={(e) =>
+                        updateField("vat_included", e.target.checked)
+                      }
+                      className="h-4 w-4"
+                    />
+                    <Label htmlFor="vat_included" className="text-sm">
+                      Priser inkluderar moms
+                    </Label>
+                  </div>
                 </div>
-
-                <button
-                  onClick={saveSettings}
-                  disabled={saving}
-                  className="w-full px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm disabled:opacity-50"
-                >
-                  {saving ? (
-                    "Sparar..."
-                  ) : (
-                    <>
-                      <Save className="inline h-4 w-4 mr-2" />
-                      Spara faktureringsinställningar
-                    </>
-                  )}
-                </button>
               </div>
+
+              {/* Betalningsinformation */}
+              <div className="border-t border-gray-200 pt-6">
+                <h2 className="text-lg font-semibold text-[#333333] mb-2">
+                  Betalningsinformation för fakturor
+                </h2>
+                <p className="text-xs text-gray-500 mb-4">
+                  Denna information visas på kundfakturor (PDF) och används för
+                  betalningar
+                </p>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="bankgiro" className="text-sm">
+                        Bankgiro
+                      </Label>
+                      <Input
+                        id="bankgiro"
+                        value={settings.bankgiro || ""}
+                        onChange={(e) => updateField("bankgiro", e.target.value)}
+                        placeholder="123-4567"
+                        className="text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="plusgiro" className="text-sm">
+                        Plusgiro
+                      </Label>
+                      <Input
+                        id="plusgiro"
+                        value={settings.plusgiro || ""}
+                        onChange={(e) => updateField("plusgiro", e.target.value)}
+                        placeholder="12 34 56-7"
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="swish_number" className="text-sm">
+                        Swish-nummer
+                      </Label>
+                      <Input
+                        id="swish_number"
+                        value={settings.swish_number || ""}
+                        onChange={(e) =>
+                          updateField("swish_number", e.target.value)
+                        }
+                        placeholder="123 456 78 90"
+                        className="text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="bank_name" className="text-sm">
+                        Bank
+                      </Label>
+                      <Input
+                        id="bank_name"
+                        value={settings.bank_name || ""}
+                        onChange={(e) => updateField("bank_name", e.target.value)}
+                        placeholder="SEB, Swedbank, Nordea..."
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-4 mt-4">
+                    <h3 className="text-sm font-semibold text-[#333333] mb-3">
+                      Internationella betalningar (valfritt)
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="iban" className="text-sm">
+                          IBAN
+                        </Label>
+                        <Input
+                          id="iban"
+                          value={settings.iban || ""}
+                          onChange={(e) => updateField("iban", e.target.value)}
+                          placeholder="SE45 5000 0000 0583 9825 7466"
+                          className="text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="bic_swift" className="text-sm">
+                          BIC/SWIFT
+                        </Label>
+                        <Input
+                          id="bic_swift"
+                          value={settings.bic_swift || ""}
+                          onChange={(e) =>
+                            updateField("bic_swift", e.target.value)
+                          }
+                          placeholder="ESSESESS"
+                          className="text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-4 mt-4">
+                    <h3 className="text-sm font-semibold text-[#333333] mb-3">
+                      Faktureringsvillkor
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="payment_terms_days" className="text-sm">
+                          Betalningsvillkor (dagar)
+                        </Label>
+                        <Input
+                          id="payment_terms_days"
+                          type="number"
+                          value={settings.payment_terms_days || 14}
+                          onChange={(e) =>
+                            updateField(
+                              "payment_terms_days",
+                              parseInt(e.target.value)
+                            )
+                          }
+                          placeholder="14"
+                          className="text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Antal dagar kund har på sig att betala (standard: 14)
+                        </p>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="invoice_prefix" className="text-sm">
+                          Fakturanummer-prefix
+                        </Label>
+                        <Input
+                          id="invoice_prefix"
+                          value={settings.invoice_prefix || "INV"}
+                          onChange={(e) =>
+                            updateField("invoice_prefix", e.target.value)
+                          }
+                          placeholder="INV"
+                          className="text-sm"
+                          maxLength={10}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Ex: INV → INV-2025-00001
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      <div>
+                        <Label htmlFor="late_fee_amount" className="text-sm">
+                          Påminnelseavgift (kr)
+                        </Label>
+                        <Input
+                          id="late_fee_amount"
+                          type="number"
+                          step="0.01"
+                          value={settings.late_fee_amount || 60}
+                          onChange={(e) =>
+                            updateField(
+                              "late_fee_amount",
+                              parseFloat(e.target.value)
+                            )
+                          }
+                          placeholder="60.00"
+                          className="text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Lagstadgad påminnelseavgift (standard: 60 kr)
+                        </p>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="interest_rate" className="text-sm">
+                          Dröjsmålsränta (% per år)
+                        </Label>
+                        <Input
+                          id="interest_rate"
+                          type="number"
+                          step="0.01"
+                          value={settings.interest_rate || 8.0}
+                          onChange={(e) =>
+                            updateField(
+                              "interest_rate",
+                              parseFloat(e.target.value)
+                            )
+                          }
+                          placeholder="8.00"
+                          className="text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Dröjsmålsränta vid försenad betalning (standard: 8%)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={saveSettings}
+                disabled={saving}
+                className="w-full px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm disabled:opacity-50"
+              >
+                {saving ? (
+                  "Sparar..."
+                ) : (
+                  <>
+                    <Save className="inline h-4 w-4 mr-2" />
+                    Spara faktureringsinställningar
+                  </>
+                )}
+              </button>
             </div>
           </TabsContent>
 
