@@ -1,5 +1,3 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
@@ -10,8 +8,33 @@ import { Database } from "@/types/database";
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verifiera autentisering med cookies
-    const supabase = createRouteHandlerClient<Database>({ cookies });
+    // Hämta access token från cookies
+    const cookies = request.cookies;
+    const accessToken = cookies.get('sb-access-token')?.value || 
+                       cookies.get('sb-fhdkkkujnhteetllxypg-auth-token')?.value;
+    
+    if (!accessToken) {
+      console.error("❌ No access token found in cookies");
+      return NextResponse.json({ 
+        error: "Unauthorized", 
+        details: "No authentication token found" 
+      }, { status: 401 });
+    }
+
+    // Skapa Supabase client med access token
+    const supabase = createClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      }
+    );
+
+    // Verifiera autentisering
     const {
       data: { user },
       error: authError,
@@ -19,7 +42,10 @@ export async function POST(request: NextRequest) {
 
     if (authError || !user) {
       console.error("❌ Auth error:", authError);
-      return NextResponse.json({ error: "Unauthorized", details: authError?.message }, { status: 401 });
+      return NextResponse.json({ 
+        error: "Unauthorized", 
+        details: authError?.message || "Invalid token" 
+      }, { status: 401 });
     }
 
     // Hämta användarens org_id
