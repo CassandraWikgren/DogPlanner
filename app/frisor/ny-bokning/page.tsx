@@ -476,7 +476,7 @@ export default function NyBokning() {
             </p>
             <Button
               onClick={() => router.push("/frisor")}
-              className="bg-orange-600 hover:bg-orange-700"
+              className="bg-[#2c7a4c] hover:bg-[#245c3a]"
               size="sm"
             >
               Gå till frisör
@@ -489,33 +489,31 @@ export default function NyBokning() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Tillbaka-knapp */}
-      <div className="bg-gray-50 pt-4 px-4">
-        <div className="max-w-5xl mx-auto">
+      {/* Header - INGEN HERO enligt Design System V2 */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-5xl mx-auto px-6 py-6">
           <Link href="/frisor">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="mb-3">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Tillbaka till frisör
             </Button>
           </Link>
-        </div>
-      </div>
-
-      {/* Hero-sektion - kompakt */}
-      <div className="relative bg-gradient-to-br from-orange-600 to-orange-700 text-white">
-        <div className="max-w-5xl mx-auto px-4 py-8 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Scissors className="h-7 w-7" />
-            <h1 className="text-2xl font-bold">Ny Frisörbokning</h1>
+          <div className="flex items-center gap-3">
+            <Scissors className="h-8 w-8 text-[#2c7a4c]" />
+            <div>
+              <h1 className="text-[32px] font-bold text-[#2c7a4c]">
+                Ny Frisörbokning
+              </h1>
+              <p className="text-base text-gray-600 mt-1">
+                Skapa en ny frisörtid för en av dina hundar
+              </p>
+            </div>
           </div>
-          <p className="text-white/90">
-            Skapa en ny frisörtid för en av dina hundar
-          </p>
         </div>
       </div>
 
       {/* Main Content - kompaktare */}
-      <div className="max-w-5xl mx-auto px-4 py-6">
+      <div className="max-w-5xl mx-auto px-6 py-6">
         {/* Error Display */}
         {error && (
           <Card className="mb-4 border-red-200 bg-red-50">
@@ -529,10 +527,10 @@ export default function NyBokning() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Customer Type Selection - kompakt */}
-          <Card>
+          {/* Customer Type Selection */}
+          <Card className="border border-gray-200">
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
+              <CardTitle className="flex items-center gap-2 text-lg text-[#2c7a4c]">
                 <User className="h-5 w-5" />
                 Välj Kundtyp
               </CardTitle>
@@ -548,15 +546,15 @@ export default function NyBokning() {
                   }}
                   className={`p-4 border-2 rounded-lg transition-all ${
                     customerType === "existing"
-                      ? "border-orange-500 bg-orange-50"
-                      : "border-gray-300 hover:border-orange-300"
+                      ? "border-[#2c7a4c] bg-[#e6f4ea]"
+                      : "border-gray-300 hover:border-[#2c7a4c]/50"
                   }`}
                 >
                   <div className="text-center">
                     <div
                       className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 ${
                         customerType === "existing"
-                          ? "bg-orange-500 text-white"
+                          ? "bg-[#2c7a4c] text-white"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
@@ -580,15 +578,15 @@ export default function NyBokning() {
                   }}
                   className={`p-4 border-2 rounded-lg transition-all ${
                     customerType === "walkin"
-                      ? "border-orange-500 bg-orange-50"
-                      : "border-gray-300 hover:border-orange-300"
+                      ? "border-[#2c7a4c] bg-[#e6f4ea]"
+                      : "border-gray-300 hover:border-[#2c7a4c]/50"
                   }`}
                 >
                   <div className="text-center">
                     <div
                       className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 ${
                         customerType === "walkin"
-                          ? "bg-orange-500 text-white"
+                          ? "bg-[#2c7a4c] text-white"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
@@ -641,10 +639,10 @@ export default function NyBokning() {
                             key={dog.id}
                             type="button"
                             onClick={() => handleDogSelect(dog)}
-                            className="flex items-center gap-4 p-4 bg-white border border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-left shadow-sm"
+                            className="flex items-center gap-4 p-4 bg-white border border-gray-300 rounded-lg hover:border-[#2c7a4c] hover:bg-[#e6f4ea] transition-colors text-left shadow-sm"
                           >
-                            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-                              <span className="text-orange-600 font-bold text-lg">
+                            <div className="w-12 h-12 rounded-full bg-[#e6f4ea] flex items-center justify-center">
+                              <span className="text-[#2c7a4c] font-bold text-lg">
                                 {dog.name.charAt(0).toUpperCase()}
                               </span>
                             </div>
@@ -671,9 +669,9 @@ export default function NyBokning() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                    <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center">
-                      <span className="text-orange-600 font-bold text-2xl">
+                  <div className="flex items-center gap-4 p-4 bg-[#e6f4ea] border border-[#2c7a4c] rounded-lg">
+                    <div className="w-16 h-16 rounded-full bg-[#2c7a4c]/10 flex items-center justify-center">
+                      <span className="text-[#2c7a4c] font-bold text-2xl">
                         {selectedDog.name.charAt(0).toUpperCase()}
                       </span>
                     </div>
@@ -800,10 +798,10 @@ export default function NyBokning() {
                                   });
                                   setExternalSearchTerm("");
                                 }}
-                                className="flex items-center gap-3 p-3 bg-white border border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors text-left"
+                                className="flex items-center gap-3 p-3 bg-white border border-gray-300 rounded-lg hover:border-[#2c7a4c] hover:bg-[#e6f4ea] transition-colors text-left"
                               >
-                                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
-                                  <span className="text-orange-600 font-bold text-sm">
+                                <div className="w-10 h-10 rounded-full bg-[#e6f4ea] flex items-center justify-center flex-shrink-0">
+                                  <span className="text-[#2c7a4c] font-bold text-sm">
                                     {customer.dog_name.charAt(0).toUpperCase()}
                                   </span>
                                 </div>
@@ -959,7 +957,7 @@ export default function NyBokning() {
                           appointment_time: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 text-sm h-9 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm h-9 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                       required
                     >
                       <option value="">Välj tid...</option>
@@ -998,14 +996,14 @@ export default function NyBokning() {
                         onClick={() => handleServiceSelect(service)}
                         className={`flex items-start gap-3 p-3 border rounded-lg transition-all text-left ${
                           selectedService?.value === service.value
-                            ? "border-orange-500 bg-orange-50 shadow-sm"
-                            : "hover:border-orange-300 hover:bg-orange-50/50"
+                            ? "border-[#2c7a4c] bg-[#e6f4ea] shadow-sm"
+                            : "hover:border-[#2c7a4c]/50 hover:bg-[#e6f4ea]/50"
                         }`}
                       >
                         <div
                           className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                             selectedService?.value === service.value
-                              ? "bg-orange-500 text-white"
+                              ? "bg-[#2c7a4c] text-white"
                               : "bg-gray-100 text-gray-600"
                           }`}
                         >
@@ -1148,7 +1146,7 @@ export default function NyBokning() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 bg-orange-600 hover:bg-orange-700"
+                className="flex-1 bg-[#2c7a4c] hover:bg-[#245c3a]"
                 size="sm"
               >
                 {submitting ? "Sparar..." : "Skapa Bokning"}
