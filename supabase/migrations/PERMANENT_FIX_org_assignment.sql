@@ -130,7 +130,7 @@ CREATE TRIGGER on_auth_user_created
 -- LAYER 3: Healing RPC Function
 -- =====================================================
 
-CREATE OR REPLACE FUNCTION heal_user_missing_org(user_id_param uuid)
+CREATE OR REPLACE FUNCTION heal_user_missing_org(p_user_id uuid)
 RETURNS jsonb AS $$
 DECLARE
   v_user_email text;
@@ -149,7 +149,7 @@ BEGIN
   SELECT email, raw_user_meta_data
   INTO v_user_email, v_user_metadata
   FROM auth.users
-  WHERE id = user_id_param;
+  WHERE id = p_user_id;
 
   IF v_user_email IS NULL THEN
     RETURN jsonb_build_object(
@@ -159,7 +159,7 @@ BEGIN
   END IF;
 
   -- Check if profile exists
-  SELECT EXISTS(SELECT 1 FROM profiles WHERE id = user_id_param)
+  SELECT EXISTS(SELECT 1 FROM profiles WHERE id = p_user_id)
   INTO v_profile_exists;
 
   -- Extract metadata
@@ -225,7 +225,7 @@ BEGIN
         full_name = COALESCE(full_name, v_full_name),
         phone = COALESCE(phone, v_phone),
         updated_at = now()
-    WHERE id = user_id_param;
+    WHERE id = p_user_id;
 
     RAISE NOTICE 'Healing: Updated profile for user %', v_user_email;
   ELSE
@@ -239,7 +239,7 @@ BEGIN
       created_at
     )
     VALUES (
-      user_id_param,
+      p_user_id,
       v_org_id,
       'admin',
       v_user_email,
