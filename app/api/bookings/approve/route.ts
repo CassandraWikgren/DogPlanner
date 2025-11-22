@@ -10,7 +10,7 @@ import { Database } from "@/types/database";
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verifiera autentisering
+    // Verifiera autentisering med cookies
     const supabase = createRouteHandlerClient<Database>({ cookies });
     const {
       data: { user },
@@ -18,7 +18,8 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      console.error("❌ Auth error:", authError);
+      return NextResponse.json({ error: "Unauthorized", details: authError?.message }, { status: 401 });
     }
 
     // Hämta användarens org_id
@@ -29,8 +30,9 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (profileError || !profile) {
+      console.error("❌ Profile error:", profileError);
       return NextResponse.json(
-        { error: "User not associated with organization" },
+        { error: "User not associated with organization", details: profileError?.message },
         { status: 403 }
       );
     }
@@ -38,11 +40,14 @@ export async function POST(request: NextRequest) {
     const userOrgId = (profile as any).org_id as string;
 
     if (!userOrgId) {
+      console.error("❌ No org_id for user:", user.id);
       return NextResponse.json(
         { error: "User not associated with organization" },
         { status: 403 }
       );
     }
+
+    console.log("✅ User authenticated:", user.id, "org:", userOrgId);
 
     // Läs request body
     const body = await request.json();
