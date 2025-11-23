@@ -291,20 +291,23 @@ export default function FrisorDashboard() {
             <div className="flex items-center gap-3">
               <Link href="/frisor/kalender">
                 <button className="h-10 px-4 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center gap-2 font-semibold text-[15px] shadow-sm">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-5 w-5" />
                   <span className="hidden sm:inline">Kalender</span>
                 </button>
               </Link>
               <button
                 onClick={loadData}
-                className="h-10 w-10 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-md transition flex items-center justify-center"
+                className="h-10 w-10 bg-[#4b5563] hover:bg-[#374151] text-white rounded-md transition flex items-center justify-center shadow-sm"
                 title="Uppdatera"
               >
-                <RefreshCcw className="h-4 w-4" />
+                <RefreshCcw className="h-5 w-5" />
               </button>
               <Link href="/admin/priser/frisor">
-                <button className="h-10 w-10 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-md transition flex items-center justify-center">
-                  <Settings2 className="h-4 w-4" />
+                <button
+                  className="h-10 w-10 bg-[#4b5563] hover:bg-[#374151] text-white rounded-md transition flex items-center justify-center shadow-sm"
+                  title="Inställningar"
+                >
+                  <Settings2 className="h-5 w-5" />
                 </button>
               </Link>
             </div>
@@ -324,8 +327,11 @@ export default function FrisorDashboard() {
                   Mina bokningar idag
                 </h2>
                 <Link href="/frisor/ny-bokning">
-                  <button className="h-8 w-8 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center justify-center">
-                    <Plus className="h-4 w-4" />
+                  <button
+                    className="h-9 w-9 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center justify-center shadow-sm"
+                    title="Ny bokning"
+                  >
+                    <Plus className="h-5 w-5" />
                   </button>
                 </Link>
               </div>
