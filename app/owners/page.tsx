@@ -45,7 +45,7 @@ interface Owner {
   email?: string;
   phone?: string;
   address?: string;
-  customer_number?: string;
+  customer_number?: number; // Changed from string to number to match database type
   notes?: string;
   created_at: string;
   org_id: string;
@@ -546,11 +546,13 @@ export default function OwnersPage() {
                           <p className="font-medium text-gray-900">
                             {owner.full_name}
                           </p>
-                          {owner.customer_number && (
-                            <p className="text-xs text-gray-600 font-mono">
-                              Kund #{owner.customer_number}
-                            </p>
-                          )}
+                          <p className="text-xs text-gray-600 font-mono">
+                            {owner.customer_number ? (
+                              `Kund #${owner.customer_number}`
+                            ) : (
+                              <span className="text-red-600">⚠️ Saknar kundnummer</span>
+                            )}
+                          </p>
                           {owner.address && (
                             <p className="text-sm text-gray-500">
                               {owner.address}

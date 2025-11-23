@@ -46,6 +46,9 @@ export default function TillvalstjansterPage() {
   useEffect(() => {
     if (currentOrgId) {
       loadServices();
+    } else {
+      // ✅ FIX: Stoppa loading spinner om currentOrgId saknas
+      setLoading(false);
     }
   }, [currentOrgId]);
 

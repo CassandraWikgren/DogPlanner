@@ -30,6 +30,9 @@ export default function PensionatSchemaPage() {
   useEffect(() => {
     if (currentOrgId) {
       loadData();
+    } else {
+      // ✅ FIX: Stoppa loading spinner om currentOrgId saknas
+      setLoading(false);
     }
   }, [currentOrgId, startDate]);
 

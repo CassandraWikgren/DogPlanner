@@ -102,9 +102,15 @@ export default function PensionatAnsokningarPage() {
   // LADDA DATA
   // ====================================
   useEffect(() => {
-    if (currentOrgId && !authLoading) {
+    if (authLoading) return; // Vänta på auth
+
+    if (currentOrgId) {
       loadPendingBookings();
       loadAllExtraServices();
+    } else {
+      // ✅ FIX: Stoppa loading spinner om currentOrgId saknas
+      setLoading(false);
+      console.warn("Ingen organisation tilldelad - kan inte ladda ansökningar");
     }
   }, [currentOrgId, authLoading]);
 

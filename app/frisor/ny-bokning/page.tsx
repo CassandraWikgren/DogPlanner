@@ -58,59 +58,12 @@ interface ServiceOption {
   basePrice: number;
   duration: number; // minutes
   description: string;
+  dog_size?: string | null;
+  coat_type?: string | null;
 }
 
-const SERVICE_OPTIONS: ServiceOption[] = [
-  {
-    value: "bath",
-    label: "Badning",
-    basePrice: 300,
-    duration: 60,
-    description: "Grundläggande badning med hundschampo",
-  },
-  {
-    value: "bath_trim",
-    label: "Badning + Trimning",
-    basePrice: 500,
-    duration: 90,
-    description: "Bad och trimning av päls",
-  },
-  {
-    value: "full_groom",
-    label: "Fullständig Klippning",
-    basePrice: 700,
-    duration: 120,
-    description: "Komplett pälsvård med klippning",
-  },
-  {
-    value: "nail_trim",
-    label: "Klotrimning",
-    basePrice: 150,
-    duration: 30,
-    description: "Trimning av klor",
-  },
-  {
-    value: "ear_cleaning",
-    label: "Öronrengöring",
-    basePrice: 100,
-    duration: 20,
-    description: "Professionell öronrengöring",
-  },
-  {
-    value: "teeth_cleaning",
-    label: "Tandrengöring",
-    basePrice: 400,
-    duration: 45,
-    description: "Tandvård och rengöring",
-  },
-  {
-    value: "custom",
-    label: "Anpassad Behandling",
-    basePrice: 0,
-    duration: 60,
-    description: "Skräddarsydd behandling",
-  },
-];
+// Note: SERVICE_OPTIONS is now loaded from database (grooming_prices table)
+// instead of being hardcoded here
 
 // Time slots (9:00 - 17:00, 30 min intervals)
 const generateTimeSlots = () => {
@@ -180,10 +133,15 @@ export default function NyBokning() {
     null
   );
 
+  // Service options loaded from database
+  const [serviceOptions, setServiceOptions] = useState<ServiceOption[]>([]);
+  const [loadingServices, setLoadingServices] = useState(false);
+
   useEffect(() => {
     if (currentOrgId && !authLoading) {
       loadDogs();
       loadExternalCustomers();
+      loadGroomingPrices();
     }
   }, [currentOrgId, authLoading]);
 
@@ -285,6 +243,45 @@ export default function NyBokning() {
     }
   };
 
+  const loadGroomingPrices = async () => {
+    if (!currentOrgId) return;
+
+    setLoadingServices(true);
+    try {
+      const { data, error: dbError } = await supabase
+        .from("grooming_prices")
+        .select("*")
+        .eq("org_id", currentOrgId)
+        .eq("active", true)
+        .order("service_type", { ascending: true });
+
+      if (dbError) {
+        console.error("Fel vid laddning av priser:", dbError);
+        // Fallback to empty array if no prices exist yet
+        setServiceOptions([]);
+        return;
+      }
+
+      // Transform database prices to ServiceOption format
+      const transformed: ServiceOption[] = (data || []).map((price: any) => ({
+        value: price.service_type,
+        label: price.service_name,
+        basePrice: price.price,
+        duration: price.duration_minutes,
+        description: price.description || "",
+        dog_size: price.dog_size,
+        coat_type: price.coat_type,
+      }));
+
+      setServiceOptions(transformed);
+    } catch (err: any) {
+      console.error("Fel vid laddning av tjänster:", err);
+      setServiceOptions([]);
+    } finally {
+      setLoadingServices(false);
+    }
+  };
+
   const handleDogSelect = async (dog: Dog) => {
     setSelectedDog(dog);
     setFormData((prev) => ({ ...prev, dog_id: dog.id }));
@@ -328,8 +325,8 @@ export default function NyBokning() {
     }));
 
     // Try to match service type from notes or special treatments
-    if (lastVisit.special_treatments) {
-      const matchedService = SERVICE_OPTIONS.find((s) =>
+    if (lastVisit.special_treatments && serviceOptions.length > 0) {
+      const matchedService = serviceOptions.find((s) =>
         lastVisit.special_treatments?.toLowerCase().includes(s.value)
       );
       if (matchedService) {
@@ -527,7 +524,7 @@ export default function NyBokning() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Customer Type Selection */}
+          {/* Customer Type Selection - Compact */}
           <Card className="border border-gray-200">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg text-[#2c7a4c]">
@@ -544,28 +541,28 @@ export default function NyBokning() {
                     setSelectedDog(null);
                     setFormData((prev) => ({ ...prev, dog_id: "" }));
                   }}
-                  className={`p-4 border-2 rounded-lg transition-all ${
+                  className={`p-3 border-2 rounded-md transition-all ${
                     customerType === "existing"
                       ? "border-[#2c7a4c] bg-[#e6f4ea]"
                       : "border-gray-300 hover:border-[#2c7a4c]/50"
                   }`}
                 >
-                  <div className="text-center">
+                  <div className="flex items-center gap-2">
                     <div
-                      className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         customerType === "existing"
                           ? "bg-[#2c7a4c] text-white"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      <User className="h-6 w-6" />
+                      <User className="h-4 w-4" />
                     </div>
-                    <p className="font-semibold text-gray-900 text-sm mb-0.5">
-                      Befintlig Hund
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      Välj från hunddagis-registret
-                    </p>
+                    <div className="text-left">
+                      <p className="font-semibold text-gray-900 text-sm">
+                        Befintlig Hund
+                      </p>
+                      <p className="text-xs text-gray-600">Från registret</p>
+                    </div>
                   </div>
                 </button>
 
@@ -576,28 +573,28 @@ export default function NyBokning() {
                     setSelectedDog(null);
                     setFormData((prev) => ({ ...prev, dog_id: "" }));
                   }}
-                  className={`p-4 border-2 rounded-lg transition-all ${
+                  className={`p-3 border-2 rounded-md transition-all ${
                     customerType === "walkin"
                       ? "border-[#2c7a4c] bg-[#e6f4ea]"
                       : "border-gray-300 hover:border-[#2c7a4c]/50"
                   }`}
                 >
-                  <div className="text-center">
+                  <div className="flex items-center gap-2">
                     <div
-                      className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         customerType === "walkin"
                           ? "bg-[#2c7a4c] text-white"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      <AlertCircle className="h-6 w-6" />
+                      <AlertCircle className="h-4 w-4" />
                     </div>
-                    <p className="font-semibold text-gray-900 text-sm mb-0.5">
-                      Walk-in Kund
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Ny kund som ringde in
-                    </p>
+                    <div className="text-left">
+                      <p className="font-semibold text-gray-900 text-sm">
+                        Walk-in Kund
+                      </p>
+                      <p className="text-xs text-gray-600">Ny inringd kund</p>
+                    </div>
                   </div>
                 </button>
               </div>
@@ -988,52 +985,85 @@ export default function NyBokning() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-2">
-                    {SERVICE_OPTIONS.map((service) => (
-                      <button
-                        key={service.value}
-                        type="button"
-                        onClick={() => handleServiceSelect(service)}
-                        className={`flex items-start gap-3 p-3 border rounded-lg transition-all text-left ${
-                          selectedService?.value === service.value
-                            ? "border-[#2c7a4c] bg-[#e6f4ea] shadow-sm"
-                            : "hover:border-[#2c7a4c]/50 hover:bg-[#e6f4ea]/50"
-                        }`}
-                      >
-                        <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                            selectedService?.value === service.value
-                              ? "bg-[#2c7a4c] text-white"
-                              : "bg-gray-100 text-gray-600"
+                  {loadingServices ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c] mx-auto mb-2"></div>
+                      <p className="text-sm text-gray-600">
+                        Laddar tjänster...
+                      </p>
+                    </div>
+                  ) : serviceOptions.length === 0 ? (
+                    <div className="text-center py-8">
+                      <AlertCircle className="h-10 w-10 text-orange-600 mx-auto mb-3" />
+                      <p className="text-gray-900 font-medium mb-1">
+                        Inga priser inlagda än
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Gå till Admin → Hundfrisör → Priser för att lägga till
+                        tjänster
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-2">
+                      {serviceOptions.map((service) => (
+                        <button
+                          key={
+                            service.value +
+                            (service.dog_size || "") +
+                            (service.coat_type || "")
+                          }
+                          type="button"
+                          onClick={() => handleServiceSelect(service)}
+                          className={`flex items-start gap-3 p-3 border-2 rounded-md transition-all text-left ${
+                            selectedService?.value === service.value &&
+                            selectedService?.dog_size === service.dog_size &&
+                            selectedService?.coat_type === service.coat_type
+                              ? "border-[#2c7a4c] bg-white shadow-sm"
+                              : "border-gray-200 hover:border-[#2c7a4c]/50 hover:bg-gray-50"
                           }`}
                         >
-                          <Scissors className="h-4 w-4" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-0.5">
-                            <p className="font-semibold text-gray-900 text-sm">
-                              {service.label}
-                            </p>
-                            <Badge
-                              variant="outline"
-                              className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs"
-                            >
-                              {service.basePrice > 0
-                                ? `${service.basePrice} kr`
-                                : "Anpassat"}
-                            </Badge>
+                          <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              selectedService?.value === service.value &&
+                              selectedService?.dog_size === service.dog_size &&
+                              selectedService?.coat_type === service.coat_type
+                                ? "bg-[#2c7a4c] text-white"
+                                : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            <Scissors className="h-4 w-4" />
                           </div>
-                          <p className="text-xs text-gray-600 mb-0.5">
-                            {service.description}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            <Clock className="h-3 w-3 inline mr-1" />
-                            {service.duration} min
-                          </p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-0.5">
+                              <p className="font-semibold text-gray-900 text-sm">
+                                {service.label}
+                                {service.dog_size && (
+                                  <span className="text-xs text-gray-500 ml-2">
+                                    ({service.dog_size})
+                                  </span>
+                                )}
+                              </p>
+                              <Badge
+                                variant="outline"
+                                className="bg-white text-[#2c7a4c] border-[#2c7a4c] text-xs font-semibold"
+                              >
+                                {service.basePrice > 0
+                                  ? `${service.basePrice} kr`
+                                  : "Anpassat"}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-gray-600 mb-0.5">
+                              {service.description}
+                            </p>
+                            <p className="text-xs text-gray-500 flex items-center">
+                              <Clock className="h-3 w-3 mr-1" />
+                              {service.duration} min
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
                   {selectedService && selectedService.value === "custom" && (
                     <div className="mt-3">

@@ -883,9 +883,9 @@ const FakturorPage = () => {
 
         {/* 🔍 Sök- och filtreringsfält */}
         <div className="space-y-4 mt-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-wrap">
             {/* Sökfält */}
-            <div className="flex items-center gap-2 flex-1">
+            <div className="flex items-center gap-2 flex-1 min-w-[250px]">
               <input
                 type="text"
                 placeholder="Sök kund, faktura, belopp eller status..."
@@ -896,7 +896,7 @@ const FakturorPage = () => {
               {search && (
                 <button
                   onClick={() => setSearch("")}
-                  className="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
+                  className="px-3 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm whitespace-nowrap"
                 >
                   Rensa
                 </button>
@@ -904,31 +904,41 @@ const FakturorPage = () => {
             </div>
 
             {/* Månadsfilter */}
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
-            >
-              <option value="all">Alla månader</option>
-              {generateMonthOptions().map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                Månad:
+              </label>
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white min-w-[180px]"
+              >
+                <option value="all">Alla månader</option>
+                {generateMonthOptions().map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Statusfilter */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
-            >
-              <option value="all">Alla status</option>
-              <option value="draft">Utkast</option>
-              <option value="sent">Skickad</option>
-              <option value="paid">Betald</option>
-              <option value="cancelled">Makulerad</option>
-            </select>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                Status:
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white min-w-[150px]"
+              >
+                <option value="all">Alla status</option>
+                <option value="draft">Utkast</option>
+                <option value="sent">Skickad</option>
+                <option value="paid">Betald</option>
+                <option value="cancelled">Makulerad</option>
+              </select>
+            </div>
 
             {/* Kolumnval */}
             <div className="relative">
@@ -946,23 +956,23 @@ const FakturorPage = () => {
               </button>
               <div
                 id="column-dropdown"
-                className="hidden absolute top-full right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 p-2 min-w-[200px]"
+                className="hidden absolute top-full right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 p-3 min-w-[220px]"
               >
-                <div className="text-xs font-medium text-gray-700 mb-2">
-                  Välj synliga kolumner:
+                <div className="text-xs font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-200">
+                  Välj synliga kolumner
                 </div>
                 {availableColumns.map((column) => (
                   <label
                     key={column.key}
-                    className="flex items-center gap-2 p-1 hover:bg-gray-50 cursor-pointer"
+                    className="flex items-start gap-3 py-2 px-2 hover:bg-gray-50 cursor-pointer rounded"
                   >
                     <input
                       type="checkbox"
                       checked={isColumnVisible(column.key)}
                       onChange={() => toggleColumn(column.key)}
-                      className="rounded text-emerald-600"
+                      className="mt-0.5 rounded text-emerald-600 flex-shrink-0 w-4 h-4"
                     />
-                    <span className="text-sm">{column.label}</span>
+                    <span className="text-sm text-gray-700 leading-tight">{column.label}</span>
                   </label>
                 ))}
               </div>

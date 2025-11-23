@@ -1,4 +1,235 @@
-<!-- Last updated: 2025-11-17 (Faktura-system fixes + Prisvisning) -->
+<!-- Last updated: 2025-11-23 (Grooming prices system, design improvements) -->
+
+---
+
+## 🔄 Senaste Uppdateringar (23 november 2025)
+
+### 🎨 FRISÖRSYSTEM MED DYNAMISKA PRISER (23 november)
+
+**Status:** Implementerat och deployat ✅
+
+#### ✨ Ny funktionalitet
+
+**Databas-drivet prissystem:**
+
+- ✅ Ny tabell `grooming_prices` för organisationsspecifika priser
+- ✅ Stöd för olika hundstorlekar (mini, small, medium, large, xlarge)
+- ✅ Stöd för olika pälstyper (short, medium, long, wire, curly)
+- ✅ Beräknad tid per behandling för kalenderplanering
+- ✅ RLS-policies för org-isolering
+
+**Admin-gränssnitt:**
+
+- ✅ Ny sida: `/admin/hundfrisor/priser`
+- ✅ Komplett CRUD för frisörtjänster och priser
+- ✅ Dropdown för hundstorlek och pälstyp
+- ✅ Inline-redigering i tabell
+- ✅ Aktivera/deaktivera tjänster utan att radera
+
+**Bokningsflöde-uppdatering:**
+
+- ✅ Dynamisk hämtning av priser från databas (ej hårdkodat)
+- ✅ Loading state medan tjänster laddas
+- ✅ Empty state med hjälpsamt meddelande
+- ✅ Visar hundstorlek i tjänstens label
+- ✅ Kompaktare kundtyp-rutor (side-by-side layout)
+
+**Design-förbättringar:**
+
+- ✅ VIT text på grön bakgrund (#2c7a4c → #ffffff)
+- ✅ Vita behandlingskort istället för gröna (bättre läsbarhet)
+- ✅ Uppdaterad DESIGN_SYSTEM_V2.md med KRITISK REGEL om textkontrast
+
+**Implementationsfiler:**
+
+- `supabase/migrations/create_grooming_prices.sql` - Databas-migration
+- `GROOMING_PRICES.sql` - Ren SQL för enkel deployment
+- `app/admin/hundfrisor/priser/page.tsx` - Admin CRUD-gränssnitt
+- `app/frisor/ny-bokning/page.tsx` - Uppdaterat bokningsflöde
+- `KLART_FRISOR.md` - Deployment-guide
+- `FRISOR_IMPLEMENTATION_GUIDE.md` - Teknisk dokumentation
+
+**Migration:** `create_grooming_prices.sql`
+
+---
+
+## 🔄 Tidigare Uppdateringar (22 november 2025)
+
+### 🎯 KUNDNUMMERSYSTEM (22 november)
+
+**Status:** Implementerat och testat ✅
+
+#### ✨ Ny funktionalitet
+
+**Automatisk kundnummergenerering:**
+
+- ✅ Varje ägare får automatiskt ett unikt kundnummer vid skapande
+- ✅ Sekvensbaserat system garanterar unikhet (även vid concurrent inserts)
+- ✅ Trigger `auto_generate_customer_number()` körs BEFORE INSERT
+- ✅ Alla 18 befintliga ägare har fått kundnummer (1-18)
+- ✅ Globalt unikt över alla organisationer
+
+**Databas:**
+
+```sql
+-- Kolumn: owners.customer_number (INTEGER, UNIQUE)
+-- Sekvens: owners_customer_number_seq
+-- Trigger: trigger_auto_customer_number
+-- Index: owners_customer_number_key (UNIQUE)
+```
+
+**UI-uppdateringar:**
+
+- ✅ Kundnummer visas i ägarlistan: "Kund #1234"
+- ✅ TypeScript-typ fixad: `customer_number: number` (var fel: string)
+- ✅ Visuell varning om kundnummer saknas (röd text)
+
+**Script:** `APPLY_CUSTOMER_NUMBERS.sql`
+
+---
+
+### ⚡ PERFORMANCE-OPTIMERINGAR (22 november)
+
+**Status:** Implementerat och pushat ✅
+
+#### 🚀 AuthContext-optimering
+
+**Problem:** 3 separata databas-queries blockerade sidladdning
+
+**Lösning:**
+
+- ✅ Konsoliderat till 1 query: `select("id, org_id, role, full_name, email, phone")`
+- ✅ 100ms setTimeout för att släppa igenom initial render
+- ✅ Quick fallback: org_id från user_metadata innan query är klar
+- ✅ 66% reduktion i databas-queries
+
+**Resultat:** Sidor laddar <1 sekund (var 2-3 sekunder)
+
+#### 📊 Sentry-optimering
+
+**Problem:** 100% sampling + Session Replay överbelastar Sentry
+
+**Lösning:**
+
+```typescript
+// sentry.client.config.ts & sentry.server.config.ts
+tracesSampleRate: 0.01,        // 1% (var 100%)
+replaysSessionSampleRate: 0,   // Disabled (var 10%)
+replaysOnErrorSampleRate: 0,   // Disabled
+enableLogs: false              // Disabled (var true)
+```
+
+**Resultat:** 99% reduktion i Sentry-events, eliminerad overhead
+
+#### 📄 Ekonomi-sidan optimering
+
+**Problem:** Laddade ALLA fakturor + invoice_lines
+
+**Lösning:**
+
+- ✅ Pagination: 50 fakturor per sida
+- ✅ Tog bort `invoice_lines` från initial query
+- ✅ Optimistic UI: Inga refetch efter uppdateringar
+
+**Resultat:** Snabb laddning även med 100+ fakturor
+
+---
+
+### 🗄️ SCHEMA-UPPDATERINGAR (22 november)
+
+**Status:** Implementerat och pushat ✅
+
+#### 📋 Nya tabeller och kolumner
+
+**1. boarding_seasons.price_multiplier**
+
+```sql
+ALTER TABLE boarding_seasons
+ADD COLUMN price_multiplier DECIMAL(3,2) DEFAULT 1.0;
+```
+
+- **Syfte:** Säsongsprispåslag (1.0 = normal, 1.5 = +50%)
+- **Påverkan:** 20+ filer använder denna kolumn
+- **Script:** `FIX_DATABASE_SCHEMA.sql`
+
+**2. owner_discounts (ny tabell)**
+
+```sql
+CREATE TABLE owner_discounts (
+    id UUID PRIMARY KEY,
+    owner_id UUID REFERENCES owners(id),
+    discount_type TEXT CHECK (IN ('percentage', 'fixed_amount')),
+    discount_value DECIMAL(10,2),
+    valid_from DATE,
+    valid_until DATE,
+    is_active BOOLEAN DEFAULT true,
+    org_id UUID REFERENCES orgs(id)
+);
+```
+
+- **Syfte:** Kundspecifika rabatter för fakturor
+- **RLS:** Enabled med policies för org-baserad åtkomst
+- **Index:** owner_id, org_id, is_active
+- **Script:** `FIX_DATABASE_SCHEMA.sql`
+
+**3. RLS Policies**
+
+- ✅ `owners`: "Users can view owners in their org"
+- ✅ `owner_discounts`: View + manage policies
+- ✅ Alla policies org_id-baserade för säkerhet
+
+---
+
+### 🐛 BUGFIXAR (22 november)
+
+**Status:** Fixat och pushat ✅
+
+#### 1. Booking Approval Authentication
+
+**Problem:** Cookie-parsing fel → 401 Unauthorized vid godkännande
+
+**Fix:** `app/api/bookings/approve/route.ts`
+
+```typescript
+const authCookie = cookies.get("sb-fhdkkkujnhteetllxypg-auth-token");
+const authData = JSON.parse(authCookie.value);
+accessToken = authData?.access_token || authData?.[0]?.access_token;
+```
+
+#### 2. UI-förbättringar (DESIGN_SYSTEM_V2)
+
+**Owner Edit Modal:**
+
+- ✅ Redesignad med green headers (#2c7a4c)
+- ✅ Labels: green semibold text, mb-2
+- ✅ Inputs: h-10, border-2, green focus ring
+- ✅ Footer: gray background, proper button styling
+
+**Weekday Selection (EditDogModal):**
+
+- ✅ Selected: green background + white text + scale-105
+- ✅ Unselected: white background + gray text
+- ✅ Tydligare visuell feedback
+
+**Owner List Buttons:**
+
+- ✅ White icons på colored backgrounds (var green on green)
+- ✅ Customer number display: "Kund #1234"
+
+---
+
+### 📧 EMAIL-SYSTEM (tidigare implementerat)
+
+**Status:** Fungerar med SMTP2GO ✅
+
+**Komponenter:**
+
+- ✅ Edge Function: `supabase/functions/send_invoice_email`
+- ✅ SMTP2GO API: 1000 emails/month gratis
+- ✅ PDF-generering med QR-kod
+- ✅ Template: Professionell design med Swish-instruktioner
+
+**Note:** Sender email (info@dogplanner.se) behöver verifieras i SMTP2GO
 
 ---
 

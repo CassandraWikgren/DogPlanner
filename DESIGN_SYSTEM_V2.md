@@ -249,6 +249,60 @@ color: #6B7280
 font-size: 16px
 ```
 
+### ⚠️ KRITISK REGEL: TEXT PÅ GRÖN BAKGRUND
+
+**ALLTID när du använder grön bakgrund (#2C7A4C eller bg-[#2c7a4c]):**
+
+```css
+background: #2C7A4C
+color: #FFFFFF /* ALLTID VIT TEXT */
+```
+
+**Exempel på RÄTT användning:**
+
+```tsx
+{
+  /* Grön bakgrund = VIT text */
+}
+<div className="bg-[#2c7a4c] text-white">
+  <p className="text-white">Detta läses bra!</p>
+  <Icon className="text-white" />
+</div>;
+
+{
+  /* Vit/ljus bakgrund = MÖRK text */
+}
+<div className="bg-white">
+  <p className="text-gray-900">Detta läses bra!</p>
+  <Icon className="text-gray-600" />
+</div>;
+```
+
+**Exempel på FEL (använd ALDRIG):**
+
+```tsx
+{
+  /* ❌ DÅLIG KONTRAST */
+}
+<div className="bg-[#2c7a4c]">
+  <p className="text-gray-600">Går inte att läsa!</p>
+</div>;
+
+{
+  /* ❌ DÅLIG KONTRAST */
+}
+<div className="bg-[#e6f4ea]">
+  <p className="text-gray-400">För ljus!</p>
+</div>;
+```
+
+**Rekommenderade färgkombinationer:**
+
+- Grön bakgrund (#2C7A4C) → VIT text (#FFFFFF)
+- Vit bakgrund (#FFFFFF) → Svart/mörkgrå text (#333333 eller #1F2937)
+- Ljusgrön bakgrund (#E6F4EA) → Mörkgrå text (#333333)
+- Grå bakgrund (#F5F5F5) → Mörkgrå text (#333333)
+
 ---
 
 ## 📄 PAGE-TYPOLOGI

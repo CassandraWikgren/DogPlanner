@@ -121,6 +121,9 @@ export default function HunddagisIntresseanmalningarPage() {
   useEffect(() => {
     if (currentOrgId) {
       loadApplications();
+    } else {
+      // ✅ FIX: Stoppa loading spinner om currentOrgId saknas
+      setLoading(false);
     }
   }, [currentOrgId]);
 

@@ -50,6 +50,9 @@ export default function HunddagisPriserPage() {
   useEffect(() => {
     if (currentOrgId) {
       loadPrices();
+    } else {
+      // ✅ FIX: Stoppa loading spinner om currentOrgId saknas
+      setLoading(false);
     }
   }, [currentOrgId]);
 

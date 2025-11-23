@@ -341,3 +341,218 @@ ALTER TABLE invoices ADD CONSTRAINT invoices_status_check
 **Skapad:** 2025-11-22  
 **Senast uppdaterad:** 2025-11-22  
 **Status:** ✅ Implementerad i produktion
+
+---
+
+# Schema-uppdatering: Frisörsystem med dynamiska priser
+
+**Datum:** 2025-11-23  
+**Migration:** `create_grooming_prices.sql`  
+**Status:** ✅ Implementerad och körts framgångsrikt
+
+## Översikt
+
+Denna uppdatering lägger till databas-drivet prissystem för hundfrisörtjänster med:
+
+- Dynamiska priser (inte hårdkodade i kod)
+- Stöd för olika hundstorlekar (mini, small, medium, large, xlarge)
+- Stöd för olika pälstyper (short, medium, long, wire, curly)
+- Beräknad tid per behandling för kalenderplanering
+- Admin-gränssnitt för att hantera priser
+- Automatisk synkning mellan admin och bokningsflöde
+
+---
+
+## 1. NY TABELL: `grooming_prices`
+
+Lagrar alla frisörtjänster och deras priser per organisation.
+
+```sql
+CREATE TABLE grooming_prices (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    org_id UUID NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
+    
+    service_name TEXT NOT NULL,           -- Ex: "Badning", "Klippning"
+    service_type TEXT NOT NULL,           -- Ex: "bath", "full_groom"
+    description TEXT,                     -- Beskrivning av tjänsten
+    
+    dog_size TEXT CHECK (dog_size IN ('mini', 'small', 'medium', 'large', 'xlarge') OR dog_size IS NULL),
+    coat_type TEXT CHECK (coat_type IN ('short', 'medium', 'long', 'wire', 'curly') OR coat_type IS NULL),
+    
+    price NUMERIC(10,2) NOT NULL DEFAULT 0,
+    duration_minutes INTEGER NOT NULL DEFAULT 60,
+    
+    active BOOLEAN DEFAULT true,
+    
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    
+    UNIQUE(org_id, service_type, dog_size, coat_type)
+);
+```
+
+**Indexering:**
+- `idx_grooming_prices_org_id` på `org_id`
+- `idx_grooming_prices_active` på `(org_id, active)` där `active = true`
+
+**RLS Policies:**
+- SELECT: Användare kan se priser i sin organisation
+- ALL: Användare kan hantera priser i sin organisation
+
+**Trigger:**
+- `grooming_prices_updated_at` - Auto-uppdatera `updated_at` vid ändringar
+
+**Exempel på användning:**
+
+```sql
+-- Lägg till badning för liten hund
+INSERT INTO grooming_prices (org_id, service_name, service_type, dog_size, price, duration_minutes)
+VALUES ('org-uuid', 'Badning - Liten hund', 'bath', 'small', 250.00, 45);
+
+-- Lägg till klippning för medel hund med lång päls
+INSERT INTO grooming_prices (org_id, service_name, service_type, dog_size, coat_type, price, duration_minutes)
+VALUES ('org-uuid', 'Klippning - Medel hund (lång päls)', 'full_groom', 'medium', 'long', 650.00, 120);
+```
+
+---
+
+## 2. ADMIN-GRÄNSSNITT
+
+**Sida:** `/app/admin/hundfrisor/priser/page.tsx`
+
+Komplett CRUD-gränssnitt där admin kan:
+
+- ✅ Lägga till nya tjänster med priser
+- ✅ Välja hundstorlek (dropdown med 5 alternativ)
+- ✅ Välja pälstyp (dropdown med 5 alternativ)
+- ✅ Ange beräknad tid i minuter
+- ✅ Redigera befintliga priser
+- ✅ Aktivera/deaktivera tjänster
+- ✅ Ta bort tjänster
+
+**Design:**
+- Vit bakgrund på kort
+- Grön primärfärg (#2c7a4c) med VIT text (#ffffff)
+- Tydlig tabellstruktur med alternating rows
+- Inline-redigering
+- Responsiv design
+
+---
+
+## 3. BOKNINGSFLÖDE-UPPDATERING
+
+**Fil:** `/app/frisor/ny-bokning/page.tsx`
+
+**Innan:** Hårdkodad array `SERVICE_OPTIONS` med 7 statiska tjänster
+
+**Efter:** Dynamisk hämtning från databas
+
+```typescript
+// Ny state
+const [serviceOptions, setServiceOptions] = useState<ServiceOption[]>([]);
+const [loadingServices, setLoadingServices] = useState(true);
+
+// Ny funktion
+const loadGroomingPrices = async () => {
+  const { data } = await supabase
+    .from("grooming_prices")
+    .select("*")
+    .eq("org_id", currentOrgId)
+    .eq("active", true);
+  
+  const transformed = data.map(price => ({
+    value: price.service_type,
+    label: price.service_name,
+    basePrice: price.price,
+    duration: price.duration_minutes,
+    dog_size: price.dog_size,
+    coat_type: price.coat_type,
+  }));
+  
+  setServiceOptions(transformed);
+};
+```
+
+**UI-förbättringar:**
+- ✅ Loading state (spinner medan priser laddas)
+- ✅ Empty state (hjälpsamt meddelande om inga priser finns)
+- ✅ Visar hundstorlek i tjänstens label
+- ✅ Kompaktare kundtyp-rutor (side-by-side layout)
+- ✅ Vita behandlingskort istället för gröna (bättre läsbarhet)
+
+---
+
+## 4. DESIGN SYSTEM-UPPDATERING
+
+**Fil:** `DESIGN_SYSTEM_V2.md`
+
+Lagt till KRITISK REGEL:
+
+```
+⚠️ KRITISK REGEL: TEXT PÅ GRÖN BAKGRUND
+
+ALLTID VIT TEXT (#FFFFFF) på grön bakgrund (#2C7A4C)
+ALDRIG grå text på grön bakgrund (oläsligt)
+```
+
+**Exempel:**
+- ✅ Rätt: `bg-[#2c7a4c] text-white`
+- ❌ Fel: `bg-[#e6f4ea] text-gray-600`
+
+---
+
+## 5. FÖRDELAR MED NYA SYSTEMET
+
+### För organisationer:
+- ✅ Kan sätta egna priser utan att ändra kod
+- ✅ Olika priser för olika hundstorlekar
+- ✅ Olika priser för olika pälstyper
+- ✅ Kan aktivera/deaktivera tjänster säsongsmässigt
+- ✅ Kan uppdatera priser när som helst
+
+### För utvecklare:
+- ✅ Ingen hårdkodad data
+- ✅ Org-isolerad (RLS säkerhet)
+- ✅ Skalbart (lätt att lägga till fler varianter)
+- ✅ Testbart (kan skapa mock-data)
+
+### För användare:
+- ✅ Ser alltid aktuella priser
+- ✅ Priser anpassade efter deras hund
+- ✅ Tydlig information om vad som ingår
+- ✅ Beräknad tid visas
+
+---
+
+## 6. RELATERADE FILER
+
+**Nya filer:**
+- `app/admin/hundfrisor/priser/page.tsx` - Admin CRUD-gränssnitt
+- `supabase/migrations/create_grooming_prices.sql` - Migration fil
+- `GROOMING_PRICES.sql` - Ren SQL (lätt att köra)
+- `KLART_FRISOR.md` - Deployment-guide
+- `FRISOR_IMPLEMENTATION_GUIDE.md` - Teknisk dokumentation
+
+**Modifierade filer:**
+- `app/frisor/ny-bokning/page.tsx` - Dynamisk data-hämtning
+- `DESIGN_SYSTEM_V2.md` - Färgkontrast-regler
+- `supabase/schema.sql` - Denna fil (dokumentation)
+
+---
+
+## 7. FRAMTIDA FÖRBÄTTRINGAR
+
+Möjliga utökningar:
+- [ ] Auto-välja pris baserat på hundens storlek från profil
+- [ ] Prishistorik/versionering
+- [ ] Bulk-import av priser (CSV)
+- [ ] Default-priser vid org-skapande
+- [ ] Rabattkoder
+- [ ] Paketpriser (t.ex. "Badning + Klippning" med rabatt)
+- [ ] Säsongsbaserad prissättning
+
+---
+
+**Skapad:** 2025-11-23  
+**Status:** ✅ Implementerad och deployad  
+**Testning:** Genomförd med framgång
