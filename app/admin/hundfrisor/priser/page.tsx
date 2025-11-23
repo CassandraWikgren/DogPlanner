@@ -235,12 +235,14 @@ export default function GroomingPricesPage() {
     }
   };
 
-  const formatSizeLabel = (size: string | null) => {
+  const formatSizeLabel = (size: string | null | undefined) => {
+    if (!size) return "Alla storlekar";
     const found = DOG_SIZES.find((s) => s.value === size);
     return found ? found.label : "Alla storlekar";
   };
 
-  const formatCoatLabel = (coat: string | null) => {
+  const formatCoatLabel = (coat: string | null | undefined) => {
+    if (!coat) return "Alla pälstyper";
     const found = COAT_TYPES.find((c) => c.value === coat);
     return found ? found.label : "Alla pälstyper";
   };
