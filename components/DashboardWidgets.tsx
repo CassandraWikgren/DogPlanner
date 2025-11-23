@@ -192,12 +192,12 @@ export default function DashboardWidgets() {
 
   const widgets = [
     {
-      title: "Dagis - Incheckade",
-      value: stats.dagisCheckedIn,
-      icon: CheckCircle,
+      title: "Hunddagis idag",
+      value: stats.dagisTotal,
+      icon: Users,
       color: "text-green-600",
       bgColor: "bg-green-50",
-      change: `av ${stats.dagisTotal} idag`, // ✅ Tydliggör att det är dagens hundar
+      change: new Date().toLocaleDateString("sv-SE", { weekday: "long" }), // Visar veckodagen
     },
     {
       title: "Pensionat - Beläggning",
@@ -243,13 +243,13 @@ export default function DashboardWidgets() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 animate-pulse"
+            className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 animate-pulse"
           >
-            <div className="h-32 bg-gray-200 rounded"></div>
+            <div className="h-24 bg-gray-200 rounded"></div>
           </div>
         ))}
       </div>
@@ -257,23 +257,23 @@ export default function DashboardWidgets() {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-2 gap-3">
       {widgets.map((widget, index) => (
         <div
           key={index}
-          className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all"
+          className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 hover:shadow-md transition-all"
         >
           <div className="flex flex-col items-center text-center h-full">
-            <div className={`p-3 rounded-lg ${widget.bgColor} mb-3`}>
-              <widget.icon className={`w-6 h-6 ${widget.color}`} />
+            <div className={`p-2 rounded-lg ${widget.bgColor} mb-2`}>
+              <widget.icon className={`w-5 h-5 ${widget.color}`} />
             </div>
-            <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
+            <p className="text-[10px] font-medium text-gray-500 mb-1 uppercase tracking-wide">
               {widget.title}
             </p>
-            <p className="text-2xl font-bold text-gray-900 mb-2">
+            <p className="text-xl font-bold text-gray-900 mb-1">
               {widget.value}
             </p>
-            <p className="text-xs text-gray-500 mt-auto">{widget.change}</p>
+            <p className="text-[10px] text-gray-500 mt-auto">{widget.change}</p>
           </div>
         </div>
       ))}
