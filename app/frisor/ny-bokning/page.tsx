@@ -244,8 +244,12 @@ export default function NyBokning() {
   };
 
   const loadGroomingPrices = async () => {
-    if (!currentOrgId) return;
+    if (!currentOrgId) {
+      console.log("⚠️ loadGroomingPrices: Ingen currentOrgId");
+      return;
+    }
 
+    console.log("🔄 loadGroomingPrices: Laddar priser för org:", currentOrgId);
     setLoadingServices(true);
     try {
       const { data, error: dbError } = await supabase
@@ -255,8 +259,14 @@ export default function NyBokning() {
         .eq("active", true)
         .order("service_type", { ascending: true });
 
+      console.log("📦 grooming_prices query result:", {
+        data,
+        error: dbError,
+        count: data?.length,
+      });
+
       if (dbError) {
-        console.error("Fel vid laddning av priser:", dbError);
+        console.error("❌ Fel vid laddning av priser:", dbError);
         // Fallback to empty array if no prices exist yet
         setServiceOptions([]);
         return;
@@ -273,9 +283,10 @@ export default function NyBokning() {
         coat_type: price.coat_type,
       }));
 
+      console.log("✅ Transformed service options:", transformed);
       setServiceOptions(transformed);
     } catch (err: any) {
-      console.error("Fel vid laddning av tjänster:", err);
+      console.error("❌ Fel vid laddning av tjänster:", err);
       setServiceOptions([]);
     } finally {
       setLoadingServices(false);
