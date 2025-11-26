@@ -243,7 +243,7 @@ export default function DashboardWidgets() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
@@ -257,7 +257,7 @@ export default function DashboardWidgets() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
       {widgets.map((widget, index) => (
         <div
           key={index}
