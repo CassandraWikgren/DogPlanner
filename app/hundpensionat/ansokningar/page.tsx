@@ -382,6 +382,7 @@ export default function PensionatAnsokningarPage() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Viktigt: Skicka cookies för auth
         body: JSON.stringify({
           bookingId,
           totalPrice: finalPrice,
