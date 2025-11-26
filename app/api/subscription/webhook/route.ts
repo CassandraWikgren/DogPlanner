@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     apiVersion: "2025-09-30.clover" as any,
   });
 
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
   const sig = req.headers.get("stripe-signature");
   const body = await req.text();

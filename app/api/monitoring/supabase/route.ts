@@ -11,7 +11,10 @@ import { Database } from "@/types/database";
 export async function GET(request: NextRequest) {
   try {
     // Verifiera autentisering
-    const supabase = createRouteHandlerClient<Database>({ cookies });
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient<Database>({
+      cookies: () => cookieStore,
+    });
     const {
       data: { user },
       error: authError,

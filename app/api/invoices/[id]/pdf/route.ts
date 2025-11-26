@@ -10,7 +10,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
     const invoiceId = params.id;
 
     // Hämta faktura med alla relationer
@@ -378,7 +379,9 @@ export async function GET(
     // Swish
     if (invoice.org?.swish_number) {
       doc.font("Helvetica-Bold").text("Swish:", 60, currentPaymentY);
-      doc.font("Helvetica").text(invoice.org.swish_number, 140, currentPaymentY);
+      doc
+        .font("Helvetica")
+        .text(invoice.org.swish_number, 140, currentPaymentY);
       currentPaymentY += 20;
     }
 
@@ -399,7 +402,10 @@ export async function GET(
     currentPaymentY += 15;
 
     // Förfallodatum
-    doc.font("Helvetica").fillColor("#666").text("Förfallodatum:", 60, currentPaymentY);
+    doc
+      .font("Helvetica")
+      .fillColor("#666")
+      .text("Förfallodatum:", 60, currentPaymentY);
     doc
       .font("Helvetica-Bold")
       .fillColor("#d32f2f")
@@ -498,17 +504,18 @@ export async function GET(
 
     // Kontaktinformation
     if (invoice.org?.email) {
-      const contactY = invoice.status === "reminder_1" || invoice.status === "reminder_2" ? feeY + 100 : feeY + 30;
+      const contactY =
+        invoice.status === "reminder_1" || invoice.status === "reminder_2"
+          ? feeY + 100
+          : feeY + 30;
       doc
         .fontSize(9)
         .font("Helvetica")
         .fillColor("#666")
         .text(`Vid frågor, kontakta: `, 50, contactY);
-      doc
-        .fillColor("#2c7a4c")
-        .text(invoice.org.email, 140, contactY, {
-          link: `mailto:${invoice.org.email}`,
-        });
+      doc.fillColor("#2c7a4c").text(invoice.org.email, 140, contactY, {
+        link: `mailto:${invoice.org.email}`,
+      });
     }
 
     // --- FOOTER ---

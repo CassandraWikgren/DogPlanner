@@ -5,10 +5,10 @@ import { generateOCR } from "@/lib/ocrGenerator";
 
 /**
  * EXPORT API FÖR FAKTUROR
- * 
+ *
  * Exporterar fakturor i olika format för bokföringssystem.
  * Företaget kan sedan importera till Fortnox, Bokio, Visma, etc.
- * 
+ *
  * Supported formats:
  * - CSV (Excel-kompatibelt)
  * - JSON (för API-integrationer)
@@ -43,7 +43,8 @@ interface InvoiceExportItem {
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
     // Autentisera användare
     const {
@@ -116,7 +117,12 @@ export async function GET(request: NextRequest) {
       if (status === "paid") {
         query = query.eq("status", "paid");
       } else if (status === "unpaid") {
-        query = query.in("status", ["sent", "overdue", "reminder_1", "reminder_2"]);
+        query = query.in("status", [
+          "sent",
+          "overdue",
+          "reminder_1",
+          "reminder_2",
+        ]);
       } else if (status === "overdue") {
         query = query.in("status", ["overdue", "reminder_1", "reminder_2"]);
       }
@@ -125,7 +131,10 @@ export async function GET(request: NextRequest) {
     const { data: invoices, error: invoicesError } = await query;
 
     if (invoicesError) {
-      return NextResponse.json({ error: invoicesError.message }, { status: 500 });
+      return NextResponse.json(
+        { error: invoicesError.message },
+        { status: 500 }
+      );
     }
 
     // Hämta fakturarader för alla fakturor
@@ -139,10 +148,13 @@ export async function GET(request: NextRequest) {
     const exportData: InvoiceExportItem[] = [];
 
     for (const invoice of invoices || []) {
-      const invoiceItems = items?.filter((item) => item.invoice_id === invoice.id) || [];
-      
+      const invoiceItems =
+        items?.filter((item) => item.invoice_id === invoice.id) || [];
+
       // Supabase returnerar owner som object, inte array
-      const owner = Array.isArray(invoice.owner) ? invoice.owner[0] : invoice.owner;
+      const owner = Array.isArray(invoice.owner)
+        ? invoice.owner[0]
+        : invoice.owner;
       const ocrNumber = generateOCR(
         owner?.customer_number,
         invoice.invoice_number
@@ -248,7 +260,9 @@ function generateCSV(data: InvoiceExportItem[]): NextResponse {
     item.payment_method || "",
   ]);
 
-  const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+  const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
+    "\n"
+  );
 
   return new NextResponse(csv, {
     status: 200,
@@ -262,7 +276,10 @@ function generateCSV(data: InvoiceExportItem[]): NextResponse {
 /**
  * Generera JSON-export
  */
-function generateJSON(data: InvoiceExportItem[], invoices: any[]): NextResponse {
+function generateJSON(
+  data: InvoiceExportItem[],
+  invoices: any[]
+): NextResponse {
   const summary = {
     export_date: new Date().toISOString(),
     total_invoices: new Set(data.map((d) => d.invoice_id)).size,
@@ -315,7 +332,9 @@ async function generateSIE(
   lines.push("#FLAGGA 0");
   lines.push('#PROGRAM "DogPlanner" 1.0');
   lines.push("#FORMAT PC8");
-  lines.push(`#GEN ${new Date().toISOString().split("T")[0].replace(/-/g, "")}`);
+  lines.push(
+    `#GEN ${new Date().toISOString().split("T")[0].replace(/-/g, "")}`
+  );
   lines.push("#SIETYP 4");
   lines.push(`#ORGNR ${org?.org_number || ""}`);
   lines.push(`#FNAMN "${org?.name || ""}"`);

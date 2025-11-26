@@ -14,7 +14,8 @@ import { NextResponse } from "next/server";
  */
 export async function POST(request: Request) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
     // Verifiera autentisering
     const {
