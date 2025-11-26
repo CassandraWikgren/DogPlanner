@@ -1,121 +1,261 @@
 # 🔄 HÅLL SCHEMA SYNKAT MED SUPABASE
 
-## Problem
-
-Jag (AI) kan inte koppla mig direkt till din Supabase databas. Men vi kan hålla schemat lokalt uppdaterat!
-
-## ✅ Lösning: Automatisk schema-sync
-
-### Setup (EN GÅNG):
-
-1. **Länka projektet till Supabase:**
-
-```bash
-cd /Users/cassandrawikgren/Desktop/Dogplanner/dogplanner-backup-20251031_075031
-supabase link
-```
-
-Du får välja projekt från en lista eller ange project-ref manuellt.
-
-2. **Hitta din project-ref:**
-
-- Öppna Supabase Dashboard
-- Settings → General → Reference ID
-- T.ex: `abcdefghijklmnop`
+**Senast uppdaterad:** 2025-11-26
 
 ---
 
-### Användning (VARJE GÅNG du ändrar något i Supabase):
+## Enkel Workflow
 
-**Alternativ 1: Använd scriptet** (enklast)
+AI kan inte koppla sig direkt till Supabase, men du kan hålla lokalt schema uppdaterat på 2 minuter!
+
+---
+
+## ✅ Snabbguide (rekommenderad metod)
+
+### När du ändrar något i Supabase:
+
+**1. Öppna `supabase/EXPORT_COMPLETE_SCHEMA.sql`**
+
+**2. Kopiera QUERY 1 (tabeller & kolumner)**
+
+**3. Kör i Supabase SQL Editor**
+
+**4. Kopiera JSON-resultatet**
+
+**5. Klistra in i `supabase/detta är_min_supabase_just_nu.sql`**
+
+**6. Säg till AI:n: "Schema uppdaterat!"**
+
+✅ **Klart på 2 minuter!**
+
+---
+
+## 📋 Vad finns i EXPORT_COMPLETE_SCHEMA.sql?
+
+Filen innehåller **7 färdiga SQL queries** för att exportera:
+
+1. **Tabeller & Kolumner** ⭐ (detta är minimum, redan gjort!)
+2. **Triggers & Functions** (automatiska processer)
+3. **RLS Policies** (säkerhetsregler)
+4. **Foreign Keys** (relationer)
+5. **Indexes** (performance)
+6. **Views** (färdiga queries)
+7. **RPC Functions** (callable från app)
+
+**Behöver du köra alla?** NEJ! Query 1 räcker oftast. Kör resten bara om du ändrat triggers/policies.
+
+---
+
+## ✅ Aktuell Status (2025-11-26)
+
+### Nyligen tillagda tabeller:
+
+- ✅ **grooming_prices** - Prislista för hundfrisörtjänster (2025-11-26)
+
+### Schema-filer i projektet:
+
+| Fil                                          | Beskrivning                        | Status     |
+| -------------------------------------------- | ---------------------------------- | ---------- |
+| `supabase/EXPORT_COMPLETE_SCHEMA.sql`        | **ANVÄND DENNA** - Färdiga queries | ✅ Aktiv   |
+| `supabase/detta är_min_supabase_just_nu.sql` | JSON export från QUERY 1           | ✅ Aktuell |
+| `supabase/schema.sql`                        | Dokumentation                      | ✅ Läs här |
+| `GROOMING_PRICES.sql`                        | Migration för grooming_prices      | ✅ Körts   |
+
+---
+
+## 🎯 Detaljerad Workflow
+
+### Steg 1: Öppna rätt fil
 
 ```bash
-./update-schema.sh
+# Öppna denna fil i VS Code:
+supabase/EXPORT_COMPLETE_SCHEMA.sql
 ```
 
-**Alternativ 2: Manuellt**
+### Steg 2: Kopiera QUERY 1
+
+Scrolla ner till "QUERY 1: ALLA TABELLER OCH KOLUMNER" och kopiera hela SQL-queryn.
+
+### Steg 3: Kör i Supabase SQL Editor
+
+1. Gå till din Supabase Dashboard
+2. Öppna SQL Editor
+3. Klistra in queryn
+4. Klicka "Run"
+5. Kopiera JSON-resultatet
+
+### Steg 4: Uppdatera lokal fil
+
+Klistra in JSON:en i `supabase/detta är_min_supabase_just_nu.sql`
+
+### Steg 5: Säg till AI:n
+
+```
+"Jag har uppdaterat schema-filen med ny info från Supabase"
+```
+
+✅ **Klart!** AI:n ser nu dina senaste ändringar.
+
+---
+
+## 🔧 Behöver du mer info?
+
+Om du ändrat **triggers, RLS policies eller functions**, kör även QUERY 2-7 från samma fil.
+
+Annars räcker QUERY 1! 🎯
+
+---
+
+## 📝 Commits (valfritt)
 
 ```bash
-supabase db pull
+git add supabase/detta\ är_min_supabase_just_nu.sql
+git commit -m "schema: Uppdaterad från Supabase $(date +%Y-%m-%d)"
+git push
 ```
 
 ---
 
-## 🎯 Workflow framåt:
+## 📋 SQL Query för fullständig export
 
-### När du gör ändringar i Supabase Dashboard:
+Om du vill exportera ALLT (tabeller, funktioner, triggers, RLS):
 
-1. Kör SQL i Supabase SQL Editor
-2. Kör `./update-schema.sh` lokalt
-3. Jag kan då läsa det uppdaterade schemat från `supabase/schema.sql`
+```sql
+-- ALTERNATIV 1: Simpel tabell-export (AKTUELL METOD)
+SELECT json_agg(
+  json_build_object(
+    'column_name', column_name,
+    'data_type', data_type,
+    'column_default', column_default,
+    'is_nullable', is_nullable
+  )
+)
+FROM information_schema.columns
+WHERE table_schema = 'public'
+ORDER BY table_name, ordinal_position;
 
-### När du gör ändringar via migrations:
-
-1. Skapa migration: `supabase migration new my_change`
-2. Skriv SQL i migrations-filen
-3. Deploya: `supabase db push`
-4. Schema uppdateras automatiskt
+-- ALTERNATIV 2: Använd GET_CURRENT_SCHEMA.sql
+-- (finns i supabase/GET_CURRENT_SCHEMA.sql)
+```
 
 ---
 
-## 📋 Vad jag kan se när schemat är synkat:
+## � Quick Reference
 
-✅ Alla tabeller och kolumner
-✅ Alla indexes och foreign keys  
-✅ Alla funktioner och triggers
-✅ Alla RLS policies
-✅ Alla views
+### Kolla om tabell finns:
 
-Detta gör att jag kan:
+```sql
+SELECT EXISTS (
+  SELECT FROM information_schema.tables
+  WHERE table_schema = 'public'
+  AND table_name = 'grooming_prices'
+);
+```
+
+### Lista alla tabeller:
+
+```sql
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
+ORDER BY table_name;
+```
+
+### Kolla RLS policies:
+
+```sql
+SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual
+FROM pg_policies
+WHERE schemaname = 'public'
+ORDER BY tablename, policyname;
+```
+
+---
+
+## 💡 När du behöver hjälp av AI
+
+**För att AI ska kunna hjälpa dig maximalt:**
+
+1. ✅ Exportera schema (se ovan)
+2. ✅ Uppdatera `supabase/detta är_min_supabase_just_nu.sql`
+3. ✅ Säg: "Jag har uppdaterat schema-filen, kan du kolla X?"
+
+**AI kan då:**
 
 - Ge exakta SQL-queries
 - Förstå relationerna mellan tabeller
-- Föreslå optimeringar
-- Debugga problem
+- Föreslå RLS policies
+- Debugga databasproblem
+- Föreslå optimeringar (index, queries)
 
 ---
 
-## 🚀 Nästa steg:
+## 📚 Viktiga filer att känna till
 
-**När Supabase maintenance är klar:**
+### Migrations (historik):
 
-1. Kör detta för att länka projektet:
+- `supabase/migrations/PERMANENT_FIX_org_assignment.sql` - Kritisk org_id-logik
+- `supabase/migrations/20251122_invoice_system_improvements.sql` - Fakturaunderlag
+- `supabase/migrations/create_grooming_prices.sql` - Grooming prices (kör denna om tabellen saknas)
 
-```bash
-cd /Users/cassandrawikgren/Desktop/Dogplanner/dogplanner-backup-20251031_075031
-supabase link --project-ref [fhdkkkujnhteetllxypg]
-```
+### SQL helpers:
 
-2. Exportera schemat första gången:
+- `GROOMING_PRICES.sql` - Ren SQL för grooming_prices (enkel att köra)
+- `supabase/GET_CURRENT_SCHEMA.sql` - Schema export query
+- `FIX_DAYCARE_COMPLETIONS_RLS.sql` - RLS fix för en specifik tabell
 
-```bash
-./update-schema.sh
-```
+### Dokumentation:
 
-3. Framåt: Kör `./update-schema.sh` efter ändringar i Supabase
-
----
-
-## 💡 Pro Tips:
-
-**Auto-commit schema changes:**
-
-```bash
-./update-schema.sh && git add supabase/schema.sql && git commit -m "📊 Schema update från Supabase"
-```
-
-**Se vad som ändrades:**
-
-```bash
-git diff supabase/schema.sql
-```
-
-**Backup av schema:**
-
-```bash
-cp supabase/schema.sql supabase/schema-backup-$(date +%Y%m%d).sql
-```
+- `supabase/schema.sql` - Dokumenterad changelog
+- `SCHEMA_SYNC_GUIDE.md` - Denna fil
 
 ---
 
-Då har jag alltid facit och kan hjälpa dig mycket bättre! 🎯
+## ⚠️ Viktigt att veta
+
+### Kör ALDRIG dessa automatiskt:
+
+- ❌ `complete_testdata.sql` - Disablar triggers & RLS (endast för dev/debug)
+- ❌ Triggers som börjar med `handle_new_user` - Kritisk för org_id assignment
+
+### Alltid safe:
+
+- ✅ SELECT queries
+- ✅ CREATE TABLE IF NOT EXISTS
+- ✅ CREATE OR REPLACE FUNCTION
+- ✅ DROP POLICY IF EXISTS + CREATE POLICY
+
+---
+
+## 🆘 Felsökning
+
+### Problem: "Tabellen finns inte"
+
+```sql
+-- Kolla om den verkligen finns
+SELECT table_name FROM information_schema.tables
+WHERE table_schema = 'public' AND table_name = 'min_tabell';
+
+-- Om NEJ: Kör migrations-filen igen
+```
+
+### Problem: "RLS blockerar queries"
+
+```sql
+-- Kolla vilka policies som finns
+SELECT * FROM pg_policies WHERE tablename = 'min_tabell';
+
+-- Lägg till policy om den saknas
+-- Se exempel i GROOMING_PRICES.sql
+```
+
+### Problem: "Kan inte se priser i frisörsbokningar"
+
+1. Kolla att `grooming_prices` tabellen finns
+2. Kolla att det finns rader: `SELECT * FROM grooming_prices LIMIT 5;`
+3. Kolla RLS: `SELECT * FROM pg_policies WHERE tablename = 'grooming_prices';`
+4. Kolla i DevTools Console för fel
+
+---
+
+**Lycka till! 🚀**

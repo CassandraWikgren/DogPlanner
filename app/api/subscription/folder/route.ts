@@ -4,8 +4,8 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
 export async function GET(req: Request) {
-  await cookies(); // Await cookies to satisfy Next.js 15
-  const supabase = createRouteHandlerClient({ cookies });
+  const cookieStore = cookies();
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
   try {
     const auth = req.headers.get("authorization") || "";
@@ -18,9 +18,8 @@ export async function GET(req: Request) {
     }
 
     // Hämta användaren från token
-    const { data: userData, error: userErr } = await supabase.auth.getUser(
-      token
-    );
+    const { data: userData, error: userErr } =
+      await supabase.auth.getUser(token);
     if (userErr || !userData?.user) {
       return NextResponse.json(
         { error: "Ogiltig användare." },

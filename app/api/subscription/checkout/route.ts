@@ -47,8 +47,8 @@ export async function POST(req: Request) {
     }
 
     // Skapa Supabase-klient utan cookies-objekt (endast URL och ANON_KEY)
-    await cookies(); // Await cookies to satisfy Next.js 15
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
     const { data: userData, error: userErr } =
       await supabase.auth.getUser(token);

@@ -55,8 +55,8 @@ type InvoiceResult = {
 
 export async function POST(req: Request) {
   try {
-    await cookies(); // Await cookies to satisfy Next.js 15
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
     const { invoiceId } = await req.json();
     if (!invoiceId) {

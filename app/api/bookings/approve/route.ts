@@ -10,9 +10,11 @@ import { Database } from "@/types/database";
  */
 export async function POST(request: NextRequest) {
   try {
-    // Använd createRouteHandlerClient för korrekt cookie-hantering (Next.js 15 + Supabase)
-    await cookies(); // Next.js 15 compatibility
-    const supabase = createRouteHandlerClient<Database>({ cookies });
+    // Skapa Supabase client med cookies (Next.js 15)
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient<Database>({
+      cookies: () => cookieStore,
+    });
 
     // Verifiera autentisering
     const {

@@ -15,12 +15,11 @@ export async function POST(req: Request) {
     }
 
     // Skapa Supabase-klient (service role key för admin-operationer)
-    await cookies(); // Await cookies to satisfy Next.js 15
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
     // 1) Verifiera vem som anropar
-    const { data: userData, error: userErr } = await supabase.auth.getUser(
-      token
-    );
+    const { data: userData, error: userErr } =
+      await supabase.auth.getUser(token);
     if (userErr || !userData?.user) {
       return NextResponse.json(
         { error: "Ogiltig användare." },

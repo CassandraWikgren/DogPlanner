@@ -4,7 +4,7 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
-  await cookies(); // Await cookies to satisfy Next.js 15
+  const cookieStore = cookies();
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeKey) {

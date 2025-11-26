@@ -1,11 +1,26 @@
 # 🚀 START HÄR — DogPlanner Systemanalys Komplett
 
-**Senast uppdaterad:** 2025-11-22  
+**Senast uppdaterad:** 2025-11-26  
 **Status:** ✅ Komplett analys av faktisk databas med funktioner
 
 ---
 
-## 📖 LÄS DETTA FÖRST
+## � HÅLL SCHEMA UPPDATERAT (2 min)
+
+**När du ändrar något i Supabase:**
+
+1. Öppna `supabase/EXPORT_COMPLETE_SCHEMA.sql`
+2. Kopiera QUERY 1
+3. Kör i Supabase SQL Editor
+4. Kopiera JSON-resultatet
+5. Klistra in i `supabase/detta är_min_supabase_just_nu.sql`
+6. Säg till AI:n: "Schema uppdaterat!"
+
+**Läs mer:** `SCHEMA_SYNC_GUIDE.md`
+
+---
+
+## �📖 LÄS DETTA FÖRST
 
 ### ✅ Systemet är STABILT (8/10)
 
@@ -44,6 +59,12 @@
 ---
 
 ## 📁 DOKUMENTATION
+
+### Schema & Databas:
+
+1. **`supabase/EXPORT_COMPLETE_SCHEMA.sql`** ⭐ — Färdiga queries för schema-export
+2. **`supabase/detta är_min_supabase_just_nu.sql`** — Aktuellt schema (JSON)
+3. **`SCHEMA_SYNC_GUIDE.md`** — Guide för att uppdatera schema
 
 ### Huvud-dokumentation:
 

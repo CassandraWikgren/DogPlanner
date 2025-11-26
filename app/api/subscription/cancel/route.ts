@@ -4,8 +4,8 @@ import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   try {
-    await cookies(); // Next.js 15 compatibility
-    const supabase = createRouteHandlerClient({ cookies });
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
     const auth = req.headers.get("authorization") || "";
     const token = auth.startsWith("Bearer ") ? auth.slice(7) : null;
@@ -17,9 +17,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const { data: userData, error: userErr } = await supabase.auth.getUser(
-      token
-    );
+    const { data: userData, error: userErr } =
+      await supabase.auth.getUser(token);
 
     if (userErr || !userData?.user) {
       return NextResponse.json(

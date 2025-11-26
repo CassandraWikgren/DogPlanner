@@ -1,2652 +1,4906 @@
 [
   {
-    "column_name": "id",
-    "data_type": "uuid",
-    "column_default": "gen_random_uuid()",
-    "is_nullable": "NO"
-  },
-  {
-    "column_name": "created_at",
-    "data_type": "timestamp with time zone",
-    "column_default": "now()",
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "org_id",
-    "data_type": "uuid",
-    "column_default": null,
-    "is_nullable": "NO"
-  },
-  {
-    "column_name": "owner_id",
-    "data_type": "uuid",
-    "column_default": null,
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "invoice_date",
-    "data_type": "date",
-    "column_default": "now()",
-    "is_nullable": "NO"
-  },
-  {
-    "column_name": "status",
-    "data_type": "text",
-    "column_default": "'draft'::text",
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "total_amount",
-    "data_type": "numeric",
-    "column_default": "0",
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "billed_name",
-    "data_type": "text",
-    "column_default": null,
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "billed_email",
-    "data_type": "text",
-    "column_default": null,
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "billed_address",
-    "data_type": "text",
-    "column_default": null,
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "deleted_at",
-    "data_type": "timestamp with time zone",
-    "column_default": null,
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "invoice_type",
-    "data_type": "text",
-    "column_default": "'full'::text",
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "due_date",
-    "data_type": "date",
-    "column_default": null,
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "invoice_number",
-    "data_type": "text",
-    "column_default": null,
-    "is_nullable": "YES"
-  },
-  {
-    "column_name": "sent_at",
-    "data_type": "timestamp with time zone",
-    "column_default": null,
-    "is_nullable": "YES"
-  }
-]
-
-[
-  {
-    "column_name": "id",
-    "data_type": "uuid"
-  },
-  {
-    "column_name": "name",
-    "data_type": "text"
-  },
-  {
-    "column_name": "created_at",
-    "data_type": "timestamp with time zone"
-  },
-  {
-    "column_name": "subscription_plan",
-    "data_type": "text"
-  },
-  {
-    "column_name": "trial_ends_at",
-    "data_type": "timestamp with time zone"
-  },
-  {
-    "column_name": "subscription_status",
-    "data_type": "text"
-  },
-  {
-    "column_name": "org_number",
-    "data_type": "text"
-  },
-  {
-    "column_name": "status",
-    "data_type": "text"
-  },
-  {
-    "column_name": "warning_sent",
-    "data_type": "boolean"
-  },
-  {
-    "column_name": "pending_plan_change",
-    "data_type": "text"
-  },
-  {
-    "column_name": "user_id",
-    "data_type": "uuid"
-  },
-  {
-    "column_name": "email",
-    "data_type": "text"
-  },
-  {
-    "column_name": "phone",
-    "data_type": "text"
-  },
-  {
-    "column_name": "address",
-    "data_type": "text"
-  },
-  {
-    "column_name": "vat_included",
-    "data_type": "boolean"
-  },
-  {
-    "column_name": "vat_rate",
-    "data_type": "numeric"
-  },
-  {
-    "column_name": "pricing_currency",
-    "data_type": "text"
-  },
-  {
-    "column_name": "contact_email",
-    "data_type": "text"
-  },
-  {
-    "column_name": "invoice_email",
-    "data_type": "text"
-  },
-  {
-    "column_name": "reply_to_email",
-    "data_type": "text"
-  },
-  {
-    "column_name": "email_sender_name",
-    "data_type": "text"
-  },
-  {
-    "column_name": "slug",
-    "data_type": "text"
-  },
-  {
-    "column_name": "cancellation_policy",
-    "data_type": "jsonb"
-  },
-  {
-    "column_name": "lan",
-    "data_type": "text"
-  },
-  {
-    "column_name": "kommun",
-    "data_type": "text"
-  },
-  {
-    "column_name": "service_types",
-    "data_type": "ARRAY"
-  },
-  {
-    "column_name": "is_visible_to_customers",
-    "data_type": "boolean"
-  }
-]
-[
-  {
-    "trigger_name": "on_insert_set_org_id_for_boarding_seasons",
-    "table_name": "boarding_seasons",
-    "function_name": "set_org_id_for_rooms",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_org_id_for_rooms()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  IF NEW.org_id IS NULL THEN\n    SELECT org_id INTO NEW.org_id \n    FROM profiles \n    WHERE id = auth.uid();\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER on_insert_set_org_id_for_boarding_seasons BEFORE INSERT ON public.boarding_seasons FOR EACH ROW EXECUTE FUNCTION set_org_id_for_rooms()"
-  },
-  {
-    "trigger_name": "trg_create_invoice_on_checkout",
-    "table_name": "bookings",
-    "function_name": "create_invoice_on_checkout",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.create_invoice_on_checkout()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n  v_invoice_id UUID;\n  v_owner_id UUID;\n  v_total_amount NUMERIC := 0;\n  v_base_amount NUMERIC := 0;\n  v_extra_service RECORD;\n  v_booking_service RECORD;\n  v_description TEXT;\n  v_nights INTEGER;\n  v_service_price NUMERIC;\nBEGIN\n  -- Skapa faktura endast när status ändras till 'checked_out'\n  IF NEW.status = 'checked_out' AND OLD.status != 'checked_out' THEN\n    \n    -- Hämta owner_id från hunden\n    SELECT owner_id INTO v_owner_id \n    FROM dogs \n    WHERE id = NEW.dog_id;\n\n    IF v_owner_id IS NULL THEN\n      RAISE WARNING 'Kunde inte hitta owner_id för dog_id %', NEW.dog_id;\n      RETURN NEW;\n    END IF;\n\n    -- Beräkna antal nätter\n    v_nights := (NEW.end_date - NEW.start_date);\n    IF v_nights <= 0 THEN\n      v_nights := 1;\n    END IF;\n\n    -- Använd bokningens totalpris som bas\n    v_base_amount := COALESCE(NEW.total_price, NEW.base_price, 0);\n    v_total_amount := v_base_amount;\n\n    -- Skapa faktura\n    INSERT INTO invoices (\n      org_id,\n      owner_id,\n      invoice_date,\n      due_date,\n      total_amount,\n      status,\n      invoice_type,\n      billed_name,\n      billed_email\n    )\n    VALUES (\n      NEW.org_id,\n      v_owner_id,\n      CURRENT_DATE,\n      CURRENT_DATE + INTERVAL '30 days',\n      0, -- Uppdateras nedan\n      'draft',\n      'afterpayment',\n      (SELECT full_name FROM owners WHERE id = v_owner_id),\n      (SELECT email FROM owners WHERE id = v_owner_id)\n    )\n    RETURNING id INTO v_invoice_id;\n\n    -- ============================================\n    -- RAD 1: Grundpris för bokningen (logi)\n    -- ============================================\n    IF v_base_amount > 0 THEN\n      INSERT INTO invoice_items (\n        invoice_id,\n        description,\n        quantity,\n        unit_price,\n        total_amount\n      )\n      VALUES (\n        v_invoice_id,\n        format('Hundpensionat %s - %s (%s nätter)', \n          NEW.start_date, \n          NEW.end_date, \n          v_nights\n        ),\n        v_nights,\n        v_base_amount / v_nights,\n        v_base_amount\n      );\n    END IF;\n\n    -- ============================================\n    -- RAD 2: Tillval från booking_services\n    -- ============================================\n    BEGIN\n      FOR v_booking_service IN\n        SELECT \n          bs.quantity,\n          bs.unit_price,\n          bs.total_price,\n          bs.staff_notes,\n          COALESCE(ps.label, 'Tilläggstjänst') as service_name\n        FROM booking_services bs\n        LEFT JOIN pensionat_services ps ON bs.service_id = ps.id\n        WHERE bs.booking_id = NEW.id\n      LOOP\n        v_description := v_booking_service.service_name;\n        \n        IF v_booking_service.staff_notes IS NOT NULL THEN\n          v_description := v_description || ' - ' || v_booking_service.staff_notes;\n        END IF;\n\n        INSERT INTO invoice_items (\n          invoice_id,\n          description,\n          quantity,\n          unit_price,\n          total_amount\n        )\n        VALUES (\n          v_invoice_id,\n          v_description,\n          v_booking_service.quantity,\n          v_booking_service.unit_price,\n          v_booking_service.total_price\n        );\n\n        v_total_amount := v_total_amount + v_booking_service.total_price;\n      END LOOP;\n    EXCEPTION \n      WHEN undefined_table THEN\n        RAISE NOTICE 'booking_services tabellen finns inte, hoppar över';\n    END;\n\n    -- ============================================\n    -- RAD 3: Återkommande tillägg från extra_service\n    -- (endast de som är aktiva under bokningsperioden)\n    -- ============================================\n    FOR v_extra_service IN\n      SELECT \n        service_type,\n        frequency,\n        price,\n        notes\n      FROM extra_service\n      WHERE dogs_id = NEW.dog_id\n        AND org_id = NEW.org_id\n        AND COALESCE(is_active, true) = true\n        AND start_date <= NEW.end_date\n        AND (end_date IS NULL OR end_date >= NEW.start_date)\n    LOOP\n      v_description := v_extra_service.service_type;\n      \n      IF v_extra_service.frequency IS NOT NULL THEN\n        v_description := v_description || ' (' || v_extra_service.frequency || ')';\n      END IF;\n\n      IF v_extra_service.notes IS NOT NULL THEN\n        v_description := v_description || ' - ' || v_extra_service.notes;\n      END IF;\n\n      -- Hämta pris från extra_service eller extra_services katalog\n      v_service_price := v_extra_service.price;\n      \n      IF v_service_price IS NULL THEN\n        BEGIN\n          SELECT price INTO v_service_price\n          FROM extra_services\n          WHERE label = v_extra_service.service_type\n            AND org_id = NEW.org_id\n            AND COALESCE(is_active, true) = true\n          LIMIT 1;\n        EXCEPTION \n          WHEN OTHERS THEN\n            v_service_price := 0;\n        END;\n      END IF;\n\n      v_service_price := COALESCE(v_service_price, 0);\n\n      IF v_service_price > 0 THEN\n        INSERT INTO invoice_items (\n          invoice_id,\n          description,\n          quantity,\n          unit_price,\n          total_amount\n        )\n        VALUES (\n          v_invoice_id,\n          v_description,\n          1,\n          v_service_price,\n          v_service_price\n        );\n\n        v_total_amount := v_total_amount + v_service_price;\n      END IF;\n    END LOOP;\n\n    -- ============================================\n    -- RAD 4: Rabatt\n    -- ============================================\n    IF NEW.discount_amount > 0 THEN\n      INSERT INTO invoice_items (\n        invoice_id,\n        description,\n        quantity,\n        unit_price,\n        total_amount\n      )\n      VALUES (\n        v_invoice_id,\n        'Rabatt',\n        1,\n        -NEW.discount_amount,\n        -NEW.discount_amount\n      );\n\n      v_total_amount := v_total_amount - NEW.discount_amount;\n    END IF;\n\n    -- Uppdatera fakturans totalsumma\n    UPDATE invoices\n    SET total_amount = GREATEST(v_total_amount, 0)\n    WHERE id = v_invoice_id;\n\n    -- Uppdatera bokningen med faktura-ID\n    UPDATE bookings \n    SET afterpayment_invoice_id = v_invoice_id\n    WHERE id = NEW.id;\n\n    RAISE NOTICE '✅ Faktura % skapad för bokning % (Total: % kr, inkl % från extra_service)', \n      v_invoice_id, NEW.id, v_total_amount, \n      (SELECT COUNT(*) FROM extra_service WHERE dogs_id = NEW.dog_id);\n\n  END IF;\n\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_create_invoice_on_checkout AFTER UPDATE ON public.bookings FOR EACH ROW WHEN (((new.status = 'checked_out'::text) AND (old.status <> 'checked_out'::text))) EXECUTE FUNCTION create_invoice_on_checkout()"
-  },
-  {
-    "trigger_name": "trg_create_prepayment_invoice",
-    "table_name": "bookings",
-    "function_name": "create_prepayment_invoice",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.create_prepayment_invoice()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n  v_invoice_id UUID;\n  v_owner_id UUID;\n  v_prepayment_amount NUMERIC := 0;\n  v_room_price NUMERIC := 0;\n  v_due_date DATE;\nBEGIN\n  -- Kör endast när status ändras till 'confirmed' från 'pending'\n  IF NEW.status = 'confirmed' AND OLD.status = 'pending' THEN\n    \n    -- Hämta owner_id från hunden\n    SELECT owner_id INTO v_owner_id \n    FROM dogs \n    WHERE id = NEW.dog_id;\n\n    -- Beräkna förskottsbelopp (rumsbokning + prepayment-tjänster)\n    -- Använd total_price minus eventuella afterpayment-tjänster\n    v_prepayment_amount := COALESCE(NEW.total_price, 0);\n    \n    -- Om det finns extra_service_ids, dra bort efterskottstjänster\n    IF NEW.extra_service_ids IS NOT NULL THEN\n      SELECT COALESCE(SUM(price), 0) INTO v_room_price\n      FROM extra_service\n      WHERE id = ANY(NEW.extra_service_ids)\n        AND payment_type = 'afterpayment';\n      \n      v_prepayment_amount := v_prepayment_amount - v_room_price;\n    END IF;\n\n    -- Sätt förfallodatum till 14 dagar från nu (eller innan startdatum)\n    v_due_date := LEAST(\n      CURRENT_DATE + INTERVAL '14 days',\n      NEW.start_date - INTERVAL '3 days'\n    )::DATE;\n\n    -- Skapa förskottsfaktura\n    INSERT INTO invoices (\n      org_id,\n      owner_id,\n      invoice_date,\n      due_date,\n      total_amount,\n      status,\n      invoice_type,\n      billed_name,\n      billed_email\n    )\n    VALUES (\n      NEW.org_id,\n      v_owner_id,\n      CURRENT_DATE,\n      v_due_date,\n      v_prepayment_amount,\n      'draft',\n      'prepayment',\n      (SELECT full_name FROM owners WHERE id = v_owner_id),\n      (SELECT email FROM owners WHERE id = v_owner_id)\n    )\n    RETURNING id INTO v_invoice_id;\n\n    -- Lägg till fakturarad för rumsbokning\n    INSERT INTO invoice_items (\n      invoice_id,\n      description,\n      quantity,\n      unit_price,\n      total_amount\n    )\n    VALUES (\n      v_invoice_id,\n      format('Pensionatvistelse %s till %s', NEW.start_date, NEW.end_date),\n      1,\n      v_prepayment_amount,\n      v_prepayment_amount\n    );\n\n    -- Uppdatera bokningen med faktura-ID\n    NEW.prepayment_invoice_id := v_invoice_id;\n    \n    RAISE NOTICE '✅ Förskottsfaktura skapad: % för bokning %', v_invoice_id, NEW.id;\n  END IF;\n\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_create_prepayment_invoice BEFORE UPDATE ON public.bookings FOR EACH ROW WHEN (((new.status = 'confirmed'::text) AND (old.status = 'pending'::text))) EXECUTE FUNCTION create_prepayment_invoice()"
-  },
-  {
-    "trigger_name": "trg_set_booking_org_id",
-    "table_name": "bookings",
-    "function_name": "set_booking_org_id",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_booking_org_id()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF NEW.org_id IS NULL THEN\n    SELECT org_id INTO NEW.org_id \n    FROM dogs \n    WHERE id = NEW.dog_id;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_set_booking_org_id BEFORE INSERT ON public.bookings FOR EACH ROW EXECUTE FUNCTION set_booking_org_id()"
-  },
-  {
-    "trigger_name": "trigger_log_booking_changes",
-    "table_name": "bookings",
-    "function_name": "log_booking_status_change",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.log_booking_status_change()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  -- Log när status ändras\n  IF (TG_OP = 'UPDATE' AND OLD.status IS DISTINCT FROM NEW.status) THEN\n    INSERT INTO booking_events (\n      org_id,\n      booking_id,\n      event_type,\n      notes,\n      metadata\n    ) VALUES (\n      NEW.org_id,\n      NEW.id,\n      CASE NEW.status\n        WHEN 'confirmed' THEN 'approved'\n        WHEN 'cancelled' THEN 'cancelled'\n        WHEN 'checked_in' THEN 'checked_in'\n        WHEN 'checked_out' THEN 'checked_out'\n        ELSE 'modified'\n      END,\n      'Status ändrad från ' || COALESCE(OLD.status, 'NULL') || ' till ' || NEW.status,\n      jsonb_build_object(\n        'old_status', OLD.status,\n        'new_status', NEW.status,\n        'old_total_price', OLD.total_price,\n        'new_total_price', NEW.total_price\n      )\n    );\n  END IF;\n\n  -- Log när bokning skapas\n  IF (TG_OP = 'INSERT') THEN\n    INSERT INTO booking_events (\n      org_id,\n      booking_id,\n      event_type,\n      notes,\n      metadata\n    ) VALUES (\n      NEW.org_id,\n      NEW.id,\n      'created',\n      'Bokning skapad',\n      jsonb_build_object(\n        'start_date', NEW.start_date,\n        'end_date', NEW.end_date,\n        'total_price', NEW.total_price\n      )\n    );\n  END IF;\n\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trigger_log_booking_changes AFTER INSERT OR UPDATE ON public.bookings FOR EACH ROW EXECUTE FUNCTION log_booking_status_change()"
-  },
-  {
-    "trigger_name": "enforce_bucket_name_length_trigger",
-    "table_name": "buckets",
-    "function_name": "enforce_bucket_name_length",
-    "function_definition": "CREATE OR REPLACE FUNCTION storage.enforce_bucket_name_length()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nbegin\n    if length(new.name) > 100 then\n        raise exception 'bucket name \"%\" is too long (% characters). Max is 100.', new.name, length(new.name);\n    end if;\n    return new;\nend;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER enforce_bucket_name_length_trigger BEFORE INSERT OR UPDATE OF name ON storage.buckets FOR EACH ROW EXECUTE FUNCTION storage.enforce_bucket_name_length()"
-  },
-  {
-    "trigger_name": "trigger_update_owner_consent_status",
-    "table_name": "consent_logs",
-    "function_name": "update_owner_consent_status",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.update_owner_consent_status()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF NEW.consent_given = true AND NEW.withdrawn_at IS NULL THEN\n    UPDATE owners SET consent_status = 'verified', consent_verified_at = NEW.given_at, updated_at = now() WHERE id = NEW.owner_id;\n  ELSIF NEW.consent_given = false THEN\n    UPDATE owners SET consent_status = 'declined', updated_at = now() WHERE id = NEW.owner_id;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trigger_update_owner_consent_status AFTER INSERT ON public.consent_logs FOR EACH ROW EXECUTE FUNCTION update_owner_consent_status()"
-  },
-  {
-    "trigger_name": "trg_set_dog_journal_org_id",
-    "table_name": "dog_journal",
-    "function_name": "set_dog_journal_org_id",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_dog_journal_org_id()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  IF NEW.org_id IS NULL THEN\n    SELECT org_id INTO NEW.org_id \n    FROM profiles \n    WHERE id = auth.uid();\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_set_dog_journal_org_id BEFORE INSERT ON public.dog_journal FOR EACH ROW EXECUTE FUNCTION set_dog_journal_org_id()"
-  },
-  {
-    "trigger_name": "trg_auto_match_owner",
-    "table_name": "dogs",
-    "function_name": "auto_match_owner_trigger",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.auto_match_owner_trigger()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nbegin\n  perform public.match_owners_to_dogs();\n  return new;\nend;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_auto_match_owner AFTER INSERT ON public.dogs FOR EACH ROW WHEN ((new.owner_id IS NULL)) EXECUTE FUNCTION auto_match_owner_trigger()"
-  },
-  {
-    "trigger_name": "trg_create_journal_on_new_dog",
-    "table_name": "dogs",
-    "function_name": "create_dog_journal_on_new_dog",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.create_dog_journal_on_new_dog()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  -- Only create journal entry if user is logged in\n  -- For public applications (auth.uid() is NULL) skip this\n  IF auth.uid() IS NOT NULL THEN\n    INSERT INTO dog_journal (org_id, dog_id, user_id, entry_type, content)\n    VALUES (NEW.org_id, NEW.id, auth.uid(), 'note', 'Hund registrerad i systemet');\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_create_journal_on_new_dog AFTER INSERT ON public.dogs FOR EACH ROW EXECUTE FUNCTION create_dog_journal_on_new_dog()"
-  },
-  {
-    "trigger_name": "trg_set_dog_org_id",
-    "table_name": "dogs",
-    "function_name": "set_dog_org_id",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_dog_org_id()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  IF NEW.org_id IS NULL THEN\n    SELECT org_id INTO NEW.org_id \n    FROM profiles \n    WHERE id = auth.uid();\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_set_dog_org_id BEFORE INSERT ON public.dogs FOR EACH ROW EXECUTE FUNCTION set_dog_org_id()"
-  },
-  {
-    "trigger_name": "trg_update_dogs_updated_at",
-    "table_name": "dogs",
-    "function_name": "update_last_updated",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.update_last_updated()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nbegin\n  new.last_updated = now();\n  return new;\nend;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_update_dogs_updated_at BEFORE UPDATE ON public.dogs FOR EACH ROW EXECUTE FUNCTION update_last_updated()"
-  },
-  {
-    "trigger_name": "trigger_update_external_customers_updated_at",
-    "table_name": "external_customers",
-    "function_name": "update_external_customers_updated_at",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.update_external_customers_updated_at()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  NEW.updated_at = NOW();\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trigger_update_external_customers_updated_at BEFORE UPDATE ON public.external_customers FOR EACH ROW EXECUTE FUNCTION update_external_customers_updated_at()"
-  },
-  {
-    "trigger_name": "trg_set_extra_service_org_id",
-    "table_name": "extra_service",
-    "function_name": "set_extra_service_org_id",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_extra_service_org_id()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  IF NEW.org_id IS NULL THEN\n    SELECT org_id INTO NEW.org_id \n    FROM profiles \n    WHERE id = auth.uid();\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_set_extra_service_org_id BEFORE INSERT ON public.extra_service FOR EACH ROW EXECUTE FUNCTION set_extra_service_org_id()"
-  },
-  {
-    "trigger_name": "trg_set_org_id_extra_services",
-    "table_name": "extra_services",
-    "function_name": "set_org_id_for_owners",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_org_id_for_owners()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  IF NEW.org_id IS NULL THEN\n    SELECT org_id INTO NEW.org_id \n    FROM profiles \n    WHERE id = auth.uid();\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_set_org_id_extra_services BEFORE INSERT ON public.extra_services FOR EACH ROW EXECUTE FUNCTION set_org_id_for_owners()"
-  },
-  {
-    "trigger_name": "trigger_auto_create_grooming_journal",
-    "table_name": "grooming_bookings",
-    "function_name": "auto_create_grooming_journal",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.auto_create_grooming_journal()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nDECLARE\n  v_dog_id UUID;\n  v_owner_id UUID;\nBEGIN\n  -- Only proceed if status changed TO 'completed'\n  IF NEW.status = 'completed' AND (OLD.status IS NULL OR OLD.status != 'completed') THEN\n    \n    -- Check if journal entry already exists for this booking\n    IF EXISTS (\n      SELECT 1 FROM grooming_journal \n      WHERE booking_id = NEW.id\n    ) THEN\n      -- Journal already exists, skip\n      RETURN NEW;\n    END IF;\n\n    -- For existing dogs: Get owner_id from dogs table\n    IF NEW.dog_id IS NOT NULL THEN\n      SELECT owner_id INTO v_owner_id\n      FROM dogs\n      WHERE id = NEW.dog_id;\n      \n      -- Create journal entry with dog_id and owner_id\n      INSERT INTO grooming_journal (\n        org_id,\n        dog_id,\n        owner_id,\n        booking_id,\n        appointment_date,\n        clip_length,\n        shampoo_type,\n        special_treatments,\n        notes,\n        duration_minutes,\n        total_price,\n        groomer_notes,\n        created_at\n      ) VALUES (\n        NEW.org_id,\n        NEW.dog_id,\n        v_owner_id,\n        NEW.id,\n        NEW.appointment_date,\n        COALESCE(NEW.clip_length, ''),\n        COALESCE(NEW.shampoo_type, ''),\n        NEW.service_type,\n        NEW.notes,\n        NULL, -- duration calculated from actual time\n        NEW.estimated_price,\n        'Auto-skapad från bokning',\n        NOW()\n      );\n      \n    -- For walk-in customers: Use external_* fields\n    ELSE\n      INSERT INTO grooming_journal (\n        org_id,\n        booking_id,\n        appointment_date,\n        external_customer_name,\n        external_customer_phone,\n        external_dog_name,\n        external_dog_breed,\n        clip_length,\n        shampoo_type,\n        special_treatments,\n        notes,\n        duration_minutes,\n        total_price,\n        groomer_notes,\n        created_at\n      ) VALUES (\n        NEW.org_id,\n        NEW.id,\n        NEW.appointment_date,\n        NEW.external_customer_name,\n        NEW.external_customer_phone,\n        NEW.external_dog_name,\n        NEW.external_dog_breed,\n        COALESCE(NEW.clip_length, ''),\n        COALESCE(NEW.shampoo_type, ''),\n        NEW.service_type,\n        NEW.notes,\n        NULL,\n        NEW.estimated_price,\n        'Auto-skapad från walk-in bokning',\n        NOW()\n      );\n    END IF;\n    \n    RAISE NOTICE 'Auto-created grooming journal entry for booking %', NEW.id;\n  END IF;\n  \n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trigger_auto_create_grooming_journal AFTER UPDATE OF status ON public.grooming_bookings FOR EACH ROW EXECUTE FUNCTION auto_create_grooming_journal()"
-  },
-  {
-    "trigger_name": "trigger_update_external_customer_stats",
-    "table_name": "grooming_bookings",
-    "function_name": "update_external_customer_stats",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.update_external_customer_stats()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nDECLARE\n  v_customer_id UUID;\nBEGIN\n  -- Only proceed if this is a walk-in booking that was just completed\n  IF NEW.status = 'completed' AND NEW.external_customer_name IS NOT NULL THEN\n    \n    -- Find or create external customer record\n    INSERT INTO external_customers (\n      org_id,\n      customer_name,\n      customer_phone,\n      dog_name,\n      dog_breed,\n      last_visit_date,\n      total_visits\n    ) VALUES (\n      NEW.org_id,\n      NEW.external_customer_name,\n      NEW.external_customer_phone,\n      NEW.external_dog_name,\n      NEW.external_dog_breed,\n      NEW.appointment_date,\n      1\n    )\n    ON CONFLICT (org_id, customer_phone, dog_name)\n    DO UPDATE SET\n      last_visit_date = NEW.appointment_date,\n      total_visits = external_customers.total_visits + 1,\n      updated_at = NOW()\n    RETURNING id INTO v_customer_id;\n    \n    RAISE NOTICE 'Updated external customer stats for customer %', v_customer_id;\n  END IF;\n  \n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trigger_update_external_customer_stats AFTER UPDATE OF status ON public.grooming_bookings FOR EACH ROW EXECUTE FUNCTION update_external_customer_stats()"
-  },
-  {
-    "trigger_name": "on_insert_set_org_id_for_grooming",
-    "table_name": "grooming_logs",
-    "function_name": "set_org_id_for_grooming",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_org_id_for_grooming()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nbegin\n  -- Hämtar organisationens ID från hunden automatiskt\n  if new.org_id is null then\n    select org_id into new.org_id\n    from dogs\n    where id = new.dog_id;\n  end if;\n  return new;\nend;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER on_insert_set_org_id_for_grooming BEFORE INSERT ON public.grooming_logs FOR EACH ROW EXECUTE FUNCTION set_org_id_for_grooming()"
-  },
-  {
-    "trigger_name": "trigger_set_invoice_number",
-    "table_name": "invoices",
-    "function_name": "set_invoice_number",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_invoice_number()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  -- Sätt invoice_number om den inte finns\n  IF NEW.invoice_number IS NULL OR NEW.invoice_number = '' THEN\n    NEW.invoice_number := generate_invoice_number(NEW.org_id);\n  END IF;\n  \n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trigger_set_invoice_number BEFORE INSERT ON public.invoices FOR EACH ROW EXECUTE FUNCTION set_invoice_number()"
-  },
-  {
-    "trigger_name": "cron_job_cache_invalidate",
-    "table_name": "job",
-    "function_name": "job_cache_invalidate",
-    "function_definition": "CREATE OR REPLACE FUNCTION cron.job_cache_invalidate()\n RETURNS trigger\n LANGUAGE c\nAS '$libdir/pg_cron', $function$cron_job_cache_invalidate$function$\n",
-    "trigger_definition": "CREATE TRIGGER cron_job_cache_invalidate AFTER INSERT OR DELETE OR UPDATE OR TRUNCATE ON cron.job FOR EACH STATEMENT EXECUTE FUNCTION cron.job_cache_invalidate()"
-  },
-  {
-    "trigger_name": "objects_delete_delete_prefix",
-    "table_name": "objects",
-    "function_name": "delete_prefix_hierarchy_trigger",
-    "function_definition": "CREATE OR REPLACE FUNCTION storage.delete_prefix_hierarchy_trigger()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n    prefix text;\nBEGIN\n    prefix := \"storage\".\"get_prefix\"(OLD.\"name\");\n\n    IF coalesce(prefix, '') != '' THEN\n        PERFORM \"storage\".\"delete_prefix\"(OLD.\"bucket_id\", prefix);\n    END IF;\n\n    RETURN OLD;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER objects_delete_delete_prefix AFTER DELETE ON storage.objects FOR EACH ROW EXECUTE FUNCTION storage.delete_prefix_hierarchy_trigger()"
-  },
-  {
-    "trigger_name": "objects_insert_create_prefix",
-    "table_name": "objects",
-    "function_name": "objects_insert_prefix_trigger",
-    "function_definition": "CREATE OR REPLACE FUNCTION storage.objects_insert_prefix_trigger()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n    PERFORM \"storage\".\"add_prefixes\"(NEW.\"bucket_id\", NEW.\"name\");\n    NEW.level := \"storage\".\"get_level\"(NEW.\"name\");\n\n    RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER objects_insert_create_prefix BEFORE INSERT ON storage.objects FOR EACH ROW EXECUTE FUNCTION storage.objects_insert_prefix_trigger()"
-  },
-  {
-    "trigger_name": "objects_update_create_prefix",
-    "table_name": "objects",
-    "function_name": "objects_update_prefix_trigger",
-    "function_definition": "CREATE OR REPLACE FUNCTION storage.objects_update_prefix_trigger()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n    old_prefixes TEXT[];\nBEGIN\n    -- Ensure this is an update operation and the name has changed\n    IF TG_OP = 'UPDATE' AND (NEW.\"name\" <> OLD.\"name\" OR NEW.\"bucket_id\" <> OLD.\"bucket_id\") THEN\n        -- Retrieve old prefixes\n        old_prefixes := \"storage\".\"get_prefixes\"(OLD.\"name\");\n\n        -- Remove old prefixes that are only used by this object\n        WITH all_prefixes as (\n            SELECT unnest(old_prefixes) as prefix\n        ),\n        can_delete_prefixes as (\n             SELECT prefix\n             FROM all_prefixes\n             WHERE NOT EXISTS (\n                 SELECT 1 FROM \"storage\".\"objects\"\n                 WHERE \"bucket_id\" = OLD.\"bucket_id\"\n                   AND \"name\" <> OLD.\"name\"\n                   AND \"name\" LIKE (prefix || '%')\n             )\n         )\n        DELETE FROM \"storage\".\"prefixes\" WHERE name IN (SELECT prefix FROM can_delete_prefixes);\n\n        -- Add new prefixes\n        PERFORM \"storage\".\"add_prefixes\"(NEW.\"bucket_id\", NEW.\"name\");\n    END IF;\n    -- Set the new level\n    NEW.\"level\" := \"storage\".\"get_level\"(NEW.\"name\");\n\n    RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER objects_update_create_prefix BEFORE UPDATE ON storage.objects FOR EACH ROW WHEN (((new.name <> old.name) OR (new.bucket_id <> old.bucket_id))) EXECUTE FUNCTION storage.objects_update_prefix_trigger()"
-  },
-  {
-    "trigger_name": "update_objects_updated_at",
-    "table_name": "objects",
-    "function_name": "update_updated_at_column",
-    "function_definition": "CREATE OR REPLACE FUNCTION storage.update_updated_at_column()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n    NEW.updated_at = now();\n    RETURN NEW; \nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER update_objects_updated_at BEFORE UPDATE ON storage.objects FOR EACH ROW EXECUTE FUNCTION storage.update_updated_at_column()"
-  },
-  {
-    "trigger_name": "on_insert_set_trial_end_for_org",
-    "table_name": "orgs",
-    "function_name": "set_trial_end_for_org",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_trial_end_for_org()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  -- Sätt gratisperiod till 3 månader från registrering\n  NEW.trial_ends_at := (now() + interval '3 months');\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER on_insert_set_trial_end_for_org BEFORE INSERT ON public.orgs FOR EACH ROW EXECUTE FUNCTION set_trial_end_for_org()"
-  },
-  {
-    "trigger_name": "on_org_insert_add_special_dates",
-    "table_name": "orgs",
-    "function_name": "add_default_special_dates_for_org",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.add_default_special_dates_for_org()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  -- 2025 - MINOR\n  INSERT INTO special_dates (org_id, date, name, category, price_surcharge, notes) VALUES\n  (NEW.id, '2025-01-06', 'Trettondedag jul', 'red_day', 75, 'Vanlig röd dag'),\n  (NEW.id, '2025-04-18', 'Långfredagen', 'red_day', 100, 'Påsken startar'),\n  (NEW.id, '2025-04-21', 'Annandag påsk', 'red_day', 75, 'Påsken slutar'),\n  (NEW.id, '2025-05-01', 'Första maj', 'red_day', 75, 'Arbetsmarknadens dag'),\n  (NEW.id, '2025-05-29', 'Kristi himmelsfärdsdag', 'red_day', 75, 'Klämdag vanlig'),\n  (NEW.id, '2025-06-06', 'Sveriges nationaldag', 'red_day', 100, 'Nationaldagen'),\n  (NEW.id, '2025-11-01', 'Alla helgons dag', 'red_day', 75, 'Höstlov')\n  ON CONFLICT (org_id, date) DO NOTHING;\n\n  -- 2025 - MAJOR\n  INSERT INTO special_dates (org_id, date, name, category, price_surcharge, notes) VALUES\n  (NEW.id, '2025-01-01', 'Nyårsdagen', 'red_day', 200, 'Nyår'),\n  (NEW.id, '2025-04-20', 'Påskdagen', 'red_day', 200, 'Påskhelg'),\n  (NEW.id, '2025-06-08', 'Pingstdagen', 'red_day', 150, 'Pinstvecka'),\n  (NEW.id, '2025-12-25', 'Juldagen', 'red_day', 200, 'Jul'),\n  (NEW.id, '2025-12-26', 'Annandag jul', 'red_day', 150, 'Jul')\n  ON CONFLICT (org_id, date) DO NOTHING;\n\n  -- 2025 - PEAK\n  INSERT INTO special_dates (org_id, date, name, category, price_surcharge, notes) VALUES\n  (NEW.id, '2025-06-20', 'Midsommarafton', 'red_day', 400, 'HÖGSTA efterfrågan'),\n  (NEW.id, '2025-06-21', 'Midsommardagen', 'red_day', 350, 'Midsommar'),\n  (NEW.id, '2025-12-23', 'Dag före julafton', 'red_day', 300, 'Julrushen börjar'),\n  (NEW.id, '2025-12-24', 'Julafton', 'red_day', 400, 'HÖGSTA efterfrågan - jul'),\n  (NEW.id, '2025-12-27', 'Mellandag', 'red_day', 250, 'Julledighet'),\n  (NEW.id, '2025-12-30', 'Dag före nyårsafton', 'red_day', 300, 'Nyårsrushen'),\n  (NEW.id, '2025-12-31', 'Nyårsafton', 'red_day', 400, 'HÖGSTA efterfrågan - nyår')\n  ON CONFLICT (org_id, date) DO NOTHING;\n\n  -- 2026 dates (samma struktur)\n  INSERT INTO special_dates (org_id, date, name, category, price_surcharge, notes) VALUES\n  (NEW.id, '2026-01-06', 'Trettondedag jul', 'red_day', 75, 'Vanlig röd dag'),\n  (NEW.id, '2026-04-03', 'Långfredagen', 'red_day', 100, 'Påsken startar'),\n  (NEW.id, '2026-04-06', 'Annandag påsk', 'red_day', 75, 'Påsken slutar'),\n  (NEW.id, '2026-05-01', 'Första maj', 'red_day', 75, 'Arbetsmarknadens dag'),\n  (NEW.id, '2026-05-14', 'Kristi himmelsfärdsdag', 'red_day', 75, 'Klämdag'),\n  (NEW.id, '2026-06-06', 'Sveriges nationaldag', 'red_day', 100, 'Nationaldagen'),\n  (NEW.id, '2026-10-31', 'Alla helgons dag', 'red_day', 75, 'Höstlov'),\n  (NEW.id, '2026-01-01', 'Nyårsdagen', 'red_day', 200, 'Nyår'),\n  (NEW.id, '2026-04-05', 'Påskdagen', 'red_day', 200, 'Påskhelg'),\n  (NEW.id, '2026-05-24', 'Pingstdagen', 'red_day', 150, 'Pinstvecka'),\n  (NEW.id, '2026-12-25', 'Juldagen', 'red_day', 200, 'Jul'),\n  (NEW.id, '2026-12-26', 'Annandag jul', 'red_day', 150, 'Jul'),\n  (NEW.id, '2026-06-19', 'Midsommarafton', 'red_day', 400, 'HÖGSTA efterfrågan'),\n  (NEW.id, '2026-06-20', 'Midsommardagen', 'red_day', 350, 'Midsommar'),\n  (NEW.id, '2026-12-23', 'Dag före julafton', 'red_day', 300, 'Julrushen'),\n  (NEW.id, '2026-12-24', 'Julafton', 'red_day', 400, 'HÖGSTA efterfrågan - jul'),\n  (NEW.id, '2026-12-27', 'Mellandag', 'red_day', 250, 'Julledighet'),\n  (NEW.id, '2026-12-30', 'Dag före nyårsafton', 'red_day', 300, 'Nyårsrushen'),\n  (NEW.id, '2026-12-31', 'Nyårsafton', 'red_day', 400, 'HÖGSTA efterfrågan - nyår')\n  ON CONFLICT (org_id, date) DO NOTHING;\n\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER on_org_insert_add_special_dates AFTER INSERT ON public.orgs FOR EACH ROW EXECUTE FUNCTION add_default_special_dates_for_org()"
-  },
-  {
-    "trigger_name": "on_org_locked_email",
-    "table_name": "orgs",
-    "function_name": "notify_admin_on_lock",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.notify_admin_on_lock()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\ndeclare\n  org_name text;\nbegin\n  select name into org_name from public.orgs where id = new.id;\n\n  perform\n    net.http_post(\n      url := 'https://api.resend.com/emails',\n      headers := jsonb_build_object(\n        'Authorization', 'Bearer ' || current_setting('app.resend_api_key', true),\n        'Content-Type', 'application/json'\n      ),\n      body := jsonb_build_object(\n        'from', 'DogPlanner <support@dogplanner.se>',\n        'to', 'support@dogplanner.se',\n        'subject', 'Konto låst: ' || org_name,\n        'html', '<p>Organisationen <b>' || org_name || '</b> har passerat sin testperiod och låsts.</p>'\n      )\n    );\n  return new;\nend;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER on_org_locked_email AFTER UPDATE ON public.orgs FOR EACH ROW WHEN (((new.status = 'locked'::text) AND (old.status IS DISTINCT FROM 'locked'::text))) EXECUTE FUNCTION notify_admin_on_lock()"
-  },
-  {
-    "trigger_name": "trigger_auto_customer_number",
-    "table_name": "owners",
-    "function_name": "auto_generate_customer_number",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.auto_generate_customer_number()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n  seq_name TEXT;\n  next_val INTEGER;\nBEGIN\n  -- Om customer_number inte redan är satt\n  IF NEW.customer_number IS NULL THEN\n    -- Försök hitta sekvensen\n    SELECT pg_get_serial_sequence('owners', 'customer_number') INTO seq_name;\n    \n    IF seq_name IS NOT NULL THEN\n      -- Sequence finns, använd den\n      EXECUTE format('SELECT nextval(%L)', seq_name) INTO next_val;\n      NEW.customer_number := next_val;\n      RAISE NOTICE 'Generated customer_number % using sequence %', next_val, seq_name;\n    ELSE\n      -- Ingen sequence, använd MAX+1 som fallback\n      SELECT COALESCE(MAX(customer_number), 0) + 1 \n      INTO NEW.customer_number \n      FROM owners;\n      RAISE WARNING 'No sequence found, using MAX+1 fallback: %', NEW.customer_number;\n    END IF;\n  END IF;\n  \n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trigger_auto_customer_number BEFORE INSERT ON public.owners FOR EACH ROW EXECUTE FUNCTION auto_generate_customer_number()"
-  },
-  {
-    "trigger_name": "set_timestamp_pension_stays",
-    "table_name": "pension_stays",
-    "function_name": "update_last_updated",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.update_last_updated()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nbegin\n  new.last_updated = now();\n  return new;\nend;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER set_timestamp_pension_stays BEFORE UPDATE ON public.pension_stays FOR EACH ROW EXECUTE FUNCTION update_last_updated()"
-  },
-  {
-    "trigger_name": "trg_calc_total_amount",
-    "table_name": "pension_stays",
-    "function_name": "calc_total_amount",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.calc_total_amount()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\ndeclare\n  addon_sum numeric(10,2) := 0;\nbegin\n  if NEW.addons is not null then\n    select sum((x->>'price')::numeric)\n    into addon_sum\n    from jsonb_array_elements(NEW.addons) as x;\n  end if;\n\n  NEW.total_amount := coalesce(NEW.base_price,0) + coalesce(addon_sum,0);\n  return NEW;\nend;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_calc_total_amount BEFORE INSERT OR UPDATE ON public.pension_stays FOR EACH ROW EXECUTE FUNCTION calc_total_amount()"
-  },
-  {
-    "trigger_name": "trg_set_pension_stay_org_id",
-    "table_name": "pension_stays",
-    "function_name": "set_pension_stay_org_id",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_pension_stay_org_id()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n  IF NEW.org_id IS NULL THEN\n    SELECT org_id INTO NEW.org_id \n    FROM dogs \n    WHERE id = NEW.dog_id;\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_set_pension_stay_org_id BEFORE INSERT OR UPDATE ON public.pension_stays FOR EACH ROW EXECUTE FUNCTION set_pension_stay_org_id()"
-  },
-  {
-    "trigger_name": "prefixes_create_hierarchy",
-    "table_name": "prefixes",
-    "function_name": "prefixes_insert_trigger",
-    "function_definition": "CREATE OR REPLACE FUNCTION storage.prefixes_insert_trigger()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nBEGIN\n    PERFORM \"storage\".\"add_prefixes\"(NEW.\"bucket_id\", NEW.\"name\");\n    RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER prefixes_create_hierarchy BEFORE INSERT ON storage.prefixes FOR EACH ROW WHEN ((pg_trigger_depth() < 1)) EXECUTE FUNCTION storage.prefixes_insert_trigger()"
-  },
-  {
-    "trigger_name": "prefixes_delete_hierarchy",
-    "table_name": "prefixes",
-    "function_name": "delete_prefix_hierarchy_trigger",
-    "function_definition": "CREATE OR REPLACE FUNCTION storage.delete_prefix_hierarchy_trigger()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nDECLARE\n    prefix text;\nBEGIN\n    prefix := \"storage\".\"get_prefix\"(OLD.\"name\");\n\n    IF coalesce(prefix, '') != '' THEN\n        PERFORM \"storage\".\"delete_prefix\"(OLD.\"bucket_id\", prefix);\n    END IF;\n\n    RETURN OLD;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER prefixes_delete_hierarchy AFTER DELETE ON storage.prefixes FOR EACH ROW EXECUTE FUNCTION storage.delete_prefix_hierarchy_trigger()"
-  },
-  {
-    "trigger_name": "on_profile_insert",
-    "table_name": "profiles",
-    "function_name": "set_default_role",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_default_role()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\nbegin\n  if new.role is null then\n    new.role := 'staff';\n  end if;\n  return new;\nend;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER on_profile_insert BEFORE INSERT ON public.profiles FOR EACH ROW EXECUTE FUNCTION set_default_role()"
-  },
-  {
-    "trigger_name": "trg_delete_org_if_no_admins",
-    "table_name": "profiles",
-    "function_name": "delete_org_if_no_admins",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.delete_org_if_no_admins()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\ndeclare\n  v_org_id uuid;\n  v_admin_count int;\nbegin\n  v_org_id := old.org_id;\n\n  -- Räkna kvarvarande admins i organisationen\n  select count(*) into v_admin_count\n  from public.profiles\n  where org_id = v_org_id\n    and role = 'admin';\n\n  -- Om inga admins finns kvar → radera hela företaget\n  if v_admin_count = 0 then\n    raise notice '⚠️ Varning: Ingen admin kvar i organisationen %, företaget kommer att tas bort!', v_org_id;\n\n    -- Radera i rätt ordning (för att undvika FK-fel)\n    delete from public.bookings where org_id = v_org_id;\n    delete from public.owners where org_id = v_org_id;\n    delete from public.dogs where org_id = v_org_id;\n    delete from public.invoices where org_id = v_org_id;\n    delete from public.orgs where id = v_org_id;\n\n    raise notice '✅ Organisation % och all tillhörande data har raderats enligt GDPR.', v_org_id;\n  end if;\n\n  return null;\nend;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_delete_org_if_no_admins AFTER DELETE ON public.profiles FOR EACH ROW EXECUTE FUNCTION delete_org_if_no_admins()"
-  },
-  {
-    "trigger_name": "trg_ensure_org_has_admin",
-    "table_name": "profiles",
-    "function_name": "ensure_org_has_admin",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.ensure_org_has_admin()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\ndeclare\n  v_org_id uuid;\n  v_admin_count int;\n  v_new_admin uuid;\nbegin\n  -- Identifiera organisationen baserat på den gamla raden\n  v_org_id := old.org_id;\n\n  -- Räkna antalet kvarvarande admins\n  select count(*) into v_admin_count\n  from public.profiles\n  where org_id = v_org_id\n    and role = 'admin';\n\n  -- Om inga admins finns kvar → uppgradera en slumpmässig staff till admin\n  if v_admin_count = 0 then\n    select id into v_new_admin\n    from public.profiles\n    where org_id = v_org_id\n    order by created_at asc\n    limit 1;\n\n    if v_new_admin is not null then\n      update public.profiles\n      set role = 'admin'\n      where id = v_new_admin;\n\n      raise notice 'Ingen admin kvar i org %, uppgraderade användare % till admin', v_org_id, v_new_admin;\n    else\n      raise notice 'Ingen kvar att uppgradera i org %, organisationen står utan användare', v_org_id;\n    end if;\n  end if;\n\n  return null;\nend;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_ensure_org_has_admin AFTER DELETE OR UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION ensure_org_has_admin()"
-  },
-  {
-    "trigger_name": "trg_set_org_id_rooms",
-    "table_name": "rooms",
-    "function_name": "set_org_id_for_rooms",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_org_id_for_rooms()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  IF NEW.org_id IS NULL THEN\n    SELECT org_id INTO NEW.org_id \n    FROM profiles \n    WHERE id = auth.uid();\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER trg_set_org_id_rooms BEFORE INSERT ON public.rooms FOR EACH ROW EXECUTE FUNCTION set_org_id_for_rooms()"
-  },
-  {
-    "trigger_name": "on_insert_set_org_id_for_services",
-    "table_name": "services",
-    "function_name": "set_org_id_for_rooms",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_org_id_for_rooms()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  IF NEW.org_id IS NULL THEN\n    SELECT org_id INTO NEW.org_id \n    FROM profiles \n    WHERE id = auth.uid();\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER on_insert_set_org_id_for_services BEFORE INSERT ON public.services FOR EACH ROW EXECUTE FUNCTION set_org_id_for_rooms()"
-  },
-  {
-    "trigger_name": "on_insert_set_org_id_for_special_dates",
-    "table_name": "special_dates",
-    "function_name": "set_special_date_org_id",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_special_date_org_id()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  IF NEW.org_id IS NULL THEN\n    NEW.org_id := (\n      SELECT org_id \n      FROM profiles \n      WHERE id = auth.uid()\n    );\n  END IF;\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER on_insert_set_org_id_for_special_dates BEFORE INSERT ON public.special_dates FOR EACH ROW EXECUTE FUNCTION set_special_date_org_id()"
-  },
-  {
-    "trigger_name": "tr_check_filters",
-    "table_name": "subscription",
-    "function_name": "subscription_check_filters",
-    "function_definition": "CREATE OR REPLACE FUNCTION realtime.subscription_check_filters()\n RETURNS trigger\n LANGUAGE plpgsql\nAS $function$\n    /*\n    Validates that the user defined filters for a subscription:\n    - refer to valid columns that the claimed role may access\n    - values are coercable to the correct column type\n    */\n    declare\n        col_names text[] = coalesce(\n                array_agg(c.column_name order by c.ordinal_position),\n                '{}'::text[]\n            )\n            from\n                information_schema.columns c\n            where\n                format('%I.%I', c.table_schema, c.table_name)::regclass = new.entity\n                and pg_catalog.has_column_privilege(\n                    (new.claims ->> 'role'),\n                    format('%I.%I', c.table_schema, c.table_name)::regclass,\n                    c.column_name,\n                    'SELECT'\n                );\n        filter realtime.user_defined_filter;\n        col_type regtype;\n\n        in_val jsonb;\n    begin\n        for filter in select * from unnest(new.filters) loop\n            -- Filtered column is valid\n            if not filter.column_name = any(col_names) then\n                raise exception 'invalid column for filter %', filter.column_name;\n            end if;\n\n            -- Type is sanitized and safe for string interpolation\n            col_type = (\n                select atttypid::regtype\n                from pg_catalog.pg_attribute\n                where attrelid = new.entity\n                      and attname = filter.column_name\n            );\n            if col_type is null then\n                raise exception 'failed to lookup type for column %', filter.column_name;\n            end if;\n\n            -- Set maximum number of entries for in filter\n            if filter.op = 'in'::realtime.equality_op then\n                in_val = realtime.cast(filter.value, (col_type::text || '[]')::regtype);\n                if coalesce(jsonb_array_length(in_val), 0) > 100 then\n                    raise exception 'too many values for `in` filter. Maximum 100';\n                end if;\n            else\n                -- raises an exception if value is not coercable to type\n                perform realtime.cast(filter.value, col_type);\n            end if;\n\n        end loop;\n\n        -- Apply consistent order to filters so the unique constraint on\n        -- (subscription_id, entity, filters) can't be tricked by a different filter order\n        new.filters = coalesce(\n            array_agg(f order by f.column_name, f.op, f.value),\n            '{}'\n        ) from unnest(new.filters) f;\n\n        return new;\n    end;\n    $function$\n",
-    "trigger_definition": "CREATE TRIGGER tr_check_filters BEFORE INSERT OR UPDATE ON realtime.subscription FOR EACH ROW EXECUTE FUNCTION realtime.subscription_check_filters()"
-  },
-  {
-    "trigger_name": "on_insert_set_org_id_for_subscriptions",
-    "table_name": "subscriptions",
-    "function_name": "set_org_id_for_subscription",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.set_org_id_for_subscription()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nBEGIN\n  -- Hämta organisationen kopplad till den användare som skapar abonnemanget\n  SELECT org_id INTO NEW.org_id\n  FROM public.profiles\n  WHERE id = auth.uid();\n\n  RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER on_insert_set_org_id_for_subscriptions BEFORE INSERT ON public.subscriptions FOR EACH ROW EXECUTE FUNCTION set_org_id_for_subscription()"
-  },
-  {
-    "trigger_name": "on_auth_user_created",
-    "table_name": "users",
-    "function_name": "handle_new_user",
-    "function_definition": "CREATE OR REPLACE FUNCTION public.handle_new_user()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\nAS $function$\nDECLARE\n  v_org_name text;\n  v_org_number text;\n  v_full_name text;\n  v_phone text;\n  v_lan text;\n  v_kommun text;\n  v_service_types text[];\n  v_org_id uuid;\nBEGIN\n  -- Extract values from user_metadata (from registration form)\n  v_org_name := COALESCE(\n    NEW.raw_user_meta_data->>'org_name',\n    split_part(NEW.email, '@', 1) || 's Hunddagis'\n  );\n  v_org_number := NEW.raw_user_meta_data->>'org_number';\n  v_full_name := COALESCE(\n    NEW.raw_user_meta_data->>'full_name',\n    split_part(NEW.email, '@', 1)\n  );\n  v_phone := NEW.raw_user_meta_data->>'phone';\n  v_lan := NEW.raw_user_meta_data->>'lan';\n  v_kommun := NEW.raw_user_meta_data->>'kommun';\n  \n  -- Parse service_types array from JSONB\n  IF NEW.raw_user_meta_data ? 'service_types' THEN\n    v_service_types := ARRAY(\n      SELECT jsonb_array_elements_text(NEW.raw_user_meta_data->'service_types')\n    );\n  END IF;\n\n  -- Create organization with proper values\n  INSERT INTO orgs (\n    name,\n    org_number,\n    email,\n    phone,\n    lan,\n    kommun,\n    service_types,\n    created_at\n  )\n  VALUES (\n    v_org_name,\n    v_org_number,\n    NEW.email,\n    v_phone,\n    v_lan,\n    v_kommun,\n    v_service_types,\n    now()\n  )\n  RETURNING id INTO v_org_id;\n\n  RAISE NOTICE 'Created org for user %: org_id=%', NEW.email, v_org_id;\n\n  -- Create profile with org_id\n  INSERT INTO profiles (\n    id,\n    org_id,\n    role,\n    email,\n    full_name,\n    phone,\n    created_at\n  )\n  VALUES (\n    NEW.id,\n    v_org_id,\n    'admin', -- First user is always admin\n    NEW.email,\n    v_full_name,\n    v_phone,\n    now()\n  );\n\n  RAISE NOTICE 'Created profile for user %: org_id=%', NEW.email, v_org_id;\n\n  -- Create 3-month trial subscription\n  INSERT INTO org_subscriptions (\n    org_id,\n    status,\n    trial_ends_at,\n    created_at\n  )\n  VALUES (\n    v_org_id,\n    'trialing',\n    now() + interval '3 months',\n    now()\n  );\n\n  RAISE NOTICE 'Created trial subscription for org_id=%', v_org_id;\n\n  RETURN NEW;\n\nEXCEPTION\n  WHEN OTHERS THEN\n    -- Don't block registration if trigger fails\n    -- Layer 2 (API) will catch this\n    RAISE WARNING 'handle_new_user failed for %: %', NEW.email, SQLERRM;\n    RETURN NEW;\nEND;\n$function$\n",
-    "trigger_definition": "CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION handle_new_user()"
-  }
-]
-
-
-[
-  {
-    "schemaname": "cron",
-    "tablename": "job",
-    "policyname": "cron_job_policy",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "(username = CURRENT_USER)",
-    "with_check": null
-  },
-  {
-    "schemaname": "cron",
-    "tablename": "job_run_details",
-    "policyname": "cron_job_run_details_policy",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "(username = CURRENT_USER)",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "attendance_logs",
-    "policyname": "Allow read attendance_logs for active or locked orgs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(EXISTS ( SELECT 1\n   FROM ((profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n     JOIN dogs d ON ((d.id = attendance_logs.dogs_id)))\n  WHERE ((p.id = auth.uid()) AND (o.id = d.org_id) AND (o.status = ANY (ARRAY['active'::text, 'trialing'::text, 'locked'::text])))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "attendance_logs",
-    "policyname": "Block changes to attendance_logs for locked orgs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "(EXISTS ( SELECT 1\n   FROM ((profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n     JOIN dogs d ON ((d.id = attendance_logs.dogs_id)))\n  WHERE ((p.id = auth.uid()) AND (o.id = d.org_id) AND (o.status <> 'locked'::text))))",
-    "with_check": "(EXISTS ( SELECT 1\n   FROM ((profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n     JOIN dogs d ON ((d.id = attendance_logs.dogs_id)))\n  WHERE ((p.id = auth.uid()) AND (o.id = d.org_id) AND (o.status <> 'locked'::text))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "boarding_seasons",
-    "policyname": "Enable all for authenticated users on boarding_seasons",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "true",
-    "with_check": "true"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "booking_events",
-    "policyname": "Customers can view own booking events",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(booking_id IN ( SELECT b.id\n   FROM (bookings b\n     JOIN dogs d ON ((b.dog_id = d.id)))\n  WHERE (d.owner_id IN ( SELECT owners.id\n           FROM owners\n          WHERE (owners.user_id = auth.uid())))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "booking_events",
-    "policyname": "Only system can create events",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "false"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "booking_events",
-    "policyname": "Staff can view booking events",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "bookings",
-    "policyname": "bookings_public_insert",
-    "permissive": "PERMISSIVE",
-    "roles": "{anon,authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "true"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "bookings",
-    "policyname": "bookings_select_by_org_or_owner",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "((org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))) OR (owner_id IN ( SELECT owners.id\n   FROM owners\n  WHERE (owners.id = auth.uid()))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "bookings",
-    "policyname": "bookings_update_by_org_or_owner",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "UPDATE",
-    "qual": "((org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))) OR ((owner_id IN ( SELECT owners.id\n   FROM owners\n  WHERE (owners.id = auth.uid()))) AND (status = 'pending'::text)))",
-    "with_check": "((org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))) OR ((owner_id IN ( SELECT owners.id\n   FROM owners\n  WHERE (owners.id = auth.uid()))) AND (status = 'pending'::text)))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "consent_logs",
-    "policyname": "consent_org_select",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "consent_logs",
-    "policyname": "consent_public_insert",
-    "permissive": "PERMISSIVE",
-    "roles": "{anon,authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "true"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "daycare_pricing",
-    "policyname": "authenticated_full_access_daycare_pricing",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "true",
-    "with_check": "true"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "Allow org members to manage dog journals",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "Allow org members to view dog journals",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "dog_journal insert",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "(auth.uid() IS NOT NULL)"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "dog_journal select",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.org_id = dog_journal.org_id))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "dog_journal_all",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "(EXISTS ( SELECT 1\n   FROM dogs d\n  WHERE ((d.id = dog_journal.dog_id) AND (d.org_id = current_org_id()))))",
-    "with_check": "(EXISTS ( SELECT 1\n   FROM dogs d\n  WHERE ((d.id = dog_journal.dog_id) AND (d.org_id = current_org_id()))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "dog_journal_delete",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "DELETE",
-    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.org_id = dog_journal.org_id) AND (p.role = 'admin'::text))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "dog_journal_insert",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "true"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "dog_journal_select",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.org_id = dog_journal.org_id))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "dog_journal_update",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "UPDATE",
-    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.org_id = dog_journal.org_id))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "insert_dog_journal_in_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dog_journal",
-    "policyname": "select_dog_journal_in_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "((org_id = auth.uid()) OR (org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dogs",
-    "policyname": "dogs_public_insert",
-    "permissive": "PERMISSIVE",
-    "roles": "{anon,authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "true"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dogs",
-    "policyname": "dogs_select_by_org_or_owner",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "((org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))) OR (owner_id IN ( SELECT owners.id\n   FROM owners\n  WHERE (owners.id = auth.uid()))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "dogs",
-    "policyname": "dogs_update_by_org_or_owner",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "UPDATE",
-    "qual": "((org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))) OR (owner_id IN ( SELECT owners.id\n   FROM owners\n  WHERE (owners.id = auth.uid()))))",
-    "with_check": "((org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))) OR (owner_id IN ( SELECT owners.id\n   FROM owners\n  WHERE (owners.id = auth.uid()))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "external_customers",
-    "policyname": "Users can insert external customers in their org",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "external_customers",
-    "policyname": "Users can update external customers in their org",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "UPDATE",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "external_customers",
-    "policyname": "Users can view external customers in their org",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "Allow read extra_service for active or locked orgs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.id = extra_service.org_id) AND (o.status = ANY (ARRAY['active'::text, 'trialing'::text, 'locked'::text])))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "Block changes to extra_service for locked orgs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.id = extra_service.org_id) AND (o.status <> 'locked'::text))))",
-    "with_check": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.id = extra_service.org_id) AND (o.status <> 'locked'::text))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "Org members can modify org extra_service",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.org_id = extra_service.org_id)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "Org members can read org extra_service",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.org_id = extra_service.org_id)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "allow_select_extra_service",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "true",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "delete_own_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "DELETE",
-    "qual": "(org_id = ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "extra_service_all",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "(EXISTS ( SELECT 1\n   FROM dogs d\n  WHERE ((d.id = extra_service.dogs_id) AND (d.org_id = current_org_id()))))",
-    "with_check": "(EXISTS ( SELECT 1\n   FROM dogs d\n  WHERE ((d.id = extra_service.dogs_id) AND (d.org_id = current_org_id()))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "extra_service_delete",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "DELETE",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "extra_service_insert",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "extra_service_select",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "extra_service_update",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "UPDATE",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "insert_own_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "((org_id IS NULL) OR (org_id = ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "select_own_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(org_id = ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_service",
-    "policyname": "update_own_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "UPDATE",
-    "qual": "(org_id = ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": "(org_id = ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "extra_services",
-    "policyname": "Allow all for authenticated users",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "(auth.role() = 'authenticated'::text)",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "function_logs",
-    "policyname": "Admins can view function logs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.role = 'admin'::text)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "grooming_logs",
-    "policyname": "Org members can modify org grooming logs",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.org_id = grooming_logs.org_id)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "grooming_logs",
-    "policyname": "Org members can read org grooming logs",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.org_id = grooming_logs.org_id)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "grooming_services",
-    "policyname": "authenticated_full_access_grooming_services",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "true",
-    "with_check": "true"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "interest_applications",
-    "policyname": "Allow anonymous insert for public applications",
-    "permissive": "PERMISSIVE",
-    "roles": "{anon}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "true"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "interest_applications",
-    "policyname": "Users can delete their org's interest applications",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "DELETE",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "interest_applications",
-    "policyname": "Users can insert interest applications for their org",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "interest_applications",
-    "policyname": "Users can update their org's interest applications",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "UPDATE",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "interest_applications",
-    "policyname": "Users can view their org's interest applications",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "interest_applications",
-    "policyname": "interest_org_select",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "invoice_items",
-    "policyname": "admin_full_access_invoice_items",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "((invoice_id IN ( SELECT invoices.id\n   FROM invoices\n  WHERE (invoices.org_id = ( SELECT profiles.org_id\n           FROM profiles\n          WHERE (profiles.id = auth.uid()))))) AND (( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = auth.uid())) = 'admin'::text))",
-    "with_check": "((invoice_id IN ( SELECT invoices.id\n   FROM invoices\n  WHERE (invoices.org_id = ( SELECT profiles.org_id\n           FROM profiles\n          WHERE (profiles.id = auth.uid()))))) AND (( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = auth.uid())) = 'admin'::text))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "invoice_items",
-    "policyname": "select_own_org_invoice_items",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(invoice_id IN ( SELECT invoices.id\n   FROM invoices\n  WHERE (invoices.org_id = ( SELECT profiles.org_id\n           FROM profiles\n          WHERE (profiles.id = auth.uid())))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "invoice_items",
-    "policyname": "staff_edit_draft_invoice_items",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "((invoice_id IN ( SELECT invoices.id\n   FROM invoices\n  WHERE ((invoices.org_id = ( SELECT profiles.org_id\n           FROM profiles\n          WHERE (profiles.id = auth.uid()))) AND (invoices.status = 'draft'::text)))) AND (( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = auth.uid())) = 'staff'::text))",
-    "with_check": "((invoice_id IN ( SELECT invoices.id\n   FROM invoices\n  WHERE ((invoices.org_id = ( SELECT profiles.org_id\n           FROM profiles\n          WHERE (profiles.id = auth.uid()))) AND (invoices.status = 'draft'::text)))) AND (( SELECT profiles.role\n   FROM profiles\n  WHERE (profiles.id = auth.uid())) = 'staff'::text))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "invoices",
-    "policyname": "insert_invoices_in_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "invoices",
-    "policyname": "select_invoices_in_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "invoices",
-    "policyname": "update_invoices_in_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "UPDATE",
-    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "orgs",
-    "policyname": "orgs_members_all",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "(id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "orgs",
-    "policyname": "orgs_public_select",
-    "permissive": "PERMISSIVE",
-    "roles": "{anon,authenticated}",
-    "cmd": "SELECT",
-    "qual": "true",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "owners",
-    "policyname": "owners_public_insert",
-    "permissive": "PERMISSIVE",
-    "roles": "{anon,authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "true"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "owners",
-    "policyname": "owners_select_by_org_or_self",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "((org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))) OR (id = auth.uid()))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "owners",
-    "policyname": "owners_update_by_org_or_self",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "UPDATE",
-    "qual": "((org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))) OR (id = auth.uid()))",
-    "with_check": "((org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))) OR (id = auth.uid()))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "price_lists",
-    "policyname": "Allow read price lists for active or locked orgs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.id = price_lists.org_id) AND (o.status = ANY (ARRAY['active'::text, 'trialing'::text, 'locked'::text])))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "price_lists",
-    "policyname": "Block changes to price lists for locked orgs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.id = price_lists.org_id) AND (o.status <> 'locked'::text))))",
-    "with_check": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.id = price_lists.org_id) AND (o.status <> 'locked'::text))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "price_lists",
-    "policyname": "Org members can modify org price_lists",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.org_id = price_lists.org_id)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "price_lists",
-    "policyname": "Org members can read org price_lists",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.org_id = price_lists.org_id)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "pricing",
-    "policyname": "Users can delete pricing for their org",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "DELETE",
-    "qual": "(org_id IN ( SELECT orgs.id\n   FROM orgs\n  WHERE (orgs.id = ((auth.jwt() ->> 'org_id'::text))::uuid)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "pricing",
-    "policyname": "Users can insert pricing for their org",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "(org_id IN ( SELECT orgs.id\n   FROM orgs\n  WHERE (orgs.id = ((auth.jwt() ->> 'org_id'::text))::uuid)))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "pricing",
-    "policyname": "Users can update pricing for their org",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "UPDATE",
-    "qual": "(org_id IN ( SELECT orgs.id\n   FROM orgs\n  WHERE (orgs.id = ((auth.jwt() ->> 'org_id'::text))::uuid)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "pricing",
-    "policyname": "Users can view pricing for their org",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(org_id IN ( SELECT orgs.id\n   FROM orgs\n  WHERE (orgs.id = ((auth.jwt() ->> 'org_id'::text))::uuid)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "profiles",
-    "policyname": "profiles_insert_own",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "(auth.uid() = id)"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "profiles",
-    "policyname": "profiles_read_own",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(auth.uid() = id)",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "profiles",
-    "policyname": "profiles_update_own",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "UPDATE",
-    "qual": "(auth.uid() = id)",
-    "with_check": "(auth.uid() = id)"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "responsibilities",
-    "policyname": "Allow read responsibilities for active or locked orgs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.status = ANY (ARRAY['active'::text, 'trialing'::text, 'locked'::text])))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "responsibilities",
-    "policyname": "Block changes to responsibilities for locked orgs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.status <> 'locked'::text))))",
-    "with_check": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.status <> 'locked'::text))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "responsibilities",
-    "policyname": "Org members can modify org responsibilities",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.org_id = responsibilities.org_id)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "responsibilities",
-    "policyname": "Org members can read org responsibilities",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.org_id = responsibilities.org_id)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "rooms",
-    "policyname": "authenticated_full_access_rooms",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.org_id = rooms.org_id))))",
-    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.id = auth.uid()) AND (profiles.org_id = rooms.org_id))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "special_dates",
-    "policyname": "Enable all for authenticated users on special_dates",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "(auth.role() = 'authenticated'::text)",
-    "with_check": "(auth.role() = 'authenticated'::text)"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "staff_notes",
-    "policyname": "Allow read staff_notes for active or locked orgs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.status = ANY (ARRAY['active'::text, 'trialing'::text, 'locked'::text])))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "staff_notes",
-    "policyname": "Block changes to staff_notes for locked orgs",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "ALL",
-    "qual": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.status <> 'locked'::text))))",
-    "with_check": "(EXISTS ( SELECT 1\n   FROM (profiles p\n     JOIN orgs o ON ((o.id = p.org_id)))\n  WHERE ((p.id = auth.uid()) AND (o.status <> 'locked'::text))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "staff_notes",
-    "policyname": "Org members can modify org staff_notes",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "ALL",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.org_id = staff_notes.org_id)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "staff_notes",
-    "policyname": "Org members can read org staff_notes",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(auth.uid() IN ( SELECT profiles.id\n   FROM profiles\n  WHERE (profiles.org_id = staff_notes.org_id)))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "subscriptions",
-    "policyname": "Users can view subscription for their organization",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(EXISTS ( SELECT 1\n   FROM profiles\n  WHERE ((profiles.org_id = subscriptions.org_id) AND (profiles.id = auth.uid()))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "subscriptions",
-    "policyname": "allow_select_subscriptions",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "true",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "subscriptions",
-    "policyname": "delete_own_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "DELETE",
-    "qual": "(org_id = ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "subscriptions",
-    "policyname": "delete_subscriptions_admin_only",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "DELETE",
-    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = 'admin'::text) AND (p.org_id = subscriptions.org_id))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "subscriptions",
-    "policyname": "insert_own_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "((org_id IS NULL) OR (org_id = ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid()))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "subscriptions",
-    "policyname": "insert_subscriptions_admin_only",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = 'admin'::text) AND (p.org_id = subscriptions.org_id))))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "subscriptions",
-    "policyname": "read_subscriptions_admin_only",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = 'admin'::text) AND (p.org_id = subscriptions.org_id))))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "subscriptions",
-    "policyname": "select_own_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "SELECT",
-    "qual": "(org_id = ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": null
-  },
-  {
-    "schemaname": "public",
-    "tablename": "subscriptions",
-    "policyname": "update_own_org",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "UPDATE",
-    "qual": "(org_id = ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
-    "with_check": "(org_id = ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
-  },
-  {
-    "schemaname": "public",
-    "tablename": "subscriptions",
-    "policyname": "update_subscriptions_admin_only",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "UPDATE",
-    "qual": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = 'admin'::text) AND (p.org_id = subscriptions.org_id))))",
-    "with_check": "(EXISTS ( SELECT 1\n   FROM profiles p\n  WHERE ((p.id = auth.uid()) AND (p.role = 'admin'::text) AND (p.org_id = subscriptions.org_id))))"
-  },
-  {
-    "schemaname": "storage",
-    "tablename": "objects",
-    "policyname": "Authenticated users can upload dog photos",
-    "permissive": "PERMISSIVE",
-    "roles": "{authenticated}",
-    "cmd": "INSERT",
-    "qual": null,
-    "with_check": "(bucket_id = 'dog-photos'::text)"
-  },
-  {
-    "schemaname": "storage",
-    "tablename": "objects",
-    "policyname": "Give users authenticated access to folder flreew_0",
-    "permissive": "PERMISSIVE",
-    "roles": "{public}",
-    "cmd": "SELECT",
-    "qual": "((bucket_id = 'documents'::text) AND ((storage.foldername(name))[1] = 'documents'::text) AND (auth.role() = 'authenticated'::text))",
-    "with_check": null
-  }
-]
-
-[
-  {
-    "routine_schema": "public",
-    "routine_name": "current_org_id",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "pgbouncer",
-    "routine_name": "get_auth",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "remove_staff_member",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "json_text",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "generate_invoice_number",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_invoice_number",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "create_invoice_on_checkout",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "auto_generate_customer_number",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "gen_salt",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "encrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "decrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pg_stat_statements_info",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "gen_salt",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "update_updated_at_column",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_org_id_for_pension_stays",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pg_stat_statements_reset",
-    "routine_type": "FUNCTION",
-    "data_type": "timestamp with time zone"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_org_id_for_grooming",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_default_role",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "auto_create_grooming_journal",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "uuid_nil",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "uuid_ns_dns",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "uuid_ns_url",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "uuid_ns_oid",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "update_external_customers_updated_at",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "update_external_customer_stats",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "auth",
-    "routine_name": "uid",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "auth",
-    "routine_name": "role",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "auth",
-    "routine_name": "email",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "uuid_ns_x500",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "uuid_generate_v1",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "match_owners_to_dogs",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "touch_bookings_updated_at",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "cron",
-    "routine_name": "schedule",
-    "routine_type": "FUNCTION",
-    "data_type": "bigint"
-  },
-  {
-    "routine_schema": "cron",
-    "routine_name": "unschedule",
-    "routine_type": "FUNCTION",
-    "data_type": "boolean"
-  },
-  {
-    "routine_schema": "cron",
-    "routine_name": "job_cache_invalidate",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "cron",
-    "routine_name": "schedule",
-    "routine_type": "FUNCTION",
-    "data_type": "bigint"
-  },
-  {
-    "routine_schema": "cron",
-    "routine_name": "alter_job",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "cron",
-    "routine_name": "schedule_in_database",
-    "routine_type": "FUNCTION",
-    "data_type": "bigint"
-  },
-  {
-    "routine_schema": "cron",
-    "routine_name": "unschedule",
-    "routine_type": "FUNCTION",
-    "data_type": "boolean"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_org_id_for_subscription",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "check_worker_is_up",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "_await_response",
-    "routine_type": "FUNCTION",
-    "data_type": "boolean"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "_urlencode_string",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "_encode_url_with_params_array",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "worker_restart",
-    "routine_type": "FUNCTION",
-    "data_type": "boolean"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "wait_until_running",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "wake",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "http_get",
-    "routine_type": "FUNCTION",
-    "data_type": "bigint"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "has_valid_consent",
-    "routine_type": "FUNCTION",
-    "data_type": "boolean"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "uuid_generate_v1mc",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "uuid_generate_v3",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "uuid_generate_v4",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "uuid_generate_v5",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "digest",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "digest",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "hmac",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "hmac",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "crypt",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "encrypt_iv",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "decrypt_iv",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_trial_end_for_org",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "http_post",
-    "routine_type": "FUNCTION",
-    "data_type": "bigint"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "http_delete",
-    "routine_type": "FUNCTION",
-    "data_type": "bigint"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "withdraw_consent",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "update_owner_consent_status",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "log_booking_status_change",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "calculate_cancellation_fee",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "calculate_data_retention_date",
-    "routine_type": "FUNCTION",
-    "data_type": "date"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "anonymize_owner",
-    "routine_type": "FUNCTION",
-    "data_type": "boolean"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_dog_org_id",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_booking_org_id",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_extra_service_org_id",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_dog_journal_org_id",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "auto_checkout_dogs",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_pension_stay_org_id",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_org_id_for_invoices",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "_http_collect_response",
-    "routine_type": "FUNCTION",
-    "data_type": "USER-DEFINED"
-  },
-  {
-    "routine_schema": "net",
-    "routine_name": "http_collect_response",
-    "routine_type": "FUNCTION",
-    "data_type": "USER-DEFINED"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgrst_ddl_watch",
-    "routine_type": "FUNCTION",
-    "data_type": "event_trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "send_invoice_email",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "trigger_invoice_generation",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "lock_expired_trials",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "grant_pg_graphql_access",
-    "routine_type": "FUNCTION",
-    "data_type": "event_trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "activate_paid_subscription",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "create_prepayment_invoice",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "update_waitlist_status",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "log_trigger_execution",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "cleanup_old_trigger_logs",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "graphql",
-    "routine_name": "get_schema_version",
-    "routine_type": "FUNCTION",
-    "data_type": "integer"
-  },
-  {
-    "routine_schema": "vault",
-    "routine_name": "create_secret",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "vault",
-    "routine_name": "update_secret",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "graphql",
-    "routine_name": "exception",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "graphql",
-    "routine_name": "_internal_resolve",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "graphql",
-    "routine_name": "resolve",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "calc_total_amount",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_org_id_for_dogs",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_org_id_from_dog",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "vault",
-    "routine_name": "_crypto_aead_det_decrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "gen_random_bytes",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "gen_random_uuid",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_sym_encrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_sym_encrypt_bytea",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_sym_encrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_sym_encrypt_bytea",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_sym_decrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_sym_decrypt_bytea",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_sym_decrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_sym_decrypt_bytea",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_pub_encrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_pub_encrypt_bytea",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_pub_encrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_pub_encrypt_bytea",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_pub_decrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_pub_decrypt_bytea",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_pub_decrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_pub_decrypt_bytea",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_pub_decrypt",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_pub_decrypt_bytea",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_key_id",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "armor",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "armor",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "dearmor",
-    "routine_type": "FUNCTION",
-    "data_type": "bytea"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgp_armor_headers",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pg_stat_statements",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "pgrst_drop_watch",
-    "routine_type": "FUNCTION",
-    "data_type": "event_trigger"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "set_graphql_placeholder",
-    "routine_type": "FUNCTION",
-    "data_type": "event_trigger"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "grant_pg_net_access",
-    "routine_type": "FUNCTION",
-    "data_type": "event_trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "handle_new_user",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "notify_admin_on_lock",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "create_org_and_admin",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "graphql_public",
-    "routine_name": "graphql",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "graphql",
-    "routine_name": "comment_directive",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "graphql",
-    "routine_name": "increment_schema_version",
-    "routine_type": "FUNCTION",
-    "data_type": "event_trigger"
-  },
-  {
-    "routine_schema": "extensions",
-    "routine_name": "grant_pg_cron_access",
-    "routine_type": "FUNCTION",
-    "data_type": "event_trigger"
-  },
-  {
-    "routine_schema": "auth",
-    "routine_name": "jwt",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "filename",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_special_date_org_id",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "heal_user_missing_org",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "prefixes_insert_trigger",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "delete_prefix",
-    "routine_type": "FUNCTION",
-    "data_type": "boolean"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "objects_insert_prefix_trigger",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "delete_prefix_hierarchy_trigger",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "ensure_org_has_admin",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "foldername",
-    "routine_type": "FUNCTION",
-    "data_type": "ARRAY"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "heal_all_users_missing_org",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "update_updated_at_column",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "can_insert_object",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "list_objects_with_delimiter",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "list_multipart_uploads_with_delimiter",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "prefixes_delete_cleanup",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "operation",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "get_level",
-    "routine_type": "FUNCTION",
-    "data_type": "integer"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "get_prefix",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "get_prefixes",
-    "routine_type": "FUNCTION",
-    "data_type": "ARRAY"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "add_prefixes",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "objects_update_level_trigger",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "search_v1_optimised",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "search_legacy_v1",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "search",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "extension",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "get_size_by_bucket",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "objects_update_prefix_trigger",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "enforce_bucket_name_length",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "search_v2",
-    "routine_type": "FUNCTION",
-    "data_type": "record"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "lock_top_prefixes",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "auto_match_owner_trigger",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "objects_delete_cleanup",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "objects_update_cleanup",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "update_last_updated",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "create_dog_journal_on_new_dog",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "storage",
-    "routine_name": "delete_leaf_prefixes",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_org_id_for_owners",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "gdpr_delete_user_data",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "quote_wal2json",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "cast",
-    "routine_type": "FUNCTION",
-    "data_type": "jsonb"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "delete_org_if_no_admins",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_org_id_for_rooms",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "to_regrole",
-    "routine_type": "FUNCTION",
-    "data_type": "regrole"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "add_staff_member",
-    "routine_type": "FUNCTION",
-    "data_type": "uuid"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "build_prepared_statement_sql",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "send_trial_warning_emails",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "apply_rls",
-    "routine_type": "FUNCTION",
-    "data_type": "USER-DEFINED"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "set_customer_number_per_org",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "check_equality_op",
-    "routine_type": "FUNCTION",
-    "data_type": "boolean"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "list_changes",
-    "routine_type": "FUNCTION",
-    "data_type": "USER-DEFINED"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "is_visible_through_filters",
-    "routine_type": "FUNCTION",
-    "data_type": "boolean"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "subscription_check_filters",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "topic",
-    "routine_type": "FUNCTION",
-    "data_type": "text"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "send",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "realtime",
-    "routine_name": "broadcast_changes",
-    "routine_type": "FUNCTION",
-    "data_type": "void"
-  },
-  {
-    "routine_schema": "public",
-    "routine_name": "add_default_special_dates_for_org",
-    "routine_type": "FUNCTION",
-    "data_type": "trigger"
+    "json_agg": [
+      {
+        "table_name": "attendance_logs",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "attendance_logs",
+        "column_name": "dogs_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "attendance_logs",
+        "column_name": "date",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "attendance_logs",
+        "column_name": "check_in",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "attendance_logs",
+        "column_name": "check_out",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "attendance_logs",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": "'''not_checked_in'''::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "attendance_logs",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": "''::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "attendance_logs",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone",
+        "column_default": "'2025-10-09 16:13:20.322986'::timestamp without time zone",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "attendance_logs",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_prices",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "boarding_prices",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "boarding_prices",
+        "column_name": "dog_size",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "boarding_prices",
+        "column_name": "base_price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "boarding_prices",
+        "column_name": "weekend_surcharge",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_prices",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_prices",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_prices",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_seasons",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "boarding_seasons",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_seasons",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_seasons",
+        "column_name": "name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_seasons",
+        "column_name": "start_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_seasons",
+        "column_name": "end_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_seasons",
+        "column_name": "type",
+        "data_type": "text",
+        "column_default": "'high'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "boarding_seasons",
+        "column_name": "price_multiplier",
+        "data_type": "numeric",
+        "column_default": "1.0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_events",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "booking_events",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_events",
+        "column_name": "booking_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_events",
+        "column_name": "event_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "booking_events",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_events",
+        "column_name": "metadata",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_events",
+        "column_name": "performed_by_user_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_events",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_services",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "booking_services",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_services",
+        "column_name": "booking_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_services",
+        "column_name": "service_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_services",
+        "column_name": "quantity",
+        "data_type": "integer",
+        "column_default": "1",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "booking_services",
+        "column_name": "price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "owner_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "room_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "start_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "end_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "checkin_time",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "checkout_time",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": "'pending'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "total_price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "deposit_amount",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "deposit_paid",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "base_price",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "addons",
+        "data_type": "jsonb",
+        "column_default": "'[]'::jsonb",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "discount_amount",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "extra_service_ids",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "prepayment_status",
+        "data_type": "text",
+        "column_default": "'unpaid'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "prepayment_invoice_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "afterpayment_invoice_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "belongings",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "bed_location",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "consent_required",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "consent_pending_until",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "cancellation_reason",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "cancelled_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "bookings",
+        "column_name": "cancelled_by_user_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "owner_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "consent_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "consent_given",
+        "data_type": "boolean",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "consent_text",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "consent_version",
+        "data_type": "text",
+        "column_default": "'1.0'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "ip_address",
+        "data_type": "inet",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "user_agent",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "signed_document_url",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "witness_staff_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "witness_notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "given_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "withdrawn_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "expires_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "created_by",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "consent_logs",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "subscription_1day",
+        "data_type": "integer",
+        "column_default": "1500",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "subscription_2days",
+        "data_type": "integer",
+        "column_default": "2500",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "subscription_3days",
+        "data_type": "integer",
+        "column_default": "3300",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "subscription_4days",
+        "data_type": "integer",
+        "column_default": "4000",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "subscription_5days",
+        "data_type": "integer",
+        "column_default": "4500",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "single_day_price",
+        "data_type": "integer",
+        "column_default": "350",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "sibling_discount_percent",
+        "data_type": "integer",
+        "column_default": "10",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "trial_day_price",
+        "data_type": "integer",
+        "column_default": "200",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_pricing",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_service_completions",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_service_completions",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "daycare_service_completions",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "daycare_service_completions",
+        "column_name": "service_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_service_completions",
+        "column_name": "scheduled_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "daycare_service_completions",
+        "column_name": "completed_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "daycare_service_completions",
+        "column_name": "completed_by",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "daycare_service_completions",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "daycare_service_completions",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "daycare_service_completions",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dog_journal",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "dog_journal",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "dog_journal",
+        "column_name": "text",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dog_journal",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dog_journal",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dog_journal",
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dog_journal",
+        "column_name": "content",
+        "data_type": "text",
+        "column_default": "''::text",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "uuid_generate_v4()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "breed",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "birth",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "heightcm",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "subscription",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "days",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "addons",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "vaccdhp",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "vaccpi",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "owner",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "roomid",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "startdate",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "enddate",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "events",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "checked_in",
+        "data_type": "boolean",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "note",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "last_updated",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "checkin_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "checkout_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "room_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "owner_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "photo_url",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "gender",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "birth_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "is_sterilized",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "medical_notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "personality_traits",
+        "data_type": "ARRAY",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "insurance_number",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "insurance_company",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "is_castrated",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "is_escape_artist",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "destroys_things",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "is_house_trained",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "special_needs",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "allergies",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "medications",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "behavior_notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "food_info",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "can_be_with_other_dogs",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "in_heat",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "heat_start_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "is_deleted",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "deleted_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "deleted_reason",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "dogs",
+        "column_name": "waitlist",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "error_logs",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "error_logs",
+        "column_name": "date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "error_logs",
+        "column_name": "message",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "error_logs",
+        "column_name": "function",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "error_logs",
+        "column_name": "created_at",
+        "data_type": "timestamp without time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "customer_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "customer_phone",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "dog_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "dog_breed",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "last_visit_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "external_customers",
+        "column_name": "total_visits",
+        "data_type": "integer",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "dogs_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "service_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "quantity",
+        "data_type": "integer",
+        "column_default": "1",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "performed_at",
+        "data_type": "date",
+        "column_default": "CURRENT_DATE",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "payment_type",
+        "data_type": "text",
+        "column_default": "'afterpayment'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "end_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_service",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_services",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "extra_services",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_services",
+        "column_name": "branch_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_services",
+        "column_name": "label",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "extra_services",
+        "column_name": "price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "extra_services",
+        "column_name": "unit",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "extra_services",
+        "column_name": "service_type",
+        "data_type": "text",
+        "column_default": "'all'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_services",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_services",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "extra_services",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "function_logs",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "function_logs",
+        "column_name": "function_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "function_logs",
+        "column_name": "run_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "function_logs",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "function_logs",
+        "column_name": "message",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "function_logs",
+        "column_name": "records_created",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "function_logs",
+        "column_name": "error",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "gdpr_deletion_log",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "gdpr_deletion_log",
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "gdpr_deletion_log",
+        "column_name": "deleted_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "gdpr_deletion_log",
+        "column_name": "owner_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "gdpr_deletion_log",
+        "column_name": "dog_count",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "gdpr_deletion_log",
+        "column_name": "booking_count",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "gdpr_deletion_log",
+        "column_name": "invoice_count",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "appointment_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "appointment_time",
+        "data_type": "time without time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "service_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "estimated_price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": "'confirmed'::text",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "external_customer_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "external_customer_phone",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "external_dog_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "external_dog_breed",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "clip_length",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_bookings",
+        "column_name": "shampoo_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "appointment_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "service_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "clip_length",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "shampoo_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "special_treatments",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "final_price",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "duration_minutes",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "before_photos",
+        "data_type": "ARRAY",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "after_photos",
+        "data_type": "ARRAY",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "next_appointment_recommended",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "external_customer_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "external_dog_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "external_dog_breed",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_journal",
+        "column_name": "booking_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "performed_at",
+        "data_type": "date",
+        "column_default": "CURRENT_DATE",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "stylist_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "clip_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "products",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_logs",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "service_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "service_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "description",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "dog_size",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "coat_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "price",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "duration_minutes",
+        "data_type": "integer",
+        "column_default": "60",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_prices",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_services",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_services",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_services",
+        "column_name": "service_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_services",
+        "column_name": "base_price",
+        "data_type": "integer",
+        "column_default": "0",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_services",
+        "column_name": "size_multiplier_enabled",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_services",
+        "column_name": "description",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_services",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_services",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "grooming_with_invoice",
+        "column_name": "grooming_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_with_invoice",
+        "column_name": "performed_at",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_with_invoice",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_with_invoice",
+        "column_name": "dog_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_with_invoice",
+        "column_name": "price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_with_invoice",
+        "column_name": "extra_service_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_with_invoice",
+        "column_name": "service_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "grooming_with_invoice",
+        "column_name": "invoiced_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "parent_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "parent_email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "parent_phone",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "owner_city",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "owner_address",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "dog_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "dog_breed",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "dog_birth",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "dog_age",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "dog_gender",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "dog_size",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "dog_height_cm",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "subscription_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "preferred_start_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "preferred_days",
+        "data_type": "ARRAY",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "special_needs",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "special_care_needs",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "is_neutered",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "is_escape_artist",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "destroys_things",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "not_house_trained",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "previous_daycare_experience",
+        "data_type": "boolean",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "gdpr_consent",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": "'pending'::text",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "first_contact_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "first_contact_notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "visit_booked_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "visit_status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "visit_completed_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "visit_result",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "contact_history",
+        "data_type": "jsonb",
+        "column_default": "'[]'::jsonb",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "priority",
+        "data_type": "integer",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "expected_start_month",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "interest_applications",
+        "column_name": "visit_booked_time",
+        "data_type": "time without time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_counters",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoice_counters",
+        "column_name": "current_year",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoice_counters",
+        "column_name": "counter",
+        "data_type": "integer",
+        "column_default": "0",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoice_counters",
+        "column_name": "prefix",
+        "data_type": "text",
+        "column_default": "'INV'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_counters",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_counters",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_items",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoice_items",
+        "column_name": "invoice_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoice_items",
+        "column_name": "booking_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_items",
+        "column_name": "description",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_items",
+        "column_name": "qty",
+        "data_type": "numeric",
+        "column_default": "1",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_items",
+        "column_name": "unit_price",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_items",
+        "column_name": "amount",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_runs",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoice_runs",
+        "column_name": "month_id",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoice_runs",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoice_runs",
+        "column_name": "invoices_created",
+        "data_type": "integer",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_runs",
+        "column_name": "run_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_runs",
+        "column_name": "error_message",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_runs",
+        "column_name": "metadata",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_runs_summary",
+        "column_name": "month_id",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_runs_summary",
+        "column_name": "total_runs",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_runs_summary",
+        "column_name": "successful_runs",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_runs_summary",
+        "column_name": "failed_runs",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_runs_summary",
+        "column_name": "total_invoices_created",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoice_runs_summary",
+        "column_name": "last_run_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "owner_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "invoice_date",
+        "data_type": "date",
+        "column_default": "now()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": "'draft'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "total_amount",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "billed_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "billed_email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "billed_address",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "deleted_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "invoice_type",
+        "data_type": "text",
+        "column_default": "'full'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "due_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "invoice_number",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "sent_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "paid_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "payment_method",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "reminder_1_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "reminder_2_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "reminder_1_fee",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "reminder_2_fee",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "collection_fee",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "late_interest",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "ocr_number",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "invoices",
+        "column_name": "payment_reference",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "latest_function_logs",
+        "column_name": "function_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "latest_function_logs",
+        "column_name": "run_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "latest_function_logs",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "latest_function_logs",
+        "column_name": "message",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "latest_function_logs",
+        "column_name": "records_created",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "latest_function_logs",
+        "column_name": "error",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "migrations",
+        "column_name": "id",
+        "data_type": "integer",
+        "column_default": "nextval('migrations_id_seq'::regclass)",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "migrations",
+        "column_name": "version",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "migrations",
+        "column_name": "description",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "migrations",
+        "column_name": "executed_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "migrations",
+        "column_name": "execution_time_ms",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "migrations",
+        "column_name": "created_by",
+        "data_type": "text",
+        "column_default": "CURRENT_USER",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_status_view",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_status_view",
+        "column_name": "name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_status_view",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_status_view",
+        "column_name": "trial_ends_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_status_view",
+        "column_name": "days_left",
+        "data_type": "double precision",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_status_view",
+        "column_name": "readable_status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_subscriptions",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "org_subscriptions",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "org_subscriptions",
+        "column_name": "plan",
+        "data_type": "text",
+        "column_default": "'basic'::text",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "org_subscriptions",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": "'trialing'::text",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "org_subscriptions",
+        "column_name": "trial_starts_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_subscriptions",
+        "column_name": "trial_ends_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_subscriptions",
+        "column_name": "current_period_end",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_subscriptions",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "org_subscriptions",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "org_subscriptions",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "organization_subscription_overview",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "organization_subscription_overview",
+        "column_name": "name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "organization_subscription_overview",
+        "column_name": "subscription_plan",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "organization_subscription_overview",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "organization_subscription_overview",
+        "column_name": "trial_ends_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "organization_subscription_overview",
+        "column_name": "trial_status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "organization_subscription_overview",
+        "column_name": "user_count",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "subscription_plan",
+        "data_type": "text",
+        "column_default": "'basic'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "trial_ends_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "subscription_status",
+        "data_type": "text",
+        "column_default": "'trial'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "org_number",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": "'trialing'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "warning_sent",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "pending_plan_change",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "phone",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "address",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "vat_included",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "vat_rate",
+        "data_type": "numeric",
+        "column_default": "25",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "pricing_currency",
+        "data_type": "text",
+        "column_default": "'SEK'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "contact_email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "invoice_email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "reply_to_email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "email_sender_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "slug",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "cancellation_policy",
+        "data_type": "jsonb",
+        "column_default": "'{\"days_3_to_7\": 0.5, \"days_7_plus\": 0, \"description\": \"7+ dagar: Ingen avgift, 3-7 dagar: 50% avgift, Under 3 dagar: 100% avgift\", \"days_under_3\": 1.0}'::jsonb",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "lan",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "kommun",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "service_types",
+        "data_type": "ARRAY",
+        "column_default": "ARRAY[]::text[]",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "is_visible_to_customers",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "bankgiro",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "plusgiro",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "swish_number",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "bank_name",
+        "data_type": "text",
+        "column_default": "'SEB'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "iban",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "bic_swift",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "payment_terms_days",
+        "data_type": "integer",
+        "column_default": "14",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "late_fee_amount",
+        "data_type": "numeric",
+        "column_default": "60.00",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "interest_rate",
+        "data_type": "numeric",
+        "column_default": "8.00",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "orgs",
+        "column_name": "invoice_prefix",
+        "data_type": "text",
+        "column_default": "'INV'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "owner_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "discount_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "discount_value",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "reason",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "valid_from",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "valid_until",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "timezone('utc'::text, now())",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "timezone('utc'::text, now())",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owner_discounts",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "full_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "phone",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "postal_code",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "city",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "contact_person_2",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "contact_phone_2",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "'2025-10-09 15:51:44.058603+00'::timestamp with time zone",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "customer_number",
+        "data_type": "integer",
+        "column_default": "nextval('owners_customer_number_seq'::regclass)",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "profile_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "personnummer",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "address",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "gdpr_consent",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "marketing_consent",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "photo_consent",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "consent_status",
+        "data_type": "text",
+        "column_default": "'pending'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "consent_verified_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "gdpr_marketing_consent",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "is_anonymized",
+        "data_type": "boolean",
+        "column_default": "false",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "anonymized_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "anonymization_reason",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "owners",
+        "column_name": "data_retention_until",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "stay_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "dog_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "breed",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "heightcm",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "subscription",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "owner_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "owner_email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "room_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "room_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "start_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "end_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "base_price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "total_amount",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "addons",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_full_view",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "stay_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "dog_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "breed",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "height_cm",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "owner_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "owner_email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "room_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "room_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "capacity",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "start_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "end_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "base_price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "addons",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "total_amount",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_calendar_view",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "owner_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "owner_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "owner_email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "owner_phone",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "city",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "postal_code",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "total_dogs",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "total_stays",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "total_spent",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_owner_summary_view",
+        "column_name": "month_period",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "room_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "room_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "capacity",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "dog_org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "start_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "end_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "dogs_booked",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "total_area_used",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_room_occupancy_view",
+        "column_name": "remaining_area",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "room_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "start_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "end_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": "'booked'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "base_price",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "addons",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "total_amount",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pension_stays",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "price_lists",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "uuid_generate_v4()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "price_lists",
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "price_lists",
+        "column_name": "effective_from",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "price_lists",
+        "column_name": "items",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "price_lists",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "price_lists",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pricing",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "pricing",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pricing",
+        "column_name": "service_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "pricing",
+        "column_name": "price_per_day",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pricing",
+        "column_name": "price_per_hour",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pricing",
+        "column_name": "description",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pricing",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pricing",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "pricing",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "profiles",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "profiles",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "profiles",
+        "column_name": "role",
+        "data_type": "text",
+        "column_default": "'staff'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "profiles",
+        "column_name": "full_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "profiles",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "profiles",
+        "column_name": "email",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "profiles",
+        "column_name": "phone",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "profiles",
+        "column_name": "last_sign_in_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "recent_trigger_failures",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "recent_trigger_failures",
+        "column_name": "trigger_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "recent_trigger_failures",
+        "column_name": "table_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "recent_trigger_failures",
+        "column_name": "operation",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "recent_trigger_failures",
+        "column_name": "row_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "recent_trigger_failures",
+        "column_name": "error_message",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "recent_trigger_failures",
+        "column_name": "new_data",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "recent_trigger_failures",
+        "column_name": "executed_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "responsibilities",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "responsibilities",
+        "column_name": "staff_id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "responsibilities",
+        "column_name": "task",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "responsibilities",
+        "column_name": "done",
+        "data_type": "boolean",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "responsibilities",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "rooms",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "rooms",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "rooms",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "rooms",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "rooms",
+        "column_name": "name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "rooms",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "rooms",
+        "column_name": "capacity",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "rooms",
+        "column_name": "capacity_m2",
+        "data_type": "numeric",
+        "column_default": "15",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "rooms",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "rooms",
+        "column_name": "room_type",
+        "data_type": "text",
+        "column_default": "'both'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "services",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "services",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "services",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "services",
+        "column_name": "name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "services",
+        "column_name": "description",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "services",
+        "column_name": "price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "services",
+        "column_name": "unit",
+        "data_type": "text",
+        "column_default": "'per_dog'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "services",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "special_dates",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "special_dates",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "special_dates",
+        "column_name": "date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "special_dates",
+        "column_name": "name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "special_dates",
+        "column_name": "category",
+        "data_type": "text",
+        "column_default": "'custom'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "special_dates",
+        "column_name": "price_surcharge",
+        "data_type": "numeric",
+        "column_default": "0",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "special_dates",
+        "column_name": "notes",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "special_dates",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "special_dates",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "special_dates",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "staff_notes",
+        "column_name": "id",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "staff_notes",
+        "column_name": "note",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "staff_notes",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscription_types",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "subscription_types",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscription_types",
+        "column_name": "subscription_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "subscription_types",
+        "column_name": "height_min",
+        "data_type": "integer",
+        "column_default": "0",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "subscription_types",
+        "column_name": "height_max",
+        "data_type": "integer",
+        "column_default": "999",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "subscription_types",
+        "column_name": "price",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "subscription_types",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscription_types",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscription_types",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "uuid_generate_v4()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "dog_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "status",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "customer_number",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "abon_type",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "price_per_month",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "start_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "end_date",
+        "data_type": "date",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "weekdays",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "trial_ends_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "plan_name",
+        "data_type": "text",
+        "column_default": "'basic'::text",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "renews_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "price",
+        "data_type": "numeric",
+        "column_default": "99",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "next_billing_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "subscriptions",
+        "column_name": "is_active",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "system_config",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "system_config",
+        "column_name": "config_key",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "system_config",
+        "column_name": "config_value",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "system_config",
+        "column_name": "description",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "system_config",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "system_config",
+        "column_name": "updated_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "trigger_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "table_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "operation",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "row_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "old_data",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "new_data",
+        "data_type": "jsonb",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "success",
+        "data_type": "boolean",
+        "column_default": "true",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "error_message",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "execution_time_ms",
+        "data_type": "integer",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "executed_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_execution_log",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_health_summary",
+        "column_name": "trigger_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_health_summary",
+        "column_name": "table_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_health_summary",
+        "column_name": "total_executions",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_health_summary",
+        "column_name": "successful",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_health_summary",
+        "column_name": "failed",
+        "data_type": "bigint",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_health_summary",
+        "column_name": "avg_execution_ms",
+        "data_type": "numeric",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "trigger_health_summary",
+        "column_name": "last_execution",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "user_org_roles",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": "gen_random_uuid()",
+        "is_nullable": "NO"
+      },
+      {
+        "table_name": "user_org_roles",
+        "column_name": "user_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "user_org_roles",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "user_org_roles",
+        "column_name": "role",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "user_org_roles",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": "now()",
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "users_without_org",
+        "column_name": "id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "users_without_org",
+        "column_name": "email",
+        "data_type": "character varying",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "users_without_org",
+        "column_name": "created_at",
+        "data_type": "timestamp with time zone",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "users_without_org",
+        "column_name": "intended_org_name",
+        "data_type": "text",
+        "column_default": null,
+        "is_nullable": "YES"
+      },
+      {
+        "table_name": "users_without_org",
+        "column_name": "org_id",
+        "data_type": "uuid",
+        "column_default": null,
+        "is_nullable": "YES"
+      }
+    ]
   }
 ]
