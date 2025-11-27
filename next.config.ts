@@ -18,16 +18,6 @@ const nextConfig: NextConfig = {
     "qrcode",
   ],
 
-  // 🚀 Edge & build-optimeringar (uppdaterad för Next.js 15)
-  turbopack: {
-    rules: {
-      "*.ts": {
-        loaders: ["ts-loader"],
-        as: "js",
-      },
-    },
-  },
-
   // 🔄 Använd unikt build ID baserat på git commit eller timestamp
   generateBuildId: async () => {
     // På Vercel: använd VERCEL_GIT_COMMIT_SHA
@@ -66,12 +56,14 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // 🧩 Experimentella inställningar (uppdaterad för Next.js 15+)
+  // 🧩 Experimentella inställningar (Next.js 15+)
   experimental: {
-    disableOptimizedLoading: true,
+    // Minnesoptimering: Minska worker threads för att spara RAM
+    workerThreads: false,
+    cpus: 1,
   },
 
-  // 🎨 CSS optimering för konsistent styling mellan miljöer
+  // 🎨 CSS & console optimering
   compiler: {
     removeConsole:
       process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false,

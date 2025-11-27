@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_OPTIONS='--max-old-space-size=2048' next dev",
+    "dev:safe": "lsof -ti:3000 | xargs kill -9 2>/dev/null || true && NODE_OPTIONS='--max-old-space-size=2048' next dev",
+    "dev:lowmem": "NODE_OPTIONS='--max-old-space-size=1024' next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
