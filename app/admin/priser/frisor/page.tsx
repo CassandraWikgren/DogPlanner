@@ -1,5 +1,29 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+// ⚠️ DEPRECATED: Denna sida har flyttats till /admin/hundfrisor/priser
+// Denna fil redirectar automatiskt till nya platsen
+
+export default function OldFrisorPriserPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to new location
+    router.replace("/admin/hundfrisor/priser");
+  }, [router]);
+
+  return (
+    <div style={{ padding: "2rem", textAlign: "center" }}>
+      <p>Redirectar till nya admin-sidan...</p>
+    </div>
+  );
+}
+
+/* GAMMAL KOD NEDAN - SPARAD FÖR REFERENS
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
@@ -489,3 +513,4 @@ export default function FrisorPriserPage() {
     </div>
   );
 }
+*/
