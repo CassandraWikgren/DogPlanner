@@ -2,7 +2,420 @@
 
 ---
 
-## 🔄 Senaste Uppdateringar (30 november 2025)
+## � ABONNEMANGSSYSTEM (Komplett Guide)
+
+### 🎯 Översikt
+
+DogPlanner använder ett **modulärt abonnemangssystem** där organisationer betalar baserat på vilka tjänster de aktiverar:
+
+| Tjänster             | Pris/mån | Trial  | Stripe Product  |
+| -------------------- | -------- | ------ | --------------- |
+| **Endast Frisör**    | 299 kr   | 60d 🎁 | `grooming_only` |
+| **Endast Dagis**     | 399 kr   | 60d 🎁 | `daycare_only`  |
+| **Endast Pensionat** | 399 kr   | 60d 🎁 | `boarding_only` |
+| **2 tjänster**       | 599 kr   | 60d 🎁 | `two_services`  |
+| **Alla 3 tjänster**  | 799 kr   | 60d 🎁 | `all_services`  |
+
+**🎁 Gratisperiod:** 2 månader (60 dagar) - endast första gången per organisation
+
+---
+
+### 🏗️ Systemarkitektur
+
+#### 1. Databas-kolumner
+
+**orgs-tabellen:**
+
+```sql
+enabled_services TEXT[]           -- ['daycare', 'boarding', 'grooming']
+service_types TEXT[]              -- ['hunddagis', 'hundpensionat', 'hundfrisor']
+has_had_subscription BOOLEAN      -- Permanent flagga för missbruksskydd
+```
+
+**org_subscriptions-tabellen:**
+
+```sql
+org_id UUID                       -- Vilket företag
+plan TEXT                         -- 'basic' / 'pro' / 'enterprise'
+status TEXT                       -- 'trialing' / 'active' / 'past_due' / 'canceled'
+trial_starts_at TIMESTAMPTZ       -- När trial började
+trial_ends_at TIMESTAMPTZ         -- När trial slutar (60 dagar)
+is_active BOOLEAN                 -- Om prenumerationen är aktiv
+```
+
+#### 2. Dual-Column System
+
+**enabled_services** vs **service_types** - båda behövs!
+
+- **enabled_services** (internal): `['daycare', 'boarding', 'grooming']`
+  - Används för plattformens access control
+  - Bestämmer vilka menyer/sidor som visas
+  - Engelska namn (system-orienterat)
+
+- **service_types** (external): `['hunddagis', 'hundpensionat', 'hundfrisor']`
+  - Används för kundsökning och publika vyer
+  - Svenska namn (användarorienterat)
+  - Avgör hur företaget syns för kunder
+
+**Mapping:**
+
+```typescript
+daycare  ↔ hunddagis
+boarding ↔ hundpensionat
+grooming ↔ hundfrisor
+```
+
+**Synkronisering:**
+
+- Database trigger `handle_new_user()` synkar båda kolumnerna vid registrering
+- API `/api/onboarding/auto` synkar vid fallback-onboarding
+- Admin-sida `/admin/tjanster` uppdaterar båda samtidigt
+
+📄 **Se:** `DUAL_SERVICE_COLUMNS_ARCHITECTURE.md` för komplett förklaring
+
+---
+
+### 🛡️ Missbruksskydd (2 Månaders Trial)
+
+#### Problem
+
+Utan skydd kan användare få flera gratisperioder genom att:
+
+- Skapa nya konton med olika email-adresser
+- Registrera nya organisationer med samma org-nummer
+- Radera och återskapa konton
+
+#### Lösning: Trestegs-spårning
+
+**1. Permanent flagga i orgs:**
+
+```sql
+has_had_subscription BOOLEAN DEFAULT false
+```
+
+- Sätts till `true` första gången prenumeration startar
+- Sätts ALDRIG tillbaka till `false`
+
+**2. Email-historik:**
+
+```sql
+org_email_history (org_number, email, created_at)
+```
+
+- Spårar alla email + org-nummer kombinationer
+- Blockerar nya trials om email redan använts
+
+**3. Org-nummer historik:**
+
+```sql
+org_number_subscription_history (org_number, has_had_subscription, first_subscription_at)
+```
+
+- Permanent historik över alla org-nummer
+- Blockerar även efter radering av konto
+
+#### Kontroller
+
+**Vid registrering:**
+
+```typescript
+// Kontrollera om tillåten
+const { data: eligibility } = await supabase.rpc("check_trial_eligibility", {
+  p_org_number: orgNumber,
+  p_email: email,
+});
+
+if (!eligibility.is_eligible) {
+  // BLOCKERA - visa felmeddelande
+  throw new Error(`Trial ej tillåten: ${eligibility.reason}`);
+}
+```
+
+**Vid Stripe-betalning:**
+
+```typescript
+// Ge trial endast om första prenumerationen
+subscription_data: {
+  trial_period_days: org.has_had_subscription ? 0 : 60;
+}
+```
+
+#### Testscenarier
+
+✅ **Scenario 1:** Första registrering → Får 60 dagars trial
+❌ **Scenario 2:** Samma email, nytt org-nummer → BLOCKERAS
+❌ **Scenario 3:** Ny email, samma org-nummer → BLOCKERAS
+❌ **Scenario 4:** Radera & återskapa → BLOCKERAS (historik finns kvar)
+✅ **Scenario 5:** Uppgradering från trial → Ingen ny trial
+
+📄 **Se:** `TRIAL_MISSBRUKSSKYDD.md` för komplett implementation
+
+---
+
+### 💳 Stripe Integration
+
+#### Betalningsflöde
+
+1. **Användare registrerar sig** → Får 60 dagars gratis trial automatiskt
+2. **Trial går ut** → Måste välja betalplan
+3. **Väljer tjänster** på `/admin/abonnemang` (dagis/pensionat/frisör)
+4. **System mappar till pris:**
+   - 1 tjänst (frisör) → 299 kr/mån
+   - 1 tjänst (dagis/pensionat) → 399 kr/mån
+   - 2 tjänster → 599 kr/mån
+   - 3 tjänster → 799 kr/mån
+5. **Klickar "Uppgradera"** → Redirectas till Stripe Checkout
+6. **Betalar med kort** → Får 60 dagars trial (om första betalningen)
+7. **Efter trial** → Automatisk månadsbetalning
+
+#### API:er
+
+**Checkout API** (`/api/subscription/checkout/route_new.ts`):
+
+```typescript
+// Skapar Stripe checkout-session
+const session = await stripe.checkout.sessions.create({
+  mode: "subscription",
+  line_items: [{ price: priceId, quantity: 1 }],
+  subscription_data: {
+    trial_period_days: org.has_had_subscription ? 0 : 60,
+    metadata: {
+      org_id: profile.org_id,
+      enabled_services: JSON.stringify(services),
+    },
+  },
+});
+```
+
+**Webhook API** (`/api/subscription/webhook/route.ts`):
+
+```typescript
+// Lyssnar på Stripe-events
+if (event.type === "checkout.session.completed") {
+  // Uppdatera org med enabled_services
+  // Sätt has_had_subscription = true
+  // Registrera i missbruksskyddstabeller
+}
+```
+
+#### Environment Variables
+
+**Stripe Keys (Vercel):**
+
+```bash
+STRIPE_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+**Price IDs (Vercel):**
+
+```bash
+STRIPE_PRICE_ID_GROOMING=price_...        # 299 kr/mån
+STRIPE_PRICE_ID_DAYCARE=price_...         # 399 kr/mån
+STRIPE_PRICE_ID_BOARDING=price_...        # 399 kr/mån
+STRIPE_PRICE_ID_TWO_SERVICES=price_...    # 599 kr/mån
+STRIPE_PRICE_ID_ALL_SERVICES=price_...    # 799 kr/mån
+```
+
+📄 **Se:** `STRIPE_INTEGRATION_GUIDE.md` för komplett setup-guide
+
+---
+
+### 🔄 Registreringsflöde
+
+#### 1. Trigger-baserad (Primary)
+
+```sql
+-- Trigger: on_auth_user_created → handle_new_user()
+```
+
+När användare registrerar sig via Supabase Auth:
+
+1. Trigger körs automatiskt
+2. Skapar organisation med enabled_services + service_types
+3. Skapar profil kopplad till org
+4. Skapar 60 dagars trial i org_subscriptions
+5. Kontrollerar trial-berättigande
+6. Registrerar i missbruksskyddstabeller
+
+#### 2. API Fallback (Secondary)
+
+```typescript
+// API: /api/onboarding/auto/route.ts
+```
+
+Om trigger misslyckas:
+
+1. Frontend anropar API
+2. Skapar organisation manuellt
+3. Skapar profil
+4. Skapar trial
+5. Samma missbruksskydd appliceras
+
+#### 3. Healing Function (Tertiary)
+
+```sql
+-- Function: heal_user_missing_org()
+```
+
+Om användare saknar org_id:
+
+1. AuthContext upptäcker `org_id = NULL`
+2. Anropar healing-funktion
+3. Skapar organisation i efterhand
+4. Uppdaterar profil
+
+📄 **Se:** `.github/copilot-instructions.md` för 3-lagers system
+
+---
+
+### 📊 Användargränssnitt
+
+#### Abonnemangssidan (`/admin/abonnemang`)
+
+**Funktioner:**
+
+- ✅ Visar nuvarande prenumerationsstatus (trialing/active/past_due)
+- ✅ Countdown till trial slutar
+- ✅ Val av tjänster (dagis/pensionat/frisör)
+- ✅ Real-time prisberäkning (299-799 kr/mån)
+- ✅ Visning av rabatt: "✨ Du sparar 199 kr/mån!"
+- ✅ Knapp för uppgradering → Stripe Checkout
+- ✅ Subscription management (pausa/avsluta)
+
+**Komponenter:**
+
+```tsx
+// Service selection grid
+<ServiceGuard service="daycare">
+  <Card>Hunddagis - 399 kr/mån</Card>
+</ServiceGuard>;
+
+// Price calculator
+{
+  selectedServices.length === 1 && <div>299-399 kr/mån</div>;
+}
+{
+  selectedServices.length === 2 && (
+    <div>
+      599 kr/mån <span>✨ Spar 199 kr!</span>
+    </div>
+  );
+}
+```
+
+#### Registreringssidan (`/register`)
+
+**Funktioner:**
+
+- ✅ Tjänstval med checkboxes
+- ✅ Real-time prisberäkning
+- ✅ Visning av gratisperiod: "🎁 2 månader gratis"
+- ✅ Tydlig prissättningstabell
+- ✅ Användarvillkor och GDPR-information
+
+---
+
+### 🧪 Testning
+
+#### 1. Testa Missbruksskydd
+
+```bash
+# Steg 1: Registrera första användaren
+# Email: test1@example.com, Org: 556677-8899
+# Förväntat: ✅ Får 60 dagars trial
+
+# Steg 2: Försök registrera igen
+# Email: test1@example.com, Org: 111222-3333 (nytt)
+# Förväntat: ❌ "Email har redan använts"
+
+# Steg 3: Försök med ny email, samma org
+# Email: test2@example.com, Org: 556677-8899 (samma)
+# Förväntat: ❌ "Organisationsnummer redan använt"
+
+# Verifiera i databas:
+SELECT * FROM org_email_history WHERE email = 'test1@example.com';
+SELECT * FROM org_number_subscription_history WHERE org_number = '556677-8899';
+SELECT has_had_subscription FROM orgs WHERE org_number = '556677-8899';
+# Förväntat: has_had_subscription = true
+```
+
+#### 2. Testa Stripe Integration
+
+```bash
+# Steg 1: Registrera ny användare (måste ha unikt org-nummer)
+# Steg 2: Gå till /admin/abonnemang
+# Steg 3: Välj tjänster (t.ex. alla 3)
+# Steg 4: Klicka "Uppgradera till Betald Plan"
+# Steg 5: I Stripe Checkout:
+#   - Använd test-kort: 4242 4242 4242 4242
+#   - Förväntat: "60 days free trial"
+# Steg 6: Efter betalning:
+#   - Kontrollera Supabase: has_had_subscription = true
+#   - Verifiera i Stripe Dashboard: subscription skapad
+```
+
+---
+
+### 📚 Dokumentation
+
+**Huvudfiler:**
+
+- 📄 **2_MANADERS_TRIAL_IMPLEMENTATION.md** - Komplett sammanfattning
+- 📄 **TRIAL_MISSBRUKSSKYDD.md** - Missbruksskydd-guide (400+ rader)
+- 📄 **STRIPE_INTEGRATION_GUIDE.md** - Stripe setup (400+ rader)
+- 📄 **DUAL_SERVICE_COLUMNS_ARCHITECTURE.md** - Dual-column system
+
+**SQL-migrations:**
+
+- 📄 **ADD_TRIAL_ABUSE_PROTECTION.sql** - Missbruksskydd
+- 📄 **FIX_TRIGGER_BOTH_COLUMNS.sql** - Dual-column sync
+- 📄 **ADD_ENABLED_SERVICES.sql** - Enabled services kolumn
+
+**API-filer:**
+
+- 📄 **app/api/onboarding/auto/route.ts** - Fallback onboarding
+- 📄 **app/api/subscription/checkout/route_new.ts** - Stripe checkout
+- 📄 **app/api/subscription/webhook/route.ts** - Stripe webhook
+
+---
+
+### ✅ Deployment Checklist
+
+**1. Databas (Supabase):**
+
+- [ ] Kör `ADD_TRIAL_ABUSE_PROTECTION.sql`
+- [ ] Kör `FIX_TRIGGER_BOTH_COLUMNS.sql`
+- [ ] Verifiera funktioner: `SELECT check_trial_eligibility('test-org', 'test@test.com');`
+
+**2. Stripe (Dashboard):**
+
+- [ ] Skapa 5 produkter (299/399/399/599/799 kr/mån)
+- [ ] Kopiera Price IDs
+- [ ] Konfigurera webhook: `https://dog-planner.vercel.app/api/subscription/webhook`
+- [ ] Subscriba till events: `checkout.session.completed`, `customer.subscription.*`
+
+**3. Environment Variables (Vercel):**
+
+- [ ] `STRIPE_SECRET_KEY`
+- [ ] `STRIPE_WEBHOOK_SECRET`
+- [ ] `STRIPE_PRICE_ID_GROOMING`
+- [ ] `STRIPE_PRICE_ID_DAYCARE`
+- [ ] `STRIPE_PRICE_ID_BOARDING`
+- [ ] `STRIPE_PRICE_ID_TWO_SERVICES`
+- [ ] `STRIPE_PRICE_ID_ALL_SERVICES`
+
+**4. Testning:**
+
+- [ ] Registrera ny användare → verifiera 60 dagars trial
+- [ ] Försök registrera samma org-nummer → verifiera blockering
+- [ ] Testa Stripe checkout med test-kort
+- [ ] Verifiera webhook uppdaterar databas
+
+---
+
+## �🔄 Senaste Uppdateringar (30 november 2025)
 
 ### 🎯 MODULÄRT TJÄNSTESYSTEM MED SMART ROUTING (30 november)
 
@@ -1304,12 +1717,19 @@ Ny professionell modul för hundfrisering:
 
 #### ✨ Nya Tabeller
 
-- **`org_subscriptions`** - Organisationens plan (trialing/active/past_due/canceled)
+- **`org_subscriptions`** - Organisationens prenumeration och status
   - ⚠️ VIKTIGT: Detta är INTE hundabonnemang! Se `subscriptions` för hundabonnemang
-  - Skapas automatiskt vid registrering via `/api/onboarding/auto`
-  - 3 månaders gratis trial för nya organisationer
+  - **Statusar:** `trialing` (60d gratis) / `active` (betalar) / `past_due` (förfallen) / `canceled` (avslutad)
+  - **Gratisperiod:** 2 månader (60 dagar) - endast första gången
+  - Skapas automatiskt vid registrering via trigger eller `/api/onboarding/auto`
+  - Integrerad med Stripe för automatisk betalning
+  - **Missbruksskydd:** `has_had_subscription` förhindrar flera gratisperioder
 - **`grooming_bookings`** - Frisörbokningar
 - **`grooming_journal`** - Frisörjournal med foton och behandlingsinfo
+- **`org_email_history`** - Spårar email + org-nummer för missbruksskydd
+- **`org_number_subscription_history`** - Permanent historik över alla org-nummer
+
+📄 **Se avsnittet "ABONNEMANGSSYSTEM (Komplett Guide)" ovan för fullständig information**
 
 #### 🔒 RLS Policies (PRODUKTIONSKLARA)
 
