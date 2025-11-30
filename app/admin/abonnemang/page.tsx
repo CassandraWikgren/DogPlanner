@@ -98,6 +98,7 @@ export default function AdminAbonnemangPage() {
   const [saving, setSaving] = useState(false);
   const [savingServices, setSavingServices] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
 
   useEffect(() => {
     if (!authLoading) {
@@ -229,6 +230,46 @@ export default function AdminAbonnemangPage() {
     return billingPeriod === "monthly"
       ? `${total} kr/mån`
       : `${total.toLocaleString("sv-SE")} kr/år`;
+  };
+
+  const handleUpgrade = async () => {
+    if (!currentOrgId || selectedServices.length === 0) {
+      setError("Välj minst en tjänst innan du uppgraderar");
+      return;
+    }
+
+    setCheckingOut(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/subscription/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orgId: currentOrgId,
+          services: selectedServices,
+          billingPeriod: billingPeriod,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Kunde inte skapa checkout-session");
+      }
+
+      const { url } = await response.json();
+
+      if (url) {
+        // Redirect to Stripe Checkout
+        window.location.href = url;
+      } else {
+        throw new Error("Ingen checkout URL returnerades");
+      }
+    } catch (err: any) {
+      console.error("Checkout error:", err);
+      setError(err.message || "Något gick fel vid uppgradering");
+      setCheckingOut(false);
+    }
   };
 
   const createSubscription = async () => {
@@ -503,27 +544,55 @@ export default function AdminAbonnemangPage() {
 
             {/* Price summary */}
             {selectedServices.length > 0 && (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">
-                      {selectedServices.length === 1
-                        ? "1 tjänst vald"
-                        : `${selectedServices.length} tjänster valda`}
-                    </p>
-                    {selectedServices.length > 1 && (
-                      <p className="text-xs text-green-600 mt-1">
-                        ✓ Paketrabatt aktiverad!
+              <>
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">
+                        {selectedServices.length === 1
+                          ? "1 tjänst vald"
+                          : `${selectedServices.length} tjänster valda`}
                       </p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-[#2c7a4c]">
-                      {calculatePrice()}
-                    </p>
+                      {selectedServices.length > 1 && (
+                        <p className="text-xs text-green-600 mt-1">
+                          ✓ Paketrabatt aktiverad!
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-[#2c7a4c]">
+                        {calculatePrice()}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {billingPeriod === "yearly"
+                          ? "Faktureras årligen"
+                          : "Faktureras månadsvis"}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+
+                {/* Upgrade Button (for trial/free users) */}
+                {(!subscription || subscription.status === "trialing") && (
+                  <Button
+                    onClick={handleUpgrade}
+                    disabled={checkingOut}
+                    className="w-full bg-gradient-to-r from-[#2c7a4c] to-[#1e5d36] hover:from-[#236139] hover:to-[#1a4d2d] text-white h-12 mb-4 text-base font-semibold shadow-lg"
+                  >
+                    {checkingOut ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Öppnar Stripe Checkout...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="mr-2 h-5 w-5" />
+                        Uppgradera till Betald Plan
+                      </>
+                    )}
+                  </Button>
+                )}
+              </>
             )}
 
             {/* Save button */}
