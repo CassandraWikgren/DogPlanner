@@ -38,7 +38,8 @@ const AVAILABLE_SERVICES = [
     name: "Hundfrisör",
     icon: "✂️",
     description: "Klippning, trimning, bad och pälsvård",
-    price: "299 kr/mån",
+    monthlyPrice: 199,
+    yearlyPrice: 1788,
     features: [
       "Bokningskalender för frisörtider",
       "Prishantering per behandling",
@@ -52,7 +53,8 @@ const AVAILABLE_SERVICES = [
     name: "Hunddagis",
     icon: "🐕",
     description: "Dagisverksamhet med närvaroregistrering",
-    price: "399 kr/mån",
+    monthlyPrice: 399,
+    yearlyPrice: 4188,
     features: [
       "Kapacitetshantering",
       "Närvarokontroll",
@@ -66,7 +68,8 @@ const AVAILABLE_SERVICES = [
     name: "Hundpensionat",
     icon: "🏨",
     description: "Pensionatbokning med rumshantering",
-    price: "399 kr/mån",
+    monthlyPrice: 399,
+    yearlyPrice: 4188,
     features: [
       "Rumshantering",
       "Säsongspriser",
@@ -86,6 +89,9 @@ export default function AdminAbonnemangPage() {
     null
   );
   const [selectedServices, setSelectedServices] = useState<ServiceType[]>([]);
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
+    "monthly"
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -201,15 +207,28 @@ export default function AdminAbonnemangPage() {
 
   const calculatePrice = () => {
     const count = selectedServices.length;
-    if (count === 0) return "0 kr/mån";
+    if (count === 0)
+      return billingPeriod === "monthly" ? "0 kr/mån" : "0 kr/år";
+
+    let total = 0;
+
     if (count === 1) {
       const service = AVAILABLE_SERVICES.find(
         (s) => s.id === selectedServices[0]
       );
-      return service?.price || "299 kr/mån";
+      total =
+        billingPeriod === "monthly"
+          ? service?.monthlyPrice || 199
+          : service?.yearlyPrice || 1788;
+    } else if (count === 2) {
+      total = billingPeriod === "monthly" ? 599 : 6588;
+    } else {
+      total = billingPeriod === "monthly" ? 799 : 8988; // Alla tre
     }
-    if (count === 2) return "599 kr/mån";
-    return "799 kr/mån"; // Alla tre
+
+    return billingPeriod === "monthly"
+      ? `${total} kr/mån`
+      : `${total.toLocaleString("sv-SE")} kr/år`;
   };
 
   const createSubscription = async () => {
@@ -405,6 +424,47 @@ export default function AdminAbonnemangPage() {
               visas i menyer och dashboards.
             </p>
 
+            {/* Billing Period Toggle */}
+            <div className="flex items-center justify-center mb-6">
+              <div className="inline-flex items-center bg-gray-100 rounded-lg p-1">
+                <button
+                  type="button"
+                  onClick={() => setBillingPeriod("monthly")}
+                  className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
+                    billingPeriod === "monthly"
+                      ? "bg-white text-[#2c7a4c] shadow-sm"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Månadsvis
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBillingPeriod("yearly")}
+                  className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
+                    billingPeriod === "yearly"
+                      ? "bg-white text-[#2c7a4c] shadow-sm"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Årsvis
+                  <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                    Spara 600 kr
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Savings Banner (only show when yearly is selected) */}
+            {billingPeriod === "yearly" && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-center">
+                <p className="text-green-700 font-semibold text-sm">
+                  🎉 Fantastisk besparing! Du sparar 600 kr per år med
+                  årsbetalning
+                </p>
+              </div>
+            )}
+
             {/* Service Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               {AVAILABLE_SERVICES.map((service) => (
@@ -433,7 +493,9 @@ export default function AdminAbonnemangPage() {
                     {service.description}
                   </p>
                   <p className="text-sm font-semibold text-[#2c7a4c]">
-                    {service.price}
+                    {billingPeriod === "monthly"
+                      ? `${service.monthlyPrice} kr/mån`
+                      : `${service.yearlyPrice.toLocaleString("sv-SE")} kr/år`}
                   </p>
                 </button>
               ))}
