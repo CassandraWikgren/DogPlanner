@@ -120,7 +120,7 @@ export async function POST(req: Request) {
     // --- 3. Hämta organisationsnamn och nuvarande tjänster ---
     const { data: org } = await supabase
       .from("orgs")
-      .select("name, enabled_services")
+      .select("name, enabled_services, has_had_subscription")
       .eq("id", profile.org_id)
       .single();
 
@@ -163,6 +163,8 @@ export async function POST(req: Request) {
         plan_name: planName,
       },
       subscription_data: {
+        // 🎁 2 MÅNADERS GRATIS TRIAL (endast om första prenumerationen)
+        trial_period_days: org?.has_had_subscription ? 0 : 60,
         metadata: {
           org_id: profile.org_id,
           enabled_services: JSON.stringify(services),

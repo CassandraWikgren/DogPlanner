@@ -34,8 +34,43 @@ export async function POST(req: Request) {
       const session = event.data.object as Stripe.Checkout.Session;
       const org_id = session.metadata?.org_id;
       const plan = session.metadata?.plan;
+      const enabled_services = session.metadata?.enabled_services;
 
       if (org_id) {
+        // 🔒 REGISTRERA PRENUMERATIONSSTART (för missbruksskydd)
+        // Hämta org-info för att få org_number
+        const { data: org } = await supabase
+          .from("orgs")
+          .select("org_number")
+          .eq("id", org_id)
+          .single();
+
+        if (org?.org_number && session.customer_email) {
+          const { error: regErr } = await supabase.rpc(
+            "register_subscription_start",
+            {
+              p_org_id: org_id,
+              p_org_number: org.org_number,
+              p_email: session.customer_email,
+            }
+          );
+
+          if (regErr) {
+            console.error(
+              "⚠️ Kunde inte registrera prenumerationsstart:",
+              regErr
+            );
+          } else {
+            console.log("🔒 Prenumerationshistorik registrerad via webhook");
+          }
+        }
+
+        // Uppdatera org med has_had_subscription
+        await supabase
+          .from("orgs")
+          .update({ has_had_subscription: true })
+          .eq("id", org_id);
+
         // Uppdatera abonnemanget i Supabase
         await supabase
           .from("subscriptions")

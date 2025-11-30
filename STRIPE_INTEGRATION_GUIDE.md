@@ -1,6 +1,7 @@
 # 💳 Stripe Integration Guide - DogPlanner
 
 **Skapad:** 30 november 2025  
+**Uppdaterad:** 30 november 2025 - Missbruksskydd & 2 månaders trial  
 **Syfte:** Komplett guide för att sätta upp Stripe-betalningar för modulära tjänster
 
 ---
@@ -9,13 +10,20 @@
 
 DogPlanner använder Stripe för att hantera abonnemangsbetalningar baserat på vilka tjänster företaget aktiverar:
 
-| Tjänster             | Pris/mån | Stripe Product  |
-| -------------------- | -------- | --------------- |
-| **Endast Frisör**    | 299 kr   | `grooming_only` |
-| **Endast Dagis**     | 399 kr   | `daycare_only`  |
-| **Endast Pensionat** | 399 kr   | `boarding_only` |
-| **2 tjänster**       | 599 kr   | `two_services`  |
-| **Alla 3 tjänster**  | 799 kr   | `all_services`  |
+| Tjänster             | Pris/mån | Trial  | Stripe Product  |
+| -------------------- | -------- | ------ | --------------- |
+| **Endast Frisör**    | 299 kr   | 60d 🎁 | `grooming_only` |
+| **Endast Dagis**     | 399 kr   | 60d 🎁 | `daycare_only`  |
+| **Endast Pensionat** | 399 kr   | 60d 🎁 | `boarding_only` |
+| **2 tjänster**       | 599 kr   | 60d 🎁 | `two_services`  |
+| **Alla 3 tjänster**  | 799 kr   | 60d 🎁 | `all_services`  |
+
+**🛡️ Missbruksskydd:**
+
+- ✅ **2 månaders gratis trial** (60 dagar) - endast första gången
+- ❌ Blockerar flera gratisperioder via email-spårning
+- ❌ Blockerar återanvändning av organisationsnummer
+- 🔒 Permanent historik i `org_email_history` och `org_number_subscription_history`
 
 ---
 
@@ -482,8 +490,46 @@ Efter grundläggande Stripe-integration fungerar:
 
 ---
 
+## 🛡️ Missbruksskydd - Implementation
+
+Systemet förhindrar att användare får flera gratisperioder. Se **TRIAL_MISSBRUKSSKYDD.md** för:
+
+- **Database migrations** - `ADD_TRIAL_ABUSE_PROTECTION.sql`
+- **Spårningsfunktioner** - `check_trial_eligibility()`, `register_subscription_start()`
+- **Testscenarier** - 5 olika missbruksfall
+- **RLS policies** - Säkerhet för historiktabeller
+
+### Snabbstart Missbruksskydd
+
+```bash
+# 1. Kör SQL-migration
+# Kör ADD_TRIAL_ABUSE_PROTECTION.sql i Supabase SQL Editor
+
+# 2. Verifiera funktioner
+SELECT check_trial_eligibility('556677-8899', 'test@example.com');
+
+# 3. Testa blockering
+# Registrera samma org-nummer två gånger → Andra försöket blockeras
+```
+
+**Viktiga filer:**
+
+- `supabase/migrations/ADD_TRIAL_ABUSE_PROTECTION.sql` - Database migration
+- `app/api/onboarding/auto/route.ts` - Kontrollera vid registrering
+- `app/api/subscription/checkout/route_new.ts` - 2 månaders trial i Stripe
+- `app/api/subscription/webhook/route.ts` - Registrera via webhook
+- `TRIAL_MISSBRUKSSKYDD.md` - Komplett dokumentation
+
+---
+
 **Skapad av:** GitHub Copilot  
 **Datum:** 30 november 2025  
+**Uppdaterad:** 30 november 2025 - Missbruksskydd & 2 månaders trial  
 **Status:** Redo för implementation
 
-**Nästa steg:** Börja med Steg 1 - Skapa produkter i Stripe Dashboard! 💳
+**Nästa steg:**
+
+1. Kör `ADD_TRIAL_ABUSE_PROTECTION.sql` i Supabase
+2. Skapa produkter i Stripe Dashboard
+3. Testa missbruksskydd med flera registreringar
+   💳

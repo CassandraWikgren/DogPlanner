@@ -137,9 +137,35 @@ export async function POST(req: Request) {
 
     console.log("Profil skapad/uppdaterad för användare:", userId);
 
-    // Skapa 3 månader gratis org-prenumeration (separerad från hundabonnemang)
+    // 🔒 KONTROLLERA TRIAL-BERÄTTIGANDE (missbruksskydd)
+    if (orgNumber) {
+      const { data: eligibility } = await supabase.rpc(
+        "check_trial_eligibility",
+        {
+          p_org_number: orgNumber,
+          p_email: userEmail,
+        }
+      );
+
+      if (eligibility && !eligibility.is_eligible) {
+        console.error("❌ Gratisperiod ej tillgänglig:", eligibility.reason);
+        return NextResponse.json(
+          {
+            error: "Gratisperiod ej tillgänglig",
+            reason: eligibility.reason,
+            message:
+              eligibility.reason === "org_number_used"
+                ? "Detta organisationsnummer har redan använt gratisperioden"
+                : "Denna email har redan använts för en gratisperiod",
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Skapa 2 månader (60 dagar) gratis org-prenumeration (separerad från hundabonnemang)
     const trialEnds = new Date();
-    trialEnds.setMonth(trialEnds.getMonth() + 3);
+    trialEnds.setDate(trialEnds.getDate() + 60); // 2 MÅNADER (ändrat från 3)
 
     const { error: subErr } = await supabase.from("org_subscriptions").insert([
       {
@@ -156,7 +182,28 @@ export async function POST(req: Request) {
       console.error("⚠️ Fel vid skapande av prenumeration:", subErr);
       // Fortsätt ändå - profil och org är viktigast
     } else {
-      console.log("💳 Prenumeration skapad med 3 månaders trial");
+      console.log("💳 Prenumeration skapad med 2 månaders trial (60 dagar)");
+
+      // 🔒 REGISTRERA PRENUMERATIONSSTART (för missbruksskydd)
+      if (orgNumber) {
+        const { error: regErr } = await supabase.rpc(
+          "register_subscription_start",
+          {
+            p_org_id: org.id,
+            p_org_number: orgNumber,
+            p_email: userEmail,
+          }
+        );
+
+        if (regErr) {
+          console.error(
+            "⚠️ Kunde inte registrera prenumerationsstart:",
+            regErr
+          );
+        } else {
+          console.log("🔒 Prenumerationshistorik registrerad");
+        }
+      }
     }
 
     console.log("✅ Auto-onboarding klar!");
