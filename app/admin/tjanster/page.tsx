@@ -19,7 +19,7 @@ const AVAILABLE_SERVICES = [
     name: "Hundfrisör",
     icon: "✂️",
     description: "Klippning, trimning, bad och pälsvård",
-    price: "299 kr/mån",
+    price: "199 kr/mån",
     features: [
       "Bokningskalender för frisörtider",
       "Prishantering per behandling",
@@ -145,7 +145,7 @@ export default function TjansterPage() {
       const service = AVAILABLE_SERVICES.find(
         (s) => s.id === selectedServices[0]
       );
-      return service?.price || "299 kr/mån";
+      return service?.price || "199 kr/mån";
     }
     if (count === 2) return "599 kr/mån";
     return "799 kr/mån"; // Alla tre

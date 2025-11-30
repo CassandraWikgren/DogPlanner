@@ -599,13 +599,13 @@ export default function ForetagPage() {
             <div className="bg-gradient-to-br from-primary to-primary-dark rounded-2xl p-8 md:p-12 text-white shadow-2xl">
               <div className="text-center mb-8">
                 <div className="text-5xl font-bold mb-2">
-                  299 kr
+                  Från 199 kr
                   <span className="text-2xl font-normal text-white/80">
                     /månad
                   </span>
                 </div>
                 <p className="text-white/90 text-lg">
-                  För hunddagis, pensionat eller frisör
+                  Hundfrisör 199 kr • Dagis/Pensionat 399 kr
                 </p>
               </div>
               <ul className="space-y-4 mb-8">
@@ -717,7 +717,7 @@ export default function ForetagPage() {
             </Link>
           </div>
           <p className="text-white/80 mt-6">
-            Gratis i 2 månader • Sedan 299 kr/månad • Avsluta när du vill
+            Gratis i 2 månader • Från 199 kr/månad • Avsluta när du vill
           </p>
         </div>
       </section>

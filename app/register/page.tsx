@@ -106,49 +106,67 @@ export default function RegisterCompanyPage() {
         </p>
 
         {/* 💰 PRISSÄTTNING - NY SEKTION */}
-        <div className="mb-8 bg-gradient-to-br from-[#2c7a4c] to-[#236139] rounded-xl p-6 text-white">
-          <h2 className="text-xl font-bold mb-3 text-center">
-            📋 Välj ditt abonnemang
-          </h2>
-          <p className="text-sm text-center mb-4 text-white/90">
+        <div className="mb-8 bg-white border-2 border-[#2c7a4c] rounded-xl p-6 shadow-sm">
+          <div className="bg-gradient-to-r from-[#2c7a4c] to-[#236139] text-white rounded-lg p-4 mb-5 text-center">
+            <h2 className="text-2xl font-bold mb-2">
+              ✨ Prova gratis i 2 månader
+            </h2>
+            <p className="text-sm text-white/90">
+              Inget betalkort krävs vid registrering • Avsluta när du vill
+            </p>
+          </div>
+
+          <p className="text-sm text-center mb-4 text-gray-700 font-medium">
             Välj de tjänster du behöver - betala endast för det du använder
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-            <div className="bg-white/10 backdrop-blur rounded-lg p-4 text-center border border-white/20">
-              <div className="text-2xl mb-2">✂️</div>
-              <div className="font-bold text-lg">299 kr/mån</div>
-              <div className="text-xs text-white/80">Endast Hundfrisör</div>
+            <div className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4 text-center border-2 border-gray-200 hover:border-[#2c7a4c] transition-colors">
+              <div className="text-3xl mb-2">✂️</div>
+              <div className="font-bold text-2xl text-[#2c7a4c]">199 kr</div>
+              <div className="text-sm text-gray-500 mb-1">/månad</div>
+              <div className="text-xs font-semibold text-gray-700">
+                Endast Hundfrisör
+              </div>
             </div>
-            <div className="bg-white/10 backdrop-blur rounded-lg p-4 text-center border border-white/20">
-              <div className="text-2xl mb-2">🐕</div>
-              <div className="font-bold text-lg">399 kr/mån</div>
-              <div className="text-xs text-white/80">Endast Hunddagis</div>
+            <div className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4 text-center border-2 border-gray-200 hover:border-[#2c7a4c] transition-colors">
+              <div className="text-3xl mb-2">🐕</div>
+              <div className="font-bold text-2xl text-[#2c7a4c]">399 kr</div>
+              <div className="text-sm text-gray-500 mb-1">/månad</div>
+              <div className="text-xs font-semibold text-gray-700">
+                Endast Hunddagis
+              </div>
             </div>
-            <div className="bg-white/10 backdrop-blur rounded-lg p-4 text-center border border-white/20">
-              <div className="text-2xl mb-2">🏨</div>
-              <div className="font-bold text-lg">399 kr/mån</div>
-              <div className="text-xs text-white/80">Endast Hundpensionat</div>
+            <div className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4 text-center border-2 border-gray-200 hover:border-[#2c7a4c] transition-colors">
+              <div className="text-3xl mb-2">🏨</div>
+              <div className="font-bold text-2xl text-[#2c7a4c]">399 kr</div>
+              <div className="text-sm text-gray-500 mb-1">/månad</div>
+              <div className="text-xs font-semibold text-gray-700">
+                Endast Hundpensionat
+              </div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="bg-white/15 backdrop-blur rounded-lg p-4 text-center border border-white/30">
-              <div className="font-bold text-lg">599 kr/mån</div>
-              <div className="text-xs text-white/90">Två valfria tjänster</div>
+            <div className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4 text-center border-2 border-gray-200 hover:border-[#2c7a4c] transition-colors">
+              <div className="font-bold text-2xl text-[#2c7a4c]">599 kr</div>
+              <div className="text-sm text-gray-500 mb-1">/månad</div>
+              <div className="text-xs font-semibold text-gray-700">
+                Två valfria tjänster
+              </div>
             </div>
-            <div className="bg-white/20 backdrop-blur rounded-lg p-4 text-center border-2 border-yellow-300">
-              <div className="text-xs text-yellow-300 font-semibold mb-1">
+            <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-lg p-4 text-center border-2 border-yellow-400 shadow-md relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full">
                 🏆 BÄST VÄRDE
               </div>
-              <div className="font-bold text-xl">799 kr/mån</div>
-              <div className="text-xs text-white/90">Alla tre tjänster</div>
+              <div className="font-bold text-2xl text-[#2c7a4c] mt-2">
+                799 kr
+              </div>
+              <div className="text-sm text-gray-500 mb-1">/månad</div>
+              <div className="text-xs font-semibold text-gray-700">
+                Alla tre tjänster
+              </div>
             </div>
-          </div>
-
-          <div className="mt-4 text-center text-xs text-white/80">
-            ✨ <strong>30 dagars gratis testperiod</strong> - inget betalkort
-            krävs vid registrering
           </div>
         </div>
 
@@ -392,7 +410,7 @@ export default function RegisterCompanyPage() {
                     <span className="text-xl">✂️</span>
                     <span className="font-bold text-gray-900">Hundfrisör</span>
                     <span className="ml-auto text-sm font-semibold text-[#2c7a4c]">
-                      299 kr/mån
+                      199 kr/mån
                     </span>
                   </div>
                   <p className="text-xs text-gray-600 leading-relaxed">
@@ -413,7 +431,7 @@ export default function RegisterCompanyPage() {
                   <span className="text-2xl font-bold text-[#2c7a4c]">
                     {serviceType.length === 1
                       ? serviceType.includes("grooming")
-                        ? "299"
+                        ? "199"
                         : "399"
                       : serviceType.length === 2
                         ? "599"
