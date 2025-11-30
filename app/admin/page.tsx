@@ -4,6 +4,7 @@ import React from "react";
 import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
 import DashboardWidgets from "@/components/DashboardWidgets";
+import { ServiceGuard } from "@/components/ServiceGuard";
 
 export default function AdminPage() {
   const { currentOrgId } = useAuth();
@@ -47,7 +48,23 @@ export default function AdminPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Rapporter - NY! */}
+            {/* Tjänsteinställningar - NY! Högst prioritet */}
+            <Link href="/admin/tjanster">
+              <div className="bg-gradient-to-br from-[#2c7a4c] to-[#236139] rounded-lg p-6 shadow-md h-full hover:shadow-xl transition-all group text-white">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-3xl">⚙️</div>
+                  <h3 className="text-lg font-semibold group-hover:underline">
+                    Tjänsteinställningar
+                  </h3>
+                </div>
+                <p className="text-sm text-white/90 leading-relaxed">
+                  Aktivera/deaktivera Dagis, Pensionat och Frisör för ditt
+                  företag.
+                </p>
+              </div>
+            </Link>
+
+            {/* Rapporter */}
             <Link href="/admin/rapporter">
               <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
@@ -79,49 +96,55 @@ export default function AdminPage() {
             </Link>
 
             {/* Priser - Hunddagis */}
-            <Link href="/admin/priser/dagis">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="text-3xl">🐕</div>
-                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
-                    Priser - Hunddagis
-                  </h3>
+            <ServiceGuard service="daycare">
+              <Link href="/admin/priser/dagis">
+                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-3xl">🐕</div>
+                    <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                      Priser - Hunddagis
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Ändra priser för dagisabonnemang och enstaka dagar.
+                  </p>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Ändra priser för dagisabonnemang och enstaka dagar.
-                </p>
-              </div>
-            </Link>
+              </Link>
+            </ServiceGuard>
 
             {/* Priser - Hundpensionat */}
-            <Link href="/admin/priser/pensionat">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="text-3xl">🏨</div>
-                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
-                    Priser - Pensionat
-                  </h3>
+            <ServiceGuard service="boarding">
+              <Link href="/admin/priser/pensionat">
+                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-3xl">🏨</div>
+                    <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                      Priser - Pensionat
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Ändra priser för pensionatsbokningar och tilläggstjänster.
+                  </p>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Ändra priser för pensionatsbokningar och tilläggstjänster.
-                </p>
-              </div>
-            </Link>
+              </Link>
+            </ServiceGuard>
 
             {/* Priser - Hundfrisör */}
-            <Link href="/admin/hundfrisor/priser">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="text-3xl">✂️</div>
-                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
-                    Priser - Frisör
-                  </h3>
+            <ServiceGuard service="grooming">
+              <Link href="/admin/hundfrisor/priser">
+                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="text-3xl">✂️</div>
+                    <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                      Priser - Frisör
+                    </h3>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Ändra priser för klippning, bad och pälsvård.
+                  </p>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Ändra priser för klippning, bad och pälsvård.
-                </p>
-              </div>
-            </Link>
+              </Link>
+            </ServiceGuard>
 
             {/* Företagsinformation */}
             <Link href="/foretagsinformation">
