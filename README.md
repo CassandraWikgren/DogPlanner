@@ -1,4 +1,202 @@
-<!-- Last updated: 2025-11-23 (Grooming prices system, design improvements) -->
+<!-- Last updated: 2025-11-30 (Modular services system, smart routing, registration redesign) -->
+
+---
+
+## 🔄 Senaste Uppdateringar (30 november 2025)
+
+### 🎯 MODULÄRT TJÄNSTESYSTEM MED SMART ROUTING (30 november)
+
+**Status:** Fullständigt implementerat och deployat ✅
+
+#### ✨ Översikt
+
+DogPlanner har nu ett komplett modulärt tjänstesystem där företag kan välja vilka tjänster de vill erbjuda:
+
+- **🐕 Hunddagis** (daycare) - 399 kr/mån
+- **🏨 Hundpensionat** (boarding) - 399 kr/mån
+- **✂️ Hundfrisör** (grooming) - 299 kr/mån
+- **📦 Paketpriser** - 599 kr (2 tjänster), 799 kr (alla 3)
+
+**Resultat:** Ett hundtrim som bara erbjuder frisörtjänster behöver aldrig se dagis- eller pensionatsfunktioner.
+
+#### 🏗️ Systemarkitektur
+
+**1. Databas (ADD_ENABLED_SERVICES.sql):**
+
+```sql
+ALTER TABLE orgs
+ADD COLUMN enabled_services TEXT[]
+DEFAULT ARRAY['daycare', 'boarding', 'grooming'];
+
+CREATE INDEX idx_orgs_enabled_services ON orgs USING GIN (enabled_services);
+```
+
+- GIN-index för snabba array-queries
+- Default: alla tre tjänster (bakåtkompatibilitet)
+- Organisationer väljer tjänster i `/admin/tjanster`
+
+**2. Hook - useEnabledServices:**
+
+```typescript
+// lib/hooks/useEnabledServices.ts
+const { hasDaycare, hasBoarding, hasGrooming, loading } = useEnabledServices();
+```
+
+- Läser från `orgs.enabled_services` baserat på `currentOrgId`
+- Boolean-flaggor för enkel konditionell rendering
+- Fallback till alla tjänster vid fel
+
+**3. Guard-komponenter:**
+
+```tsx
+// components/ServiceGuard.tsx
+<ServiceGuard service="grooming">
+  <Link href="/frisor">Hundfrisör</Link>
+</ServiceGuard>
+
+<AnyServiceGuard services={['daycare', 'boarding']}>
+  <Link href="/admin/rum">Rumhantering</Link>
+</AnyServiceGuard>
+```
+
+**4. Smart Routing:**
+
+```typescript
+// app/dashboard/page.tsx
+useEffect(() => {
+  const enabledCount = [hasDaycare, hasBoarding, hasGrooming].filter(
+    Boolean
+  ).length;
+
+  // Auto-redirect om bara EN tjänst aktiverad
+  if (enabledCount === 1) {
+    if (hasGrooming) router.replace("/frisor");
+    else if (hasDaycare) router.replace("/hunddagis");
+    else if (hasBoarding) router.replace("/hundpensionat");
+  }
+}, [hasDaycare, hasBoarding, hasGrooming]);
+```
+
+#### 🎨 UI-implementering
+
+**Navbar (konditionella länkar):**
+
+- ✅ Hunddagis-länk endast om `hasDaycare === true`
+- ✅ Hundpensionat endast om `hasBoarding === true`
+- ✅ Hundfrisör endast om `hasGrooming === true`
+- ✅ Dashboard och Admin alltid synliga
+
+**Dashboard (konditionella kort):**
+
+- Endast aktiverade tjänster visas som modulkort
+- Auto-redirect vid single-service (se Smart Routing)
+
+**Admin-sidan:**
+
+- Priskort för varje tjänst använder `<ServiceGuard>`
+- Endast relevanta prissidor visas
+
+**DashboardWidgets (konditionell statistik):**
+
+- Hunddagis-widget → endast om `hasDaycare === true`
+- 4 pensionat-widgets → endast om `hasBoarding === true`
+- Viktiga notiser → visas alltid
+
+**DagensHundarWidget:**
+
+- Döljs helt om `hasBoarding === false`
+- Visar incheckade pensionatshundar
+
+#### 📊 Prissättningsmodell
+
+```
+🔧 Enskilda tjänster:
+  Frisör:       299 kr/mån
+  Dagis:        399 kr/mån
+  Pensionat:    399 kr/mån
+
+💰 Paketpriser (rabatt):
+  2 tjänster:   599 kr/mån (sparar 199 kr)
+  Alla 3:       799 kr/mån (sparar 398 kr)
+
+✨ Testperiod:
+  30 dagar gratis - inget betalkort krävs
+```
+
+#### 🚀 Registreringsflöde
+
+**Uppdaterad registreringssida (`/register`):**
+
+- ✅ **Prissättningsbox** synlig innan registrering
+- ✅ **Detaljerade tjänstebeskrivningar:**
+  - Hunddagis: "Dagisverksamhet med schema, närvarohantering, rumstilldelning och fakturaunderlag"
+  - Hundpensionat: "Bokningssystem med kalender, in-/utcheckning, rumhantering och fakturaunderlag"
+  - Hundfrisör: "Bokningssystem för trimning med 22+ behandlingstyper, prissättning och kalender"
+- ✅ **Real-time prisberäkning** - visar exakt månadspris vid val
+- ✅ **Sparvisning** - "✨ Du sparar 199 kr/mån med paketpris!"
+- ✅ **Korrekta användarvillkor:**
+  - Länkar till Allmänna villkor, Integritetspolicy, PUB
+  - Öppnas i nya flikar
+  - Tydlig förklaring av vad varje dokument innehåller
+
+**Backend-integration:**
+
+```typescript
+// app/register/page.tsx
+enabled_services: serviceType; // ['daycare', 'boarding', 'grooming']
+
+// supabase/migrations/UPDATE_TRIGGER_ENABLED_SERVICES.sql
+// Trigger: handle_new_user() läser enabled_services från user_metadata
+// Sätter på orgs.enabled_services vid organisation-skapande
+
+// app/api/onboarding/auto/route.ts
+// Fallback API hanterar också enabled_services
+```
+
+#### 📚 Dokumentation
+
+**MODULAR_SERVICES_GUIDE.md:**
+
+- Komplett systemguide (500+ rader)
+- Teknisk arkitektur
+- Användningsscenarier (frisör-only, dagis+pensionat, full-service)
+- Testchecklista
+- Framtida förbättringar
+
+#### 🧪 Testscenario: Hundtrim (endast frisör)
+
+1. Registrera på `/register`
+2. Välj ENDAST "Hundfrisör" (✂️)
+3. Se prisberäkning: **"299 kr/mån"**
+4. Registrera konto → bekräfta email → logga in
+5. **Auto-redirect till `/frisor`** (smart routing)
+6. **Navbar visar:** Dashboard, Hundfrisör, Admin
+7. **Dashboard widgets:** Endast "Viktiga notiser"
+8. **Admin-sidan:** Endast "Priser - Frisör" syns
+9. **Resultat:** Perfekt skräddarsytt system för hundfrisör! 🎉
+
+#### ✅ Implementation
+
+**Implementerade filer:**
+
+- ✅ `/lib/hooks/useEnabledServices.ts` - Hook för tjänstekontroll
+- ✅ `/components/ServiceGuard.tsx` - Guard-komponenter (3 varianter)
+- ✅ `/app/admin/tjanster/page.tsx` - Inställningssida för tjänsteval
+- ✅ `/app/dashboard/page.tsx` - Smart routing + konditionella kort
+- ✅ `/components/Navbar.tsx` - Konditionella länkar
+- ✅ `/components/DashboardWidgets.tsx` - Konditionella widgets
+- ✅ `/components/DagensHundarWidget.tsx` - Konditionell visning
+- ✅ `/app/register/page.tsx` - Prissättning + tjänsteval
+- ✅ `/app/api/onboarding/auto/route.ts` - Hanterar enabled_services
+- ✅ `/supabase/migrations/ADD_ENABLED_SERVICES.sql` - Databas-migration
+- ✅ `/supabase/migrations/UPDATE_TRIGGER_ENABLED_SERVICES.sql` - Trigger-uppdatering
+
+**SQL-migrationer (körda i Supabase):**
+
+1. ✅ `ADD_ENABLED_SERVICES.sql` - Lade till kolumn + index
+2. ✅ `UPDATE_TRIGGER_ENABLED_SERVICES.sql` - Uppdaterad trigger för nya användare
+
+**Status:** ✅ Deployed to production & fully tested
 
 ---
 
