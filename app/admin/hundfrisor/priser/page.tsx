@@ -110,15 +110,29 @@ export default function GroomingPricesPage() {
   });
 
   useEffect(() => {
+    console.log("🐛 DEBUG - Grooming Prices Page mounted:", {
+      currentOrgId,
+      authLoading,
+      timestamp: new Date().toISOString(),
+    });
+
     if (currentOrgId) {
       loadPrices();
     } else {
       setLoading(false);
+      if (!authLoading) {
+        console.warn("⚠️  currentOrgId is missing after auth loaded!");
+      }
     }
   }, [currentOrgId]);
 
   const loadPrices = async () => {
-    if (!currentOrgId) return;
+    if (!currentOrgId) {
+      console.error("❌ loadPrices called without currentOrgId");
+      return;
+    }
+
+    console.log("🔍 Laddar priser för org:", currentOrgId);
 
     setLoading(true);
     setError(null);
@@ -133,12 +147,19 @@ export default function GroomingPricesPage() {
         .order("coat_type", { ascending: true, nullsFirst: true });
 
       if (error) {
+        console.error("❌ Supabase SELECT error:", {
+          error,
+          code: error.code,
+          message: error.message,
+          currentOrgId,
+        });
         throw new Error(`Kunde inte hämta priser: ${error.message}`);
       }
 
+      console.log(`✅ Laddade ${data?.length || 0} priser:`, data);
       setPrices(data || []);
     } catch (err: any) {
-      console.error("Error loading prices:", err);
+      console.error("❌ Error loading prices:", err);
       setError(err.message || "Okänt fel vid laddning av priser");
     } finally {
       setLoading(false);
@@ -212,21 +233,67 @@ export default function GroomingPricesPage() {
   };
 
   const addNewPrice = async () => {
-    if (!currentOrgId || !newPrice.service_name || !newPrice.price) {
+    // Validering
+    if (!currentOrgId) {
+      setError("Ingen organisation tilldelad. Kontakta admin.");
+      console.error("❌ currentOrgId saknas:", currentOrgId);
+      return;
+    }
+
+    if (!newPrice.service_name || !newPrice.price) {
       setError("Tjänstnamn och pris måste fyllas i");
       return;
     }
 
+    const insertData = {
+      ...newPrice,
+      org_id: currentOrgId,
+      // Säkerställ att price är ett nummer
+      price: Number(newPrice.price),
+      duration_minutes: Number(newPrice.duration_minutes),
+    };
+
+    console.log("🐛 DEBUG - Försöker lägga till pris:", {
+      currentOrgId,
+      newPrice,
+      insertData,
+      timestamp: new Date().toISOString(),
+    });
+
     setSaving(true);
     setError(null);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("grooming_prices")
-        .insert([{ ...newPrice, org_id: currentOrgId }]);
+        .insert([insertData])
+        .select(); // Returnera den skapade raden
 
       if (error) {
-        throw new Error(`Kunde inte lägga till: ${error.message}`);
+        console.error("❌ Supabase INSERT error:", {
+          error,
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        });
+
+        // Ge mer specifika felmeddelanden
+        if (error.message.includes("row-level security")) {
+          throw new Error(
+            "Behörighetsproblem: Du saknar rättigheter att lägga till priser. " +
+              "Kontakta admin eller se konsolen (F12) för detaljer."
+          );
+        } else if (error.message.includes("duplicate key")) {
+          throw new Error(
+            "Ett pris med denna kombination finns redan. " +
+              "Ändra hundstorlek, pälstyp eller tjänstetyp."
+          );
+        } else {
+          throw new Error(`Kunde inte lägga till: ${error.message}`);
+        }
       }
+
+      console.log("✅ Pris tillagt framgångsrikt:", data);
 
       await loadPrices();
       setShowAddForm(false);
@@ -235,7 +302,7 @@ export default function GroomingPricesPage() {
         service_name: "Badning",
         dog_size: null,
         coat_type: null,
-        price: 0,
+        price: undefined as any,
         duration_minutes: 60,
         description: "",
         active: true,
@@ -243,7 +310,7 @@ export default function GroomingPricesPage() {
       setSuccess("Nytt pris tillagt!");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      console.error("Error adding price:", err);
+      console.error("❌ Error adding price:", err);
       setError(err.message || "Okänt fel vid tillägg");
     } finally {
       setSaving(false);

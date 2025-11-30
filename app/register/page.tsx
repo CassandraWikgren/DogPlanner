@@ -106,64 +106,73 @@ export default function RegisterCompanyPage() {
         </p>
 
         {/* 💰 PRISSÄTTNING - NY SEKTION */}
-        <div className="mb-8 bg-white border-2 border-[#2c7a4c] rounded-xl p-6 shadow-sm">
-          <div className="bg-gradient-to-r from-[#2c7a4c] to-[#236139] text-white rounded-lg p-4 mb-5 text-center">
-            <h2 className="text-2xl font-bold mb-2">
-              ✨ Prova gratis i 2 månader
+        <div className="mb-8 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-[#2c7a4c] rounded-xl p-6 shadow-sm">
+          <div className="bg-white border-2 border-[#2c7a4c] rounded-lg p-5 mb-5 text-center shadow-sm">
+            <div className="text-4xl mb-2">✨</div>
+            <h2 className="text-2xl font-bold mb-2 text-[#2c7a4c]">
+              Prova gratis i 2 månader
             </h2>
-            <p className="text-sm text-white/90">
+            <p className="text-sm text-gray-600 font-medium">
               Inget betalkort krävs vid registrering • Avsluta när du vill
             </p>
           </div>
 
-          <p className="text-sm text-center mb-4 text-gray-700 font-medium">
+          <p className="text-sm text-center mb-5 text-gray-700 font-semibold">
             Välj de tjänster du behöver - betala endast för det du använder
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-            <div className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4 text-center border-2 border-gray-200 hover:border-[#2c7a4c] transition-colors">
-              <div className="text-3xl mb-2">✂️</div>
-              <div className="font-bold text-2xl text-[#2c7a4c]">199 kr</div>
-              <div className="text-sm text-gray-500 mb-1">/månad</div>
-              <div className="text-xs font-semibold text-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="bg-white rounded-lg p-5 text-center border-2 border-gray-200 hover:border-[#2c7a4c] hover:shadow-md transition-all">
+              <div className="text-4xl mb-3">✂️</div>
+              <div className="font-bold text-3xl text-[#2c7a4c] mb-1">
+                199 kr
+              </div>
+              <div className="text-sm text-gray-500 mb-2">/månad</div>
+              <div className="text-sm font-semibold text-gray-800">
                 Endast Hundfrisör
               </div>
             </div>
-            <div className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4 text-center border-2 border-gray-200 hover:border-[#2c7a4c] transition-colors">
-              <div className="text-3xl mb-2">🐕</div>
-              <div className="font-bold text-2xl text-[#2c7a4c]">399 kr</div>
-              <div className="text-sm text-gray-500 mb-1">/månad</div>
-              <div className="text-xs font-semibold text-gray-700">
+            <div className="bg-white rounded-lg p-5 text-center border-2 border-gray-200 hover:border-[#2c7a4c] hover:shadow-md transition-all">
+              <div className="text-4xl mb-3">🐕</div>
+              <div className="font-bold text-3xl text-[#2c7a4c] mb-1">
+                399 kr
+              </div>
+              <div className="text-sm text-gray-500 mb-2">/månad</div>
+              <div className="text-sm font-semibold text-gray-800">
                 Endast Hunddagis
               </div>
             </div>
-            <div className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4 text-center border-2 border-gray-200 hover:border-[#2c7a4c] transition-colors">
-              <div className="text-3xl mb-2">🏨</div>
-              <div className="font-bold text-2xl text-[#2c7a4c]">399 kr</div>
-              <div className="text-sm text-gray-500 mb-1">/månad</div>
-              <div className="text-xs font-semibold text-gray-700">
+            <div className="bg-white rounded-lg p-5 text-center border-2 border-gray-200 hover:border-[#2c7a4c] hover:shadow-md transition-all">
+              <div className="text-4xl mb-3">🏨</div>
+              <div className="font-bold text-3xl text-[#2c7a4c] mb-1">
+                399 kr
+              </div>
+              <div className="text-sm text-gray-500 mb-2">/månad</div>
+              <div className="text-sm font-semibold text-gray-800">
                 Endast Hundpensionat
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4 text-center border-2 border-gray-200 hover:border-[#2c7a4c] transition-colors">
-              <div className="font-bold text-2xl text-[#2c7a4c]">599 kr</div>
-              <div className="text-sm text-gray-500 mb-1">/månad</div>
-              <div className="text-xs font-semibold text-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-lg p-5 text-center border-2 border-gray-200 hover:border-[#2c7a4c] hover:shadow-md transition-all">
+              <div className="font-bold text-3xl text-[#2c7a4c] mb-1">
+                599 kr
+              </div>
+              <div className="text-sm text-gray-500 mb-2">/månad</div>
+              <div className="text-sm font-semibold text-gray-800">
                 Två valfria tjänster
               </div>
             </div>
-            <div className="bg-gradient-to-br from-yellow-50 to-amber-50 rounded-lg p-4 text-center border-2 border-yellow-400 shadow-md relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full">
+            <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg p-5 text-center border-2 border-amber-400 shadow-md relative hover:shadow-lg transition-all">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-400 text-gray-900 text-xs font-bold px-4 py-1.5 rounded-full shadow-sm">
                 🏆 BÄST VÄRDE
               </div>
-              <div className="font-bold text-2xl text-[#2c7a4c] mt-2">
+              <div className="font-bold text-3xl text-[#2c7a4c] mt-2 mb-1">
                 799 kr
               </div>
-              <div className="text-sm text-gray-500 mb-1">/månad</div>
-              <div className="text-xs font-semibold text-gray-700">
+              <div className="text-sm text-gray-500 mb-2">/månad</div>
+              <div className="text-sm font-semibold text-gray-800">
                 Alla tre tjänster
               </div>
             </div>
@@ -423,12 +432,12 @@ export default function RegisterCompanyPage() {
 
             {/* Prisberäkning */}
             {serviceType.length > 0 && (
-              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-gray-700">
+              <div className="mt-4 p-5 bg-white border-2 border-[#2c7a4c] rounded-lg shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-gray-800">
                     Ditt månadspris:
                   </span>
-                  <span className="text-2xl font-bold text-[#2c7a4c]">
+                  <span className="text-3xl font-bold text-[#2c7a4c]">
                     {serviceType.length === 1
                       ? serviceType.includes("grooming")
                         ? "199"
@@ -436,15 +445,20 @@ export default function RegisterCompanyPage() {
                       : serviceType.length === 2
                         ? "599"
                         : "799"}{" "}
-                    kr/mån
+                    kr
                   </span>
                 </div>
                 {serviceType.length >= 2 && (
-                  <p className="text-xs text-green-700 mt-2 text-center">
-                    ✨ Du sparar{" "}
-                    {serviceType.length === 2 ? "199 kr/mån" : "398 kr/mån"} med
-                    paketpris!
-                  </p>
+                  <div className="pt-3 border-t border-gray-200">
+                    <p className="text-sm text-emerald-700 font-semibold text-center flex items-center justify-center gap-2">
+                      <span className="text-lg">✨</span>
+                      Du sparar{" "}
+                      {serviceType.length === 2
+                        ? "199 kr/mån"
+                        : "398 kr/mån"}{" "}
+                      med paketpris!
+                    </p>
+                  </div>
                 )}
               </div>
             )}
