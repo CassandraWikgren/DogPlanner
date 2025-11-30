@@ -109,7 +109,7 @@ export default function AdminPage() {
             </Link>
 
             {/* Priser - Hundfrisör */}
-            <Link href="/admin/priser/frisor">
+            <Link href="/admin/hundfrisor/priser">
               <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">✂️</div>

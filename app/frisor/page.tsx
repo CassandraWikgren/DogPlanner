@@ -302,7 +302,7 @@ export default function FrisorDashboard() {
               >
                 <RefreshCcw className="h-5 w-5" />
               </button>
-              <Link href="/admin/priser/frisor">
+              <Link href="/admin/hundfrisor/priser">
                 <button
                   className="h-10 w-10 bg-[#4b5563] hover:bg-[#374151] text-white rounded-md transition flex items-center justify-center shadow-sm"
                   title="Inställningar"
