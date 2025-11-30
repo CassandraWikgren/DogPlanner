@@ -6,20 +6,20 @@
 -- Detta möjliggör att företag kan välja endast de moduler de behöver (t.ex. endast frisör)
 
 -- Lägg till kolumn för enabled_services
-ALTER TABLE organisations 
+ALTER TABLE orgs 
 ADD COLUMN IF NOT EXISTS enabled_services TEXT[] 
 DEFAULT ARRAY['daycare', 'boarding', 'grooming'];
 
 -- Lägg till kommentar för dokumentation
-COMMENT ON COLUMN organisations.enabled_services IS 
+COMMENT ON COLUMN orgs.enabled_services IS 
 'Array med aktiverade tjänster: daycare (hunddagis), boarding (hundpensionat), grooming (hundfrisör). Default: alla aktiverade för bakåtkompatibilitet.';
 
 -- Index för snabbare queries (GIN-index för array-operationer)
-CREATE INDEX IF NOT EXISTS idx_organisations_enabled_services 
-ON organisations USING GIN (enabled_services);
+CREATE INDEX IF NOT EXISTS idx_orgs_enabled_services 
+ON orgs USING GIN (enabled_services);
 
 -- Sätt alla befintliga organisationer till "alla tjänster" (säkerhet för bakåtkompatibilitet)
-UPDATE organisations 
+UPDATE orgs 
 SET enabled_services = ARRAY['daycare', 'boarding', 'grooming']
 WHERE enabled_services IS NULL;
 
@@ -41,10 +41,10 @@ BEGIN
     IF EXISTS (
         SELECT 1 
         FROM information_schema.columns 
-        WHERE table_name = 'organisations' 
+        WHERE table_name = 'orgs' 
         AND column_name = 'enabled_services'
     ) THEN
-        RAISE NOTICE '✅ Kolumnen enabled_services har lagts till i organisations-tabellen';
+        RAISE NOTICE '✅ Kolumnen enabled_services har lagts till i orgs-tabellen';
     ELSE
         RAISE EXCEPTION '❌ Kolumnen enabled_services kunde inte skapas';
     END IF;

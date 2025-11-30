@@ -36,7 +36,7 @@ export function useEnabledServices(): EnabledServicesReturn {
 
     try {
       const { data, error } = await supabase
-        .from("organisations")
+        .from("orgs")
         .select("enabled_services")
         .eq("id", currentOrgId)
         .single();

@@ -101,7 +101,7 @@ export default function TjansterPage() {
 
     try {
       const { error: updateError } = await supabase
-        .from("organisations")
+        .from("orgs")
         .update({ enabled_services: selectedServices })
         .eq("id", currentOrgId);
 
