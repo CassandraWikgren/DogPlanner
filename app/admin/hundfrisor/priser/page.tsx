@@ -369,7 +369,7 @@ export default function GroomingPricesPage() {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white text-gray-900">
                       {SERVICE_TYPES.map((type) => (
                         <SelectItem key={type.value} value={type.value}>
                           {type.label}
@@ -407,7 +407,7 @@ export default function GroomingPricesPage() {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white text-gray-900">
                       {DOG_SIZES.map((size) => (
                         <SelectItem
                           key={size.value || "null"}
@@ -434,7 +434,7 @@ export default function GroomingPricesPage() {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white text-gray-900">
                       {COAT_TYPES.map((coat) => (
                         <SelectItem
                           key={coat.value || "null"}
