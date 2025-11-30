@@ -6,21 +6,45 @@ import { cookies } from "next/headers";
 // =====================================================
 // STRIPE CHECKOUT - MODULÄRA TJÄNSTER
 // =====================================================
-// Priser baserat på antalet aktiverade tjänster
+// Månads priser:
 // - 1 tjänst (Frisör): 199 kr/mån
 // - 1 tjänst (Dagis/Pensionat): 399 kr/mån
 // - 2 tjänster: 599 kr/mån
 // - 3 tjänster: 799 kr/mån
+//
+// Årspriser (50 kr/mån rabatt = 600 kr/år):
+// - 1 tjänst (Frisör): 1788 kr/år (149 kr/mån)
+// - 1 tjänst (Dagis/Pensionat): 4188 kr/år (349 kr/mån)
+// - 2 tjänster: 6588 kr/år (549 kr/mån)
+// - 3 tjänster: 8988 kr/år (749 kr/mån)
 
-const PRICE_IDS: Record<string, string> = {
-  grooming_only: process.env.STRIPE_PRICE_ID_GROOMING || "", // 199 kr/mån
-  daycare_only: process.env.STRIPE_PRICE_ID_DAYCARE || "", // 399 kr/mån
-  boarding_only: process.env.STRIPE_PRICE_ID_BOARDING || "", // 399 kr/mån
-  two_services: process.env.STRIPE_PRICE_ID_TWO_SERVICES || "", // 599 kr/mån
-  all_services: process.env.STRIPE_PRICE_ID_ALL_SERVICES || "", // 799 kr/mån
+const PRICE_IDS: Record<string, { monthly: string; yearly: string }> = {
+  grooming_only: {
+    monthly: process.env.STRIPE_PRICE_ID_GROOMING || "",
+    yearly: process.env.STRIPE_PRICE_ID_GROOMING_YEARLY || "",
+  },
+  daycare_only: {
+    monthly: process.env.STRIPE_PRICE_ID_DAYCARE || "",
+    yearly: process.env.STRIPE_PRICE_ID_DAYCARE_YEARLY || "",
+  },
+  boarding_only: {
+    monthly: process.env.STRIPE_PRICE_ID_BOARDING || "",
+    yearly: process.env.STRIPE_PRICE_ID_BOARDING_YEARLY || "",
+  },
+  two_services: {
+    monthly: process.env.STRIPE_PRICE_ID_TWO_SERVICES || "",
+    yearly: process.env.STRIPE_PRICE_ID_TWO_SERVICES_YEARLY || "",
+  },
+  all_services: {
+    monthly: process.env.STRIPE_PRICE_ID_ALL_SERVICES || "",
+    yearly: process.env.STRIPE_PRICE_ID_ALL_SERVICES_YEARLY || "",
+  },
 };
 
-function getPriceIdFromServices(services: string[]): {
+function getPriceIdFromServices(
+  services: string[],
+  billingPeriod: "monthly" | "yearly" = "monthly"
+): {
   priceId: string;
   planName: string;
 } {
@@ -33,20 +57,35 @@ function getPriceIdFromServices(services: string[]): {
   if (count === 1) {
     const service = services[0];
     if (service === "grooming") {
-      return { priceId: PRICE_IDS.grooming_only, planName: "Hundfrisör" };
+      return {
+        priceId: PRICE_IDS.grooming_only[billingPeriod],
+        planName: "Hundfrisör",
+      };
     } else if (service === "daycare") {
-      return { priceId: PRICE_IDS.daycare_only, planName: "Hunddagis" };
+      return {
+        priceId: PRICE_IDS.daycare_only[billingPeriod],
+        planName: "Hunddagis",
+      };
     } else if (service === "boarding") {
-      return { priceId: PRICE_IDS.boarding_only, planName: "Hundpensionat" };
+      return {
+        priceId: PRICE_IDS.boarding_only[billingPeriod],
+        planName: "Hundpensionat",
+      };
     }
   }
 
   if (count === 2) {
-    return { priceId: PRICE_IDS.two_services, planName: "2 Tjänster" };
+    return {
+      priceId: PRICE_IDS.two_services[billingPeriod],
+      planName: "2 Tjänster",
+    };
   }
 
   if (count === 3) {
-    return { priceId: PRICE_IDS.all_services, planName: "Alla 3 Tjänster" };
+    return {
+      priceId: PRICE_IDS.all_services[billingPeriod],
+      planName: "Alla 3 Tjänster",
+    };
   }
 
   throw new Error("Ogiltig tjänstekombination");
@@ -124,9 +163,11 @@ export async function POST(req: Request) {
       .eq("id", profile.org_id)
       .single();
 
-    // --- 4. Läs in valda tjänster från body ---
+    // --- 4. Läs in valda tjänster och billing period från body ---
     const body = await req.json();
-    const { services } = body; // Array: ['daycare', 'boarding', 'grooming']
+    const { services, billingPeriod = "monthly" } = body;
+    // services: Array: ['daycare', 'boarding', 'grooming']
+    // billingPeriod: 'monthly' | 'yearly'
 
     if (!services || !Array.isArray(services) || services.length === 0) {
       return NextResponse.json(
@@ -135,8 +176,20 @@ export async function POST(req: Request) {
       );
     }
 
-    // --- 5. Få rätt price ID baserat på tjänster ---
-    const { priceId, planName } = getPriceIdFromServices(services);
+    if (!["monthly", "yearly"].includes(billingPeriod)) {
+      return NextResponse.json(
+        {
+          error: "Ogiltig billing period. Måste vara 'monthly' eller 'yearly'.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // --- 5. Få rätt price ID baserat på tjänster OCH billing period ---
+    const { priceId, planName } = getPriceIdFromServices(
+      services,
+      billingPeriod
+    );
 
     if (!priceId) {
       return NextResponse.json(
@@ -161,6 +214,7 @@ export async function POST(req: Request) {
         user_id: user.id,
         enabled_services: JSON.stringify(services), // Spara valda tjänster
         plan_name: planName,
+        billing_period: billingPeriod, // Spara billing period
       },
       subscription_data: {
         // 🎁 2 MÅNADERS GRATIS TRIAL (endast om första prenumerationen)
@@ -168,6 +222,7 @@ export async function POST(req: Request) {
         metadata: {
           org_id: profile.org_id,
           enabled_services: JSON.stringify(services),
+          billing_period: billingPeriod,
         },
       },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/admin/abonnemang?success=true`,

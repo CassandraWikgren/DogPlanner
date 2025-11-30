@@ -35,8 +35,21 @@ export async function POST(req: Request) {
       const org_id = session.metadata?.org_id;
       const plan = session.metadata?.plan;
       const enabled_services = session.metadata?.enabled_services;
+      const billing_period = session.metadata?.billing_period || "monthly";
 
       if (org_id) {
+        // Hämta Stripe subscription för att få customer_id och subscription_id
+        let stripeSubscriptionId = null;
+        let stripeCustomerId = null;
+
+        if (session.subscription) {
+          const subscription = await stripe.subscriptions.retrieve(
+            session.subscription as string
+          );
+          stripeSubscriptionId = subscription.id;
+          stripeCustomerId = subscription.customer as string;
+        }
+
         // 🔒 REGISTRERA PRENUMERATIONSSTART (för missbruksskydd)
         // Hämta org-info för att få org_number
         const { data: org } = await supabase
@@ -65,10 +78,17 @@ export async function POST(req: Request) {
           }
         }
 
-        // Uppdatera org med has_had_subscription
+        // Uppdatera org med subscription details
         await supabase
           .from("orgs")
-          .update({ has_had_subscription: true })
+          .update({
+            has_had_subscription: true,
+            subscription_start_date: new Date().toISOString(),
+            billing_period: billing_period,
+            stripe_subscription_id: stripeSubscriptionId,
+            stripe_customer_id: stripeCustomerId,
+            subscription_status: "active",
+          })
           .eq("id", org_id);
 
         // Uppdatera abonnemanget i Supabase
@@ -83,7 +103,9 @@ export async function POST(req: Request) {
           })
           .eq("org_id", org_id);
 
-        console.log(`✅ Prenumeration aktiverad för org ${org_id} (${plan})`);
+        console.log(
+          `✅ Prenumeration aktiverad för org ${org_id} (${plan}, ${billing_period})`
+        );
       }
     }
 
