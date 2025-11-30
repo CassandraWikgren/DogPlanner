@@ -10,7 +10,7 @@ DogPlanner använder ett **modulärt abonnemangssystem** där organisationer bet
 
 | Tjänster             | Pris/mån | Trial  | Stripe Product  |
 | -------------------- | -------- | ------ | --------------- |
-| **Endast Frisör**    | 299 kr   | 60d 🎁 | `grooming_only` |
+| **Endast Frisör**    | 199 kr   | 60d 🎁 | `grooming_only` |
 | **Endast Dagis**     | 399 kr   | 60d 🎁 | `daycare_only`  |
 | **Endast Pensionat** | 399 kr   | 60d 🎁 | `boarding_only` |
 | **2 tjänster**       | 599 kr   | 60d 🎁 | `two_services`  |
@@ -160,7 +160,7 @@ subscription_data: {
 2. **Trial går ut** → Måste välja betalplan
 3. **Väljer tjänster** på `/admin/abonnemang` (dagis/pensionat/frisör)
 4. **System mappar till pris:**
-   - 1 tjänst (frisör) → 299 kr/mån
+   - 1 tjänst (frisör) → 199 kr/mån
    - 1 tjänst (dagis/pensionat) → 399 kr/mån
    - 2 tjänster → 599 kr/mån
    - 3 tjänster → 799 kr/mån
@@ -294,7 +294,7 @@ Om användare saknar org_id:
 
 // Price calculator
 {
-  selectedServices.length === 1 && <div>299-399 kr/mån</div>;
+  selectedServices.length === 1 && <div>199-399 kr/mån</div>;
 }
 {
   selectedServices.length === 2 && (
@@ -524,7 +524,7 @@ useEffect(() => {
 
 ```
 🔧 Enskilda tjänster:
-  Frisör:       299 kr/mån
+  Frisör:       199 kr/mån
   Dagis:        399 kr/mån
   Pensionat:    399 kr/mån
 

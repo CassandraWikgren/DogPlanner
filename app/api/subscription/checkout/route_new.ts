@@ -7,13 +7,13 @@ import { cookies } from "next/headers";
 // STRIPE CHECKOUT - MODULÄRA TJÄNSTER
 // =====================================================
 // Priser baserat på antalet aktiverade tjänster
-// - 1 tjänst (Frisör): 299 kr/mån
+// - 1 tjänst (Frisör): 199 kr/mån
 // - 1 tjänst (Dagis/Pensionat): 399 kr/mån
 // - 2 tjänster: 599 kr/mån
 // - 3 tjänster: 799 kr/mån
 
 const PRICE_IDS: Record<string, string> = {
-  grooming_only: process.env.STRIPE_PRICE_ID_GROOMING || "", // 299 kr/mån
+  grooming_only: process.env.STRIPE_PRICE_ID_GROOMING || "", // 199 kr/mån
   daycare_only: process.env.STRIPE_PRICE_ID_DAYCARE || "", // 399 kr/mån
   boarding_only: process.env.STRIPE_PRICE_ID_BOARDING || "", // 399 kr/mån
   two_services: process.env.STRIPE_PRICE_ID_TWO_SERVICES || "", // 599 kr/mån

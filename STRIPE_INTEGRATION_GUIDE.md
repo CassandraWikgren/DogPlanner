@@ -12,7 +12,7 @@ DogPlanner använder Stripe för att hantera abonnemangsbetalningar baserat på 
 
 | Tjänster             | Pris/mån | Trial  | Stripe Product  |
 | -------------------- | -------- | ------ | --------------- |
-| **Endast Frisör**    | 299 kr   | 60d 🎁 | `grooming_only` |
+| **Endast Frisör**    | 199 kr   | 60d 🎁 | `grooming_only` |
 | **Endast Dagis**     | 399 kr   | 60d 🎁 | `daycare_only`  |
 | **Endast Pensionat** | 399 kr   | 60d 🎁 | `boarding_only` |
 | **2 tjänster**       | 599 kr   | 60d 🎁 | `two_services`  |
