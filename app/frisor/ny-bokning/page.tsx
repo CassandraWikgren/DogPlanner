@@ -129,9 +129,7 @@ export default function NyBokning() {
   });
 
   const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
-  const [selectedService, setSelectedService] = useState<ServiceOption | null>(
-    null
-  );
+  const [selectedServices, setSelectedServices] = useState<ServiceOption[]>([]);
 
   // Service options loaded from database
   const [serviceOptions, setServiceOptions] = useState<ServiceOption[]>([]);
@@ -347,13 +345,54 @@ export default function NyBokning() {
   };
 
   const handleServiceSelect = (service: ServiceOption) => {
-    setSelectedService(service);
-    setFormData((prev) => ({
-      ...prev,
-      service_type: service.value,
-      estimated_price: service.basePrice,
-    }));
+    // Toggle service selection (add or remove)
+    setSelectedServices((prev) => {
+      const isAlreadySelected = prev.some(
+        (s) =>
+          s.value === service.value &&
+          s.dog_size === service.dog_size &&
+          s.coat_type === service.coat_type
+      );
+
+      if (isAlreadySelected) {
+        // Remove service
+        return prev.filter(
+          (s) =>
+            !(
+              s.value === service.value &&
+              s.dog_size === service.dog_size &&
+              s.coat_type === service.coat_type
+            )
+        );
+      } else {
+        // Add service
+        return [...prev, service];
+      }
+    });
   };
+
+  // Update formData when selectedServices changes
+  useEffect(() => {
+    if (selectedServices.length > 0) {
+      const totalPrice = selectedServices.reduce(
+        (sum, s) => sum + s.basePrice,
+        0
+      );
+      const serviceTypes = selectedServices.map((s) => s.label).join(", ");
+
+      setFormData((prev) => ({
+        ...prev,
+        service_type: serviceTypes,
+        estimated_price: totalPrice,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        service_type: "",
+        estimated_price: 0,
+      }));
+    }
+  }, [selectedServices]);
 
   const validate = (): string | null => {
     if (customerType === "existing") {
@@ -993,9 +1032,48 @@ export default function NyBokning() {
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <Scissors className="h-5 w-5" />
                     3. Välj Behandling
+                    {selectedServices.length > 0 &&
+                      ` (${selectedServices.length} vald${selectedServices.length > 1 ? "a" : ""})`}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
+                  {/* Valda behandlingar sammanfattning */}
+                  {selectedServices.length > 0 && (
+                    <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-sm font-medium text-green-900 mb-2">
+                        Valda behandlingar:
+                      </p>
+                      <div className="space-y-1">
+                        {selectedServices.map((service, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between text-sm"
+                          >
+                            <span className="text-green-800">
+                              • {service.label}
+                              {service.dog_size && ` (${service.dog_size})`}
+                            </span>
+                            <span className="font-semibold text-green-900">
+                              {service.basePrice} kr
+                            </span>
+                          </div>
+                        ))}
+                        <div className="pt-2 mt-2 border-t border-green-300 flex items-center justify-between">
+                          <span className="font-semibold text-green-900">
+                            Totalt:
+                          </span>
+                          <span className="font-bold text-green-900 text-base">
+                            {selectedServices.reduce(
+                              (sum, s) => sum + s.basePrice,
+                              0
+                            )}{" "}
+                            kr
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {loadingServices ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c] mx-auto mb-2"></div>
@@ -1015,71 +1093,83 @@ export default function NyBokning() {
                       </p>
                     </div>
                   ) : (
-                    <div className="grid gap-2">
-                      {serviceOptions.map((service) => (
-                        <button
-                          key={
-                            service.value +
-                            (service.dog_size || "") +
-                            (service.coat_type || "")
-                          }
-                          type="button"
-                          onClick={() => handleServiceSelect(service)}
-                          className={`flex items-start gap-3 p-3 border-2 rounded-md transition-all text-left ${
-                            selectedService?.value === service.value &&
-                            selectedService?.dog_size === service.dog_size &&
-                            selectedService?.coat_type === service.coat_type
-                              ? "border-[#2c7a4c] bg-white shadow-sm"
-                              : "border-gray-200 hover:border-[#2c7a4c]/50 hover:bg-gray-50"
-                          }`}
-                        >
-                          <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                              selectedService?.value === service.value &&
-                              selectedService?.dog_size === service.dog_size &&
-                              selectedService?.coat_type === service.coat_type
-                                ? "bg-[#2c7a4c] text-white"
-                                : "bg-gray-100 text-gray-600"
+                    <>
+                      <p className="text-sm text-gray-600 mb-3">
+                        💡 Du kan välja flera behandlingar. Klicka på en
+                        behandling för att lägga till eller ta bort den.
+                      </p>
+                      <div className="grid gap-2">
+                        {serviceOptions.map((service) => (
+                          <button
+                            key={
+                              service.value +
+                              (service.dog_size || "") +
+                              (service.coat_type || "")
+                            }
+                            type="button"
+                            onClick={() => handleServiceSelect(service)}
+                            className={`flex items-start gap-3 p-3 border-2 rounded-md transition-all text-left ${
+                              selectedServices.some(
+                                (s) =>
+                                  s.value === service.value &&
+                                  s.dog_size === service.dog_size &&
+                                  s.coat_type === service.coat_type
+                              )
+                                ? "border-[#2c7a4c] bg-white shadow-sm"
+                                : "border-gray-200 hover:border-[#2c7a4c]/50 hover:bg-gray-50"
                             }`}
                           >
-                            <Scissors className="h-4 w-4" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-0.5">
-                              <p className="font-semibold text-gray-900 text-sm">
-                                {service.label}
-                                {service.dog_size && (
-                                  <span className="text-xs text-gray-500 ml-2">
-                                    ({service.dog_size})
-                                  </span>
-                                )}
-                              </p>
-                              <Badge
-                                variant="outline"
-                                className="bg-white text-[#2c7a4c] border-[#2c7a4c] text-xs font-semibold"
-                              >
-                                {service.basePrice > 0
-                                  ? `${service.basePrice} kr`
-                                  : "Anpassat"}
-                              </Badge>
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                selectedServices.some(
+                                  (s) =>
+                                    s.value === service.value &&
+                                    s.dog_size === service.dog_size &&
+                                    s.coat_type === service.coat_type
+                                )
+                                  ? "bg-[#2c7a4c] text-white"
+                                  : "bg-gray-100 text-gray-600"
+                              }`}
+                            >
+                              <Scissors className="h-4 w-4" />
                             </div>
-                            <p className="text-xs text-gray-600 mb-0.5">
-                              {service.description}
-                            </p>
-                            <p className="text-xs text-gray-500 flex items-center">
-                              <Clock className="h-3 w-3 mr-1" />
-                              {service.duration} min
-                            </p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between mb-0.5">
+                                <p className="font-semibold text-gray-900 text-sm">
+                                  {service.label}
+                                  {service.dog_size && (
+                                    <span className="text-xs text-gray-500 ml-2">
+                                      ({service.dog_size})
+                                    </span>
+                                  )}
+                                </p>
+                                <Badge
+                                  variant="outline"
+                                  className="bg-white text-[#2c7a4c] border-[#2c7a4c] text-xs font-semibold"
+                                >
+                                  {service.basePrice > 0
+                                    ? `${service.basePrice} kr`
+                                    : "Anpassat"}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-gray-600 mb-0.5">
+                                {service.description}
+                              </p>
+                              <p className="text-xs text-gray-500 flex items-center">
+                                <Clock className="h-3 w-3 mr-1" />
+                                {service.duration} min
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </>
                   )}
 
-                  {selectedService && selectedService.value === "custom" && (
+                  {selectedServices.some((s) => s.value === "custom") && (
                     <div className="mt-3">
                       <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                        Ange pris
+                        Ange pris för anpassad behandling
                       </label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -1102,7 +1192,7 @@ export default function NyBokning() {
                   )}
 
                   {/* Additional Treatment Details - kompakt */}
-                  {selectedService && (
+                  {selectedServices.length > 0 && (
                     <div className="mt-3 p-3 bg-gray-50 rounded-lg space-y-3">
                       <p className="font-medium text-gray-900 text-sm mb-2">
                         Behandlingsdetaljer (Rekommenderas)
@@ -1151,7 +1241,7 @@ export default function NyBokning() {
             )}
 
           {/* Anteckningar - kompakt */}
-          {selectedService && (
+          {selectedServices.length > 0 && (
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">

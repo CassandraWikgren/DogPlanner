@@ -48,6 +48,8 @@ const SERVICE_TYPES = [
   { value: "bath_blow", label: "Bad & Fön" },
   { value: "bath_trim", label: "Badning + Trimning" },
   { value: "full_groom", label: "Helklippning" },
+  { value: "lion_clip", label: "Lejonklipp / Friseringsklipp" },
+  { value: "breed_standard", label: "Rasstandard-klipp / Utställningsklipp" },
   { value: "paw_details", label: "Tassar, klor & detaljer" },
   { value: "undercoat", label: "Underullsbehandling" },
   { value: "hygiene_clip", label: "Hygienklipp / Sanering" },
@@ -60,6 +62,7 @@ const SERVICE_TYPES = [
   { value: "paw_trim", label: "Tassklippning" },
   { value: "ear_cleaning", label: "Öronrengöring" },
   { value: "teeth_cleaning", label: "Tandrengöring" },
+  { value: "anal_gland", label: "Analsäckstömning" },
   { value: "custom", label: "Anpassad Behandling" },
 ];
 
