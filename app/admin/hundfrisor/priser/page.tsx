@@ -103,7 +103,7 @@ export default function GroomingPricesPage() {
     service_name: "Badning",
     dog_size: null,
     coat_type: null,
-    price: 0,
+    price: undefined as any, // Låt användaren skriva in pris själv
     duration_minutes: 60,
     description: "",
     active: true,
@@ -384,7 +384,7 @@ export default function GroomingPricesPage() {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white text-gray-900">
+                    <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
                       {SERVICE_TYPES.map((type) => (
                         <SelectItem key={type.value} value={type.value}>
                           {type.label}
@@ -422,7 +422,7 @@ export default function GroomingPricesPage() {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white text-gray-900">
+                    <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
                       {DOG_SIZES.map((size) => (
                         <SelectItem
                           key={size.value || "null"}
@@ -449,7 +449,7 @@ export default function GroomingPricesPage() {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white text-gray-900">
+                    <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
                       {COAT_TYPES.map((coat) => (
                         <SelectItem
                           key={coat.value || "null"}
@@ -468,14 +468,17 @@ export default function GroomingPricesPage() {
                     type="number"
                     min="0"
                     step="50"
-                    value={newPrice.price}
+                    value={newPrice.price || ""}
                     onChange={(e) =>
                       setNewPrice((prev) => ({
                         ...prev,
-                        price: Number(e.target.value),
+                        price:
+                          e.target.value === ""
+                            ? (undefined as any)
+                            : Number(e.target.value),
                       }))
                     }
-                    placeholder="0"
+                    placeholder="t.ex. 300"
                   />
                 </div>
 
