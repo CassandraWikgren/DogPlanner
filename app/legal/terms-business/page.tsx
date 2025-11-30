@@ -25,10 +25,10 @@ export default function TermsBusinessPage() {
             </h1>
           </div>
           <p className="text-gray-600">
-            <strong>Senast uppdaterad:</strong> 17 november 2025
+            <strong>Senast uppdaterad:</strong> 30 november 2025
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            Version 1.0 | Gäller från: 17 november 2025
+            Version 2.0 | Gäller från: 30 november 2025
           </p>
         </div>
       </div>
@@ -247,15 +247,15 @@ export default function TermsBusinessPage() {
               </div>
 
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h3 className="font-semibold text-green-900 mb-2">
-                  🎁 Provperiod
+                <h3 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
+                  ✨ Provperiod
                 </h3>
                 <p className="text-sm text-green-800">
-                  Nya kunder får <strong>3 månaders gratis provperiod</strong>{" "}
-                  med tillgång till alla funktioner i Professional-planen. Ingen
-                  betalning krävs under provperioden, men betalningsmetod måste
-                  registreras. Efter provperioden övergår ni automatiskt till
-                  vald prisplan om ni inte säger upp.
+                  Nya kunder får <strong>2 månaders gratis provperiod</strong>{" "}
+                  med tillgång till alla funktioner. Inget betalkort krävs vid
+                  registrering. Efter provperioden kan ni välja att uppgradera
+                  till en betald plan eller fortsätta använda systemet gratis
+                  med begränsningar.
                 </p>
               </div>
             </div>
@@ -273,70 +273,151 @@ export default function TermsBusinessPage() {
                   4.1 Tillgängliga planer
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {/* Free Plan */}
-                  <div className="border-2 border-gray-200 rounded-lg p-4">
-                    <h4 className="font-bold text-gray-900 mb-1">Free</h4>
-                    <p className="text-2xl font-bold text-gray-900 mb-2">
-                      0 kr<span className="text-sm text-gray-500">/mån</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Hundfrisör */}
+                  <div className="border-2 border-gray-300 rounded-lg p-5 bg-white hover:shadow-md transition-shadow">
+                    <div className="text-3xl mb-2">✂️</div>
+                    <h4 className="font-bold text-gray-900 mb-1 text-lg">
+                      Hundfrisör
+                    </h4>
+                    <p className="text-3xl font-bold text-[#2c7a4c] mb-1">
+                      199 kr
+                      <span className="text-base text-gray-500">/mån</span>
                     </p>
-                    <ul className="text-xs text-gray-700 space-y-1">
-                      <li>✓ Upp till 5 hundar</li>
-                      <li>✓ Basfunktioner</li>
-                      <li>✓ Kundportal</li>
-                      <li>✗ Fakturering</li>
+                    <p className="text-xs text-gray-500 mb-3">
+                      eller 1 788 kr/år
+                    </p>
+                    <ul className="text-sm text-gray-700 space-y-2">
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Bokningssystem för trimning</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>22+ behandlingstyper</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Prishantering & kalender</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Fakturering</span>
+                      </li>
                     </ul>
                   </div>
 
-                  {/* Basic Plan */}
-                  <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
-                    <h4 className="font-bold text-blue-900 mb-1">Basic</h4>
-                    <p className="text-2xl font-bold text-blue-900 mb-2">
-                      299 kr<span className="text-sm text-blue-600">/mån</span>
+                  {/* Hunddagis */}
+                  <div className="border-2 border-gray-300 rounded-lg p-5 bg-white hover:shadow-md transition-shadow">
+                    <div className="text-3xl mb-2">🐕</div>
+                    <h4 className="font-bold text-gray-900 mb-1 text-lg">
+                      Hunddagis
+                    </h4>
+                    <p className="text-3xl font-bold text-[#2c7a4c] mb-1">
+                      399 kr
+                      <span className="text-base text-gray-500">/mån</span>
                     </p>
-                    <ul className="text-xs text-blue-800 space-y-1">
-                      <li>✓ Upp till 50 hundar</li>
-                      <li>✓ Bokningshantering</li>
-                      <li>✓ Fakturering</li>
-                      <li>✓ E-postsupport</li>
+                    <p className="text-xs text-gray-500 mb-3">
+                      eller 4 188 kr/år
+                    </p>
+                    <ul className="text-sm text-gray-700 space-y-2">
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Schemaläggning & närvarohantering</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Kapacitetshantering</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Fakturaunderlag</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Abonnemang & väntelista</span>
+                      </li>
                     </ul>
                   </div>
 
-                  {/* Professional Plan */}
-                  <div className="border-2 border-primary rounded-lg p-4 bg-primary/5 relative">
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-white text-xs px-3 py-1 rounded-full">
-                      POPULÄRAST
+                  {/* Hundpensionat */}
+                  <div className="border-2 border-gray-300 rounded-lg p-5 bg-white hover:shadow-md transition-shadow">
+                    <div className="text-3xl mb-2">🏨</div>
+                    <h4 className="font-bold text-gray-900 mb-1 text-lg">
+                      Hundpensionat
+                    </h4>
+                    <p className="text-3xl font-bold text-[#2c7a4c] mb-1">
+                      399 kr
+                      <span className="text-base text-gray-500">/mån</span>
+                    </p>
+                    <p className="text-xs text-gray-500 mb-3">
+                      eller 4 188 kr/år
+                    </p>
+                    <ul className="text-sm text-gray-700 space-y-2">
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>In-/utcheckning</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Rumhantering med kapacitet</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Bokningskalender</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Fakturaunderlag</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Paketpriser */}
+                <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl">
+                  <h4 className="font-bold text-gray-900 mb-3 text-lg">
+                    💎 Paketpriser - Spara pengar!
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white rounded-lg p-4 border border-blue-200">
+                      <p className="font-bold text-2xl text-[#2c7a4c] mb-1">
+                        599 kr/mån
+                      </p>
+                      <p className="text-sm text-gray-700 mb-2">
+                        Två valfria tjänster
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Spara 199 kr/mån jämfört med enskilda abonnemang
+                      </p>
                     </div>
-                    <h4 className="font-bold text-primary mb-1">
-                      Professional
-                    </h4>
-                    <p className="text-2xl font-bold text-primary mb-2">
-                      799 kr<span className="text-sm">/mån</span>
-                    </p>
-                    <ul className="text-xs text-gray-700 space-y-1">
-                      <li>✓ Obegränsat antal hundar</li>
-                      <li>✓ Alla funktioner</li>
-                      <li>✓ Prioriterad support</li>
-                      <li>✓ API-åtkomst</li>
-                    </ul>
+                    <div className="bg-white rounded-lg p-4 border-2 border-yellow-400 relative">
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900 text-xs px-3 py-1 rounded-full font-bold">
+                        🏆 BÄST VÄRDE
+                      </div>
+                      <p className="font-bold text-2xl text-[#2c7a4c] mb-1">
+                        799 kr/mån
+                      </p>
+                      <p className="text-sm text-gray-700 mb-2">
+                        Alla tre tjänster
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Spara 398 kr/mån - få allt för ett lågt pris!
+                      </p>
+                    </div>
                   </div>
+                </div>
 
-                  {/* Enterprise Plan */}
-                  <div className="border-2 border-purple-200 rounded-lg p-4 bg-purple-50">
-                    <h4 className="font-bold text-purple-900 mb-1">
-                      Enterprise
-                    </h4>
-                    <p className="text-2xl font-bold text-purple-900 mb-2">
-                      Kontakta
-                      <span className="text-sm text-purple-600"> oss</span>
-                    </p>
-                    <ul className="text-xs text-purple-800 space-y-1">
-                      <li>✓ Flera anläggningar</li>
-                      <li>✓ Dedikerad support</li>
-                      <li>✓ SLA 99.9%</li>
-                      <li>✓ Anpassningar</li>
-                    </ul>
-                  </div>
+                {/* Årsbetalning info */}
+                <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800">
+                    <strong>
+                      💰 Betala årsvis och spara ytterligare 50 kr/månad
+                    </strong>{" "}
+                    (600 kr/år totalt). Exempelvis kostar Hundfrisör bara 149
+                    kr/mån vid årsbetalning (1 788 kr/år istället för 2 388
+                    kr/år).
+                  </p>
                 </div>
               </div>
 
@@ -346,26 +427,24 @@ export default function TermsBusinessPage() {
                 </h3>
                 <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm text-gray-700">
                   <p>
-                    <strong>Fakturering:</strong> Månatlig förskottsfakturering
-                    (betalas i början av varje månad)
+                    <strong>Fakturering:</strong> Månatlig eller årlig
+                    förskottsfakturering (betalas i början av perioden)
                   </p>
                   <p>
-                    <strong>Årlig betalning:</strong> 10% rabatt vid
-                    årsbetalning i förskott
+                    <strong>Årlig betalning:</strong> Spara 50 kr/månad (600
+                    kr/år) vid årsbetalning i förskott
                   </p>
                   <p>
-                    <strong>Betalningsmetoder:</strong> Kort (Visa/Mastercard),
-                    Autogiro, Faktura (tillgänglig från Professional)
+                    <strong>Betalningsmetoder:</strong> Stripe Checkout (Visa,
+                    Mastercard, m.fl.)
                   </p>
                   <p>
-                    <strong>Förfallodag:</strong> 14 dagar från fakturadatum
+                    <strong>Automatisk förnyelse:</strong> Abonnemanget förnyas
+                    automatiskt varje månad/år
                   </p>
                   <p>
-                    <strong>Dröjsmålsränta:</strong> Enligt räntelagen (för
-                    närvarande 2% + referensränta per månad)
-                  </p>
-                  <p>
-                    <strong>Påminnelseavgift:</strong> 60 kr enligt Inkassolagen
+                    <strong>Uppsägning:</strong> Kan göras när som helst.
+                    Årsabonnemang ger pro-rata återbetalning
                   </p>
                 </div>
               </div>
@@ -541,8 +620,9 @@ export default function TermsBusinessPage() {
                 </h3>
                 <p className="text-sm text-green-800">
                   Vi strävar efter <strong>99.5% tillgänglighet</strong>{" "}
-                  (uptime) per månad, exklusive planerat underhåll. Professional
-                  och Enterprise har högre SLA-garantier (se SLA-dokument).
+                  (uptime) per månad, exklusive planerat underhåll. Se vårt
+                  SLA-dokument för fullständiga garantier och
+                  kompensationsregler.
                 </p>
               </div>
 
@@ -583,37 +663,11 @@ export default function TermsBusinessPage() {
                   7.4 Support
                 </h3>
                 <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm border">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-2 text-left">Plan</th>
-                        <th className="px-4 py-2 text-left">Supportkanal</th>
-                        <th className="px-4 py-2 text-left">Svarstid</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-t">
-                        <td className="px-4 py-2">Free</td>
-                        <td className="px-4 py-2">FAQ, Community</td>
-                        <td className="px-4 py-2">-</td>
-                      </tr>
-                      <tr className="border-t">
-                        <td className="px-4 py-2">Basic</td>
-                        <td className="px-4 py-2">E-post</td>
-                        <td className="px-4 py-2">48 timmar</td>
-                      </tr>
-                      <tr className="border-t">
-                        <td className="px-4 py-2">Professional</td>
-                        <td className="px-4 py-2">E-post, Chat</td>
-                        <td className="px-4 py-2">24 timmar</td>
-                      </tr>
-                      <tr className="border-t">
-                        <td className="px-4 py-2">Enterprise</td>
-                        <td className="px-4 py-2">E-post, Chat, Telefon</td>
-                        <td className="px-4 py-2">4 timmar</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <p className="text-sm text-gray-700 mb-3">
+                    Vi erbjuder e-postsupport för alla betalande kunder. Support
+                    ingår i priset och ges på svenska under kontorstid (mån-fre
+                    9-17).
+                  </p>
                 </div>
               </div>
             </div>
@@ -662,20 +716,10 @@ export default function TermsBusinessPage() {
                   8.2 Skadestånd
                 </h3>
                 <p className="text-sm text-gray-700 mb-2">
-                  Vårt totala skadeståndsansvar är begränsat till:
+                  Vårt totala skadeståndsansvar är begränsat till högst 6
+                  månaders abonnemangsavgift för den tjänst som berörs av
+                  skadan.
                 </p>
-                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                  <li>
-                    <strong>Free & Basic:</strong> Högst 10 000 kr per incident
-                  </li>
-                  <li>
-                    <strong>Professional:</strong> Högst 6 månaders
-                    abonnemangsavgift
-                  </li>
-                  <li>
-                    <strong>Enterprise:</strong> Enligt separat avtal
-                  </li>
-                </ul>
                 <p className="text-sm text-gray-600 mt-3">
                   Vi ansvarar INTE för indirekta skador som utebliven vinst,
                   förlust av data (utöver återställning från backup) eller
