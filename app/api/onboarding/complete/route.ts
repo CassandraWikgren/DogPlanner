@@ -56,9 +56,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: profErr.message }, { status: 400 });
     }
 
-    // 5) Skapa prenumeration: 3 mån gratis
+    // 5) Skapa prenumeration: 2 månader (60 dagar) gratis
     const trialEndsAt = new Date();
-    trialEndsAt.setMonth(trialEndsAt.getMonth() + 3);
+    trialEndsAt.setDate(trialEndsAt.getDate() + 60); // 2 MÅNADER (60 dagar)
 
     const { error: subErr } = await supabase.from("subscriptions").insert([
       {
