@@ -48,22 +48,6 @@ export default function AdminPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Tjänsteinställningar - NY! Högst prioritet */}
-            <Link href="/admin/tjanster">
-              <div className="bg-gradient-to-br from-[#2c7a4c] to-[#236139] rounded-lg p-6 shadow-md h-full hover:shadow-xl transition-all group text-white">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="text-3xl">⚙️</div>
-                  <h3 className="text-lg font-semibold group-hover:underline">
-                    Tjänsteinställningar
-                  </h3>
-                </div>
-                <p className="text-sm text-white/90 leading-relaxed">
-                  Aktivera/deaktivera Dagis, Pensionat och Frisör för ditt
-                  företag.
-                </p>
-              </div>
-            </Link>
-
             {/* Rapporter */}
             <Link href="/admin/rapporter">
               <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
