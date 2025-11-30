@@ -840,25 +840,41 @@ export default function AdminAbonnemangPage() {
                       <strong>{refundInfo.months_used} månader</strong>.
                     </p>
 
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                      <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        Viktigt att veta
+                      </h4>
+                      <p className="text-sm text-amber-800">
+                        Du betalade för ett årsabonnemang och fick därmed 50 kr/mån rabatt (600 kr totalt). 
+                        Vid avbrott i förtid <strong>förlorar du årsrabatten</strong> och använd tid beräknas 
+                        till ordinarie månadspris.
+                      </p>
+                    </div>
+
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                       <h4 className="font-semibold text-blue-900 mb-2">
                         Återbetalningsberäkning:
                       </h4>
                       <div className="space-y-1 text-sm text-blue-800">
                         <p>
-                          • Betalt:{" "}
+                          • Du betalade:{" "}
                           {refundInfo.yearly_price?.toLocaleString("sv-SE")} kr
-                          (årsabonnemang)
+                          (årsabonnemang med rabatt)
                         </p>
                         <p>
-                          • Använt: {refundInfo.months_used} mån ×{" "}
-                          {refundInfo.monthly_price} kr ={" "}
-                          {refundInfo.amount_used?.toLocaleString("sv-SE")} kr
+                          • Använd tid omräknas till månadspris: {refundInfo.months_used} mån ×{" "}
+                          {refundInfo.monthly_price} kr = {refundInfo.amount_used?.toLocaleString("sv-SE")} kr
                         </p>
-                        <p className="font-bold text-lg mt-2 text-green-700">
-                          💰 Återbetalning:{" "}
-                          {refundInfo.refund_amount?.toLocaleString("sv-SE")} kr
-                        </p>
+                        <div className="border-t border-blue-300 my-2 pt-2">
+                          <p className="font-bold text-lg text-green-700">
+                            💰 Du får tillbaka:{" "}
+                            {refundInfo.refund_amount?.toLocaleString("sv-SE")} kr
+                          </p>
+                          <p className="text-xs text-blue-600 mt-1">
+                            ({refundInfo.yearly_price?.toLocaleString("sv-SE")} kr - {refundInfo.amount_used?.toLocaleString("sv-SE")} kr)
+                          </p>
+                        </div>
                       </div>
                     </div>
 
