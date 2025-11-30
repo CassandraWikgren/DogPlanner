@@ -100,9 +100,21 @@ export default function TjansterPage() {
     setSuccess(null);
 
     try {
+      // Mappa enabled_services till service_types (för OrganisationSelector)
+      const serviceTypesMap: Record<string, string> = {
+        daycare: "hunddagis",
+        boarding: "hundpensionat",
+        grooming: "hundfrisor",
+      };
+      const serviceTypes = selectedServices.map((s) => serviceTypesMap[s] || s);
+
+      // Uppdatera BÅDA kolumnerna
       const { error: updateError } = await supabase
         .from("orgs")
-        .update({ enabled_services: selectedServices })
+        .update({
+          enabled_services: selectedServices,
+          service_types: serviceTypes,
+        })
         .eq("id", currentOrgId);
 
       if (updateError) {

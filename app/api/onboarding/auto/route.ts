@@ -73,6 +73,16 @@ export async function POST(req: Request) {
       "grooming",
     ];
 
+    // Mappa enabled_services till service_types (för OrganisationSelector kompatibilitet)
+    const serviceTypesMap: Record<string, string> = {
+      daycare: "hunddagis",
+      boarding: "hundpensionat",
+      grooming: "hundfrisor",
+    };
+    const serviceTypes = enabledServices.map(
+      (s: string) => serviceTypesMap[s] || s
+    );
+
     console.log("📋 Metadata:", {
       fullName,
       orgName,
@@ -80,9 +90,10 @@ export async function POST(req: Request) {
       phone,
       userEmail,
       enabledServices,
+      serviceTypes,
     });
 
-    // Skapa organisationen med enabled_services
+    // Skapa organisationen med BÅDA enabled_services OCH service_types
     const { data: org, error: orgErr } = await supabase
       .from("orgs")
       .insert([
@@ -93,6 +104,7 @@ export async function POST(req: Request) {
           vat_included: true,
           vat_rate: 25,
           enabled_services: enabledServices,
+          service_types: serviceTypes,
         },
       ])
       .select("id")
