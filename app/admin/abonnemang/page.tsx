@@ -846,9 +846,10 @@ export default function AdminAbonnemangPage() {
                         Viktigt att veta
                       </h4>
                       <p className="text-sm text-amber-800">
-                        Du betalade för ett årsabonnemang och fick därmed 50 kr/mån rabatt (600 kr totalt). 
-                        Vid avbrott i förtid <strong>förlorar du årsrabatten</strong> och använd tid beräknas 
-                        till ordinarie månadspris.
+                        Du betalade för ett årsabonnemang och fick därmed 50
+                        kr/mån rabatt (600 kr totalt). Vid avbrott i förtid{" "}
+                        <strong>förlorar du årsrabatten</strong> och använd tid
+                        beräknas till ordinarie månadspris.
                       </p>
                     </div>
 
@@ -863,16 +864,22 @@ export default function AdminAbonnemangPage() {
                           (årsabonnemang med rabatt)
                         </p>
                         <p>
-                          • Använd tid omräknas till månadspris: {refundInfo.months_used} mån ×{" "}
-                          {refundInfo.monthly_price} kr = {refundInfo.amount_used?.toLocaleString("sv-SE")} kr
+                          • Använd tid omräknas till månadspris:{" "}
+                          {refundInfo.months_used} mån ×{" "}
+                          {refundInfo.monthly_price} kr ={" "}
+                          {refundInfo.amount_used?.toLocaleString("sv-SE")} kr
                         </p>
                         <div className="border-t border-blue-300 my-2 pt-2">
                           <p className="font-bold text-lg text-green-700">
                             💰 Du får tillbaka:{" "}
-                            {refundInfo.refund_amount?.toLocaleString("sv-SE")} kr
+                            {refundInfo.refund_amount?.toLocaleString("sv-SE")}{" "}
+                            kr
                           </p>
                           <p className="text-xs text-blue-600 mt-1">
-                            ({refundInfo.yearly_price?.toLocaleString("sv-SE")} kr - {refundInfo.amount_used?.toLocaleString("sv-SE")} kr)
+                            ({refundInfo.yearly_price?.toLocaleString("sv-SE")}{" "}
+                            kr -{" "}
+                            {refundInfo.amount_used?.toLocaleString("sv-SE")}{" "}
+                            kr)
                           </p>
                         </div>
                       </div>
