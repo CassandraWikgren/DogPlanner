@@ -67,6 +67,11 @@ export async function POST(req: Request) {
     const orgName = user.user_metadata?.org_name || "Mitt Hunddagis";
     const orgNumber = user.user_metadata?.org_number || null;
     const userEmail = user.email || null;
+    const enabledServices = user.user_metadata?.enabled_services || [
+      "daycare",
+      "boarding",
+      "grooming",
+    ];
 
     console.log("📋 Metadata:", {
       fullName,
@@ -74,9 +79,10 @@ export async function POST(req: Request) {
       orgNumber,
       phone,
       userEmail,
+      enabledServices,
     });
 
-    // Skapa organisationen
+    // Skapa organisationen med enabled_services
     const { data: org, error: orgErr } = await supabase
       .from("orgs")
       .insert([
@@ -86,6 +92,7 @@ export async function POST(req: Request) {
           email: userEmail,
           vat_included: true,
           vat_rate: 25,
+          enabled_services: enabledServices,
         },
       ])
       .select("id")

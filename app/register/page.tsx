@@ -56,7 +56,7 @@ export default function RegisterCompanyPage() {
     try {
       const fullName = `${firstName.trim()} ${lastName.trim()}`;
 
-      // 🟢 Skapa användaren i Supabase
+      // 🟢 Skapa användaren i Supabase med enabled_services
       const { error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -68,7 +68,7 @@ export default function RegisterCompanyPage() {
             org_number: orgNumber.trim(),
             lan: lan.trim(),
             kommun: kommun.trim(),
-            service_types: serviceType, // Array av valda tjänster
+            enabled_services: serviceType, // Array: ['daycare', 'boarding', 'grooming']
           },
           // Efter bekräftelse skickas användaren till /login
           emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/login`,
@@ -104,6 +104,53 @@ export default function RegisterCompanyPage() {
             Skapa kundkonto här
           </Link>
         </p>
+
+        {/* 💰 PRISSÄTTNING - NY SEKTION */}
+        <div className="mb-8 bg-gradient-to-br from-[#2c7a4c] to-[#236139] rounded-xl p-6 text-white">
+          <h2 className="text-xl font-bold mb-3 text-center">
+            📋 Välj ditt abonnemang
+          </h2>
+          <p className="text-sm text-center mb-4 text-white/90">
+            Välj de tjänster du behöver - betala endast för det du använder
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <div className="bg-white/10 backdrop-blur rounded-lg p-4 text-center border border-white/20">
+              <div className="text-2xl mb-2">✂️</div>
+              <div className="font-bold text-lg">299 kr/mån</div>
+              <div className="text-xs text-white/80">Endast Hundfrisör</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur rounded-lg p-4 text-center border border-white/20">
+              <div className="text-2xl mb-2">🐕</div>
+              <div className="font-bold text-lg">399 kr/mån</div>
+              <div className="text-xs text-white/80">Endast Hunddagis</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur rounded-lg p-4 text-center border border-white/20">
+              <div className="text-2xl mb-2">🏨</div>
+              <div className="font-bold text-lg">399 kr/mån</div>
+              <div className="text-xs text-white/80">Endast Hundpensionat</div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="bg-white/15 backdrop-blur rounded-lg p-4 text-center border border-white/30">
+              <div className="font-bold text-lg">599 kr/mån</div>
+              <div className="text-xs text-white/90">Två valfria tjänster</div>
+            </div>
+            <div className="bg-white/20 backdrop-blur rounded-lg p-4 text-center border-2 border-yellow-300">
+              <div className="text-xs text-yellow-300 font-semibold mb-1">
+                🏆 BÄST VÄRDE
+              </div>
+              <div className="font-bold text-xl">799 kr/mån</div>
+              <div className="text-xs text-white/90">Alla tre tjänster</div>
+            </div>
+          </div>
+
+          <div className="mt-4 text-center text-xs text-white/80">
+            ✨ <strong>30 dagars gratis testperiod</strong> - inget betalkort
+            krävs vid registrering
+          </div>
+        </div>
 
         {err && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700 text-sm">
@@ -258,64 +305,131 @@ export default function RegisterCompanyPage() {
               Vilka tjänster erbjuder ni?{" "}
               <span className="text-red-500">*</span>
             </label>
+            <p className="text-xs text-gray-600 mb-3">
+              Välj de tjänster ditt företag erbjuder. Du kan ändra detta senare
+              under Admin → Tjänsteinställningar.
+            </p>
             <div className="space-y-2">
-              <label className="flex items-center gap-3 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">
+              <label className="flex items-start gap-3 p-4 border-2 border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition">
                 <input
                   type="checkbox"
-                  checked={serviceType.includes("hunddagis")}
+                  checked={serviceType.includes("daycare")}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setServiceType([...serviceType, "hunddagis"]);
+                      setServiceType([...serviceType, "daycare"]);
                     } else {
                       setServiceType(
-                        serviceType.filter((t) => t !== "hunddagis")
+                        serviceType.filter((t) => t !== "daycare")
                       );
                     }
                   }}
-                  className="w-4 h-4 text-[#2c7a4c] focus:ring-[#2c7a4c]"
+                  className="mt-1 w-5 h-5 text-[#2c7a4c] focus:ring-[#2c7a4c] rounded"
                 />
-                <span className="font-medium">🐕 Hunddagis</span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xl">🐕</span>
+                    <span className="font-bold text-gray-900">Hunddagis</span>
+                    <span className="ml-auto text-sm font-semibold text-[#2c7a4c]">
+                      399 kr/mån
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 leading-relaxed">
+                    Dagisverksamhet med schema, närvarohantering,
+                    rumstilldelning och fakturaunderlag
+                  </p>
+                </div>
               </label>
 
-              <label className="flex items-center gap-3 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">
+              <label className="flex items-start gap-3 p-4 border-2 border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition">
                 <input
                   type="checkbox"
-                  checked={serviceType.includes("hundpensionat")}
+                  checked={serviceType.includes("boarding")}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setServiceType([...serviceType, "hundpensionat"]);
+                      setServiceType([...serviceType, "boarding"]);
                     } else {
                       setServiceType(
-                        serviceType.filter((t) => t !== "hundpensionat")
+                        serviceType.filter((t) => t !== "boarding")
                       );
                     }
                   }}
-                  className="w-4 h-4 text-[#2c7a4c] focus:ring-[#2c7a4c]"
+                  className="mt-1 w-5 h-5 text-[#2c7a4c] focus:ring-[#2c7a4c] rounded"
                 />
-                <span className="font-medium">🏠 Hundpensionat</span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xl">🏨</span>
+                    <span className="font-bold text-gray-900">
+                      Hundpensionat
+                    </span>
+                    <span className="ml-auto text-sm font-semibold text-[#2c7a4c]">
+                      399 kr/mån
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 leading-relaxed">
+                    Bokningssystem med kalender, in-/utcheckning, rumhantering
+                    och fakturaunderlag
+                  </p>
+                </div>
               </label>
 
-              <label className="flex items-center gap-3 p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer">
+              <label className="flex items-start gap-3 p-4 border-2 border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition">
                 <input
                   type="checkbox"
-                  checked={serviceType.includes("hundfrisor")}
+                  checked={serviceType.includes("grooming")}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setServiceType([...serviceType, "hundfrisor"]);
+                      setServiceType([...serviceType, "grooming"]);
                     } else {
                       setServiceType(
-                        serviceType.filter((t) => t !== "hundfrisor")
+                        serviceType.filter((t) => t !== "grooming")
                       );
                     }
                   }}
-                  className="w-4 h-4 text-[#2c7a4c] focus:ring-[#2c7a4c]"
+                  className="mt-1 w-5 h-5 text-[#2c7a4c] focus:ring-[#2c7a4c] rounded"
                 />
-                <span className="font-medium">✂️ Hundfrisör</span>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xl">✂️</span>
+                    <span className="font-bold text-gray-900">Hundfrisör</span>
+                    <span className="ml-auto text-sm font-semibold text-[#2c7a4c]">
+                      299 kr/mån
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 leading-relaxed">
+                    Bokningssystem för trimning med 22+ behandlingstyper,
+                    prissättning och kalender
+                  </p>
+                </div>
               </label>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              Välj alla tjänster ni erbjuder. Ni kan ändra detta senare.
-            </p>
+
+            {/* Prisberäkning */}
+            {serviceType.length > 0 && (
+              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700">
+                    Ditt månadspris:
+                  </span>
+                  <span className="text-2xl font-bold text-[#2c7a4c]">
+                    {serviceType.length === 1
+                      ? serviceType.includes("grooming")
+                        ? "299"
+                        : "399"
+                      : serviceType.length === 2
+                        ? "599"
+                        : "799"}{" "}
+                    kr/mån
+                  </span>
+                </div>
+                {serviceType.length >= 2 && (
+                  <p className="text-xs text-green-700 mt-2 text-center">
+                    ✨ Du sparar{" "}
+                    {serviceType.length === 2 ? "199 kr/mån" : "398 kr/mån"} med
+                    paketpris!
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Lösenord */}
@@ -334,18 +448,48 @@ export default function RegisterCompanyPage() {
           </div>
 
           {/* Villkor */}
-          <div className="flex items-start gap-3 mt-4">
-            <input
-              type="checkbox"
-              id="terms"
-              checked={acceptedTerms}
-              onChange={(e) => setAcceptedTerms(e.target.checked)}
-              className="mt-1 w-4 h-4 text-[#2c7a4c] focus:ring-[#2c7a4c]"
-              required
-            />
-            <label htmlFor="terms" className="text-sm text-gray-700">
-              Jag godkänner DogPlanners allmänna villkor.
-            </label>
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-1 w-5 h-5 text-[#2c7a4c] focus:ring-[#2c7a4c] rounded"
+                required
+              />
+              <label htmlFor="terms" className="text-sm text-gray-700">
+                Jag godkänner DogPlanners{" "}
+                <Link
+                  href="/legal/terms-business"
+                  target="_blank"
+                  className="text-[#2c7a4c] font-semibold hover:underline"
+                >
+                  allmänna villkor för företagskunder
+                </Link>
+                ,{" "}
+                <Link
+                  href="/legal/privacy-policy-business"
+                  target="_blank"
+                  className="text-[#2c7a4c] font-semibold hover:underline"
+                >
+                  integritetspolicy
+                </Link>{" "}
+                och{" "}
+                <Link
+                  href="/legal/pub-agreement"
+                  target="_blank"
+                  className="text-[#2c7a4c] font-semibold hover:underline"
+                >
+                  personuppgiftsbiträdesavtal (PUB)
+                </Link>
+                .
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 mt-2 ml-8">
+              Dessa dokument beskriver hur DogPlanner fungerar, vilka
+              abonnemangsvillkor som gäller och hur vi hanterar personuppgifter.
+            </p>
           </div>
 
           <button
