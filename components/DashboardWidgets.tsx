@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
+import { useEnabledServices } from "@/lib/hooks/useEnabledServices";
 import {
   Users,
   Calendar,
@@ -33,6 +34,7 @@ interface DashboardStats {
 
 export default function DashboardWidgets() {
   const { currentOrgId } = useAuth();
+  const { hasDaycare, hasBoarding, hasGrooming } = useEnabledServices();
   const [stats, setStats] = useState<DashboardStats>({
     dagisTotal: 0,
     dagisCheckedIn: 0,
@@ -191,46 +193,61 @@ export default function DashboardWidgets() {
   };
 
   const widgets = [
-    {
-      title: "Hunddagis idag",
-      value: stats.dagisTotal,
-      icon: Users,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      change: new Date().toLocaleDateString("sv-SE", { weekday: "long" }), // Visar veckodagen
-    },
-    {
-      title: "Pensionat - Beläggning",
-      value: `${stats.pensionatOccupiedRooms}/${stats.pensionatTotalRooms}`,
-      icon: Home,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-      change: `${Math.round((stats.pensionatOccupiedRooms / (stats.pensionatTotalRooms || 1)) * 100)}% belagda rum`,
-    },
-    {
-      title: "Incheckningar idag",
-      value: stats.pensionatCheckInsToday,
-      icon: LogIn,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-      change: "Pensionat",
-    },
-    {
-      title: "Utcheckningar idag",
-      value: stats.pensionatCheckOutsToday,
-      icon: LogOut,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-      change: "Pensionat",
-    },
-    {
-      title: "Väntande bokningar",
-      value: stats.pensionatPendingBookings,
-      icon: Clock,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-50",
-      change: "Behöver bekräftas",
-    },
+    // Hunddagis widget - endast om aktiverad
+    ...(hasDaycare
+      ? [
+          {
+            title: "Hunddagis idag",
+            value: stats.dagisTotal,
+            icon: Users,
+            color: "text-green-600",
+            bgColor: "bg-green-50",
+            change: new Date().toLocaleDateString("sv-SE", {
+              weekday: "long",
+            }),
+          },
+        ]
+      : []),
+
+    // Pensionat widgets - endast om aktiverad
+    ...(hasBoarding
+      ? [
+          {
+            title: "Pensionat - Beläggning",
+            value: `${stats.pensionatOccupiedRooms}/${stats.pensionatTotalRooms}`,
+            icon: Home,
+            color: "text-blue-600",
+            bgColor: "bg-blue-50",
+            change: `${Math.round((stats.pensionatOccupiedRooms / (stats.pensionatTotalRooms || 1)) * 100)}% belagda rum`,
+          },
+          {
+            title: "Incheckningar idag",
+            value: stats.pensionatCheckInsToday,
+            icon: LogIn,
+            color: "text-purple-600",
+            bgColor: "bg-purple-50",
+            change: "Pensionat",
+          },
+          {
+            title: "Utcheckningar idag",
+            value: stats.pensionatCheckOutsToday,
+            icon: LogOut,
+            color: "text-orange-600",
+            bgColor: "bg-orange-50",
+            change: "Pensionat",
+          },
+          {
+            title: "Väntande bokningar",
+            value: stats.pensionatPendingBookings,
+            icon: Clock,
+            color: "text-yellow-600",
+            bgColor: "bg-yellow-50",
+            change: "Behöver bekräftas",
+          },
+        ]
+      : []),
+
+    // Viktiga notiser - alltid visa
     {
       title: "Viktiga notiser",
       value: stats.allergiesCount + stats.medicationsCount,

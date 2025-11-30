@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useAuth } from "@/app/context/AuthContext";
+import { useEnabledServices } from "@/lib/hooks/useEnabledServices";
 import { PawPrint, User, Phone, AlertCircle, Home } from "lucide-react";
 import Link from "next/link";
 
@@ -24,6 +25,7 @@ type CheckedInDog = {
 
 export default function DagensHundarWidget() {
   const { currentOrgId } = useAuth();
+  const { hasBoarding } = useEnabledServices();
   const [dogs, setDogs] = useState<CheckedInDog[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClientComponentClient();
@@ -63,7 +65,8 @@ export default function DagensHundarWidget() {
     }
   };
 
-  if (!currentOrgId) return null;
+  // Visa inte widgeten om pensionat inte är aktiverad
+  if (!currentOrgId || !hasBoarding) return null;
 
   if (loading) {
     return (

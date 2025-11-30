@@ -15,10 +15,12 @@ import {
   Settings,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEnabledServices } from "@/lib/hooks/useEnabledServices";
 
 export default function Navbar() {
   const { user, role, signOut: logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { hasDaycare, hasBoarding, hasGrooming } = useEnabledServices();
 
   return (
     <nav className="bg-[#2c7a4c] text-white shadow-md fixed top-0 left-0 w-full z-50">
@@ -126,30 +128,36 @@ export default function Navbar() {
                     <Home size={20} />
                     <span className="font-medium">Dashboard</span>
                   </Link>
-                  <Link
-                    href="/hunddagis"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
-                  >
-                    <Dog size={20} />
-                    <span className="font-medium">Hunddagis</span>
-                  </Link>
-                  <Link
-                    href="/hundpensionat"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
-                  >
-                    <Building2 size={20} />
-                    <span className="font-medium">Hundpensionat</span>
-                  </Link>
-                  <Link
-                    href="/frisor"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
-                  >
-                    <Scissors size={20} />
-                    <span className="font-medium">Hundfrisör</span>
-                  </Link>
+                  {hasDaycare && (
+                    <Link
+                      href="/hunddagis"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
+                    >
+                      <Dog size={20} />
+                      <span className="font-medium">Hunddagis</span>
+                    </Link>
+                  )}
+                  {hasBoarding && (
+                    <Link
+                      href="/hundpensionat"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
+                    >
+                      <Building2 size={20} />
+                      <span className="font-medium">Hundpensionat</span>
+                    </Link>
+                  )}
+                  {hasGrooming && (
+                    <Link
+                      href="/frisor"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-green-700 transition text-white"
+                    >
+                      <Scissors size={20} />
+                      <span className="font-medium">Hundfrisör</span>
+                    </Link>
+                  )}
                   <Link
                     href="/admin"
                     onClick={() => setMenuOpen(false)}
