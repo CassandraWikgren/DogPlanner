@@ -99,6 +99,9 @@ export default function AdminAbonnemangPage() {
   const [savingServices, setSavingServices] = useState(false);
   const [creating, setCreating] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
+  const [canceling, setCanceling] = useState(false);
+  const [refundInfo, setRefundInfo] = useState<any>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   useEffect(() => {
     if (!authLoading) {
@@ -269,6 +272,71 @@ export default function AdminAbonnemangPage() {
       console.error("Checkout error:", err);
       setError(err.message || "Något gick fel vid uppgradering");
       setCheckingOut(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!currentOrgId) return;
+
+    // Först: Hämta återbetalningsinformation
+    try {
+      const response = await fetch(
+        `/api/subscription/cancel?orgId=${currentOrgId}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Kunde inte hämta återbetalningsinformation"
+        );
+      }
+
+      const data = await response.json();
+      setRefundInfo(data);
+      setShowCancelDialog(true);
+    } catch (err: any) {
+      console.error("Error fetching refund info:", err);
+      setError(err.message || "Kunde inte beräkna återbetalning");
+    }
+  };
+
+  const confirmCancellation = async () => {
+    if (!currentOrgId) return;
+
+    setCanceling(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/subscription/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orgId: currentOrgId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Kunde inte avbryta prenumeration");
+      }
+
+      const data = await response.json();
+
+      setShowCancelDialog(false);
+      setSuccess(
+        data.refund?.refund_amount > 0
+          ? `✅ Prenumerationen har avbrutits. ${data.refund.refund_amount} kr återbetalas inom 5-10 arbetsdagar.`
+          : "✅ Prenumerationen har avbrutits."
+      );
+
+      // Reload subscription data
+      await loadSubscription();
+    } catch (err: any) {
+      console.error("Cancellation error:", err);
+      setError(err.message || "Något gick fel vid avbokning");
+    } finally {
+      setCanceling(false);
     }
   };
 
@@ -698,19 +766,9 @@ export default function AdminAbonnemangPage() {
                   <Button
                     variant="outline"
                     className="border-red-500 text-red-700 hover:bg-red-50"
-                    onClick={() => {
-                      if (
-                        confirm(
-                          "Är du säker på att du vill avsluta prenumerationen? Detta kan inte ångras."
-                        )
-                      ) {
-                        alert(
-                          "Kontakta support för att avsluta prenumerationen"
-                        );
-                      }
-                    }}
+                    onClick={handleCancelSubscription}
                   >
-                    Avsluta prenumeration
+                    Avbryt prenumeration
                   </Button>
                 </div>
               </>
@@ -763,6 +821,96 @@ export default function AdminAbonnemangPage() {
             <Button variant="outline">Kontakta support</Button>
           </CardContent>
         </Card>
+
+        {/* Cancel Subscription Dialog */}
+        {showCancelDialog && refundInfo && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <Card className="max-w-lg w-full">
+              <CardHeader className="bg-red-50 border-b border-red-200">
+                <CardTitle className="text-lg font-semibold text-red-700 flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5" />
+                  Bekräfta avbokning
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                {refundInfo.eligible ? (
+                  <>
+                    <p className="text-gray-700 mb-4">
+                      Du har använt tjänsten i{" "}
+                      <strong>{refundInfo.months_used} månader</strong>.
+                    </p>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <h4 className="font-semibold text-blue-900 mb-2">
+                        Återbetalningsberäkning:
+                      </h4>
+                      <div className="space-y-1 text-sm text-blue-800">
+                        <p>
+                          • Betalt:{" "}
+                          {refundInfo.yearly_price?.toLocaleString("sv-SE")} kr
+                          (årsabonnemang)
+                        </p>
+                        <p>
+                          • Använt: {refundInfo.months_used} mån ×{" "}
+                          {refundInfo.monthly_price} kr ={" "}
+                          {refundInfo.amount_used?.toLocaleString("sv-SE")} kr
+                        </p>
+                        <p className="font-bold text-lg mt-2 text-green-700">
+                          💰 Återbetalning:{" "}
+                          {refundInfo.refund_amount?.toLocaleString("sv-SE")} kr
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-gray-600 mb-6">
+                      Pengarna återbetalas automatiskt till samma betalmetod
+                      inom 5-10 arbetsdagar.
+                    </p>
+                  </>
+                ) : (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <p className="text-yellow-800">
+                      {refundInfo.reason ===
+                      "Endast årsabonnemang kan återbetalas pro-rata"
+                        ? "Månadsabonnemang har ingen återbetalning vid avbrott."
+                        : refundInfo.reason}
+                    </p>
+                  </div>
+                )}
+
+                <p className="text-red-600 font-medium mb-6">
+                  ⚠️ Detta kan inte ångras. Din prenumeration avslutas
+                  omedelbart.
+                </p>
+
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCancelDialog(false)}
+                    disabled={canceling}
+                    className="flex-1"
+                  >
+                    Avbryt
+                  </Button>
+                  <Button
+                    onClick={confirmCancellation}
+                    disabled={canceling}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    {canceling ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Avbryter...
+                      </>
+                    ) : (
+                      "Bekräfta avbokning"
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );
