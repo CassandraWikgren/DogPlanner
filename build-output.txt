@@ -1,0 +1,14 @@
+
+> dogplanner@1.0.0 build
+> next build
+
+unhandledRejection [Error: Cannot find module 'caniuse-lite/dist/unpacker/agents'
+Require stack:
+- /Users/cassandrawikgren/Desktop/Dogplanner/dogplanner-backup-20251031_075031/node_modules/next/dist/compiled/browserslist/index.js
+- /Users/cassandrawikgren/Desktop/Dogplanner/dogplanner-backup-20251031_075031/node_modules/next/dist/build/utils.js
+- /Users/cassandrawikgren/Desktop/Dogplanner/dogplanner-backup-20251031_075031/node_modules/next/dist/build/entries.js
+- /Users/cassandrawikgren/Desktop/Dogplanner/dogplanner-backup-20251031_075031/node_modules/next/dist/build/index.js
+- /Users/cassandrawikgren/Desktop/Dogplanner/dogplanner-backup-20251031_075031/node_modules/next/dist/cli/next-build.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}

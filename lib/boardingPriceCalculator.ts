@@ -250,7 +250,9 @@ export async function calculateNightPrice(
     const beforeSeason = nightPrice;
     nightPrice = nightPrice * multiplier;
     breakdown.push(
-      `${season.name}: ×${multiplier} (${beforeSeason} kr → ${Math.round(nightPrice)} kr)`
+      `${season.name}: ×${multiplier} (${beforeSeason} kr → ${Math.round(
+        nightPrice
+      )} kr)`
     );
   }
 
