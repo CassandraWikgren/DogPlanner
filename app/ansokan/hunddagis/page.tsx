@@ -11,6 +11,7 @@ import OrganisationSelector from "@/components/OrganisationSelector";
 import { DogBreedSelect } from "@/components/DogBreedSelect";
 
 export default function HunddagisAnsokanPage() {
+  const supabase = createClient();
   const [orgId, setOrgId] = useState<string | null>(null);
   const [orgName, setOrgName] = useState<string>("");
 
@@ -32,6 +33,7 @@ export default function HunddagisAnsokanPage() {
     dog_breed: "",
     dog_birth: "",
     dog_gender: "" as "hane" | "tik" | "",
+    dog_size: "" as "small" | "medium" | "large" | "",
     dog_height_cm: "",
 
     // Abonnemang
@@ -87,6 +89,7 @@ export default function HunddagisAnsokanPage() {
     if (!formData.dog_breed.trim()) return "Ange hundens ras";
     if (!formData.dog_birth) return "Ange hundens födelsedatum";
     if (!formData.dog_gender) return "Ange hundens kön";
+    if (!formData.dog_size) return "Ange hundens storlek";
     if (!formData.dog_height_cm || isNaN(Number(formData.dog_height_cm)))
       return "Ange hundens mankhöjd i cm";
     return null;
@@ -157,6 +160,7 @@ export default function HunddagisAnsokanPage() {
             dog_breed: formData.dog_breed.trim(),
             dog_birth: formData.dog_birth,
             dog_gender: formData.dog_gender,
+            dog_size: formData.dog_size as "small" | "medium" | "large",
             dog_height_cm: Number(formData.dog_height_cm),
             subscription_type: formData.subscription_type,
             preferred_days: formData.preferred_days,
@@ -438,6 +442,30 @@ export default function HunddagisAnsokanPage() {
                     <option value="">Välj kön</option>
                     <option value="hane">Hane</option>
                     <option value="tik">Tik</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Storlek <span className="text-red-600">*</span>
+                  </label>
+                  <select
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    value={formData.dog_size}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        dog_size: e.target.value as
+                          | "small"
+                          | "medium"
+                          | "large",
+                      })
+                    }
+                  >
+                    <option value="">Välj storlek</option>
+                    <option value="small">Liten (upp till 10 kg)</option>
+                    <option value="medium">Medel (10-25 kg)</option>
+                    <option value="large">Stor (över 25 kg)</option>
                   </select>
                 </div>
 
