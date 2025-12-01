@@ -40,7 +40,7 @@ interface Application {
   preferred_days?: string[] | null;
   special_needs?: string | null;
   previous_daycare_experience?: boolean | null;
-  status: "pending" | "contacted" | "accepted" | "declined";
+  status: string;
   notes?: string | null;
   created_at: string;
   updated_at: string;
@@ -48,15 +48,16 @@ interface Application {
   first_contact_date?: string | null;
   first_contact_notes?: string | null;
   visit_booked_date?: string | null;
-  visit_status?: "booked" | "completed" | "cancelled" | "no_show" | null;
+  visit_status?: string | null;
   visit_completed_date?: string | null;
-  visit_result?: "approved" | "declined" | "waiting" | "not_suitable" | null;
+  visit_result?: string | null;
   contact_history?: any[] | null;
-  priority?: number;
+  priority?: number | null;
   expected_start_month?: string | null;
 }
 
 export default function ApplicationsPage() {
+  const supabase = createClient();
   const { user, currentOrgId } = useAuth();
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
