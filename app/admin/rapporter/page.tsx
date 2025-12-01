@@ -45,6 +45,7 @@ interface ReportStats {
 
 export default function RapporterPage() {
   const { currentOrgId, loading: authLoading } = useAuth();
+  const supabase = createClient();
 
   const [stats, setStats] = useState<ReportStats>({
     totalBookings: 0,
@@ -99,10 +100,10 @@ export default function RapporterPage() {
         // Bokningar inom datumintervall
         supabase
           .from("bookings")
-          .select("id, status, check_in, check_out, total_price, room_id")
+          .select("id, status, start_date, end_date, total_price, room_id")
           .eq("org_id", currentOrgId)
-          .gte("check_in", dateRange.start)
-          .lte("check_out", dateRange.end),
+          .gte("start_date", dateRange.start)
+          .lte("end_date", dateRange.end),
 
         // Hundar
         supabase
@@ -150,8 +151,8 @@ export default function RapporterPage() {
       // Beläggning: räkna unika rum per dag
       const occupancyMap = new Map<string, Set<string>>();
       confirmedBookings.forEach((booking) => {
-        const start = new Date(booking.check_in);
-        const end = new Date(booking.check_out);
+        const start = new Date(booking.start_date);
+        const end = new Date(booking.end_date);
 
         for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
           const dateKey = d.toISOString().split("T")[0];
@@ -215,8 +216,8 @@ export default function RapporterPage() {
         .select(
           `
           id,
-          check_in,
-          check_out,
+          start_date,
+          end_date,
           status,
           total_price,
           special_requests,
@@ -237,9 +238,9 @@ export default function RapporterPage() {
         `
         )
         .eq("org_id", currentOrgId)
-        .gte("check_in", dateRange.start)
-        .lte("check_out", dateRange.end)
-        .order("check_in", { ascending: false });
+        .gte("start_date", dateRange.start)
+        .lte("end_date", dateRange.end)
+        .order("start_date", { ascending: false });
 
       if (bookingsError) {
         console.error(ERROR_CODES.EXPORT_FAILED, bookingsError);
@@ -249,8 +250,8 @@ export default function RapporterPage() {
       // Formattera data för Excel
       const excelData = bookings.map((booking: any) => ({
         "Boknings-ID": booking.id,
-        Incheckning: booking.check_in,
-        Utcheckning: booking.check_out,
+        Incheckning: booking.start_date,
+        Utcheckning: booking.end_date,
         Status:
           booking.status === "confirmed"
             ? "Bekräftad"
