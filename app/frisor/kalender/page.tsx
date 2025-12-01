@@ -98,6 +98,7 @@ const getStatusIcon = (status: string) => {
 };
 
 export default function GroomingCalendar() {
+  const supabase = createClient();
   const router = useRouter();
   const { currentOrgId, loading: authLoading } = useAuth();
 
