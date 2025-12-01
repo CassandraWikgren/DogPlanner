@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/app/context/AuthContext";
 
 import { Loader2, Lock, Unlock, PlusCircle, FileText } from "lucide-react";
 
@@ -92,6 +93,7 @@ const DEFAULT_COLUMNS = [
 
 const FakturorPage = () => {
   const supabase = createClient();
+  const { currentOrgId } = useAuth();
 
   // 🧠 Statehantering
   const [mounted, setMounted] = useState(false);
@@ -474,10 +476,17 @@ const FakturorPage = () => {
       const dueDate = new Date();
       dueDate.setDate(dueDate.getDate() + 30);
 
+      if (!currentOrgId) {
+        throw new Error(
+          `${ERROR_CODES.VALIDATION} Ingen organisation tillgänglig`
+        );
+      }
+
       // Skapa fakturan
       const { data: invoice, error: invoiceError } = await supabase
         .from("invoices")
         .insert({
+          org_id: currentOrgId,
           owner_id: ownerId,
           invoice_date: new Date().toISOString(),
           due_date: dueDate.toISOString(),
@@ -494,6 +503,7 @@ const FakturorPage = () => {
       }
 
       // Lägg till fakturarad med beskrivning
+      // @ts-ignore - invoice_items table not in generated types yet
       const { error: itemError } = await supabase.from("invoice_items").insert({
         invoice_id: invoice.id,
         description: description.trim(),

@@ -32,8 +32,8 @@ interface DagisPricing {
   // Rabatter och övrigt
   sibling_discount_percent: number;
   trial_day_price: number;
-  created_at?: string;
-  updated_at?: string;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export default function DagisPriserPage() {

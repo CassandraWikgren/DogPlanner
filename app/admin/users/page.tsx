@@ -89,7 +89,13 @@ export default function UsersPage() {
 
       if (error) throw error;
 
-      setUsers(data || []);
+      // Cast role to correct type
+      const typedData = (data || []).map((user) => ({
+        ...user,
+        role: user.role as "admin" | "staff" | "groomer" | "customer" | null,
+      }));
+
+      setUsers(typedData);
     } catch (err: any) {
       console.error("Error loading users:", err);
       setError(err.message || "Kunde inte ladda användare");
@@ -349,9 +355,11 @@ export default function UsersPage() {
                           <span className="font-medium text-gray-900">
                             {user.full_name || user.email}
                           </span>
-                          <Badge className={ROLE_COLORS[user.role]}>
-                            {ROLE_LABELS[user.role]}
-                          </Badge>
+                          {user.role && (
+                            <Badge className={ROLE_COLORS[user.role]}>
+                              {ROLE_LABELS[user.role]}
+                            </Badge>
+                          )}
                           {user.id === currentUser?.id && (
                             <Badge variant="outline" className="text-xs">
                               Det är du
@@ -368,9 +376,11 @@ export default function UsersPage() {
                         )}
                         <div className="text-xs text-gray-400 mt-1">
                           Skapad:{" "}
-                          {new Date(user.created_at).toLocaleDateString(
-                            "sv-SE"
-                          )}
+                          {user.created_at
+                            ? new Date(user.created_at).toLocaleDateString(
+                                "sv-SE"
+                              )
+                            : "Okänt datum"}
                         </div>
                       </div>
                     </div>
@@ -380,7 +390,7 @@ export default function UsersPage() {
                         <>
                           <select
                             className="border border-gray-300 rounded-md px-3 py-1.5 text-sm"
-                            value={user.role}
+                            value={user.role || "customer"}
                             onChange={(e) =>
                               handleChangeRole(user.id, e.target.value)
                             }

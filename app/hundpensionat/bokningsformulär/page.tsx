@@ -19,7 +19,7 @@ interface SimpleDog {
 interface SimpleRoom {
   id: string;
   name: string;
-  capacity_m2: number;
+  capacity_m2: number | null;
 }
 
 interface SimpleExtraService {

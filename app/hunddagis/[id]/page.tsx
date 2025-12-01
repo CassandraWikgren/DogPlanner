@@ -149,6 +149,7 @@ export default function DogProfilePage() {
   const supabase = createClient();
 
   const { id } = useParams();
+  const dogId = Array.isArray(id) ? id[0] : id;
 
   // State
   const [dog, setDog] = useState<Dog | null>(null);
@@ -174,11 +175,11 @@ export default function DogProfilePage() {
         owners(id, full_name, phone, email, customer_number, contact_person_2, contact_phone_2),
         rooms(id, name),
         orgs(id, name),
-        extra_service(id, dogs_id, service_type, quantity, price, notes, performed_at_date),
+        extra_service(id, dogs_id, service_type, quantity, price, notes),
         dog_journal(id, text, created_at)
       `
         )
-        .eq("id", id)
+        .eq("id", dogId)
         .maybeSingle();
 
       if (error) throw error;
@@ -221,7 +222,7 @@ export default function DogProfilePage() {
     } finally {
       setLoading(false);
     }
-  }, [supabase, id, logDebug]);
+  }, [supabase, dogId, logDebug]);
 
   /* ======================================================
    * REALTID – dog_journal & extra_service
@@ -238,7 +239,7 @@ export default function DogProfilePage() {
           event: "*",
           schema: "public",
           table: "dog_journal",
-          filter: `dog_id=eq.${id}`,
+          filter: `dog_id=eq.${dogId}`,
         },
         () => {
           logDebug(
@@ -261,7 +262,7 @@ export default function DogProfilePage() {
           event: "*",
           schema: "public",
           table: "extra_service",
-          filter: `dogs_id=eq.${id}`,
+          filter: `dogs_id=eq.${dogId}`,
         },
         () => {
           logDebug(
@@ -279,7 +280,7 @@ export default function DogProfilePage() {
       supabase.removeChannel(journalChannel);
       supabase.removeChannel(serviceChannel);
     };
-  }, [id, supabase, loadDog, logDebug]);
+  }, [dogId, supabase, loadDog, logDebug]);
   /* ======================================================
    * FEEDBACK-HJÄLPFUNKTION
    * ====================================================== */

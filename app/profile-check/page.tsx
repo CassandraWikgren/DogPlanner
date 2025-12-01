@@ -67,7 +67,7 @@ export default function ProfileCheckPage() {
     setHealing(true);
     try {
       const { data, error } = await supabase.rpc("heal_user_missing_org", {
-        user_id: user?.id,
+        p_user_id: user?.id,
       });
 
       if (error) {
