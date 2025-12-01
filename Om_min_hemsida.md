@@ -40,7 +40,8 @@ Hundägare: Har begränsad åtkomst. Hundägare kan logga in och se sin egen hun
 Personal: Denna roll avser ordinarie personal på hunddagis/pensionat. Personalen kan se listor över alla hundar som är inskrivna, checka in och ut hundar, lägga till tjänster under en pensionatsvistelse och uppdatera hundars profiler (t.ex. anteckningar eller ändra schemainformation).
 Frisör: En specialiserad roll för personal som arbetar med hundtrimning och pälsvård. Frisören har tillgång till att se och hantera bokningar relaterade till trimning, och kan fylla i eller uppdatera en frisörjournal för hunden (anteckningar om klippning, bad, pälsvård etc.).
 Administratör: Har fullständig behörighet i systemet. Administratören kan se och redigera all information – inklusive samtliga hundprofiler, scheman, bokningar, journaler, fakturor och inställningar för verksamheten. Denna roll innehas av t.ex. verksamhetsägaren eller platschefen och inkluderar även rättigheter att hantera användarkonton och tilldela roller till personal.  
-Detta rollsystem gör att information hålls säker och att användargränssnittet kan anpassas efter användarens behov. Till exempel ser en hundägare endast sin egen hunds data, personal ser alla hundar men inte ekonomiska inställningar, och endast administratören har tillgång till systemets alla delar.
+Detta rollsystem gör att information hålls säker och att användargränssnittet kan anpassas efter användarens behov. Till exempel ser en hundägare endast sin egen hunds data, personal ser alla hundar men inte ekonomiska inställningar, och endast administratören har tillgång till systemets -ä'
+alla delar.
 Design och användarvänlighet
 DogPlanner är designad med både estetik och tydlighet i åtanke. Designen i stort är modern, ren och professionell med fokus på att även vara säljande (tilltalande för nya kunder som demonstrerar systemet) utan att tumma på tydlighet eller prestanda. Använd alltid design_systen.md för att se hur sidan ska vara.
 Alla sidor i applikationen har ett enhetligt utseende och layout. Till exempel harmonierar stil och komponenter på dashboard-sidan med de på hunddagis-sidan och övriga vyer, vilket ger en konsekvent användarupplevelse genom hela systemet. Användarvänligheten är hög prioritet: navigationsmenyer och knappar är intuitiva, information presenteras i tydliga tabeller/kort, och viktiga funktioner är lättåtkomliga. Hela plattformen är dessutom responsiv och mobilanpassad, så att den fungerar smidigt även på mobiltelefoner och surfplattor. Detta är avgörande då personal kan behöva använda systemet i farten eller ute på gården bland hundarna. Sammantaget strävar designen efter att vara både estetiskt tilltalande och praktisk för dagligt bruk.
@@ -827,19 +828,90 @@ Bildgalleri för hundarnas före- och efterbilder.
 Kommentarsfunktion för snabb intern kommunikation mellan frisörer.
 Kundportal för ägare att se sina bokningar och journaluppgifter.
 
-
-
 🐾 DogPlanner – Arkitektur och byggmanual
 DogPlanner är ett webbaserat affärssystem för hundverksamheter som hunddagis, hundpensionat och hundfrisörer. Systemet hanterar bokningar, kunder, priser och fakturor. Det är byggt i Next.js 15.5 med Supabase som backend (för autentisering, databas, lagring och edge-functions).
 Syftet är att automatisera hantering av kundregister (ägare och hundar), bokningar och tjänster, prisberäkning inklusive moms, rabatter och säsonger, samt fakturaunderlag och PDF-fakturor. Det stöder realtidsuppdateringar mellan personal och administratör. Varje företag (organisation) som använder systemet har egna priser, kunder och fakturor.
 
 Teknisk struktur
-Frontend är byggd i Next.js 15.5 + TypeScript med Tailwind CSS och ShadCN/UI för gränssnittet. Backend körs på Supabase (Postgres, Auth, Storage, Edge Functions) med realtidsuppdatering via Supabase Realtime Channels. PDF-fakturor genereras med PDFKit, QRCode och Stream-Buffers. Databasen använder RLS (Row Level Security). Autentisering hanteras med Supabase Auth Helpers för Next.js. Systemet kan driftsättas på Vercel eller Supabase Edge Runtime.
+Frontend är byggd i Next.js 15.5 + TypeScript med Tailwind CSS och ShadCN/UI för gränssnittet. Backend körs på Supabase (Postgres, Auth, Storage, Edge Functions) med realtidsuppdatering via Supabase Realtime Channels. PDF-fakturor genereras med PDFKit, QRCode och Stream-Buffers. Databasen använder RLS (Row Level Security).
+
+**⚠️ VIKTIGT: Supabase SSR Migration (1 Dec 2025)**
+Systemet använder nu `@supabase/ssr` (INTE det gamla deprecated `@supabase/auth-helpers-nextjs`).
+
+- **Server Components/API Routes**: `import { createClient } from '@/lib/supabase/server'` → `const supabase = await createClient()`
+- **Client Components**: `import { createClient } from '@/lib/supabase/client'` → `const supabase = createClient()`
+- **Middleware**: `import { updateSession } from '@/lib/supabase/middleware'`
+
+**Type System (Dec 2025)**
+För att eliminera `as any` casts och förbättra type safety har systemet ett robust type system:
+
+1. **types/auth.ts** - Autentisering och användare
+   - `DogPlannerUser` - Utökad Supabase User med metadata
+   - Type guards: `hasUserMetadata()`, `hasOrgId()`, `isValidEmail()`
+   - Utilities: `getOrgIdFromUser()`, `getRoleFromUser()`
+
+2. **types/entities.ts** - Business entities med relationer
+   - `DogWithOwner`, `DogComplete` - Hundar med relations
+   - `RoomWithDogs`, `InvoiceWithDetails` - Rum och fakturor
+   - `SubscriptionType`, `InvoiceStatus`, `DogSize` - Type-safe enums
+   - Utilities: `getDogSize()`, `formatWeekdays()`, `calculateAge()`
+
+3. **lib/validation.ts** - Centraliserad validering
+   - Validators: UUID, email, phone, org number (Luhn algorithm)
+   - Error classes: `ValidationError`, `DatabaseError`, `AuthenticationError`
+   - Type guards för alla entities
+
+**Migration från 'as any':**
+
+```typescript
+// ❌ Gammalt sätt
+const orgId = (user as any).user_metadata?.org_id;
+
+// ✅ Nytt sätt
+const orgId = getOrgIdFromUser(user);
+if (!orgId)
+  throw new ValidationError("Ingen organisation tilldelad", "ORG_001");
+```
+
 Triggers används för att automatiskt sätta rätt organisation och användare på fakturor, uppdatera totalpris vid prisändringar och beräkna fakturaradernas belopp automatiskt.
 
 Kodstruktur
-Appen har en tydlig struktur med komponentmappar för UI och delade komponenter. Logik för prissättning finns i lib/pricing.ts och Supabase-klienten i lib/supabaseClient.ts. API-routen api/pdf/route.ts hanterar PDF-generering. Sidor finns för hunddagis, pensionat, frisör, fakturor och priser.
-Dataflöde: Hundägare → Hundprofil → Bokning/Abonnemang → Fakturaunderlag → PDF-faktura → Rapportering
+Appen har en tydlig struktur med komponentmappar för UI och delade komponenter.
+
+**Type System (Dec 2025):**
+
+- `types/auth.ts` - User types, metadata, type guards
+- `types/entities.ts` - Business entities (Dog, Invoice, Booking etc.)
+- `types/README.md` - Komplett dokumentation av type systemet
+- `lib/validation.ts` - Centraliserad validering med error classes
+
+**Business Logic:**
+
+- `lib/pricing.ts` - Prissättning
+- `lib/boardingPriceCalculator.ts` - Pensionatspriser (type-safe)
+- `lib/roomCalculator.ts` - Rumsberäkningar (Jordbruksverket)
+- `lib/pensionatCalculations.ts` - Pensionatskalkyler
+
+**Supabase Clients:**
+
+- `lib/supabase/server.ts` - Server components & API routes
+- `lib/supabase/client.ts` - Client components
+- `lib/supabase/middleware.ts` - Middleware för session
+
+**API:**
+
+- `app/api/pdf/route.ts` - PDF-generering
+- `app/api/invoices/*/` - Fakturahantering
+
+**Sidor:**
+
+- `app/hunddagis/` - Hunddagis
+- `app/hundpensionat/` - Pensionat
+- `app/frisor/` - Frisör
+- `app/admin/faktura/` - Fakturor
+- `app/admin/priser/` - Priser
+
+Dataflöde: Hundägare → Hundprofil → Bokning/Abonnemang → Fakturaunderlag → PDF-faktura → Rapportering
 Alla delar är kopplade via organisationens ID och uppdateras i realtid.
 
 Fakturasidan
@@ -861,7 +933,50 @@ Alla tre sidor delar samma struktur och använder Supabase-klienter med autentis
 Realtidskoppling används för att synkronisera bokningar och fakturor mellan användare.
 
 Supabase-klienter och imports
-På klientsidan används createClientComponentClient och på serversidan createClient. Vanliga UI-komponenter importeras från ShadCN-biblioteket (t.ex. knappar, inputs, accordions).
+**VIKTIGT: Använd ALDRIG `@supabase/auth-helpers-nextjs` (deprecated sedan 1 Dec 2025)**
+
+**Server Components & API Routes:**
+
+```typescript
+import { createClient } from '@/lib/supabase/server';
+
+export default async function Page() {
+  const supabase = await createClient();
+  const { data } = await supabase.from('dogs').select('*');
+  return <div>{/* ... */}</div>;
+}
+```
+
+**Client Components:**
+
+```typescript
+"use client";
+import { createClient } from "@/lib/supabase/client";
+
+export default function Component() {
+  const supabase = createClient();
+  // ...
+}
+```
+
+**Type-safe queries med entities:**
+
+```typescript
+import { getDogSize, type DogWithOwner } from "@/types/entities";
+
+const { data } = await supabase
+  .from("dogs")
+  .select("*, owners(*)")
+  .returns<DogWithOwner[]>();
+
+// Type-safe size calculation
+if (data) {
+  const size = getDogSize(data[0].shoulder_height);
+}
+```
+
+**Vanliga UI-komponenter:**
+Importeras från ShadCN-biblioteket (t.ex. Button, Input, Accordion, Dialog, Tabs).
 
 Fakturagenerering (PDF)
 PDF-fakturor genereras via en Edge Function (app/api/pdf/route.ts) som hämtar fakturadata, lägger till företagslogotyp och kunduppgifter, skapar QR-kod för betalning via Swish eller bankgiro, och exporterar resultatet till Supabase Storage.
