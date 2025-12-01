@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
 
 /**
@@ -9,9 +9,8 @@ import { Database } from "@/types/database";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verifiera autentisering    const supabase = createRouteHandlerClient<Database>({
-      cookies: () => cookieStore,
-    });
+    // Verifiera autentisering
+    const supabase = await createClient();
     const {
       data: { user },
       error: authError,
@@ -22,7 +21,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Skapa admin client med service role key
-    const supabaseAdmin = createClient<Database>(
+    const supabaseAdmin = createSupabaseClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       {

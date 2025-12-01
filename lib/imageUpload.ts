@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { createClient } from "./supabase/client";
 
 /**
  * Ladda upp en bild till Supabase Storage
@@ -12,9 +12,7 @@ export async function uploadImage(
   folder: string = "dogs",
   fileName?: string
 ): Promise<string> {
-  if (!supabase) {
-    throw new Error("Supabase client is not available");
-  }
+  const supabase = createClient();
 
   try {
     // Validera filtyp

@@ -14,7 +14,7 @@
  * 3. Säsong (multiplikator)
  */
 
-import { supabase } from "./supabase";
+import { createClient } from "./supabase/client";
 
 export interface BoardingPrice {
   dog_size: "small" | "medium" | "large";
@@ -69,6 +69,7 @@ export async function getBasePrice(
   dogSize: "small" | "medium" | "large",
   orgId: string
 ): Promise<BoardingPrice | null> {
+  const supabase = createClient();
   const { data, error } = await supabase
     .from("boarding_prices")
     .select("dog_size, base_price, weekend_surcharge")
@@ -93,6 +94,7 @@ export async function getSpecialDate(
   orgId: string
 ): Promise<SpecialDate | null> {
   const dateStr = formatDate(date);
+  const supabase = createClient();
 
   const { data, error } = await supabase
     .from("special_dates")
@@ -118,6 +120,7 @@ export async function getActiveSeason(
   orgId: string
 ): Promise<BoardingSeason | null> {
   const dateStr = formatDate(date);
+  const supabase = createClient();
 
   const { data, error } = await supabase
     .from("boarding_seasons")
