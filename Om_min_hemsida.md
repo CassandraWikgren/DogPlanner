@@ -883,6 +883,74 @@ Appen har en tydlig struktur med komponentmappar för UI och delade komponenter.
 - `types/auth.ts` - User types, metadata, type guards
 - `types/entities.ts` - Business entities (Dog, Invoice, Booking etc.)
 - `types/README.md` - Komplett dokumentation av type systemet
+
+---
+
+## 🔢 Kundnummer och ägarhantering (GDPR-compliant)
+
+**Svensk bokföringsstandard och GDPR:**
+Systemet följer svensk bokföringslagstiftning och GDPR när det gäller hantering av personnummer och kundnummer.
+
+**Grundprincip:**
+
+- **Ett personnummer = ETT kundnummer = MÅNGA hundar**
+- Detta förhindrar dubbletter och säkerställer korrekt bokföring
+
+**Automatisk ägarmatching (EditDogModal.tsx):**
+När en ny hund läggs till försöker systemet FÖRST hitta befintlig ägare via:
+
+1. **E-post** (mest tillförlitlig matchning)
+2. **Telefonnummer** (normaliserat, tar bort mellanslag/bindestreck)
+3. **Namn + telefon** (backup-matchning)
+4. **Personnummer** (KRITISK - förhindrar duplicate key violations)
+
+**Personnummer-kontroll (Dec 2025):**
+
+- Databasen har UNIQUE constraint på `(org_id, personnummer)`
+- Om personnummer redan finns: Återanvänd befintlig ägare automatiskt
+- Detta förhindrar felet: `duplicate key value violates unique constraint 'owners_org_personnummer_key'`
+
+**Exempel på hur det fungerar:**
+
+```typescript
+Scenario 1: Befintlig ägare
+- Person: Anna Andersson (personnummer: 820315-1234)
+- Hund 1: "Bella" (redan registrerad → Kundnr: 10001)
+- Hund 2: "Max" (ny hund, samma personnummer)
+- Resultat: Systemet hittar Anna via personnummer → Återanvänder Kundnr: 10001
+- Båda hundarna faktureras till samma kundnummer
+
+Scenario 2: Ny ägare
+- Person: Erik Svensson (personnummer: 900101-5678)
+- Hund: "Charlie" (ny registrering)
+- Resultat: Systemet hittar ingen match → Skapar ny ägare → DB-trigger genererar Kundnr: 10002
+```
+
+**Synlig feedback till användaren:**
+När systemet hittar och återanvänder en befintlig ägare visas en **blå toast-notifikation** i nedre högra hörnet:
+
+```
+✅ Befintlig ägare hittad: Anna Andersson (Kundnr: 10001).
+Matchad på: Personnummer.
+Samma ägare kan ha flera hundar med samma kundnummer.
+```
+
+**Fördelar med detta system:**
+
+- ✅ **GDPR-compliant**: Personnummer dupliceras aldrig i databasen
+- ✅ **Bokföringslagen**: Ett personnummer = Ett kundnummer (korrekt enligt BFL)
+- ✅ **Användarupplevelse**: Tydlig feedback när ägare återanvänds
+- ✅ **Dataintegritet**: Förhindrar inkonsistenta kunduppgifter
+- ✅ **Automatisering**: Kundnummer genereras automatiskt av DB-trigger
+
+**Teknisk implementation:**
+
+- Matchningslogik: `components/EditDogModal.tsx` (rad 490-595)
+- Database constraint: `supabase/migrations/20251122160200_remote_schema.sql`
+- Toast-notifieringar: `components/ui/use-toast.tsx`
+
+---
+
 - `lib/validation.ts` - Centraliserad validering med error classes
 
 **Business Logic:**
