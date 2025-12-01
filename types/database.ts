@@ -394,6 +394,46 @@ export interface Database {
           },
         ];
       };
+      boarding_prices: {
+        Row: {
+          id: string;
+          org_id: string;
+          dog_size: string;
+          base_price: number;
+          weekend_surcharge: number | null;
+          is_active: boolean | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          dog_size: string;
+          base_price: number;
+          weekend_surcharge?: number | null;
+          is_active?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          dog_size?: string;
+          base_price?: number;
+          weekend_surcharge?: number | null;
+          is_active?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "boarding_prices_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       bookings: {
         Row: {
           id: string;
