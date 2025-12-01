@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { Calculator, Save, Plus } from "lucide-react";
 import PageContainer from "@/components/PageContainer";
 import AssistedRegistrationModal from "@/components/AssistedRegistrationModal";
@@ -52,6 +52,7 @@ interface PriceCalculation {
 }
 
 export default function NewPensionatBooking() {
+  const supabase = createClient();
   const { currentOrgId } = useAuth();
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [owners, setOwners] = useState<Owner[]>([]);

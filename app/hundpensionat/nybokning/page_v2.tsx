@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { Calculator, Save, Plus, User, Calendar, Home } from "lucide-react";
 import AssistedRegistrationModal from "@/components/AssistedRegistrationModal";
 import { useAuth } from "@/app/context/AuthContext";
@@ -55,6 +55,7 @@ interface PriceCalculation {
 // ============================================================================
 
 export default function NewPensionatBooking() {
+  const supabase = createClient();
   const { currentOrgId } = useAuth();
 
   // Data state

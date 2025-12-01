@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import Link from "next/link";
 import {
@@ -41,6 +41,7 @@ type Dog = Database["public"]["Tables"]["dogs"]["Row"];
 type Owner = Database["public"]["Tables"]["owners"]["Row"];
 
 export default function HundpensionatPage() {
+  const supabase = createClient();
   const { user, loading } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [search, setSearch] = useState("");
@@ -536,8 +537,8 @@ export default function HundpensionatPage() {
                           booking.status === "confirmed"
                             ? "bg-green-100 text-green-800"
                             : booking.status === "pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-gray-100 text-gray-800"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-gray-100 text-gray-800"
                         }`}
                       >
                         {booking.status}
