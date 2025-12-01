@@ -47,8 +47,8 @@ interface BoardingPrice {
   org_id: string;
   dog_size: "small" | "medium" | "large";
   base_price: number;
-  weekend_surcharge: number;
-  is_active: boolean;
+  weekend_surcharge: number | null;
+  is_active: boolean | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -82,8 +82,8 @@ interface ExtraService {
   label: string;
   price: number;
   unit: "per dag" | "per gång" | "fast pris";
-  service_type: "boarding" | "daycare" | "both";
-  is_active: boolean;
+  service_type: "boarding" | "daycare" | "both" | null;
+  is_active: boolean | null;
 }
 
 type TabType = "grundpriser" | "specialdatum" | "säsonger" | "tillval";
@@ -188,7 +188,10 @@ export default function PensionatPriserPage() {
           is_active: true,
         }));
 
-      setBoardingPrices([...(data || []), ...missingPrices]);
+      setBoardingPrices([
+        ...((data || []) as BoardingPrice[]),
+        ...(missingPrices as BoardingPrice[]),
+      ]);
     } catch (err: any) {
       console.error("Error loading boarding prices:", err);
       setError("Kunde inte ladda grundpriser");
@@ -243,7 +246,7 @@ export default function PensionatPriserPage() {
         .eq("is_active", true);
 
       if (error) throw error;
-      setExtraServices(data || []);
+      setExtraServices((data || []) as ExtraService[]);
     } catch (err: any) {
       console.error("Error loading extra services:", err);
     }
@@ -297,7 +300,9 @@ export default function PensionatPriserPage() {
 
         // Replace temp with real data
         setBoardingPrices((prev) =>
-          prev.map((p) => (p.dog_size === size ? data[0] : p))
+          prev.map((p) =>
+            p.dog_size === size ? (data[0] as BoardingPrice) : p
+          )
         );
       }
 
@@ -322,8 +327,10 @@ export default function PensionatPriserPage() {
     }
 
     try {
+      // @ts-ignore - special_dates table not in generated types yet
       const { data, error } = await supabase
         .from("special_dates")
+        // @ts-ignore
         .insert([
           {
             org_id: currentOrgId,
@@ -352,8 +359,10 @@ export default function PensionatPriserPage() {
 
   const handleDeleteSpecialDate = async (id: string) => {
     try {
+      // @ts-ignore - special_dates table not in generated types yet
       const { error } = await supabase
         .from("special_dates")
+        // @ts-ignore
         .update({ is_active: false })
         .eq("id", id);
 
@@ -384,8 +393,10 @@ export default function PensionatPriserPage() {
     }
 
     try {
+      // @ts-ignore - boarding_seasons table not in generated types yet
       const { data, error } = await supabase
         .from("boarding_seasons")
+        // @ts-ignore
         .insert([
           {
             org_id: currentOrgId,
@@ -412,11 +423,12 @@ export default function PensionatPriserPage() {
       setError("Kunde inte lägga till säsong");
     }
   };
-
   const handleDeleteSeason = async (id: string) => {
     try {
+      // @ts-ignore - boarding_seasons table not in generated types yet
       const { error } = await supabase
         .from("boarding_seasons")
+        // @ts-ignore
         .update({ is_active: false })
         .eq("id", id);
 
@@ -456,7 +468,7 @@ export default function PensionatPriserPage() {
       if (error) throw error;
       if (!data || data.length === 0) throw new Error("Service not created");
 
-      setExtraServices([...extraServices, data[0]]);
+      setExtraServices([...extraServices, data[0] as ExtraService]);
       setNewService({ label: "", price: 0, unit: "per gång" });
       setSuccess("✅ Tillvalstjänst tillagd!");
       setTimeout(() => setSuccess(null), 2000);
@@ -763,7 +775,7 @@ export default function PensionatPriserPage() {
                           <div className="flex items-center gap-2">
                             <Input
                               type="number"
-                              value={price.weekend_surcharge}
+                              value={price.weekend_surcharge ?? 0}
                               onChange={(e) => {
                                 const val = parseFloat(e.target.value) || 0;
                                 setBoardingPrices((prev) =>
