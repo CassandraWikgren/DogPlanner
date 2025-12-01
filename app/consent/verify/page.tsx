@@ -155,7 +155,7 @@ function VerifyContent() {
 
       // 3. Uppdatera consent_log (if table exists)
       // @ts-ignore - consent_logs table may not be in generated types
-      const { error: consentError } = await supabase
+      const { error: consentError } = await (supabase as any)
         .from("consent_logs")
         .update({
           consent_given: true,
@@ -172,7 +172,7 @@ function VerifyContent() {
 
       // 4. Skapa ny consent_log för dokumentation
       // @ts-ignore - consent_logs table may not be in generated types
-      await supabase.from("consent_logs").insert({
+      await (supabase as any).from("consent_logs").insert({
         owner_id: tokenPayload!.ownerId,
         org_id: tokenPayload!.orgId,
         consent_type: "digital_email",

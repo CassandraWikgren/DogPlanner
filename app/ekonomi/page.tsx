@@ -125,7 +125,13 @@ export default function FakturaPage() {
 
       if (error) throw error;
 
-      setInvoices(data || []);
+      // Cast status to correct type
+      const typedData = (data || []).map((invoice) => ({
+        ...invoice,
+        status: invoice.status as "draft" | "sent" | "paid" | "overdue",
+      }));
+
+      setInvoices(typedData);
       setTotalCount(count || 0);
     } catch (error) {
       console.error("Fel vid hämtning av fakturor:", error);
@@ -626,7 +632,10 @@ export default function FakturaPage() {
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      downloadPdf(invoice.id, invoice.invoice_number)
+                      downloadPdf(
+                        invoice.id,
+                        invoice.invoice_number || `faktura-${invoice.id}`
+                      )
                     }
                     disabled={downloadingPdf === invoice.id}
                     className="border-gray-300 hover:bg-gray-50"

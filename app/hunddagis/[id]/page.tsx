@@ -47,7 +47,7 @@ type ExtraService = {
   quantity: number | null;
   price: number | null;
   notes: string | null;
-  performed_at_date: string | null;
+  // performed_at_date column doesn't exist in database
 };
 
 type Journal = { id: string; text: string; created_at: string };
@@ -162,6 +162,12 @@ export default function DogProfilePage() {
    * LADDA HUNDENS DATA (Supabase)
    * ====================================================== */
   const loadDog = useCallback(async () => {
+    if (!dogId) {
+      setMessage("❌ Inget hund-ID angivet");
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       logDebug("info", "Hämtar hundprofil från Supabase...");
