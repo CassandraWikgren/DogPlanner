@@ -2,6 +2,7 @@ import path from "path";
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
 
+// Force rebuild: 2025-12-01 11:06
 const nextConfig: NextConfig = {
   // 🌍 Miljövariabler tillgängliga i hela appen
   env: {
