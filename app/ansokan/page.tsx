@@ -101,6 +101,13 @@ export default function AnsokanPage() {
           billing_period: null,
           has_had_subscription: null,
           enabled_services: ["daycare"],
+          bankgiro: null,
+          plusgiro: null,
+          swish_number: null,
+          website: null,
+          payment_terms_days: null,
+          late_fee_amount: null,
+          interest_rate: null,
         },
         {
           id: "mock-2",
@@ -119,6 +126,13 @@ export default function AnsokanPage() {
           billing_period: null,
           has_had_subscription: null,
           enabled_services: ["daycare"],
+          bankgiro: null,
+          plusgiro: null,
+          swish_number: null,
+          website: null,
+          payment_terms_days: null,
+          late_fee_amount: null,
+          interest_rate: null,
         },
       ];
 

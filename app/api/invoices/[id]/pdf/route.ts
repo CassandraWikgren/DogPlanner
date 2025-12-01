@@ -4,7 +4,6 @@ import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import { generateOCR, formatOCR, generateSwishURL } from "@/lib/ocrGenerator";
 
-// @ts-nocheck - TODO: Fix invoice types - many fields missing from database types (invoice_number, billed_name, invoice_items table, org payment fields, etc.)
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -31,7 +30,14 @@ export async function GET(
           org_number,
           address,
           phone,
-          email
+          email,
+          website,
+          bankgiro,
+          plusgiro,
+          swish_number,
+          payment_terms_days,
+          late_fee_amount,
+          interest_rate
         )
       `
       )
@@ -45,9 +51,6 @@ export async function GET(
       );
     }
 
-    // Cast to any because many fields are missing from types (invoice_number, billed_name, etc.)
-    const invoiceData = invoice as any;
-
     // Hämta fakturarader
     const { data: items, error: itemsError } = await supabase
       .from("invoice_items")
@@ -59,9 +62,7 @@ export async function GET(
         { error: "Kunde inte hämta fakturarader" },
         { status: 500 }
       );
-    }
-
-    const itemsData = items as any[]; // Skapa PDF
+    } // Skapa PDF
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     const chunks: Buffer[] = [];
 
@@ -80,7 +81,7 @@ export async function GET(
       .fontSize(10)
       .font("Helvetica-Bold")
       .fillColor("#000")
-      .text(invoiceData.org?.name || "DogPlanner", 350, orgY, {
+      .text(invoice.org?.name || "DogPlanner", 350, orgY, {
         align: "right",
         width: 200,
       });
@@ -89,39 +90,34 @@ export async function GET(
       .fontSize(9)
       .font("Helvetica")
       .fillColor("#666")
-      .text(invoiceData.org?.address || "", 350, orgY + 15, {
+      .text(invoice.org?.address || "", 350, orgY + 15, {
         align: "right",
         width: 200,
       });
 
-    doc.text(
-      `${invoiceData.org?.postal_code || ""} ${invoiceData.org?.city || ""}`,
-      350,
-      orgY + 27,
-      { align: "right", width: 200 }
-    );
+    // Note: postal_code and city not available in orgs table
 
-    if (invoiceData.org?.org_number) {
-      doc.text(`Org.nr: ${invoiceData.org.org_number}`, 350, orgY + 39, {
+    if (invoice.org?.org_number) {
+      doc.text(`Org.nr: ${invoice.org.org_number}`, 350, orgY + 27, {
         align: "right",
         width: 200,
       });
     }
 
-    if (invoiceData.org?.phone) {
-      doc.text(`Tel: ${invoiceData.org.phone}`, 350, orgY + 51, {
+    if (invoice.org?.phone) {
+      doc.text(`Tel: ${invoice.org.phone}`, 350, orgY + 51, {
         align: "right",
         width: 200,
       });
     }
 
-    if (invoiceData.org?.email) {
+    if (invoice.org?.email) {
       doc
         .fillColor("#2c7a4c")
-        .text(invoiceData.org.email, 350, orgY + 63, {
+        .text(invoice.org.email, 350, orgY + 63, {
           align: "right",
           width: 200,
-          link: `mailto:${invoiceData.org.email}`,
+          link: `mailto:${invoice.org.email}`,
         })
         .fillColor("#666");
     }
@@ -141,11 +137,7 @@ export async function GET(
       .text("Fakturanummer:", 50, infoStartY)
       .font("Helvetica-Bold")
       .fillColor("#000")
-      .text(
-        invoiceData.invoice_number || invoiceData.id.slice(0, 8),
-        150,
-        infoStartY
-      );
+      .text(invoice.invoice_number || invoice.id.slice(0, 8), 150, infoStartY);
 
     doc
       .font("Helvetica")
@@ -154,7 +146,7 @@ export async function GET(
       .font("Helvetica-Bold")
       .fillColor("#000")
       .text(
-        new Date(invoiceData.invoice_date).toLocaleDateString("sv-SE"),
+        new Date(invoice.invoice_date).toLocaleDateString("sv-SE"),
         150,
         infoStartY + 15
       );
@@ -166,7 +158,7 @@ export async function GET(
       .font("Helvetica-Bold")
       .fillColor("#000")
       .text(
-        new Date(invoiceData.due_date).toLocaleDateString("sv-SE"),
+        new Date(invoice.due_date).toLocaleDateString("sv-SE"),
         150,
         infoStartY + 30
       );
@@ -190,22 +182,16 @@ export async function GET(
       .font("Helvetica")
       .fillColor("#333")
       .text(
-        invoiceData.billed_name || invoiceData.owner?.full_name,
+        invoice.billed_name || invoice.owner?.full_name,
         330,
         customerBoxY + 30
       );
 
-    if (invoiceData.owner?.address) {
-      doc.text(invoiceData.owner.address, 330, customerBoxY + 42);
+    if (invoice.owner?.address) {
+      doc.text(invoice.owner.address, 330, customerBoxY + 42);
     }
 
-    if (invoiceData.owner?.postal_code && invoiceData.owner?.city) {
-      doc.text(
-        `${invoiceData.owner.postal_code} ${invoiceData.owner.city}`,
-        330,
-        customerBoxY + 54
-      );
-    }
+    // Note: postal_code and city not available in owners table
 
     // --- FAKTURARADER ---
     const tableTop = 280;
@@ -235,24 +221,29 @@ export async function GET(
 
     doc.fontSize(9).font("Helvetica").fillColor("#333");
 
-    (itemsData || []).forEach((item: any, index: number) => {
-      const itemTotal = item.total_amount || item.quantity * item.unit_price;
+    (items || []).forEach((item, index) => {
+      const itemTotal = item.amount || (item.qty || 0) * (item.unit_price || 0);
       subtotal += itemTotal;
 
       // Beskrivning (kan wrappa)
-      doc.text(item.description, 60, currentY, { width: 250 });
+      doc.text(item.description || "", 60, currentY, { width: 250 });
 
       // Antal
-      doc.text(item.quantity.toString(), 320, currentY, {
+      doc.text((item.qty || 0).toString(), 320, currentY, {
         width: 50,
         align: "right",
       });
 
       // Enhetspris
-      doc.text(`${item.unit_price.toLocaleString("sv-SE")} kr`, 380, currentY, {
-        width: 70,
-        align: "right",
-      });
+      doc.text(
+        `${(item.unit_price || 0).toLocaleString("sv-SE")} kr`,
+        380,
+        currentY,
+        {
+          width: 70,
+          align: "right",
+        }
+      );
 
       // Totalt
       doc.text(`${itemTotal.toLocaleString("sv-SE")} kr`, 460, currentY, {
@@ -263,7 +254,7 @@ export async function GET(
       currentY += 25;
 
       // Lägg till linje mellan rader
-      if (index < itemsData.length - 1) {
+      if (index < (items?.length || 0) - 1) {
         doc
           .strokeColor("#e5e7eb")
           .lineWidth(0.5)
@@ -314,7 +305,7 @@ export async function GET(
     doc
       .fontSize(14)
       .text(
-        `${invoiceData.total_amount.toLocaleString("sv-SE")} kr`,
+        `${invoice.total_amount.toLocaleString("sv-SE")} kr`,
         460,
         totalsY + 55,
         {
@@ -343,17 +334,15 @@ export async function GET(
     doc.fontSize(9).font("Helvetica").fillColor("#333");
 
     // Bankgiro + OCR
-    if (invoiceData.org?.bankgiro) {
+    if (invoice.org?.bankgiro) {
       doc.font("Helvetica-Bold").text("Bankgiro:", 60, currentPaymentY);
-      doc
-        .font("Helvetica")
-        .text(invoiceData.org.bankgiro, 140, currentPaymentY);
+      doc.font("Helvetica").text(invoice.org.bankgiro, 140, currentPaymentY);
       currentPaymentY += 15;
 
       // Generera OCR-nummer
       const ocrNumber = generateOCR(
-        invoiceData.owner?.customer_number,
-        invoiceData.invoice_number
+        invoice.owner?.customer_number,
+        invoice.invoice_number
       );
       const formattedOCR = formatOCR(ocrNumber);
 
@@ -367,20 +356,18 @@ export async function GET(
     }
 
     // Plusgiro (om det finns)
-    if (invoiceData.org?.plusgiro) {
+    if (invoice.org?.plusgiro) {
       doc.font("Helvetica-Bold").text("Plusgiro:", 60, currentPaymentY);
-      doc
-        .font("Helvetica")
-        .text(invoiceData.org.plusgiro, 140, currentPaymentY);
+      doc.font("Helvetica").text(invoice.org.plusgiro, 140, currentPaymentY);
       currentPaymentY += 15;
     }
 
     // Swish
-    if (invoiceData.org?.swish_number) {
+    if (invoice.org?.swish_number) {
       doc.font("Helvetica-Bold").text("Swish:", 60, currentPaymentY);
       doc
         .font("Helvetica")
-        .text(invoiceData.org.swish_number, 140, currentPaymentY);
+        .text(invoice.org.swish_number, 140, currentPaymentY);
       currentPaymentY += 20;
     }
 
@@ -394,7 +381,7 @@ export async function GET(
       .font("Helvetica-Bold")
       .fillColor("#000")
       .text(
-        `${invoiceData.org?.payment_terms_days || 14} dagar netto`,
+        `${invoice.org?.payment_terms_days || 14} dagar netto`,
         140,
         currentPaymentY
       );
@@ -409,19 +396,19 @@ export async function GET(
       .font("Helvetica-Bold")
       .fillColor("#d32f2f")
       .text(
-        new Date(invoiceData.due_date).toLocaleDateString("sv-SE"),
+        new Date(invoice.due_date).toLocaleDateString("sv-SE"),
         140,
         currentPaymentY
       );
     currentPaymentY += 10;
 
     // Swish QR-kod (höger sida)
-    if (invoiceData.org?.swish_number) {
+    if (invoice.org?.swish_number) {
       try {
         const swishURL = generateSwishURL(
-          invoiceData.org.swish_number,
-          invoiceData.total_amount,
-          invoiceData.invoice_number || invoiceData.id.slice(0, 8)
+          invoice.org.swish_number,
+          invoice.total_amount,
+          invoice.invoice_number || invoice.id.slice(0, 8)
         );
         const qrDataURL = await QRCode.toDataURL(swishURL, {
           width: 120,
@@ -454,18 +441,15 @@ export async function GET(
       .fillColor("#999")
       .text(
         `Vid försenad betalning tillkommer påminnelseavgift (${
-          invoiceData.org?.late_fee_amount || 60
-        } kr) samt dröjsmålsränta (${invoiceData.org?.interest_rate || 8}% per år).`,
+          invoice.org?.late_fee_amount || 60
+        } kr) samt dröjsmålsränta (${invoice.org?.interest_rate || 8}% per år).`,
         50,
         feeY,
         { width: 500 }
       );
 
     // Påminnelsenotis (om fakturan är en påminnelse)
-    if (
-      invoiceData.status === "reminder_1" ||
-      invoiceData.status === "reminder_2"
-    ) {
+    if (invoice.status === "reminder_1" || invoice.status === "reminder_2") {
       const reminderY = feeY + 30;
       doc
         .rect(50, reminderY - 10, 500, 60)
@@ -478,7 +462,7 @@ export async function GET(
         .font("Helvetica-Bold")
         .fillColor("#d32f2f")
         .text(
-          invoiceData.status === "reminder_1"
+          invoice.status === "reminder_1"
             ? "BETALNINGSPÅMINNELSE"
             : "ANDRA BETALNINGSPÅMINNELSE",
           60,
@@ -487,7 +471,7 @@ export async function GET(
 
       doc.fontSize(9).font("Helvetica").fillColor("#333");
 
-      if (invoiceData.status === "reminder_1") {
+      if (invoice.status === "reminder_1") {
         doc.text(
           "Vi har inte mottagit betalning för denna faktura. Vänligen betala snarast för att undvika påminnelseavgift.",
           60,
@@ -496,7 +480,7 @@ export async function GET(
         );
       } else {
         doc.text(
-          `Påminnelseavgift (${invoiceData.reminder_2_fee || 60} kr) och dröjsmålsränta har lagts till. Vid utebliven betalning överlämnas ärendet till inkasso.`,
+          `Påminnelseavgift (${invoice.reminder_2_fee || 60} kr) och dröjsmålsränta har lagts till. Vid utebliven betalning överlämnas ärendet till inkasso.`,
           60,
           reminderY + 20,
           { width: 480 }
@@ -505,10 +489,9 @@ export async function GET(
     }
 
     // Kontaktinformation
-    if (invoiceData.org?.email) {
+    if (invoice.org?.email) {
       const contactY =
-        invoiceData.status === "reminder_1" ||
-        invoiceData.status === "reminder_2"
+        invoice.status === "reminder_1" || invoice.status === "reminder_2"
           ? feeY + 100
           : feeY + 30;
       doc
@@ -516,8 +499,8 @@ export async function GET(
         .font("Helvetica")
         .fillColor("#666")
         .text(`Vid frågor, kontakta: `, 50, contactY);
-      doc.fillColor("#2c7a4c").text(invoiceData.org.email, 140, contactY, {
-        link: `mailto:${invoiceData.org.email}`,
+      doc.fillColor("#2c7a4c").text(invoice.org.email, 140, contactY, {
+        link: `mailto:${invoice.org.email}`,
       });
     }
 
@@ -547,7 +530,7 @@ export async function GET(
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="Faktura-${invoiceData.invoice_number || invoiceData.id.slice(0, 8)}.pdf"`,
+        "Content-Disposition": `attachment; filename="Faktura-${invoice.invoice_number || invoice.id.slice(0, 8)}.pdf"`,
       },
     });
   } catch (error: any) {

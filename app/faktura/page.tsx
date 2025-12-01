@@ -74,11 +74,9 @@ type InvoiceItem = {
   id: string;
   invoice_id: string;
   description: string | null;
-  quantity: number;
-  unit_price: number;
-  total_amount: number;
-  tax_rate?: number;
-  created_at?: string;
+  qty: number | null;
+  unit_price: number | null;
+  amount: number | null;
 };
 
 const DEFAULT_COLUMNS = [
@@ -250,9 +248,7 @@ const FakturorPage = () => {
       logDebug("info", "Hämtar fakturarader…");
       const { data, error } = await supabase
         .from("invoice_items")
-        .select(
-          "id, invoice_id, description, quantity, unit_price, total_amount, tax_rate, created_at"
-        );
+        .select("id, invoice_id, description, qty, unit_price, amount");
 
       if (error) {
         throw new Error(
@@ -507,7 +503,7 @@ const FakturorPage = () => {
       const { error: itemError } = await supabase.from("invoice_items").insert({
         invoice_id: invoice.id,
         description: description.trim(),
-        quantity: 1,
+        qty: 1,
         unit_price: belopp,
         total_amount: belopp,
       });

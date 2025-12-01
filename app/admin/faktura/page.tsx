@@ -61,9 +61,9 @@ type InvoiceItem = {
   id: string;
   invoice_id: string;
   description: string | null;
-  qty: number;
-  unit_price: number;
-  amount: number;
+  qty: number | null;
+  unit_price: number | null;
+  amount: number | null;
 };
 
 const FakturorPage = () => {

@@ -24,7 +24,7 @@ import {
 
 interface Invoice {
   id: string;
-  invoice_number?: string;
+  invoice_number?: string | null;
   owner_id: string;
   invoice_date: string;
   due_date: string;
@@ -32,8 +32,8 @@ interface Invoice {
   paid_amount?: number;
   status: "draft" | "sent" | "paid" | "overdue";
   notes?: string | null;
-  sent_at?: string;
-  paid_date?: string;
+  sent_at?: string | null;
+  paid_date?: string | null;
   owner?: {
     full_name: string;
     customer_number?: number | null;

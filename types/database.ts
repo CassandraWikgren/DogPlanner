@@ -24,6 +24,14 @@ export interface Database {
           has_had_subscription: boolean | null;
           // Enabled services
           enabled_services: string[] | null;
+          // Payment fields (from invoice_system_improvements migration)
+          bankgiro: string | null;
+          plusgiro: string | null;
+          swish_number: string | null;
+          website: string | null;
+          payment_terms_days: number | null;
+          late_fee_amount: number | null;
+          interest_rate: number | null;
         };
         Insert: {
           id?: string;
@@ -42,6 +50,13 @@ export interface Database {
           billing_period?: string | null;
           has_had_subscription?: boolean | null;
           enabled_services?: string[] | null;
+          bankgiro?: string | null;
+          plusgiro?: string | null;
+          swish_number?: string | null;
+          website?: string | null;
+          payment_terms_days?: number | null;
+          late_fee_amount?: number | null;
+          interest_rate?: number | null;
         };
         Update: {
           id?: string;
@@ -60,6 +75,13 @@ export interface Database {
           billing_period?: string | null;
           has_had_subscription?: boolean | null;
           enabled_services?: string[] | null;
+          bankgiro?: string | null;
+          plusgiro?: string | null;
+          swish_number?: string | null;
+          website?: string | null;
+          payment_terms_days?: number | null;
+          late_fee_amount?: number | null;
+          interest_rate?: number | null;
         };
         Relationships: [];
       };
@@ -612,6 +634,23 @@ export interface Database {
           notes: string | null;
           created_at: string | null;
           updated_at: string | null;
+          // Additional fields from migrations
+          invoice_number: string | null;
+          billed_name: string | null;
+          billed_email: string | null;
+          billed_address: string | null;
+          invoice_type: string | null;
+          sent_at: string | null;
+          paid_at: string | null;
+          reminder_1_date: string | null;
+          reminder_2_date: string | null;
+          reminder_1_fee: number | null;
+          reminder_2_fee: number | null;
+          collection_fee: number | null;
+          late_interest: number | null;
+          ocr_number: string | null;
+          payment_reference: string | null;
+          deleted_at: string | null;
         };
         Insert: {
           id?: string;
@@ -625,6 +664,22 @@ export interface Database {
           notes?: string | null;
           created_at?: string | null;
           updated_at?: string | null;
+          invoice_number?: string | null;
+          billed_name?: string | null;
+          billed_email?: string | null;
+          billed_address?: string | null;
+          invoice_type?: string | null;
+          sent_at?: string | null;
+          paid_at?: string | null;
+          reminder_1_date?: string | null;
+          reminder_2_date?: string | null;
+          reminder_1_fee?: number | null;
+          reminder_2_fee?: number | null;
+          collection_fee?: number | null;
+          late_interest?: number | null;
+          ocr_number?: string | null;
+          payment_reference?: string | null;
+          deleted_at?: string | null;
         };
         Update: {
           id?: string;
@@ -638,6 +693,22 @@ export interface Database {
           notes?: string | null;
           created_at?: string | null;
           updated_at?: string | null;
+          invoice_number?: string | null;
+          billed_name?: string | null;
+          billed_email?: string | null;
+          billed_address?: string | null;
+          invoice_type?: string | null;
+          sent_at?: string | null;
+          paid_at?: string | null;
+          reminder_1_date?: string | null;
+          reminder_2_date?: string | null;
+          reminder_1_fee?: number | null;
+          reminder_2_fee?: number | null;
+          collection_fee?: number | null;
+          late_interest?: number | null;
+          ocr_number?: string | null;
+          payment_reference?: string | null;
+          deleted_at?: string | null;
         };
         Relationships: [
           {
@@ -650,6 +721,41 @@ export interface Database {
             foreignKeyName: "invoices_owner_id_fkey";
             columns: ["owner_id"];
             referencedRelation: "owners";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      invoice_items: {
+        Row: {
+          id: string;
+          invoice_id: string;
+          booking_id: string | null;
+          description: string | null;
+          qty: number | null;
+          unit_price: number | null;
+          amount: number | null;
+        };
+        Insert: {
+          id?: string;
+          invoice_id: string;
+          booking_id?: string | null;
+          description?: string | null;
+          qty?: number | null;
+          unit_price?: number | null;
+        };
+        Update: {
+          id?: string;
+          invoice_id?: string;
+          booking_id?: string | null;
+          description?: string | null;
+          qty?: number | null;
+          unit_price?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey";
+            columns: ["invoice_id"];
+            referencedRelation: "invoices";
             referencedColumns: ["id"];
           },
         ];
