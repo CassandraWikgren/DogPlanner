@@ -33,6 +33,7 @@ export function DagisStats({
   onStatClick,
   currentOrgId,
 }: DagisStatsProps) {
+  const supabase = createClient();
   const [applications, setApplications] = useState(0);
   const [services, setServices] = useState(0);
   const [rooms, setRooms] = useState(0);
