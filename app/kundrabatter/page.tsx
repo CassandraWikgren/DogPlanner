@@ -25,8 +25,8 @@ interface CustomerDiscount {
   discount_value: number;
   description: string;
   is_permanent: boolean;
-  valid_from?: string;
-  valid_until?: string;
+  valid_from?: string | null;
+  valid_until?: string | null;
   is_active: boolean;
   created_at: string;
   owners?: Owner;
