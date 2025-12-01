@@ -881,7 +881,7 @@ SELECT * FROM cron.job WHERE jobname = 'monthly-invoice-generation';
 ```sql
 CREATE TABLE daycare_pricing (
   id UUID PRIMARY KEY,
-  org_id UUID REFERENCES organisations(id),  -- 👈 Varje org har sin egen rad
+  org_id UUID REFERENCES orgs(id),  -- 👈 Varje org har sin egen rad
 
   -- Abonnemangspriser (företaget bestämmer själv)
   subscription_1day DECIMAL(10,2),   -- "Deltid 1" (1 dag/vecka)
@@ -1044,7 +1044,7 @@ TOTALT: 17765 kr
 CREATE TABLE extra_service (
   id UUID PRIMARY KEY,
   dogs_id UUID REFERENCES dogs(id),
-  org_id UUID REFERENCES organisations(id),
+  org_id UUID REFERENCES orgs(id),
   service_type TEXT,  -- "Träningskurs", "Medicinering", "Grooming"
   price DECIMAL(10,2),
 
