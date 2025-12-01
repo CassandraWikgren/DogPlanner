@@ -17,7 +17,8 @@ import {
  * }
  */
 export async function POST(request: Request) {
-  try {    const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
     // Verifiera authentication
     const {
@@ -50,8 +51,6 @@ export async function POST(request: Request) {
         end_date,
         status,
         total_price,
-        prepayment_invoice_id,
-        afterpayment_invoice_id,
         dogs (
           id,
           name,
@@ -113,13 +112,13 @@ export async function POST(request: Request) {
 
     // Hämta organisationens avbokningspolicy
     const { data: organisation } = await supabase
-      .from("organisations")
+      .from("orgs")
       .select("cancellation_policy")
       .eq("id", booking.org_id)
       .single();
 
     const policy = parsePolicyFromOrganisation(
-      organisation?.cancellation_policy
+      (organisation as any)?.cancellation_policy
     );
 
     // Beräkna avbokningsavgift
@@ -159,9 +158,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Hantera återbetalning om det finns en förskottsfaktura
+    // TODO: Hantera återbetalning om det finns en förskottsfaktura
+    // Kolumnen prepayment_invoice_id finns inte ännu i bookings-tabellen
+    /*
     if (booking.prepayment_invoice_id && calculation.refundAmount > 0) {
-      // Uppdatera fakturan till refunded
       const { error: invoiceError } = await supabase
         .from("invoices")
         .update({
@@ -174,9 +174,9 @@ export async function POST(request: Request) {
 
       if (invoiceError) {
         console.error("Fel vid uppdatering av faktura:", invoiceError);
-        // Fortsätt ändå - avbokningen är gjord
       }
     }
+    */
 
     // TODO: Skicka avbokningsbekräftelse via email
     // await sendCancellationEmail(booking, calculation);

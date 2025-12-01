@@ -64,10 +64,7 @@ export async function uploadImage(
  * @returns Promise<boolean>
  */
 export async function deleteImage(imageUrl: string): Promise<boolean> {
-  if (!supabase) {
-    console.error("Supabase client is not available");
-    return false;
-  }
+  const supabase = createClient();
 
   try {
     // Extrahera path från URL

@@ -80,7 +80,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Skapa admin client med service role key (bypassa RLS)
-    const supabaseAdmin = createClient<Database>(
+    const { createClient: createServiceClient } = await import(
+      "@supabase/supabase-js"
+    );
+    const supabaseAdmin = createServiceClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       {
