@@ -22,9 +22,6 @@ export default function LoginPage() {
     const forceLogin = urlParams.get("force") === "true";
 
     if (!authLoading && user && !forceLogin) {
-      console.log(
-        "LoginPage: User already logged in, redirecting to dashboard"
-      );
       router.push("/dashboard");
     }
   }, [user, authLoading, router]);
@@ -42,8 +39,6 @@ export default function LoginPage() {
         email,
         password,
       });
-
-      console.log("🔑 Login result:", data, error); // <== Felsökning i terminalen
 
       if (error) throw error;
 

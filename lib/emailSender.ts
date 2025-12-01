@@ -9,6 +9,7 @@
  */
 
 import { Resend } from "resend";
+import { createClient } from "@/lib/supabase/client";
 import { getEmailSender, getOrgEmailConfig } from "./emailConfig";
 import {
   getApplicationConfirmationEmail,
@@ -389,9 +390,16 @@ export async function sendWelcomeEmail(
   let orgName = "vår hunddagis";
   if (orgId) {
     try {
-      const orgConfig = await getOrgEmailConfig(orgId);
-      // Vi behöver hämta org-namnet separat - detta är en förenkling
-      orgName = "hunddagis"; // TODO: Hämta från org-tabellen
+      const supabase = createClient();
+      const { data: org } = await supabase
+        .from("organisations")
+        .select("name")
+        .eq("id", orgId)
+        .single() as { data: { name: string } | null };
+      
+      if (org?.name) {
+        orgName = org.name;
+      }
     } catch (e) {
       console.warn("Could not fetch org name:", e);
     }

@@ -136,8 +136,6 @@ export default function CustomerRegisterPage() {
         throw new Error(`${ERROR_CODES.VALIDATION} ${stepError}`);
       }
 
-      console.log("[DEBUG] Startar Supabase Auth registrering...");
-
       // 1. Skapa autentiserad användare med Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: ownerData.email,
@@ -159,8 +157,6 @@ export default function CustomerRegisterPage() {
       if (!authData.user) {
         throw new Error(`${ERROR_CODES.AUTH} Ingen användare skapades`);
       }
-
-      console.log("[DEBUG] Auth-användare skapad:", authData.user.id);
 
       // 2. Skapa ägarprofil i owners-tabellen kopplad till auth-användaren
       const ownerData_insert: any = {
@@ -211,7 +207,7 @@ export default function CustomerRegisterPage() {
         );
       }
 
-      console.log("[DEBUG] Ägarprofil skapad:", newOwner); // 2. Skapa hunden kopplad till ägaren (dogs.owner_id → owners.id)
+      // 2. Skapa hunden kopplad till ägaren (dogs.owner_id → owners.id)
       const dogData_insert: any = {
         name: dogData.name,
         breed: dogData.breed,
@@ -247,8 +243,6 @@ export default function CustomerRegisterPage() {
 
       if (personality.length > 0)
         dogData_insert.personality_traits = personality;
-
-      console.log("[DEBUG] Försöker skapa hund med data:", dogData_insert);
 
       const { data: newDog, error: dogError } = await supabase
         .from("dogs")

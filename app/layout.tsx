@@ -46,11 +46,9 @@ export default function RootLayout({
           !cookieName.includes("-auth-token-code-verifier")
         ) {
           document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-          console.log("🧹 Cleaned old cookie:", cookieName);
         }
       });
       localStorage.setItem(migrationKey, "true");
-      console.log("✅ SSR migration cookie cleanup complete");
     }
   }, []);
 

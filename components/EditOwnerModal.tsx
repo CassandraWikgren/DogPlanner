@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/app/context/AuthContext";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,7 @@ export function EditOwnerModal({
   refresh,
 }: EditOwnerModalProps) {
   const supabase = createClient();
+  const { currentOrgId } = useAuth();
   const [form, setForm] = useState<OwnerForm>(owner || {});
 
   useEffect(() => {
@@ -43,6 +45,11 @@ export function EditOwnerModal({
 
   async function handleSave() {
     try {
+      if (!currentOrgId) {
+        alert("Ingen organisation hittades");
+        return;
+      }
+
       if (!owner?.customer_number && !owner?.id) {
         // Ny ägare (customer_number sätts av trigger)
         const insertData = {
@@ -52,7 +59,7 @@ export function EditOwnerModal({
           contact_person_2: form.contact_person_2 ?? null,
           contact_phone_2: form.contact_phone_2 ?? null,
           address: null,
-          org_id: "", // TODO: set correct org_id if needed
+          org_id: currentOrgId,
           notes: null,
           customer_number: null,
         };

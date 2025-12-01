@@ -25,5 +25,10 @@
     "types": ["node", "pdfkit"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", ".next"]
+  "exclude": [
+    "node_modules",
+    ".next",
+    "archive_gamla_schema_disabled",
+    "archive"
+  ]
 }
