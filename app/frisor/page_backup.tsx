@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { capitalize } from "@/lib/textUtils";
 import {
@@ -102,6 +102,7 @@ const SERVICE_LABELS: Record<string, string> = {
  * Main Component
  * =========================== */
 export default function FrisorPage() {
+  const supabase = createClient();
   const { user, currentOrgId, loading: authLoading } = useAuth();
   const effectiveOrgId = currentOrgId || user?.user_metadata?.org_id || null;
 
