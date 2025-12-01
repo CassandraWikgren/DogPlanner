@@ -1,6 +1,7 @@
 /**
  * PRISBERÄKNING FÖR HUNDPENSIONAT
  * Skapad: 2025-11-13
+ * Uppdaterad: 2025-12-01 - Förbättrad type safety och error handling
  *
  * Denna modul hanterar prisberäkning för pensionatsbokningar med stöd för:
  * - Grundpriser per hundstorlek
@@ -15,19 +16,29 @@
  */
 
 import { createClient } from "./supabase/client";
+import type { DogSize } from "@/types/entities";
+
+// =====================================================
+// TYPE DEFINITIONS
+// =====================================================
 
 export interface BoardingPrice {
-  dog_size: "small" | "medium" | "large";
+  dog_size: DogSize;
   base_price: number;
-  weekend_surcharge: number;
+  weekend_surcharge: number | null;
+  org_id: string;
+  is_active: boolean;
 }
+
+export type SpecialDateCategory = "red_day" | "holiday" | "event" | "custom";
 
 export interface SpecialDate {
   date: string;
   name: string;
-  category: "red_day" | "holiday" | "event" | "custom";
+  category: SpecialDateCategory;
   price_surcharge: number;
   is_active: boolean;
+  org_id: string;
 }
 
 export interface BoardingSeason {
@@ -35,16 +46,47 @@ export interface BoardingSeason {
   start_date: string;
   end_date: string;
   price_multiplier: number;
+  priority: number;
   is_active: boolean;
+  org_id: string;
 }
+
+export interface PriceBreakdown {
+  basePrice: number;
+  weekendSurcharge: number;
+  seasonMultiplier: number;
+  specialDateSurcharge: number;
+  totalPerNight: number;
+}
+
+export interface PriceCalculationResult {
+  success: boolean;
+  totalCost: number;
+  nights: number;
+  breakdown: PriceBreakdown[];
+  error?: string;
+}
+
+// =====================================================
+// UTILITY FUNCTIONS
+// =====================================================
 
 /**
  * Bestämmer hundstorlek baserat på mankhöjd
+ * Nu med null/undefined säker hantering
  */
-export function getDogSize(heightCm: number): "small" | "medium" | "large" {
-  if (heightCm < 35) return "small";
+export function getDogSize(heightCm: number | null | undefined): DogSize {
+  if (!heightCm || heightCm < 35) return "small";
   if (heightCm <= 54) return "medium";
   return "large";
+}
+
+/**
+ * Validerar att ett datum är giltigt
+ */
+function isValidDate(dateString: string): boolean {
+  const date = new Date(dateString);
+  return date instanceof Date && !isNaN(date.getTime());
 }
 
 /**
@@ -64,26 +106,52 @@ export function formatDate(date: Date): string {
 
 /**
  * Hämta grundpris för hundstorlek
+ * Med förbättrad error handling och validering
  */
 export async function getBasePrice(
-  dogSize: "small" | "medium" | "large",
+  dogSize: DogSize,
   orgId: string
 ): Promise<BoardingPrice | null> {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("boarding_prices")
-    .select("dog_size, base_price, weekend_surcharge")
-    .eq("org_id", orgId)
-    .eq("dog_size", dogSize)
-    .eq("is_active", true)
-    .single();
-
-  if (error) {
-    console.error("Fel vid hämtning av grundpris:", error);
+  // Validera input
+  if (!orgId) {
+    console.error("[ERR-4001] Validering: org_id saknas");
     return null;
   }
 
-  return data as BoardingPrice;
+  const validSizes: DogSize[] = ["small", "medium", "large"];
+  if (!validSizes.includes(dogSize)) {
+    console.error(`[ERR-4001] Validering: Ogiltig hundstorlek: ${dogSize}`);
+    return null;
+  }
+
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("boarding_prices")
+      .select("dog_size, base_price, weekend_surcharge, org_id, is_active")
+      .eq("org_id", orgId)
+      .eq("dog_size", dogSize)
+      .eq("is_active", true)
+      .single();
+
+    if (error) {
+      console.error("[ERR-1001] Databasfel vid hämtning av grundpris:", error);
+      return null;
+    }
+
+    if (!data) {
+      console.warn(
+        `[WARN] Inget grundpris funnet för storlek: ${dogSize}, org: ${orgId}`
+      );
+      return null;
+    }
+
+    // Type assertion är säker här eftersom vi kontrollerat datan ovan
+    return data as BoardingPrice;
+  } catch (error) {
+    console.error("[ERR-5001] Oväntat fel i getBasePrice:", error);
+    return null;
+  }
 }
 
 /**
@@ -170,7 +238,7 @@ export async function calculateNightPrice(
     breakdown.push(`${specialDate.name}: +${specialDate.price_surcharge} kr`);
   }
   // Steg 3: Om inget specialdatum, kolla helg
-  else if (isWeekend(date)) {
+  else if (isWeekend(date) && basePrice.weekend_surcharge) {
     nightPrice += basePrice.weekend_surcharge;
     breakdown.push(`Helgtillägg: +${basePrice.weekend_surcharge} kr`);
   }
