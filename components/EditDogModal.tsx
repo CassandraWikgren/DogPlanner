@@ -4,6 +4,7 @@ import * as React from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { DogBreedSelect } from "@/components/DogBreedSelect";
+import { toast } from "@/components/ui/use-toast";
 
 /** Props */
 type Props = {
@@ -502,6 +503,10 @@ export default function EditDogModal({
           console.log(
             `✅ Återanvänder befintlig ägare: ${hit.full_name} (Kundnr: ${hit.customer_number}) - matchad på e-post`
           );
+          toast(
+            `✅ Befintlig ägare hittad: ${hit.full_name} (Kundnr: ${hit.customer_number}). Matchad på e-post.`,
+            "info"
+          );
         }
       }
 
@@ -532,6 +537,10 @@ export default function EditDogModal({
           console.log(
             `✅ Återanvänder befintlig ägare: ${match.full_name} (Kundnr: ${match.customer_number}) - matchad på telefon`
           );
+          toast(
+            `✅ Befintlig ägare hittad: ${match.full_name} (Kundnr: ${match.customer_number}). Matchad på telefonnummer.`,
+            "info"
+          );
         }
       }
 
@@ -550,6 +559,10 @@ export default function EditDogModal({
           console.log(
             `✅ Återanvänder befintlig ägare: ${hit3.full_name} (Kundnr: ${hit3.customer_number}) - matchad på namn + telefon`
           );
+          toast(
+            `✅ Befintlig ägare hittad: ${hit3.full_name} (Kundnr: ${hit3.customer_number}). Matchad på namn + telefon.`,
+            "info"
+          );
         }
       }
 
@@ -567,6 +580,10 @@ export default function EditDogModal({
           existingCustomerNumber = hit4.customer_number;
           console.log(
             `✅ Återanvänder befintlig ägare: ${hit4.full_name} (Kundnr: ${hit4.customer_number}) - matchad på personnummer`
+          );
+          toast(
+            `✅ Befintlig ägare hittad: ${hit4.full_name} (Kundnr: ${hit4.customer_number}). Matchad på personnummer. Samma ägare kan ha flera hundar.`,
+            "info"
           );
         }
       }
