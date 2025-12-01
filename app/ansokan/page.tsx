@@ -40,6 +40,7 @@ interface FormData {
  * [ERR-1001] Databaskoppling, [ERR-2001] Formulärvalidering, [ERR-4001] Skicka ansökan
  */
 export default function AnsokanPage() {
+  const supabase = createClient();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -94,6 +95,12 @@ export default function AnsokanPage() {
           vat_rate: 25,
           created_at: "",
           updated_at: "",
+          stripe_customer_id: null,
+          stripe_subscription_id: null,
+          subscription_status: null,
+          billing_period: null,
+          has_had_subscription: null,
+          enabled_services: ["daycare"],
         },
         {
           id: "mock-2",
@@ -106,6 +113,12 @@ export default function AnsokanPage() {
           vat_rate: 25,
           created_at: "",
           updated_at: "",
+          stripe_customer_id: null,
+          stripe_subscription_id: null,
+          subscription_status: null,
+          billing_period: null,
+          has_had_subscription: null,
+          enabled_services: ["daycare"],
         },
       ];
 
