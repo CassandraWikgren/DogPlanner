@@ -741,12 +741,9 @@ export default function EditDogModal({
               dog_id: dogId,
               user_id: user?.id || null, // ✅ VIKTIGT: Lägg till user_id
               content: journalText.trim(),
-              entry_type: "note",
             },
           ])
-          .throwOnError();
-
-        // Ladda om journalhistorik efter sparning
+          .throwOnError(); // Ladda om journalhistorik efter sparning
         const { data: updatedJournal } = await supabase
           .from("dog_journal")
           .select("*")
@@ -1396,12 +1393,6 @@ export default function EditDogModal({
                                   }
                                 )}
                               </span>
-                              {entry.entry_type &&
-                                entry.entry_type !== "note" && (
-                                  <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[10px]">
-                                    {entry.entry_type}
-                                  </span>
-                                )}
                             </div>
                             <p className="text-gray-600 whitespace-pre-wrap">
                               {entry.content}
