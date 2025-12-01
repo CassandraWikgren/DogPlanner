@@ -9,7 +9,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "types:generate": "supabase gen types typescript --project-id fhdkkkujnhteetllxypg --schema public > types/database.ts && echo '✅ Types uppdaterade från Supabase'",
+    "types:backup": "cp types/database.ts types/database_backup_$(date +%Y%m%d_%H%M%S).ts && npm run types:generate",
+    "types:check": "npm run types:generate && npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
