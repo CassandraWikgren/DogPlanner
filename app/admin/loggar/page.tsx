@@ -16,6 +16,7 @@ type Log = {
 
 export default function LoggarPage() {
   const router = useRouter();
+  const supabase = createClient(); // Create client at component level
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
