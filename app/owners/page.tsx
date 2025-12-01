@@ -64,6 +64,7 @@ type SortKey = keyof Owner | "dog_count";
 type SortDirection = "asc" | "desc";
 
 export default function OwnersPage() {
+  const supabase = createClient();
   const { user, currentOrgId, loading: authLoading } = useAuth();
   const [owners, setOwners] = useState<Owner[]>([]);
   const [loading, setLoading] = useState(true);

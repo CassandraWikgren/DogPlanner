@@ -68,6 +68,7 @@ interface DayData {
 }
 
 export default function KalenderPage() {
+  const supabase = createClient();
   const { user, currentOrgId, loading: authLoading } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);

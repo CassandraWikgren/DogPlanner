@@ -14,6 +14,7 @@ interface Dog {
 }
 
 export default function DashboardHeader() {
+  const supabase = createClient();
   const [dateInfo, setDateInfo] = useState({ date: "", weekday: "" });
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [loading, setLoading] = useState(true);

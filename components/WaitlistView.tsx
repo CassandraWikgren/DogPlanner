@@ -29,6 +29,7 @@ interface WaitlistViewProps {
 export default function WaitlistView({
   onApplicationClick,
 }: WaitlistViewProps) {
+  const supabase = createClient();
   const { currentOrgId } = useAuth();
   const [applications, setApplications] = useState<InterestApplication[]>([]);
   const [loading, setLoading] = useState(true);

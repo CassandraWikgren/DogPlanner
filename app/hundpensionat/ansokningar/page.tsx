@@ -71,6 +71,7 @@ interface OwnerDiscount {
 // HUVUDKOMPONENT
 // ====================================
 export default function PensionatAnsokningarPage() {
+  const supabase = createClient();
   const { user, currentOrgId, loading: authLoading } = useAuth();
 
   const [bookings, setBookings] = useState<PendingBooking[]>([]);

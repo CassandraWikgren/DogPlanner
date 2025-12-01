@@ -16,6 +16,7 @@ import {
 import CreateAccountOffer from "@/components/CreateAccountOffer";
 
 export default function PensionatAnsokanPage() {
+  const supabase = createClient();
   const [orgId, setOrgId] = useState<string | null>(null);
   const [orgName, setOrgName] = useState<string>("");
 

@@ -10,6 +10,7 @@ export default function HundpensionatPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const supabase = createClient();
   // 🐾 Next.js 15 – params är en Promise
   const { id } = use(params);
 

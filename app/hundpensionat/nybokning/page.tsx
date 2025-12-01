@@ -55,6 +55,7 @@ interface PriceCalculation {
 // ============================================================================
 
 export default function NewPensionatBooking() {
+  const supabase = createClient();
   const { currentOrgId } = useAuth();
 
   // Data state

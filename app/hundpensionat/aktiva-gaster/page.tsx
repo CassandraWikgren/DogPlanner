@@ -60,6 +60,7 @@ interface ExtraService {
 }
 
 export default function AktivaGasterPage() {
+  const supabase = createClient();
   const { user, currentOrgId, loading: authLoading } = useAuth();
 
   const [guests, setGuests] = useState<ActiveGuest[]>([]);

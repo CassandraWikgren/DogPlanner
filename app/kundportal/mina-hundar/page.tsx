@@ -33,6 +33,7 @@ const INITIAL_FORM: DogFormData = {
 };
 
 export default function MinaHundarPage() {
+  const supabase = createClient();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [dogs, setDogs] = useState<DogProfile[]>([]);

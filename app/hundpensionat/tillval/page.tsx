@@ -30,6 +30,7 @@ const UNIT_OPTIONS = [
 ];
 
 export default function TillvalstjansterPage() {
+  const supabase = createClient();
   const router = useRouter();
   const { user, currentOrgId, loading: authLoading } = useAuth();
   const [services, setServices] = useState<ExtraService[]>([]);

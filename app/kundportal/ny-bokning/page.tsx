@@ -12,6 +12,7 @@ type DogProfile = Database["public"]["Tables"]["dogs"]["Row"];
 type ExtraService = Database["public"]["Tables"]["extra_services"]["Row"];
 
 export default function NyBokningPage() {
+  const supabase = createClient();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 

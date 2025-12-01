@@ -8,6 +8,7 @@ interface Props {
 }
 
 export default function SupabaseListener({ accessToken }: Props) {
+  const supabase = createClient();
   const router = useRouter();
 
   useEffect(() => {

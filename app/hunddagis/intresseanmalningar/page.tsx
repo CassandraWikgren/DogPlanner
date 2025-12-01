@@ -52,8 +52,8 @@ interface InterestApplication {
   dog_breed?: string | null;
   dog_birth?: string | null;
   dog_age?: number | null;
-  dog_gender?: "hane" | "tik" | null;
-  dog_size?: "small" | "medium" | "large" | null;
+  dog_gender?: string | null;
+  dog_size?: "small" | "medium" | "large";
   dog_height_cm?: number | null;
   subscription_type?: string | null;
   preferred_start_date?: string | null;
@@ -66,7 +66,7 @@ interface InterestApplication {
   not_house_trained?: boolean | null;
   previous_daycare_experience?: boolean | null;
   gdpr_consent?: boolean | null;
-  status: "pending" | "contacted" | "accepted" | "declined";
+  status: string;
   notes?: string | null;
   created_at: string;
   updated_at: string;
@@ -158,7 +158,7 @@ export default function HunddagisIntresseanmalningarPage() {
   const updateApplicationStatus = async (
     applicationId: string,
     newStatus: string,
-    notes?: string
+    notes?: string | null
   ) => {
     setSaving(true);
     try {
@@ -344,7 +344,7 @@ export default function HunddagisIntresseanmalningarPage() {
           application.parent_email,
           application.parent_name,
           application.dog_name,
-          application.preferred_start_date,
+          application.preferred_start_date || undefined,
           currentOrgId
         );
 
@@ -391,11 +391,12 @@ export default function HunddagisIntresseanmalningarPage() {
     );
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return "Ej angivet";
     return new Date(dateString).toLocaleDateString("sv-SE");
   };
 
-  const formatDays = (days?: string[]) => {
+  const formatDays = (days?: string[] | null) => {
     if (!days || days.length === 0) return "Ej angivet";
 
     const dayNames: Record<string, string> = {

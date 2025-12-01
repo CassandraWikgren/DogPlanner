@@ -60,6 +60,7 @@ interface Booking {
 }
 
 export default function MinaBokningarPage() {
+  const supabase = createClient();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 

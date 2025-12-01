@@ -43,6 +43,7 @@ type Dog = Database["public"]["Tables"]["dogs"]["Row"];
 type Owner = Database["public"]["Tables"]["owners"]["Row"];
 
 export default function HundpensionatPage() {
+  const supabase = createClient();
   const { user, currentOrgId, loading } = useAuth();
   // ✅ FIX: Fallback till metadata om AuthContext inte hunnit sätta currentOrgId
   const effectiveOrgId =

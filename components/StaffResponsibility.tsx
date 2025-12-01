@@ -13,6 +13,7 @@ interface Responsibility {
 }
 
 export default function StaffResponsibility() {
+  const supabase = createClient();
   const [tasks, setTasks] = useState<Responsibility[]>([]);
   const [loading, setLoading] = useState(true);
   const [newTask, setNewTask] = useState("");

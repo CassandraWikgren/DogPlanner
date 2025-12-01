@@ -20,6 +20,7 @@ interface Organisation {
 }
 
 export default function OrganisationSettingsPage() {
+  const supabase = createClient();
   const { user, role } = useAuth();
   const [org, setOrg] = useState<Organisation | null>(null);
   const [members, setMembers] = useState<Profile[]>([]);

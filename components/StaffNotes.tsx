@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function StaffNotes() {
+  const supabase = createClient();
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(true);
   const [showSaved, setShowSaved] = useState(false); // ✅ för popup

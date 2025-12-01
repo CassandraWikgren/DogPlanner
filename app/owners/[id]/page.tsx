@@ -12,6 +12,7 @@ import { Button } from "@components/ui/button";
 import PageContainer from "@/components/PageContainer";
 
 export default function OwnerPage() {
+  const supabase = createClient();
   const { user } = useAuth();
   const params = useParams();
   // id från [id] är alltid en sträng i Next.js App Router

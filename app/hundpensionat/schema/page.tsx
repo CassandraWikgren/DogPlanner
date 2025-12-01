@@ -18,6 +18,7 @@ type Booking = Database["public"]["Tables"]["bookings"]["Row"] & {
 type Room = Database["public"]["Tables"]["rooms"]["Row"];
 
 export default function PensionatSchemaPage() {
+  const supabase = createClient();
   const { currentOrgId } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);

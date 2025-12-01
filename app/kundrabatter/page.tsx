@@ -33,6 +33,7 @@ interface CustomerDiscount {
 }
 
 export default function CustomerDiscountsPage() {
+  const supabase = createClient();
   const { user } = useAuth();
 
   const [discounts, setDiscounts] = useState<CustomerDiscount[]>([]);

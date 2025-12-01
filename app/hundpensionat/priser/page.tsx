@@ -57,6 +57,7 @@ const SIZE_RANGES: Record<SizeCategory, string> = {
 };
 
 export default function PriserPage() {
+  const supabase = createClient();
   const { user, currentOrgId, loading: authLoading } = useAuth();
   const [prices, setPrices] = useState<BoardingPrice[]>([]);
   const [seasons, setSeasons] = useState<BoardingSeason[]>([]);
