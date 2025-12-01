@@ -26,12 +26,11 @@ import Link from "next/link";
 
 interface UserProfile {
   id: string;
-  email: string;
-  role: "admin" | "staff" | "groomer" | "customer";
-  full_name?: string;
-  phone?: string;
-  created_at: string;
-  last_sign_in_at?: string;
+  email: string | null;
+  role: "admin" | "staff" | "groomer" | "customer" | null;
+  full_name?: string | null;
+  phone?: string | null;
+  created_at: string | null;
 }
 
 const ROLE_LABELS = {
@@ -84,9 +83,7 @@ export default function UsersPage() {
       // Hämta alla profiles för denna organisation
       const { data, error } = await supabase
         .from("profiles")
-        .select(
-          "id, email, role, full_name, phone, created_at, last_sign_in_at"
-        )
+        .select("id, email, role, full_name, phone, created_at")
         .eq("org_id", currentOrgId)
         .order("created_at", { ascending: false });
 
