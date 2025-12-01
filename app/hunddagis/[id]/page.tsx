@@ -50,7 +50,7 @@ type ExtraService = {
   // performed_at_date column doesn't exist in database
 };
 
-type Journal = { id: string; text: string; created_at: string };
+type Journal = { id: string; content: string; created_at: string };
 
 type Dog = {
   id: string;
@@ -182,7 +182,7 @@ export default function DogProfilePage() {
         rooms(id, name),
         orgs(id, name),
         extra_service(id, dogs_id, service_type, quantity, price, notes),
-        dog_journal(id, text, created_at)
+        dog_journal(id, content, created_at)
       `
         )
         .eq("id", dogId)
@@ -670,7 +670,6 @@ export default function DogProfilePage() {
                 <tr>
                   <th className="px-3 py-1 text-left">Typ</th>
                   <th className="px-3 py-1 text-left">Antal</th>
-                  <th className="px-3 py-1 text-left">Datum</th>
                   <th className="px-3 py-1 text-left">Notering</th>
                 </tr>
               </thead>
@@ -679,13 +678,6 @@ export default function DogProfilePage() {
                   <tr key={s.id} className="border-t">
                     <td className="px-3 py-1">{s.service_type ?? "—"}</td>
                     <td className="px-3 py-1">{s.quantity ?? "—"}</td>
-                    <td className="px-3 py-1">
-                      {s.performed_at_date
-                        ? new Date(s.performed_at_date).toLocaleDateString(
-                            "sv-SE"
-                          )
-                        : "—"}
-                    </td>
                     <td className="px-3 py-1">{s.notes ?? "—"}</td>
                   </tr>
                 ))}
@@ -801,7 +793,7 @@ function JournalSection({
             <p className="text-xs text-gray-500 mb-1">
               {new Date(j.created_at).toLocaleString("sv-SE")}
             </p>
-            <p>{j.text}</p>
+            <p>{j.content}</p>
           </li>
         ))}
       </ul>

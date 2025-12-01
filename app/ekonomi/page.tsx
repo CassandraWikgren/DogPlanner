@@ -31,17 +31,17 @@ interface Invoice {
   total_amount: number;
   paid_amount?: number;
   status: "draft" | "sent" | "paid" | "overdue";
-  notes?: string;
+  notes?: string | null;
   sent_at?: string;
   paid_date?: string;
   owner?: {
     full_name: string;
-    customer_number?: number;
-    phone?: string;
-    email?: string;
+    customer_number?: number | null;
+    phone?: string | null;
+    email?: string | null;
   };
   invoice_lines?: InvoiceLine[];
-  created_at: string;
+  created_at: string | null;
 }
 
 interface InvoiceLine {
