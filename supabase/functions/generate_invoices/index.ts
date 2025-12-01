@@ -36,52 +36,64 @@ serve(async (req) => {
 
     console.log("🧾 Generating invoices for:", monthId);
 
-    // === Hämta senaste prislista ===
-    const { data: price, error: priceErr } = await supabase
-      .from("price_lists")
-      .select("*")
-      .order("effective_from", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // === FIX: Beräkna rätt period (föregående månad) ===
+    const [year, month] = monthId.split("-").map(Number);
+    const startOfMonth = new Date(year, month - 1, 1);
+    const endOfMonth = new Date(year, month, 0);
 
-    if (priceErr)
-      throw new Error(`Price list fetch error: ${priceErr.message}`);
-    const prices = price?.items || {};
-    console.log("✅ Price list loaded:", Object.keys(prices).length, "items");
-
-    // === Hämta alla hundar med ägare + organisation ===
-    const { data: dogs, error: dogsErr } = await supabase.from("dogs").select(`
-      id, name, subscription, owner_id, org_id,
+    // === FIX: Hämta hundar med aktiva abonnemang (EXKLUDERA Dagshund) ===
+    const { data: dogs, error: dogsErr } = await supabase
+      .from("dogs")
+      .select(
+        `
+      id, name, subscription, owner_id, org_id, startdate, enddate,
       owner:owners (full_name, email)
-    `);
+    `
+      )
+      .not("subscription", "is", null)
+      .not("subscription", "eq", "")
+      .not("subscription", "eq", "Dagshund") // Dagshundar faktureras INTE månadsvis
+      .lte("startdate", endOfMonth.toISOString().split("T")[0])
+      .or(
+        `enddate.is.null,enddate.gte.${startOfMonth.toISOString().split("T")[0]}`
+      );
+
     if (dogsErr) throw new Error(`Dogs fetch error: ${dogsErr.message}`);
 
     if (!dogs?.length) {
-      console.log("⚠️ No dogs found – exiting.");
+      console.log("⚠️ No active subscription dogs found.");
       await supabase.from("function_logs").insert([
         {
           function_name: "generate_invoices",
           status: "warning",
-          message: "No dogs found – no invoices generated.",
+          message: `No active subscription dogs for ${monthId}`,
         },
       ]);
-      return new Response("No dogs found", { status: 200 });
+
+      await supabase.from("invoice_runs").insert([
+        {
+          month_id: monthId,
+          status: "success",
+          invoices_created: 0,
+          metadata: {
+            message: "No active subscription dogs found",
+            timestamp: new Date().toISOString(),
+          },
+        },
+      ]);
+
+      return new Response("No active subscriptions", { status: 200 });
     }
 
-    console.log(`🐶 Found ${dogs.length} dogs.`);
+    console.log(`🐶 Found ${dogs.length} dogs with active subscriptions.`);
     const invoices = [];
-
-    // FIX: Använd monthId för att beräkna rätt period (föregående månad)
-    const [year, month] = monthId.split("-").map(Number);
-    const startOfMonth = new Date(year, month - 1, 1);
-    const endOfMonth = new Date(year, month, 0);
 
     // === Gruppera hundar per ägare & org ===
     const owners = {};
     for (const d of dogs) {
       const ownerName = d.owner?.full_name ?? "Okänd ägare";
       const orgId = d.org_id ?? null;
-      const ownerId = d.owner_id ?? null; // Hämta owner_id direkt från dogs-tabellen
+      const ownerId = d.owner_id ?? null;
       if (!owners[ownerName])
         owners[ownerName] = { dogs: [], org_id: orgId, owner_id: ownerId };
       owners[ownerName].dogs.push(d);
@@ -97,43 +109,76 @@ serve(async (req) => {
       const dogsList = info.dogs;
       const orgId = info.org_id ?? null;
       const ownerEmail = dogsList[0]?.owner?.email ?? "";
-
-      // Hämta owner_id från grupperade data (mer robust än att ta från första hunden)
       const ownerId = info.owner_id ?? null;
+
+      if (!orgId) {
+        console.warn(`⚠️ No org_id for owner ${ownerName}, skipping`);
+        continue;
+      }
 
       dogCount += dogsList.length;
       const lines = [];
       let total = 0;
-      
-      // === RABATTER: Hämta daycare_pricing för syskonrabatt ===
-      let siblingDiscountPercent = 0;
-      if (orgId) {
-        const { data: pricingData } = await supabase
-          .from("daycare_pricing")
-          .select("sibling_discount_percent")
-          .eq("org_id", orgId)
-          .maybeSingle();
-        
-        if (pricingData) {
-          siblingDiscountPercent = pricingData.sibling_discount_percent || 0;
-        }
+
+      // === FIX: Hämta daycare_pricing för denna organisation ===
+      const { data: pricingData, error: pricingErr } = await supabase
+        .from("daycare_pricing")
+        .select("*")
+        .eq("org_id", orgId)
+        .maybeSingle();
+
+      if (pricingErr || !pricingData) {
+        console.error(
+          `❌ No daycare_pricing for org ${orgId}:`,
+          pricingErr?.message
+        );
+        console.log(`⚠️ Skipping owner ${ownerName} - no pricing configured`);
+        continue;
       }
-      
-      console.log(`👨‍👩‍👧 ${dogsList.length} hundar för ${ownerName}, syskonrabatt: ${siblingDiscountPercent}%`);
+
+      console.log(`💰 Loaded pricing for org ${orgId}:`, {
+        subscription_5days: pricingData.subscription_5days,
+        subscription_3days: pricingData.subscription_3days,
+        subscription_2days: pricingData.subscription_2days,
+        sibling_discount: pricingData.sibling_discount_percent,
+      });
+
+      // === FIX: Korrekt subscription-mappning ===
+      const subscriptionMap = {
+        Heltid: pricingData.subscription_5days || 0,
+        "Deltid 4": pricingData.subscription_4days || 0,
+        "Deltid 3": pricingData.subscription_3days || 0,
+        "Deltid 2": pricingData.subscription_2days || 0,
+        "Deltid 1": pricingData.subscription_1day || 0,
+      };
 
       for (const d of dogsList) {
-        const sub = d.subscription?.toLowerCase();
-        const priceVal = prices[sub] ?? 0;
+        const sub = d.subscription?.trim();
+        const priceVal = subscriptionMap[sub];
+
+        if (priceVal === undefined) {
+          console.warn(
+            `⚠️ Unknown subscription type "${sub}" for dog ${d.name}`
+          );
+          continue;
+        }
+
+        if (priceVal === 0) {
+          console.warn(
+            `⚠️ Zero price for subscription "${sub}" (dog: ${d.name})`
+          );
+        }
 
         // Basprenumeration
         if (priceVal > 0) {
           lines.push({
-            description: `${d.name} – ${d.subscription}`,
+            description: `${d.name} – ${sub}`,
             quantity: 1,
             unit_price: priceVal,
             total: priceVal,
           });
           total += priceVal;
+          console.log(`  ✅ ${d.name}: ${sub} = ${priceVal} kr`);
         }
 
         // === Extra services för HUNDDAGIS (återkommande månadstillägg) ===
@@ -145,7 +190,9 @@ serve(async (req) => {
           .eq("org_id", orgId)
           .eq("is_active", true)
           .lte("start_date", endOfMonth.toISOString().split("T")[0]) // Startat före/under månaden
-          .or(`end_date.is.null,end_date.gte.${startOfMonth.toISOString().split("T")[0]}`); // Inget slutdatum ELLER slutar efter/under månadens start
+          .or(
+            `end_date.is.null,end_date.gte.${startOfMonth.toISOString().split("T")[0]}`
+          ); // Inget slutdatum ELLER slutar efter/under månadens start
 
         if (daycareExtErr) {
           console.warn(
@@ -163,8 +210,7 @@ serve(async (req) => {
             if (extra.frequency === "daily") {
               // Om hunden har "days" fält, beräkna faktiska dagar i månaden
               // Annars approximera baserat på subscription
-              const daysInCurrentMonth =
-                new Date(year, month, 0).getDate() - 1; // Approximate working days
+              const daysInCurrentMonth = new Date(year, month, 0).getDate() - 1; // Approximate working days
               quantity = Math.ceil(daysInCurrentMonth * 0.8); // ~80% av dagarna (approximation)
             } else if (extra.frequency === "weekly") {
               quantity = 4; // 4 veckor per månad
@@ -260,9 +306,10 @@ serve(async (req) => {
           total += stayTotal;
         }
       }
-      
+
       // === RABATTER: Applicera syskonrabatt om flera hundar ===
-      if (dogsList.length > 1 && siblingDiscountPercent > 0) {
+      const siblingDiscountPercent = pricingData.sibling_discount_percent || 0;
+      if (dogsList.length > 1 && siblingDiscountPercent > 0 && total > 0) {
         const discountAmount = total * (siblingDiscountPercent / 100);
         lines.push({
           description: `Syskonrabatt (${dogsList.length} hundar, -${siblingDiscountPercent}%)`,
@@ -271,36 +318,41 @@ serve(async (req) => {
           total: -discountAmount,
         });
         total -= discountAmount;
-        
+
         console.log(
           `💰 Syskonrabatt applicerad: -${discountAmount.toFixed(2)} kr (${siblingDiscountPercent}%)`
         );
       }
 
-      invoices.push({
-        org_id: orgId,
-        owner_id: ownerId,
-        billed_name: ownerName,
-        billed_email: ownerEmail,
-        invoice_date: startOfMonth.toISOString().split("T")[0], // YYYY-MM-DD format
-        due_date: endOfMonth.toISOString().split("T")[0],
-        lines,
-        total_amount: total,
-        status: "draft",
-        invoice_type: "full", // Månadsfaktura är 'full' (inte förskott/efterskott)
-      });
+      // === Skapa faktura om det finns rader ===
+      if (lines.length > 0 && total > 0) {
+        invoices.push({
+          org_id: orgId,
+          owner_id: ownerId,
+          billed_name: ownerName,
+          billed_email: ownerEmail,
+          invoice_date: startOfMonth.toISOString().split("T")[0],
+          due_date: endOfMonth.toISOString().split("T")[0],
+          lines,
+          total_amount: total,
+          status: "draft",
+          invoice_type: "full",
+        });
+        totalAmount += total;
+      } else {
+        console.log(`⚠️ No billable items for ${ownerName}, skipping invoice`);
+      }
     }
 
     // === Spara fakturor ===
     if (invoices.length > 0) {
       console.log(`💾 Inserting ${invoices.length} invoices...`);
 
-      // FIX: totalAmount och dogCount redan beräknat ovan, ta bort duplicering
       let invoiceCount = 0;
 
       for (const inv of invoices) {
-        const lines = inv.lines; // Spara lines separat
-        delete inv.lines; // Ta bort lines från invoice-objektet
+        const lines = inv.lines;
+        delete inv.lines;
 
         // Insert invoice först
         const { data: insertedInvoice, error: insertErr } = await supabase
@@ -318,7 +370,7 @@ serve(async (req) => {
         }
 
         console.log(
-          `✅ Invoice created: ${insertedInvoice.invoice_number} (ID: ${insertedInvoice.id}) for ${inv.billed_name}`
+          `✅ Invoice created: ${insertedInvoice.invoice_number} (ID: ${insertedInvoice.id}) for ${inv.billed_name}, Amount: ${inv.total_amount} kr`
         );
 
         // Insert invoice_items
@@ -348,9 +400,6 @@ serve(async (req) => {
           );
         }
 
-        // ✅ FAKTURAUNDERLAG - Status förblir 'draft'
-        // Ingen email skickas automatiskt - företaget hanterar detta manuellt i systemet
-        
         console.log(
           `✅ Fakturaunderlag skapat: ${insertedInvoice.invoice_number} (${inv.billed_name})`
         );
@@ -359,23 +408,17 @@ serve(async (req) => {
       }
 
       console.log(
-        `✅ Successfully inserted ${invoiceCount} invoices with items.`
+        `✅ Successfully inserted ${invoiceCount} invoices with total amount: ${totalAmount.toFixed(2)} kr`
       );
 
-      // Beräkna totalsummor för metadata
-      const totalInvoiceAmount = invoices.reduce(
-        (sum, inv) => sum + inv.total_amount,
-        0
-      );
-
-      // 3. Logga i invoice_runs tabell
+      // Logga i invoice_runs tabell
       await supabase.from("invoice_runs").insert([
         {
           month_id: monthId,
           status: "success",
           invoices_created: invoiceCount,
           metadata: {
-            total_amount: totalInvoiceAmount,
+            total_amount: totalAmount,
             dog_count: dogCount,
             timestamp: new Date().toISOString(),
           },
@@ -386,43 +429,58 @@ serve(async (req) => {
         {
           function_name: "generate_invoices",
           status: "success",
-          message: `✅ ${invoices.length} invoices created for ${monthId} (Total: ${totalAmount} kr)`,
+          message: `✅ ${invoiceCount} invoices created for ${monthId} (Total: ${totalAmount.toFixed(2)} kr, ${dogCount} dogs)`,
         },
       ]);
 
       // === Skicka e-post via Supabase SMTP ===
-      await supabase.functions.invoke("send_email", {
-        body: {
-          to: "din-adress@icloud.com",
-          subject: `DogPlanner – Fakturagenerering klar (${monthId})`,
-          text: `✅ Fakturagenereringen är färdig!\n${invoices.length} fakturor skapades för ${monthId}.`,
-        },
-      });
+      try {
+        await supabase.functions.invoke("send_email", {
+          body: {
+            to: "cassandrawikgren@icloud.com",
+            subject: `DogPlanner – Fakturagenerering klar (${monthId})`,
+            text: `✅ Fakturagenereringen är färdig!\n\n${invoiceCount} fakturor skapades för ${monthId}.\nTotalt belopp: ${totalAmount.toFixed(2)} kr\nAntal hundar: ${dogCount}`,
+          },
+        });
+      } catch (emailErr) {
+        console.warn("⚠️ Email notification failed:", emailErr.message);
+      }
     } else {
       console.log("⚠️ No invoices to insert");
       await supabase.from("function_logs").insert([
         {
           function_name: "generate_invoices",
           status: "warning",
-          message: `No invoices generated for ${monthId}`,
+          message: `No billable invoices generated for ${monthId}`,
         },
       ]);
 
-      // Logga även i invoice_runs
       await supabase.from("invoice_runs").insert([
         {
           month_id: monthId,
           status: "success",
           invoices_created: 0,
           metadata: {
-            message: "No dogs/subscriptions found requiring invoicing",
+            message: "No billable subscriptions found",
             timestamp: new Date().toISOString(),
           },
         },
       ]);
     }
 
-    return new Response(`Invoices generated for ${monthId}`, { status: 200 });
+    return new Response(
+      JSON.stringify({
+        success: true,
+        month: monthId,
+        invoices_created: invoices.length,
+        total_amount: totalAmount,
+        dog_count: dogCount,
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   } catch (err) {
     console.error("❌ Invoice generation failed:", err.message);
 
@@ -457,6 +515,15 @@ serve(async (req) => {
       console.warn("⚠️ Failed to log error to invoice_runs:", logErr.message);
     }
 
-    return new Response(`Error: ${err.message}`, { status: 500 });
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: err.message,
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 });
