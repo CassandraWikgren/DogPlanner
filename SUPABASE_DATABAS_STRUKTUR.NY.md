@@ -714,18 +714,20 @@ heal_user_missing_org()
 ### **Server Components/API Routes**
 
 ```typescript
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from "@/lib/supabase/server";
 
 // Hämta alla hundar för inloggad användares organisation
 const supabase = await createClient();
 const { data: dogs } = await supabase
-  .from('dogs')
-  .select(`
+  .from("dogs")
+  .select(
+    `
     *,
     owners(id, full_name, customer_number, phone, email),
     rooms(id, name, room_type)
-  `)
-  .order('name');
+  `
+  )
+  .order("name");
 ```
 
 ### **Client Components**
@@ -771,3 +773,557 @@ const channel = supabase
 - `types/README.md` - Type system dokumentation
 - `.github/copilot-instructions.md` - Systemarkitektur
 - `SUPABASE_SSR_MIGRATION.md` - SSR migration guide
+
+---
+
+## 💰 FAKTURERINGSSYSTEM - KOMPLETT GUIDE
+
+**Uppdaterad:** 1 Dec 2025 (Kritiska buggar fixade)  
+**Status:** ✅ Produktionsklar
+
+### Översikt
+
+DogPlanner har två separata faktureringssystem:
+
+1. **🏨 HUNDPENSIONAT** - Booking-baserad (förskott + efterskott)
+2. **🐕 HUNDDAGIS** - Månadsbaserad (automatisk via cron)
+
+---
+
+## 🏨 HUNDPENSIONAT - Booking-baserad fakturering
+
+### Förskottsfaktura (Prepayment)
+
+**När:** Booking status: `pending` → `confirmed`  
+**Trigger:** `trg_create_prepayment_invoice`  
+**Function:** `create_prepayment_invoice()`
+
+**Vad inkluderas:**
+
+```sql
+-- RAD 1: Bokning grundpris (from bookings.total_price)
+-- RAD 2: Prepayment services (from booking_services WHERE charge_at = 'prepayment')
+-- Förfallodatum: MIN(14 dagar, 3 dagar före start_date)
+-- Status: 'draft' (fakturaunderlag)
+```
+
+**Exempel:**
+
+```
+Hundpensionat (7 nätter, 2025-12-20 - 2025-12-27): 700 kr/natt × 7 = 4900 kr
+Bad och nagelvård (förskott): 300 kr
+──────────────────────────────────────────────────────────────
+Förskottsfaktura: 5200 kr
+Förfallodatum: 2025-12-17 (3 dagar före check-in)
+```
+
+---
+
+### Efterskottsfaktura (Checkout)
+
+**När:** Booking status: any → `checked_out`  
+**Trigger:** `trg_create_invoice_on_checkout`  
+**Function:** `create_invoice_on_checkout()`
+
+**Vad inkluderas:**
+
+```sql
+-- RAD 1: Grundpris (redan i förskott)
+-- RAD 2: booking_services (charge_at = 'full')
+-- RAD 3: extra_service (performed during stay)
+-- RAD 4: Rabatt (från bookings.discount_amount)
+```
+
+**Beräkning:**
+
+```typescript
+total_with_services = base_price + SUM(services_price);
+discount = bookings.discount_amount;
+final_invoice_amount = total_with_services - discount;
+```
+
+**Exempel:**
+
+```
+Hundpensionat (7 nätter): 4900 kr (redan i förskott)
+Veterinärbesök (utfört under vistelsen): 800 kr
+Extra promenad dagligen (7 dagar × 50 kr): 350 kr
+Rabatt (stamkund): -200 kr
+──────────────────────────────────────────────────────────────
+Efterskottsfaktura: 5850 kr
+(4900 + 800 + 350 - 200)
+```
+
+---
+
+## 🐕 HUNDDAGIS - Månadsbaserad fakturering
+
+### Automatisk månadsfakturering
+
+**System:** Edge Function `generate_invoices`  
+**Körs:** Automatiskt via Supabase pg_cron  
+**Schema:** `'0 8 1 * *'` (kl 08:00 UTC den 1:a varje månad)  
+**Migration:** `20251122_setup_automatic_invoice_cron.sql`
+
+**Verifiera cron:**
+
+```sql
+SELECT * FROM cron.job WHERE jobname = 'monthly-invoice-generation';
+-- Förväntat: schedule = '0 8 1 * *', active = true
+```
+
+---
+
+### Prissättning per organisation
+
+**VIKTIGT:** Varje organisation har sina egna priser i `daycare_pricing` tabellen!
+
+```sql
+CREATE TABLE daycare_pricing (
+  id UUID PRIMARY KEY,
+  org_id UUID REFERENCES organisations(id),  -- 👈 Varje org har sin egen rad
+
+  -- Abonnemangspriser (företaget bestämmer själv)
+  subscription_1day DECIMAL(10,2),   -- "Deltid 1" (1 dag/vecka)
+  subscription_2days DECIMAL(10,2),  -- "Deltid 2" (2 dagar/vecka)
+  subscription_3days DECIMAL(10,2),  -- "Deltid 3" (3 dagar/vecka)
+  subscription_4days DECIMAL(10,2),  -- "Deltid 4" (4 dagar/vecka)
+  subscription_5days DECIMAL(10,2),  -- "Heltid" (5 dagar/vecka)
+
+  -- Drop-in-pris (Dagshund - faktureras INTE månadsvis)
+  single_day_price DECIMAL(10,2),
+
+  -- Rabatter (företaget bestämmer själv)
+  sibling_discount_percent INTEGER,  -- Syskonrabatt i %
+
+  -- Metadata
+  effective_from DATE,
+  updated_at TIMESTAMP
+);
+```
+
+**Exempel - olika organisationers priser:**
+
+**Organisation A (Cassandras Hunddagis, Stockholm):**
+
+```sql
+subscription_5days: 4500 kr/månad
+subscription_3days: 3300 kr/månad
+subscription_2days: 2500 kr/månad
+sibling_discount_percent: 10
+```
+
+**Organisation B (Norrlands Hundpensionat, Kiruna):**
+
+```sql
+subscription_5days: 3200 kr/månad  -- Lägre hyror
+subscription_3days: 2400 kr/månad
+subscription_2days: 1800 kr/månad
+sibling_discount_percent: 15  -- Mer generös
+```
+
+**Organisation C (Luxury Dog Spa, Östermalm):**
+
+```sql
+subscription_5days: 6500 kr/månad  -- Premium!
+subscription_3days: 4800 kr/månad
+subscription_2days: 3500 kr/månad
+sibling_discount_percent: 5  -- Mindre rabatt
+```
+
+---
+
+### Hur Edge Function fungerar (FIXAD 2025-12-01)
+
+**Flöde:**
+
+```
+1. Cron triggar kl 08:00 UTC den 1:a varje månad
+2. Edge Function startar
+3. För varje organisation:
+   a. Hämta ORGANISATIONENS daycare_pricing
+   b. Hämta hundar med aktiva abonnemang för denna org
+   c. Filtrera: startdate <= månadens slut, enddate >= månadens start (eller NULL)
+   d. Exkludera: subscription = "Dagshund" (de faktureras INTE månadsvis)
+   e. För varje hund:
+      - Lägg till abonnemangspris (från daycare_pricing)
+      - Lägg till extra services (återkommande tillägg)
+   f. Applicera syskonrabatt om > 1 hund
+   g. Skapa faktura med status 'draft'
+4. Logga resultat i invoice_runs
+```
+
+**Kritiska buggar fixade 2025-12-01:**
+
+```diff
+- ❌ FÖRE: Läste från price_lists (gammal tabell) → 0 kr för alla abonnemang!
++ ✅ EFTER: Läser från daycare_pricing → Korrekta priser per organisation
+
+- ❌ FÖRE: prices["heltid".toLowerCase()] → undefined → 0 kr
++ ✅ EFTER: subscriptionMap["Heltid"] → 4500 kr (eller org's pris)
+
+- ❌ FÖRE: Hämtade ALLA hundar, även utan subscription
++ ✅ EFTER: Endast hundar med aktiva abonnemang (startdate/enddate filter)
+
+- ❌ FÖRE: Skapade fakturor med 0 kr
++ ✅ EFTER: Skippar fakturor utan billable items
+```
+
+**Kod (förenklad):**
+
+```typescript
+// Hämta ORGANISATIONENS priser
+const { data: pricingData } = await supabase
+  .from("daycare_pricing")
+  .select("*")
+  .eq("org_id", orgId) // 👈 Per organisation!
+  .maybeSingle();
+
+// Korrekt subscription-mappning
+const subscriptionMap = {
+  Heltid: pricingData.subscription_5days, // 4500 kr (eller org's pris)
+  "Deltid 4": pricingData.subscription_4days,
+  "Deltid 3": pricingData.subscription_3days, // 3300 kr
+  "Deltid 2": pricingData.subscription_2days, // 2500 kr
+  "Deltid 1": pricingData.subscription_1day,
+};
+
+const priceVal = subscriptionMap[dog.subscription];
+```
+
+---
+
+### Exempel - Månadsfaktura
+
+**Organisation: Cassandras Hunddagis**  
+**Månad: November 2025**  
+**Ägare: Anna Andersson (3 hundar)**
+
+```
+Bella – Heltid: 4500 kr
+Max – Heltid: 4500 kr
+Luna – Deltid 3: 3300 kr
+──────────────────────────────────
+Subtotal: 12300 kr
+
+Extra tjänster:
+Bella – Träningskurs (månad): 500 kr
+Max – Medicinering (daglig): 400 kr
+──────────────────────────────────
+Subtotal med tillägg: 13200 kr
+
+Syskonrabatt (3 hundar, -10%): -1320 kr
+──────────────────────────────────
+TOTALT: 11880 kr
+```
+
+**Jämfört med annan organisation:**
+
+**Organisation: Luxury Dog Spa** (högre priser)  
+**Samma hundar:**
+
+```
+Bella – Heltid: 6500 kr (vs 4500 kr)
+Max – Heltid: 6500 kr
+Luna – Deltid 3: 4800 kr (vs 3300 kr)
+Subtotal: 17800 kr
+
+Extra tjänster: 900 kr
+Syskonrabatt (3 hundar, -5%): -935 kr (mindre rabatt!)
+──────────────────────────────────
+TOTALT: 17765 kr
+```
+
+---
+
+### Extra services (återkommande tillägg)
+
+**Tabell:** `extra_service`
+
+```sql
+CREATE TABLE extra_service (
+  id UUID PRIMARY KEY,
+  dogs_id UUID REFERENCES dogs(id),
+  org_id UUID REFERENCES organisations(id),
+  service_type TEXT,  -- "Träningskurs", "Medicinering", "Grooming"
+  price DECIMAL(10,2),
+
+  -- För HUNDDAGIS (återkommande)
+  is_active BOOLEAN,
+  frequency TEXT,  -- "daily", "weekly", "monthly"
+  start_date DATE,
+  end_date DATE,  -- NULL = pågående
+
+  -- För PENSIONAT (engångstillägg)
+  performed_at TIMESTAMP,
+  quantity INTEGER
+);
+```
+
+**Beräkning för hunddagis:**
+
+```typescript
+if (extra.frequency === "daily") {
+  quantity = Math.ceil(daysInMonth * 0.8); // ~80% av dagarna
+} else if (extra.frequency === "weekly") {
+  quantity = 4; // 4 veckor per månad
+} else if (extra.frequency === "monthly") {
+  quantity = 1;
+}
+
+total = quantity * extra.price;
+```
+
+**Exempel:**
+
+```
+Medicinering (daily, 50 kr/dag):
+- November har 30 dagar
+- Hunden är där ~80% = 24 dagar
+- Total: 24 × 50 kr = 1200 kr
+
+Träningskurs (weekly, 200 kr/vecka):
+- 4 veckor per månad
+- Total: 4 × 200 kr = 800 kr
+
+Grooming (monthly, 500 kr):
+- 1 gång per månad
+- Total: 1 × 500 kr = 500 kr
+```
+
+---
+
+### Syskonrabatt
+
+**Appliceras automatiskt** om samma ägare har > 1 hund med abonnemang.
+
+```typescript
+if (dogsList.length > 1 && siblingDiscountPercent > 0 && total > 0) {
+  const discountAmount = total * (siblingDiscountPercent / 100);
+  total -= discountAmount;
+}
+```
+
+**Exempel:**
+
+```
+Organisation A (10% syskonrabatt):
+3 hundar, subtotal 12300 kr
+Rabatt: 12300 × 0.10 = -1230 kr
+Final: 11070 kr
+
+Organisation B (15% syskonrabatt):
+3 hundar, subtotal 12300 kr
+Rabatt: 12300 × 0.15 = -1845 kr
+Final: 10455 kr
+```
+
+---
+
+## 📊 Fakturastatuser
+
+```
+draft       Fakturaunderlag (nyskapat, ej skickat)
+sent        Skickat till kund
+paid        Betalt
+overdue     Förfallen
+cancelled   Makulerad
+```
+
+**Flöde:**
+
+```
+1. System skapar: status = 'draft'
+2. Admin granskar i /admin/faktura
+3. Admin klickar "Skicka": status = 'sent' (email skickas)
+4. Kund betalar: status = 'paid' (manuellt eller Stripe webhook)
+5. Om ej betalt vid due_date: status = 'overdue'
+```
+
+---
+
+## 🛠️ Fakturatabeller
+
+### invoices
+
+```sql
+id UUID PRIMARY KEY
+org_id UUID  -- Vilken organisation fakturan tillhör
+owner_id UUID  -- Vilken ägare/kund
+invoice_number TEXT UNIQUE  -- "INV-2025-001" (auto-genererad)
+invoice_date DATE
+due_date DATE
+total_amount DECIMAL(10,2)
+status TEXT  -- 'draft', 'sent', 'paid', 'overdue', 'cancelled'
+invoice_type TEXT  -- 'prepayment', 'full', 'afterpayment'
+billed_name TEXT
+billed_email TEXT
+notes TEXT
+created_at TIMESTAMP
+```
+
+### invoice_items
+
+```sql
+id UUID PRIMARY KEY
+invoice_id UUID REFERENCES invoices(id)
+description TEXT  -- "Bella – Heltid", "Syskonrabatt"
+quantity INTEGER
+unit_price DECIMAL(10,2)
+total_amount DECIMAL(10,2)
+```
+
+### invoice_runs
+
+```sql
+id UUID PRIMARY KEY
+month_id TEXT  -- "2025-11"
+status TEXT  -- 'success', 'failed'
+invoices_created INTEGER
+error_message TEXT
+metadata JSONB  -- { total_amount, dog_count, timestamp }
+created_at TIMESTAMP
+```
+
+---
+
+## 🔍 Felsökning
+
+### Cron körs inte
+
+```sql
+-- Kolla om cron finns
+SELECT * FROM cron.job;
+
+-- Om tom, kör migration:
+-- supabase/migrations/20251122_setup_automatic_invoice_cron.sql
+```
+
+### Inga fakturor skapas
+
+```sql
+-- Kolla Edge Function logs i Supabase Dashboard
+-- Eller kolla function_logs-tabellen:
+SELECT * FROM function_logs
+WHERE function_name = 'generate_invoices'
+ORDER BY created_at DESC
+LIMIT 10;
+```
+
+### Priser är 0 kr
+
+```sql
+-- Kolla om daycare_pricing finns för organisationen
+SELECT * FROM daycare_pricing WHERE org_id = 'din-org-id';
+
+-- Om tom, lägg till:
+INSERT INTO daycare_pricing (org_id, subscription_5days, subscription_3days, ...)
+VALUES ('din-org-id', 4500, 3300, ...);
+```
+
+### Hundar faktureras dubbelt
+
+```sql
+-- Kolla att startdate/enddate är korrekta
+SELECT
+  id,
+  name,
+  subscription,
+  startdate,
+  enddate
+FROM dogs
+WHERE org_id = 'din-org-id';
+
+-- Sätt enddate om hund slutat:
+UPDATE dogs
+SET enddate = '2025-11-30'
+WHERE id = 'hund-id';
+```
+
+---
+
+## 🧪 Testning
+
+### Manuell fakturagenerering
+
+```bash
+# I Supabase Dashboard → Edge Functions → generate_invoices
+# Body:
+{ "month": "2025-11" }
+```
+
+### Verifiera resultat
+
+```sql
+-- Senaste fakturorna
+SELECT
+  invoice_number,
+  billed_name,
+  total_amount,
+  status,
+  invoice_date
+FROM invoices
+WHERE created_at > NOW() - INTERVAL '1 hour'
+ORDER BY created_at DESC;
+
+-- Fakturarader med priser
+SELECT
+  i.invoice_number,
+  ii.description,
+  ii.unit_price,
+  ii.quantity,
+  ii.total_amount
+FROM invoice_items ii
+JOIN invoices i ON i.id = ii.invoice_id
+WHERE i.created_at > NOW() - INTERVAL '1 hour'
+ORDER BY i.created_at DESC;
+
+-- Verifiera att abonnemangspriser INTE är 0 kr!
+SELECT * FROM invoice_items
+WHERE description LIKE '%Heltid%'
+AND unit_price = 0;  -- Ska vara TOM!
+```
+
+---
+
+## 📝 Viktigt att veta
+
+### Multi-tenant säkerhet
+
+✅ **Allt är isolerat per organisation:**
+
+- Priser hämtas från daycare_pricing WHERE org_id = X
+- Hundar filtreras på org_id automatiskt via RLS
+- Extra services filtreras på org_id
+- Fakturor skapas med korrekt org_id
+
+### Dagshundar faktureras INTE månadsvis
+
+```sql
+-- Dagshundar har subscription = "Dagshund"
+-- De exkluderas från månadsfakturering:
+.not("subscription", "eq", "Dagshund")
+
+-- Dagshundar betalar per besök (single_day_price)
+```
+
+### Abonnemang måste vara aktiva
+
+```sql
+-- Endast hundar med:
+startdate <= månadens slut
+AND (enddate IS NULL OR enddate >= månadens start)
+
+-- Exempel November 2025:
+startdate <= 2025-11-30
+AND (enddate IS NULL OR enddate >= 2025-11-01)
+```
+
+---
+
+**Frågor? Kolla:**
+
+- `types/README.md` - Type system dokumentation
+- `.github/copilot-instructions.md` - Systemarkitektur
+- `SUPABASE_SSR_MIGRATION.md` - SSR migration guide
+- `FAKTURERINGSSYSTEM_FIXED_DEPLOYMENT.md` - Deployment guide för faktureringsfixen
