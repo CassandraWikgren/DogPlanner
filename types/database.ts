@@ -416,36 +416,30 @@ export interface Database {
       dog_journal: {
         Row: {
           id: string;
-          org_id: string | null;
-          dog_id: string | null;
-          user_id: string | null;
-          entry_type: string | null;
-          content: string;
-          is_important: boolean | null;
+          dog_id: string;
+          text: string | null;
           created_at: string | null;
-          updated_at: string | null;
+          org_id: string | null;
+          user_id: string | null;
+          content: string;
         };
         Insert: {
           id?: string;
-          org_id?: string | null;
-          dog_id?: string | null;
-          user_id?: string | null;
-          entry_type?: string | null;
-          content: string;
-          is_important?: boolean | null;
+          dog_id: string;
+          text?: string | null;
           created_at?: string | null;
-          updated_at?: string | null;
+          org_id?: string | null;
+          user_id?: string | null;
+          content?: string;
         };
         Update: {
           id?: string;
-          org_id?: string | null;
-          dog_id?: string | null;
-          user_id?: string | null;
-          entry_type?: string | null;
-          content?: string;
-          is_important?: boolean | null;
+          dog_id?: string;
+          text?: string | null;
           created_at?: string | null;
-          updated_at?: string | null;
+          org_id?: string | null;
+          user_id?: string | null;
+          content?: string;
         };
         Relationships: [
           {
