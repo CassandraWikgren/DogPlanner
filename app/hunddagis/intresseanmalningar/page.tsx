@@ -42,32 +42,32 @@ import {
 
 interface InterestApplication {
   id: string;
-  org_id?: string;
+  org_id?: string | null;
   parent_name: string;
   parent_email: string;
   parent_phone: string;
-  owner_city?: string;
-  owner_address?: string;
+  owner_city?: string | null;
+  owner_address?: string | null;
   dog_name: string;
-  dog_breed?: string;
-  dog_birth?: string;
-  dog_age?: number;
-  dog_gender?: "hane" | "tik";
-  dog_size?: "small" | "medium" | "large";
-  dog_height_cm?: number;
-  subscription_type?: string;
-  preferred_start_date?: string;
-  preferred_days?: string[];
-  special_needs?: string;
-  special_care_needs?: string;
-  is_neutered?: boolean;
-  is_escape_artist?: boolean;
-  destroys_things?: boolean;
-  not_house_trained?: boolean;
-  previous_daycare_experience?: boolean;
-  gdpr_consent?: boolean;
+  dog_breed?: string | null;
+  dog_birth?: string | null;
+  dog_age?: number | null;
+  dog_gender?: "hane" | "tik" | null;
+  dog_size?: "small" | "medium" | "large" | null;
+  dog_height_cm?: number | null;
+  subscription_type?: string | null;
+  preferred_start_date?: string | null;
+  preferred_days?: string[] | null;
+  special_needs?: string | null;
+  special_care_needs?: string | null;
+  is_neutered?: boolean | null;
+  is_escape_artist?: boolean | null;
+  destroys_things?: boolean | null;
+  not_house_trained?: boolean | null;
+  previous_daycare_experience?: boolean | null;
+  gdpr_consent?: boolean | null;
   status: "pending" | "contacted" | "accepted" | "declined";
-  notes?: string;
+  notes?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -77,6 +77,7 @@ interface InterestApplication {
  * [ERR-1001] Databaskoppling, [ERR-4001] Uppdatering, [ERR-5001] Okänt fel
  */
 export default function HunddagisIntresseanmalningarPage() {
+  const supabase = createClient();
   const { currentOrgId } = useAuth();
   const [applications, setApplications] = useState<InterestApplication[]>([]);
   const [loading, setLoading] = useState(true);
