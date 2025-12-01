@@ -751,7 +751,7 @@ function JournalSection({
       setSaving(true);
       const { error } = await supabase
         .from("dog_journal")
-        .insert([{ dog_id: dogId, text }]);
+        .insert([{ dog_id: dogId, content: text }]);
       if (error) throw error;
       const { data } = await supabase
         .from("dog_journal")
