@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 
 export default function LoginPage() {
@@ -36,13 +36,8 @@ export default function LoginPage() {
     setMessage(null);
     setLoading(true);
 
-    if (!supabase) {
-      setError("Databaskoppling saknas");
-      setLoading(false);
-      return;
-    }
-
     try {
+      const supabase = createClient();
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -73,13 +68,8 @@ export default function LoginPage() {
     setMessage(null);
     setLoading(true);
 
-    if (!supabase) {
-      setError("Databaskoppling saknas");
-      setLoading(false);
-      return;
-    }
-
     try {
+      const supabase = createClient();
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       });

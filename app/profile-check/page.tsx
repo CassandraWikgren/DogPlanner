@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import Link from "next/link";
 
 export default function ProfileCheckPage() {
   const { user, profile, currentOrgId, role } = useAuth();
-  const supabase = createClientComponentClient();
   const [dbProfile, setDbProfile] = useState<any>(null);
   const [dbOrg, setDbOrg] = useState<any>(null);
   const [healing, setHealing] = useState(false);

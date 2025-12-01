@@ -3,7 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -93,7 +93,6 @@ type TabType = "grundpriser" | "specialdatum" | "säsonger" | "tillval";
 // ===========================
 
 export default function PensionatPriserPage() {
-  const supabase = createClientComponentClient();
   const { currentOrgId } = useAuth();
 
   // State

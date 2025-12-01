@@ -17,7 +17,7 @@ import {
   Trash2,
   AlertTriangle,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 
 interface PriceData {

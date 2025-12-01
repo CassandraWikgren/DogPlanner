@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-
+import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/app/context/AuthContext";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,9 +67,8 @@ type InvoiceItem = {
 };
 
 const FakturorPage = () => {
-  const supabase = createClientComponentClient();
-
   // 🧠 Statehantering
+  const { currentOrgId } = useAuth();
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [items, setItems] = useState<InvoiceItem[]>([]);
@@ -101,6 +100,7 @@ const FakturorPage = () => {
       setLoading(true);
       logDebug("info", "Hämtar fakturor…");
 
+      const supabase = createClient();
       const { data, error } = await supabase
         .from("invoices")
         .select(
@@ -140,6 +140,7 @@ const FakturorPage = () => {
   // 🧾 Hämta fakturarader (invoice_items)
   async function loadItems() {
     try {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from("invoice_items")
         .select("id, invoice_id, description, qty, unit_price, amount");
@@ -183,6 +184,7 @@ const FakturorPage = () => {
   useEffect(() => {
     loadInvoices();
     loadItems();
+    const supabase = createClient();
     const channel = supabase
       .channel("invoice_changes")
       .on(
@@ -218,8 +220,15 @@ const FakturorPage = () => {
       setCreating(true);
       const dueDate = new Date();
       dueDate.setDate(dueDate.getDate() + 30);
-      // 🔔 org_id (och user_id) sätts av triggers i databasen
+
+      if (!currentOrgId) {
+        toast("Ingen organisation tilldelad", "error");
+        return;
+      }
+
+      const supabase = createClient();
       const { error } = await supabase.from("invoices").insert({
+        org_id: currentOrgId,
         owner_id: ownerId,
         invoice_date: new Date().toISOString(),
         due_date: dueDate.toISOString(),
@@ -240,6 +249,7 @@ const FakturorPage = () => {
   async function exportPDF(invoiceId: string) {
     try {
       toast("Genererar PDF…");
+      const supabase = createClient();
       const { data, error } = await supabase.functions.invoke("pdf", {
         body: { invoiceId },
       });
@@ -469,19 +479,19 @@ const FakturorPage = () => {
                                   inv.status === "draft"
                                     ? "bg-gray-100 text-gray-600"
                                     : inv.status === "sent"
-                                    ? "bg-blue-100 text-blue-700"
-                                    : inv.status === "paid"
-                                    ? "bg-emerald-100 text-emerald-700"
-                                    : "bg-red-100 text-red-700"
+                                      ? "bg-blue-100 text-blue-700"
+                                      : inv.status === "paid"
+                                        ? "bg-emerald-100 text-emerald-700"
+                                        : "bg-red-100 text-red-700"
                                 }`}
                               >
                                 {inv.status === "draft"
                                   ? "Utkast"
                                   : inv.status === "sent"
-                                  ? "Skickad"
-                                  : inv.status === "paid"
-                                  ? "Betald"
-                                  : "Makulerad"}
+                                    ? "Skickad"
+                                    : inv.status === "paid"
+                                      ? "Betald"
+                                      : "Makulerad"}
                               </span>
                             </td>
                             <td className="p-2">
@@ -520,8 +530,8 @@ const FakturorPage = () => {
                       log.type === "error"
                         ? "border-red-500 text-red-400"
                         : log.type === "success"
-                        ? "border-emerald-500 text-emerald-400"
-                        : "border-blue-500 text-blue-400"
+                          ? "border-emerald-500 text-emerald-400"
+                          : "border-blue-500 text-blue-400"
                     }`}
                   >
                     <span className="text-gray-400">{log.time}</span>{" "}

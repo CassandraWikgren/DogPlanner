@@ -1,11 +1,11 @@
 // app/api/staff/remove/route.ts
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 
 export async function DELETE(req: Request) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createClient();
 
     const { user_id } = await req.json();
     if (!user_id) {

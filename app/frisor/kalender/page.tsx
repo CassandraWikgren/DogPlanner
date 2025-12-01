@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -100,7 +100,6 @@ const getStatusIcon = (status: string) => {
 export default function GroomingCalendar() {
   const router = useRouter();
   const { currentOrgId, loading: authLoading } = useAuth();
-  const supabase = createClientComponentClient();
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [bookings, setBookings] = useState<GroomingBooking[]>([]);

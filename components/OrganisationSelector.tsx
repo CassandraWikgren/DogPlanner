@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { MapPin, Building2, ChevronDown } from "lucide-react";
 
 interface Organisation {
@@ -28,7 +28,7 @@ export default function OrganisationSelector({
   onSelect,
   required = true,
 }: OrganisationSelectorProps) {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [lan, setLan] = useState<string>("");
   const [kommun, setKommun] = useState<string>("");
   const [availableLan, setAvailableLan] = useState<string[]>([]);
@@ -47,14 +47,14 @@ export default function OrganisationSelector({
 
         const { data, error: fetchError } = await supabase
           .from("orgs")
-          .select("id, name, kommun, lan, service_types, address, phone, email")
+          .select("id, name, address, phone, email")
           .eq("is_visible_to_customers", true)
           .contains("service_types", [serviceType])
           .order("name");
 
         if (fetchError) throw fetchError;
 
-        const orgs = (data || []) as Organisation[];
+        const orgs = (data || []) as any as Organisation[];
         setOrganisations(orgs);
 
         // Extrahera unika län

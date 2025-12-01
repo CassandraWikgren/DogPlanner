@@ -4,7 +4,7 @@
 export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +33,6 @@ interface CustomerDiscount {
 }
 
 export default function CustomerDiscountsPage() {
-  const supabase = createClientComponentClient();
   const { user } = useAuth();
 
   const [discounts, setDiscounts] = useState<CustomerDiscount[]>([]);

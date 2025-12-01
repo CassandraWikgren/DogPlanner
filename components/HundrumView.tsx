@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { calculateRequiredArea } from "@/lib/roomCalculator";
 import {
@@ -35,7 +35,7 @@ interface Dog {
 interface Room {
   id: string;
   name: string;
-  capacity_m2: number;
+  capacity_m2: number | null;
   notes: string | null;
 }
 
@@ -55,7 +55,7 @@ export default function HundrumView() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   useEffect(() => {
     if (currentOrgId) {
@@ -170,7 +170,8 @@ export default function HundrumView() {
       }));
 
       const requiredSpace = calculateRequiredArea(dogsForCalculation);
-      const availableSpace = room.capacity_m2 - requiredSpace;
+      const roomCapacity = room.capacity_m2 ?? 0; // Fallback to 0 if null
+      const availableSpace = roomCapacity - requiredSpace;
       const isOverCapacity = availableSpace < 0;
 
       return {
@@ -317,7 +318,9 @@ export default function HundrumView() {
                   }`}
                   style={{
                     width: `${Math.min(
-                      (roomOcc.requiredSpace / roomOcc.room.capacity_m2) * 100,
+                      (roomOcc.requiredSpace /
+                        ((roomOcc.room.capacity_m2 ?? 1) || 1)) * // Fallback to 1 to avoid division by zero
+                        100,
                       100
                     )}%`,
                   }}

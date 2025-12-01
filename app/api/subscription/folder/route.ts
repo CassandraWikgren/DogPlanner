@@ -1,11 +1,7 @@
 // app/api/subscription/status/route.ts
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-
-export async function GET(req: Request) {
-  const cookieStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+import { createClient } from "@/lib/supabase/server";
+export async function GET(req: Request) {  const supabase = await createClient();
 
   try {
     const auth = req.headers.get("authorization") || "";

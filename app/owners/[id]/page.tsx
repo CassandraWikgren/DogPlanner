@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { EditOwnerModal } from "@/components/EditOwnerModal";
 import { Button } from "@components/ui/button";
@@ -13,7 +13,6 @@ import PageContainer from "@/components/PageContainer";
 
 export default function OwnerPage() {
   const { user } = useAuth();
-  const supabase = createClientComponentClient();
   const params = useParams();
   // id från [id] är alltid en sträng i Next.js App Router
   const id =

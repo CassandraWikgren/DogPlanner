@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import PageContainer from "@/components/PageContainer";
 import { ArrowLeft, Check, AlertCircle, Settings, Loader2 } from "lucide-react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import {
   useEnabledServices,
@@ -61,7 +61,6 @@ const AVAILABLE_SERVICES = [
 export default function TjansterPage() {
   const { currentOrgId, loading: authLoading } = useAuth();
   const { services, refresh } = useEnabledServices();
-  const supabase = createClientComponentClient();
 
   const [selectedServices, setSelectedServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,6 +108,7 @@ export default function TjansterPage() {
       const serviceTypes = selectedServices.map((s) => serviceTypesMap[s] || s);
 
       // Uppdatera BÅDA kolumnerna
+      const supabase = createClient();
       const { error: updateError } = await supabase
         .from("orgs")
         .update({

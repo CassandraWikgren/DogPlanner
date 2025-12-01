@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -127,7 +127,8 @@ export default function CustomerRegisterPage() {
     setSuccess(null);
 
     try {
-      const supabase = createClientComponentClient();
+      // Skapa Supabase client
+      const supabase = createClient();
 
       // Validera sista steget
       const stepError = validateStep3();

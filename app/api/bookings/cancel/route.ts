@@ -1,6 +1,5 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import {
   calculateCancellationFee,
   parsePolicyFromOrganisation,
@@ -18,9 +17,7 @@ import {
  * }
  */
 export async function POST(request: Request) {
-  try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  try {    const supabase = await createClient();
 
     // Verifiera authentication
     const {

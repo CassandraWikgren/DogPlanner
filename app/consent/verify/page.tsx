@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { Shield, Check, AlertTriangle, Info } from "lucide-react";
 import jwt from "jsonwebtoken";
 
@@ -21,7 +21,6 @@ interface TokenPayload {
 function VerifyContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const supabase = createClientComponentClient();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

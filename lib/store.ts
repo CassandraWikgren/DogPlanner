@@ -1,5 +1,5 @@
 // lib/store.ts
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 
 /* ----------------------------- Typer (UI -> DB) ---------------------------- */
 export type OwnerDraft = {

@@ -4,7 +4,7 @@
 export const dynamic = "force-dynamic";
 
 import React, { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 
 import Link from "next/link";
@@ -17,15 +17,13 @@ type SubscriptionType = {
   height_min: number;
   height_max: number;
   price: number;
-  description: string | null;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  description: string;
+  created_at: string | null;
+  updated_at: string | null;
 };
 
 export default function HunddagisPriserPage() {
   const { currentOrgId } = useAuth();
-  const supabase = createClientComponentClient();
 
   const [prices, setPrices] = useState<SubscriptionType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +61,7 @@ export default function HunddagisPriserPage() {
     setError(null);
 
     try {
+      const supabase = createClient();
       const { data, error: fetchError } = await supabase
         .from("subscription_types")
         .select("*")
@@ -72,7 +71,7 @@ export default function HunddagisPriserPage() {
 
       if (fetchError) throw fetchError;
 
-      setPrices(data || []);
+      setPrices((data || []) as SubscriptionType[]);
     } catch (err: any) {
       console.error("Error loading prices:", err);
       setError(err.message || "Kunde inte ladda priser");
@@ -89,6 +88,8 @@ export default function HunddagisPriserPage() {
     setSuccess(null);
 
     try {
+      const supabase = createClient();
+
       // Validering
       if (formData.height_min < 0 || formData.height_max < 0) {
         throw new Error("Mankhöjd måste vara positiv");
@@ -137,6 +138,7 @@ export default function HunddagisPriserPage() {
     setError(null);
 
     try {
+      const supabase = createClient();
       const { error: deleteError } = await supabase
         .from("subscription_types")
         .delete()
@@ -163,6 +165,7 @@ export default function HunddagisPriserPage() {
     setError(null);
 
     try {
+      const supabase = createClient();
       const { error: updateError } = await supabase
         .from("subscription_types")
         .update({ [field]: value })

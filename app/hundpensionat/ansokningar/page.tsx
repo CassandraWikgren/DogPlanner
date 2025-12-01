@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import {
   CheckCircle,
@@ -71,7 +71,6 @@ interface OwnerDiscount {
 // HUVUDKOMPONENT
 // ====================================
 export default function PensionatAnsokningarPage() {
-  const supabase = createClientComponentClient();
   const { user, currentOrgId, loading: authLoading } = useAuth();
 
   const [bookings, setBookings] = useState<PendingBooking[]>([]);

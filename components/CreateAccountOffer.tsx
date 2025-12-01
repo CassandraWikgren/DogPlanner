@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
+import { useAuth } from "@/app/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles, Lock, CheckCircle, AlertCircle } from "lucide-react";
@@ -27,6 +28,7 @@ export default function CreateAccountOffer({
   dogGender,
   dogHeightCm,
 }: CreateAccountOfferProps) {
+  const { currentOrgId } = useAuth();
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -51,7 +53,7 @@ export default function CreateAccountOffer({
     setCreating(true);
 
     try {
-      const supabase = createClientComponentClient();
+      const supabase = createClient();
 
       // Dela upp namn i för- och efternamn
       const nameParts = ownerName.trim().split(" ");
@@ -85,11 +87,12 @@ export default function CreateAccountOffer({
         .insert([
           {
             id: authData.user.id,
+            org_id: currentOrgId, // Använd currentOrgId från context
             full_name: ownerName,
             email: ownerEmail,
             phone: ownerPhone,
             created_at: new Date().toISOString(),
-          },
+          } as any,
         ])
         .select()
         .single();
@@ -102,14 +105,14 @@ export default function CreateAccountOffer({
       // Skapa hund i dogs-tabellen
       const { error: dogError } = await supabase.from("dogs").insert([
         {
+          org_id: currentOrgId, // Använd currentOrgId från context
           owner_id: authData.user.id,
           name: dogName,
           breed: dogBreed,
           birth: dogBirth,
-          gender: dogGender,
           heightcm: parseInt(dogHeightCm) || null,
           created_at: new Date().toISOString(),
-        },
+        } as any,
       ]);
 
       if (dogError) {

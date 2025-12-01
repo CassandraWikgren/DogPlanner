@@ -3,7 +3,11 @@
 Follow these concise, actionable rules when editing or extending this repo.
 
 - Framework & runtime: Next.js (App Router) + React + TypeScript. Version in package.json is Next ^15 and React ^19. Routes live under `app/`.
-- Auth & DB: Supabase is the primary backend. Client helper is `lib/supabase.ts` and the app-level client is created in `app/layout.tsx` via `createClientComponentClient()`.
+- **⚠️ Auth & DB:** Supabase is the primary backend. **IMPORTANT:** We use `@supabase/ssr` (migrated 1 Dec 2025). **NEVER use deprecated `@supabase/auth-helpers-nextjs`**.
+  - **Server Components/API Routes:** `import { createClient } from '@/lib/supabase/server'` then `const supabase = await createClient()`
+  - **Client Components:** `import { createClient } from '@/lib/supabase/client'` then `const supabase = createClient()`
+  - **Middleware:** `import { updateSession } from '@/lib/supabase/middleware'`
+  - See `SUPABASE_SSR_MIGRATION.md` for full migration details
 - Important env vars (required locally and on Vercel):
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -52,5 +56,6 @@ Follow these concise, actionable rules when editing or extending this repo.
   - Preserve import aliases and `next.config.ts` webpack alias entries.
   - When adding server-side dependencies, update `next.config.ts`'s `serverExternalPackages`/`outputFileTracingIncludes` if they are used in API routes.
   - **Pages requiring org_id**: If adding new page that uses `currentOrgId` from AuthContext, ALWAYS add else-case: `if (currentOrgId) { loadData(); } else { setLoading(false); }` to prevent infinite loading spinner.
+  - **⚠️ NEVER import from `@supabase/auth-helpers-nextjs`** — this package is deprecated and removed. Use `@/lib/supabase/server` or `@/lib/supabase/client` instead.
 
-If anything in these instructions is unclear or you want more coverage for a subsystem (PDFs, billing, or room rules), tell me which area and I will expand this file.
+If anything in these instructions is unclear or you want more coverage for a subsystem (PDFs, billing, SSR patterns, or room rules), tell me which area and I will expand this file.

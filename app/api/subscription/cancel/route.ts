@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -17,9 +16,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
  * - Årsabonnemang: Beräkna använd tid × månadspris, återbetala resten automatiskt via Stripe
  */
 export async function POST(req: Request) {
-  try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  try {    const supabase = await createClient();
 
     // Autentisera användare
     const {
@@ -181,10 +178,7 @@ export async function GET(req: Request) {
         { error: "Använd POST för att faktiskt avbryta" },
         { status: 400 }
       );
-    }
-
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    }    const supabase = await createClient();
 
     const {
       data: { user },

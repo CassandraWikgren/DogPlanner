@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,8 +33,8 @@ const ERROR_CODES = {
 interface Dog {
   id: string;
   name: string;
-  breed: string;
-  heightcm: number; // Supabase använder heightcm
+  breed: string | null;
+  heightcm: number | null; // Supabase använder heightcm
   owner_id: string;
 }
 
@@ -88,7 +88,8 @@ function BookingPageContent() {
 
   const fetchDogs = async () => {
     try {
-      const supabase = createClientComponentClient();
+      // Skapa Supabase client
+      const supabase = createClient();
 
       // Kontrollera auth
       const {
@@ -101,6 +102,10 @@ function BookingPageContent() {
       }
 
       // Hämta ägaren
+      if (!user.email) {
+        throw new Error(`${ERROR_CODES.AUTH} Användare saknar email`);
+      }
+
       const { data: ownerData, error: ownerError } = await supabase
         .from("owners")
         .select("id")
@@ -182,8 +187,9 @@ function BookingPageContent() {
   }, [searchParams]);
 
   const getDogSizeCategory = (
-    heightcm: number
+    heightcm: number | null
   ): "small" | "medium" | "large" => {
+    if (!heightcm) return "medium"; // Default to medium if height unknown
     if (heightcm < 35) return "small";
     if (heightcm < 55) return "medium";
     return "large";
@@ -302,7 +308,8 @@ function BookingPageContent() {
     }
 
     try {
-      const supabase = createClientComponentClient();
+      // Skapa Supabase client
+      const supabase = createClient();
 
       // Hämta hundens ägare för bokningen
       const { data: dogData, error: dogError } = await supabase
@@ -330,6 +337,9 @@ function BookingPageContent() {
         return;
       }
 
+      // Type assertion for pensionatData
+      const pensionatSettings = pensionatData as { org_id: string };
+
       // Beräkna pris med calculateBookingPrice från boardingPriceCalculator
       const { calculateBookingPrice } = await import(
         "@/lib/boardingPriceCalculator"
@@ -338,7 +348,7 @@ function BookingPageContent() {
         checkinDate,
         checkoutDate,
         dogData.heightcm || 35,
-        pensionatData.org_id
+        pensionatSettings.org_id
       );
 
       // Skapa bokningen med status "pending" för godkännande
@@ -348,7 +358,7 @@ function BookingPageContent() {
           {
             dog_id: selectedDog,
             owner_id: dogData.owner_id,
-            org_id: pensionatData.org_id,
+            org_id: pensionatSettings.org_id,
             start_date: checkinDate.toISOString().split("T")[0],
             end_date: checkoutDate.toISOString().split("T")[0],
             service_type: "hundpensionat",

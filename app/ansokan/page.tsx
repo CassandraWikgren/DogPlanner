@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { Database } from "@/types/database";
 import { PawPrint, Heart, CheckCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";

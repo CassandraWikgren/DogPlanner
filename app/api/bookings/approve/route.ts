@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { Database } from "@/types/database";
 
 /**
@@ -10,9 +9,7 @@ import { Database } from "@/types/database";
  */
 export async function POST(request: NextRequest) {
   try {
-    // Skapa Supabase client med cookies (Next.js 15)
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({
+    // Skapa Supabase client med cookies (Next.js 15)    const supabase = createRouteHandlerClient<Database>({
       cookies: () => cookieStore,
     });
 

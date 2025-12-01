@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import { generateOCR } from "@/lib/ocrGenerator";
 
 /**
@@ -42,9 +41,7 @@ interface InvoiceExportItem {
 }
 
 export async function GET(request: NextRequest) {
-  try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  try {    const supabase = await createClient();
 
     // Autentisera användare
     const {

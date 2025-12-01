@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import {
   Calendar,
@@ -45,7 +45,6 @@ interface ReportStats {
 
 export default function RapporterPage() {
   const { currentOrgId, loading: authLoading } = useAuth();
-  const supabase = createClientComponentClient();
 
   const [stats, setStats] = useState<ReportStats>({
     totalBookings: 0,

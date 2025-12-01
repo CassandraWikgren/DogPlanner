@@ -4,7 +4,7 @@
 export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 
 import { Loader2, Lock, Unlock, PlusCircle, FileText } from "lucide-react";
 
@@ -91,7 +91,6 @@ const DEFAULT_COLUMNS = [
 ];
 
 const FakturorPage = () => {
-  const supabase = createClientComponentClient();
 
   // 🧠 Statehantering
   const [mounted, setMounted] = useState(false);

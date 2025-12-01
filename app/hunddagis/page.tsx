@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { capitalize } from "@/lib/textUtils";
 

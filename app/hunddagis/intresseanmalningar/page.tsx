@@ -4,7 +4,7 @@
 export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -78,7 +78,6 @@ interface InterestApplication {
  */
 export default function HunddagisIntresseanmalningarPage() {
   const { currentOrgId } = useAuth();
-  const supabase = createClientComponentClient();
   const [applications, setApplications] = useState<InterestApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

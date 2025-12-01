@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { updateSession } from "@/lib/supabase/middleware";
 
 // ============================================
 // RATE LIMITING
@@ -89,14 +90,15 @@ if (typeof setInterval !== "undefined") {
   }, 300000);
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // Rate limiting check
   const rateLimitResponse = checkRateLimit(request);
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
 
-  return NextResponse.next();
+  // Supabase session refresh
+  return await updateSession(request);
 }
 
 export const config = {

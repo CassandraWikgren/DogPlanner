@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import Stripe from "stripe";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-
 export async function POST(req: Request) {
-  const cookieStore = cookies();
-
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeKey) {
     return NextResponse.json(
@@ -18,7 +14,7 @@ export async function POST(req: Request) {
     apiVersion: "2025-09-30.clover" as any,
   });
 
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  const supabase = await createClient();
 
   const sig = req.headers.get("stripe-signature");
   const body = await req.text();
@@ -63,8 +59,7 @@ export async function POST(req: Request) {
             "register_subscription_start",
             {
               p_org_id: org_id,
-              p_org_number: org.org_number,
-              p_email: session.customer_email,
+              p_plan: plan || "basic",
             }
           );
 

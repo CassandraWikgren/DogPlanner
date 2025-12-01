@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,6 @@ interface DagisPricing {
 }
 
 export default function DagisPriserPage() {
-  const supabase = createClientComponentClient();
   const { currentOrgId } = useAuth();
 
   const [loading, setLoading] = useState(true);

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Database } from "@/types/database";
 import { X, Save, CheckCircle, UserPlus } from "lucide-react";
@@ -93,6 +93,7 @@ export default function InterestApplicationModal({
     setError(null);
 
     try {
+      const supabase = createClient();
       const { error: updateError } = await supabase
         .from("interest_applications")
         .update({
@@ -153,6 +154,7 @@ export default function InterestApplicationModal({
     setError(null);
 
     try {
+      const supabase = createClient();
       // 1. Skapa ägare
       const { data: ownerData, error: ownerError } = await supabase
         .from("owners")

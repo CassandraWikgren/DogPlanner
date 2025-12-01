@@ -16,6 +16,14 @@ export interface Database {
           vat_rate: number | null;
           created_at: string | null;
           updated_at: string | null;
+          // Stripe & subscription fields
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          subscription_status: string | null;
+          billing_period: string | null;
+          has_had_subscription: boolean | null;
+          // Enabled services
+          enabled_services: string[] | null;
         };
         Insert: {
           id?: string;
@@ -28,6 +36,12 @@ export interface Database {
           vat_rate?: number | null;
           created_at?: string | null;
           updated_at?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          subscription_status?: string | null;
+          billing_period?: string | null;
+          has_had_subscription?: boolean | null;
+          enabled_services?: string[] | null;
         };
         Update: {
           id?: string;
@@ -40,6 +54,12 @@ export interface Database {
           vat_rate?: number | null;
           created_at?: string | null;
           updated_at?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          subscription_status?: string | null;
+          billing_period?: string | null;
+          has_had_subscription?: boolean | null;
+          enabled_services?: string[] | null;
         };
         Relationships: [];
       };
@@ -245,6 +265,12 @@ export interface Database {
           checkout_date: string | null;
           created_at: string | null;
           updated_at: string | null;
+          // Health & behavior fields
+          is_castrated: boolean | null;
+          allergies: string | null;
+          medications: string | null;
+          special_needs: string | null;
+          behavior_notes: string | null;
         };
         Insert: {
           id?: string;
@@ -269,6 +295,11 @@ export interface Database {
           checkout_date?: string | null;
           created_at?: string | null;
           updated_at?: string | null;
+          is_castrated?: boolean | null;
+          allergies?: string | null;
+          medications?: string | null;
+          special_needs?: string | null;
+          behavior_notes?: string | null;
         };
         Update: {
           id?: string;
@@ -293,6 +324,11 @@ export interface Database {
           checkout_date?: string | null;
           created_at?: string | null;
           updated_at?: string | null;
+          is_castrated?: boolean | null;
+          allergies?: string | null;
+          medications?: string | null;
+          special_needs?: string | null;
+          behavior_notes?: string | null;
         };
         Relationships: [
           {
@@ -369,6 +405,7 @@ export interface Database {
           end_date: string;
           status: string | null;
           total_price: number | null;
+          base_price: number | null;
           discount_amount: number | null;
           notes: string | null;
           special_requests: string | null;
@@ -385,6 +422,7 @@ export interface Database {
           end_date: string;
           status?: string | null;
           total_price?: number | null;
+          base_price?: number | null;
           discount_amount?: number | null;
           notes?: string | null;
           special_requests?: string | null;
@@ -401,6 +439,7 @@ export interface Database {
           end_date?: string;
           status?: string | null;
           total_price?: number | null;
+          base_price?: number | null;
           discount_amount?: number | null;
           notes?: string | null;
           special_requests?: string | null;
@@ -470,6 +509,107 @@ export interface Database {
             foreignKeyName: "extra_services_org_id_fkey";
             columns: ["org_id"];
             referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      subscriptions: {
+        Row: {
+          id: string;
+          org_id: string;
+          status: string;
+          plan: string | null;
+          trial_starts_at: string | null;
+          trial_ends_at: string | null;
+          next_billing_at: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+          plan_name: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          status?: string;
+          plan?: string | null;
+          trial_starts_at?: string | null;
+          trial_ends_at?: string | null;
+          next_billing_at?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          plan_name?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          status?: string;
+          plan?: string | null;
+          trial_starts_at?: string | null;
+          trial_ends_at?: string | null;
+          next_billing_at?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          plan_name?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      invoices: {
+        Row: {
+          id: string;
+          org_id: string;
+          owner_id: string;
+          invoice_date: string;
+          due_date: string;
+          total_amount: number;
+          status: string;
+          payment_method: string | null;
+          notes: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          owner_id: string;
+          invoice_date: string;
+          due_date: string;
+          total_amount: number;
+          status?: string;
+          payment_method?: string | null;
+          notes?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          owner_id?: string;
+          invoice_date?: string;
+          due_date?: string;
+          total_amount?: number;
+          status?: string;
+          payment_method?: string | null;
+          notes?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "invoices_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "invoices_owner_id_fkey";
+            columns: ["owner_id"];
+            referencedRelation: "owners";
             referencedColumns: ["id"];
           },
         ];
@@ -671,6 +811,58 @@ export interface Database {
           },
         ];
       };
+      grooming_prices: {
+        Row: {
+          id: string;
+          org_id: string;
+          service_name: string;
+          service_type: string;
+          description: string | null;
+          dog_size: string | null;
+          coat_type: string | null;
+          price: number;
+          duration_minutes: number;
+          active: boolean;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          service_name: string;
+          service_type: string;
+          description?: string | null;
+          dog_size?: string | null;
+          coat_type?: string | null;
+          price: number;
+          duration_minutes?: number;
+          active?: boolean;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          service_name?: string;
+          service_type?: string;
+          description?: string | null;
+          dog_size?: string | null;
+          coat_type?: string | null;
+          price?: number;
+          duration_minutes?: number;
+          active?: boolean;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "grooming_prices_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       grooming_journal: {
         Row: {
           id: string;
@@ -747,6 +939,269 @@ export interface Database {
           },
         ];
       };
+      subscription_types: {
+        Row: {
+          id: string;
+          org_id: string;
+          subscription_type: string;
+          height_min: number;
+          height_max: number;
+          price: number;
+          description: string;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          subscription_type: string;
+          height_min: number;
+          height_max: number;
+          price: number;
+          description: string;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          subscription_type?: string;
+          height_min?: number;
+          height_max?: number;
+          price?: number;
+          description?: string;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "subscription_types_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      daycare_pricing: {
+        Row: {
+          id: string;
+          org_id: string;
+          subscription_type: string;
+          height_min: number;
+          height_max: number;
+          price: number;
+          description: string;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          subscription_type: string;
+          height_min: number;
+          height_max: number;
+          price: number;
+          description: string;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          subscription_type?: string;
+          height_min?: number;
+          height_max?: number;
+          price?: number;
+          description?: string;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "daycare_pricing_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      extra_service: {
+        Row: {
+          id: string;
+          org_id: string;
+          dogs_id: string;
+          service_id: string | null;
+          service_type: string;
+          frequency: string | null;
+          quantity: number | null;
+          price: number | null;
+          notes: string | null;
+          start_date: string | null;
+          end_date: string | null;
+          performed_at: string | null;
+          is_active: boolean | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          dogs_id: string;
+          service_id?: string | null;
+          service_type: string;
+          frequency?: string | null;
+          quantity?: number | null;
+          price?: number | null;
+          notes?: string | null;
+          start_date?: string | null;
+          end_date?: string | null;
+          performed_at?: string | null;
+          is_active?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          dogs_id?: string;
+          service_id?: string | null;
+          service_type?: string;
+          frequency?: string | null;
+          quantity?: number | null;
+          price?: number | null;
+          notes?: string | null;
+          start_date?: string | null;
+          end_date?: string | null;
+          performed_at?: string | null;
+          is_active?: boolean | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "extra_service_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "extra_service_dogs_id_fkey";
+            columns: ["dogs_id"];
+            referencedRelation: "dogs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      daycare_completions: {
+        Row: {
+          id: string;
+          org_id: string;
+          dog_id: string;
+          service_type: string;
+          is_completed: boolean;
+          completed_at: string | null;
+          completed_by_name: string | null;
+          scheduled_month: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          dog_id: string;
+          service_type: string;
+          is_completed?: boolean;
+          completed_at?: string | null;
+          completed_by_name?: string | null;
+          scheduled_month?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          dog_id?: string;
+          service_type?: string;
+          is_completed?: boolean;
+          completed_at?: string | null;
+          completed_by_name?: string | null;
+          scheduled_month?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "daycare_completions_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "daycare_completions_dog_id_fkey";
+            columns: ["dog_id"];
+            referencedRelation: "dogs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      daycare_service_completions: {
+        Row: {
+          id: string;
+          org_id: string;
+          dog_id: string;
+          service_type: string;
+          is_completed: boolean;
+          completed_at: string | null;
+          completed_by: string | null;
+          completed_by_name: string | null;
+          scheduled_month: string | null;
+          notes: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          dog_id: string;
+          service_type: string;
+          is_completed?: boolean;
+          completed_at?: string | null;
+          completed_by?: string | null;
+          completed_by_name?: string | null;
+          scheduled_month?: string | null;
+          notes?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          org_id?: string;
+          dog_id?: string;
+          service_type?: string;
+          is_completed?: boolean;
+          completed_at?: string | null;
+          completed_by?: string | null;
+          completed_by_name?: string | null;
+          scheduled_month?: string | null;
+          notes?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "daycare_service_completions_org_id_fkey";
+            columns: ["org_id"];
+            referencedRelation: "orgs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "daycare_service_completions_dog_id_fkey";
+            columns: ["dog_id"];
+            referencedRelation: "dogs";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: { [key: string]: never };
     Functions: {
@@ -757,6 +1212,28 @@ export interface Database {
           message: string;
           org_id?: string;
           created_new_org?: boolean;
+          error?: string;
+        };
+      };
+      register_subscription_start: {
+        Args: { p_org_id: string; p_plan: string };
+        Returns: { success: boolean; message: string };
+      };
+      calculate_yearly_refund: {
+        Args: { p_org_id: string };
+        Returns: {
+          eligible: boolean;
+          refund_amount: number;
+          months_used: number;
+          calculation: string;
+        };
+      };
+      gdpr_delete_user_data: {
+        Args: { p_user_id: string };
+        Returns: {
+          success: boolean;
+          deleted: number;
+          message: string;
           error?: string;
         };
       };

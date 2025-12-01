@@ -1,6 +1,5 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database";
 
@@ -10,9 +9,7 @@ import { Database } from "@/types/database";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verifiera autentisering
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({
+    // Verifiera autentisering    const supabase = createRouteHandlerClient<Database>({
       cookies: () => cookieStore,
     });
     const {

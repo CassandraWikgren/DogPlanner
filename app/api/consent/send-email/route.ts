@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/emailSender";
 

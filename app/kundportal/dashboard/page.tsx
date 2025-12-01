@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,40 +40,70 @@ const ERROR_CODES = {
 interface Owner {
   id: string;
   full_name: string;
-  phone: string;
-  email: string;
-  address?: string;
-  city?: string;
-  postal_code?: string;
-  contact_person_2?: string;
-  contact_phone_2?: string;
-  created_at: string;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  customer_number: number | null;
+  contact_person_2: string | null;
+  contact_phone_2: string | null;
+  notes: string | null;
+  org_id: string;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 interface Dog {
   id: string;
   name: string;
-  breed: string;
-  birth: string;
-  heightcm: number;
-  subscription: string;
+  breed: string | null;
+  birth: string | null;
+  heightcm: number | null;
+  subscription: string | null;
   owner_id: string;
-  vaccdhp?: string;
-  vaccpi?: string;
-  is_castrated: boolean;
-  behavior_notes?: string;
+  org_id: string;
+  room_id: string | null;
+  vaccdhp: string | null;
+  vaccpi: string | null;
+  is_castrated: boolean | null;
+  behavior_notes: string | null;
+  days: string | null;
+  startdate: string | null;
+  enddate: string | null;
+  photo_url: string | null;
+  notes: string | null;
+  events: any | null;
+  checked_in: boolean | null;
+  checkin_date: string | null;
+  checkout_date: string | null;
+  allergies: string | null;
+  medications: string | null;
+  special_needs: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 interface Booking {
   id: string;
+  org_id: string;
   dog_id: string;
+  owner_id: string;
+  room_id: string | null;
   start_date: string;
   end_date: string;
-  status: "pending" | "confirmed" | "checked_in" | "checked_out" | "cancelled";
-  base_price: number;
-  total_price: number;
-  // Relations
-  dogs: Dog;
+  status: string | null;
+  base_price: number | null;
+  total_price: number | null;
+  discount_amount: number | null;
+  notes: string | null;
+  special_requests: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  // Relations - partial dog object from query
+  dogs: {
+    id: string;
+    name: string;
+    breed: string | null;
+  };
 }
 
 export default function CustomerDashboard() {
@@ -95,15 +125,14 @@ export default function CustomerDashboard() {
 
   const fetchCustomerData = async () => {
     try {
-      const supabase = createClientComponentClient();
-
+      const supabase = createClient();
       // Kontrollera auth status
       const {
         data: { user },
         error: authError,
       } = await supabase.auth.getUser();
 
-      if (authError || !user) {
+      if (authError || !user || !user.email) {
         router.push("/kundportal/login");
         return;
       }
@@ -172,41 +201,42 @@ export default function CustomerDashboard() {
   };
 
   const handleLogout = async () => {
-    const supabase = createClientComponentClient();
+    const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/kundportal");
   };
 
   const getStatusBadge = (status: Booking["status"]) => {
-    const configs = {
-      pending: {
-        color: "bg-yellow-100 text-yellow-800",
-        icon: AlertCircle,
-        text: "Väntande",
-      },
-      confirmed: {
-        color: "bg-green-100 text-green-800",
-        icon: CheckCircle,
-        text: "Bekräftad",
-      },
-      checked_in: {
-        color: "bg-blue-100 text-blue-800",
-        icon: CheckCircle,
-        text: "Incheckad",
-      },
-      checked_out: {
-        color: "bg-gray-100 text-gray-800",
-        icon: CheckCircle,
-        text: "Utcheckad",
-      },
-      cancelled: {
-        color: "bg-red-100 text-red-800",
-        icon: XCircle,
-        text: "Avbokad",
-      },
-    };
+    const configs: Record<string, { color: string; icon: any; text: string }> =
+      {
+        pending: {
+          color: "bg-yellow-100 text-yellow-800",
+          icon: AlertCircle,
+          text: "Väntande",
+        },
+        confirmed: {
+          color: "bg-green-100 text-green-800",
+          icon: CheckCircle,
+          text: "Bekräftad",
+        },
+        checked_in: {
+          color: "bg-blue-100 text-blue-800",
+          icon: CheckCircle,
+          text: "Incheckad",
+        },
+        checked_out: {
+          color: "bg-gray-100 text-gray-800",
+          icon: CheckCircle,
+          text: "Utcheckad",
+        },
+        cancelled: {
+          color: "bg-red-100 text-red-800",
+          icon: XCircle,
+          text: "Avbokad",
+        },
+      };
 
-    const config = configs[status];
+    const config = configs[status || "pending"];
     const Icon = config.icon;
 
     return (
@@ -225,13 +255,14 @@ export default function CustomerDashboard() {
     });
   };
 
-  const getDogSizeCategory = (heightcm: number) => {
+  const getDogSizeCategory = (heightcm: number | null) => {
+    if (!heightcm) return "Okänd storlek";
     if (heightcm < 35) return "Liten hund";
     if (heightcm < 55) return "Medelstor hund";
     return "Stor hund";
   };
 
-  const calculateAge = (birthDate: string) => {
+  const calculateAge = (birthDate: string | null) => {
     if (!birthDate) return "Okänd ålder";
     const birth = new Date(birthDate);
     const today = new Date();
@@ -442,15 +473,17 @@ export default function CustomerDashboard() {
                         <div>
                           <p className="font-medium">{dog.name}</p>
                           <p className="text-sm text-gray-600">
-                            {dog.breed} • {dog.heightcm} cm
+                            {dog.breed} • {dog.heightcm || "?"} cm
                           </p>
                         </div>
                         <Badge variant="outline">
-                          {dog.heightcm <= 34
-                            ? "Liten"
-                            : dog.heightcm <= 49
-                              ? "Mellan"
-                              : "Stor"}
+                          {!dog.heightcm
+                            ? "Okänd"
+                            : dog.heightcm <= 34
+                              ? "Liten"
+                              : dog.heightcm <= 49
+                                ? "Mellan"
+                                : "Stor"}
                         </Badge>
                       </div>
                     ))}
@@ -689,11 +722,7 @@ export default function CustomerDashboard() {
                     <MapPin className="h-5 w-5 text-gray-400 mr-3" />
                     <div>
                       <p className="font-medium">
-                        {currentOwner.address
-                          ? `${currentOwner.address}${
-                              currentOwner.city ? `, ${currentOwner.city}` : ""
-                            }`
-                          : "Ej angett"}
+                        {currentOwner.address || "Ej angett"}
                       </p>
                       <p className="text-sm text-gray-600">Adress</p>
                     </div>
@@ -703,7 +732,10 @@ export default function CustomerDashboard() {
                     <Clock className="h-5 w-5 text-gray-400 mr-3" />
                     <div>
                       <p className="font-medium">
-                        Medlem sedan {formatDate(currentOwner.created_at)}
+                        Medlem sedan{" "}
+                        {currentOwner.created_at
+                          ? formatDate(currentOwner.created_at)
+                          : "Okänt"}
                       </p>
                       <p className="text-sm text-gray-600">Medlemskap</p>
                     </div>

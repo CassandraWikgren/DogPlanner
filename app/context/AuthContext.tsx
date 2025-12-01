@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 
 type SubscriptionState = {
   status?: "trialing" | "active" | "past_due" | "canceled" | string;
@@ -63,14 +63,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     init();
 
-    if (!supabase) {
-      console.warn("Supabase inte tillgängligt");
-      setLoading(false);
-      return;
-    }
-
+    const supabase = createClient();
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (_event: any, session: any) => {
         const u = session?.user || null;
 
         // Kontrollera om det är demo-cookies aktiva
@@ -105,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Endast kör API-anrop för business users (med org_id eller role)
           // Kundportal-användare och offentliga besökare behöver inte onboarding/subscription
           const hasBusinessRole = metaOrg || (u as any)?.app_metadata?.role;
-          
+
           if (hasBusinessRole) {
             // Kör queries i bakgrunden UTAN att blockera rendering
             // Använd setTimeout för att släppa igenom första render
@@ -113,8 +108,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               // Försök auto-onboarding i bakgrunden
               safeAutoOnboarding(session.access_token)
                 .then(() => refreshProfile(u.id))
-                .catch((err) => console.error("Background onboarding failed:", err));
-              
+                .catch((err) =>
+                  console.error("Background onboarding failed:", err)
+                );
+
               refreshSubscription(session.access_token).catch((err) =>
                 console.error("Background subscription check failed:", err)
               );
@@ -192,15 +189,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Säkerhetskontroll för supabase-klient
-      if (!supabase) {
-        console.error(
-          "AuthContext: Supabase client är null - kontrollera miljövariabler"
-        );
-        setLoading(false);
-        return;
-      }
-
+      // Skapa supabase client för session check
+      const supabase = createClient();
       const { data, error } = await supabase.auth.getSession();
       if (error) {
         console.error("AuthContext: Error getting session:", error);
@@ -238,12 +228,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function refreshProfile(userId: string) {
-    if (!supabase) {
-      console.error("AuthContext: Supabase client är null i refreshProfile");
-      return;
-    }
-
     try {
+      // Skapa supabase client
+      const supabase = createClient();
+
       // Optimerad: Gör EN query istället för 2-3
       const { data: profileData, error } = await supabase
         .from("profiles")
@@ -301,10 +289,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function healMissingOrg(userId: string): Promise<boolean> {
-    if (!supabase) return false;
-
     try {
       console.log("🔧 Försöker heala användare med saknad org_id...");
+
+      // Skapa supabase client
+      const supabase = createClient();
 
       // Anropa healing-funktionen i databasen
       // VIKTIGT: Parametern heter p_user_id, inte user_id (se PERMANENT_FIX_org_assignment.sql)
@@ -381,15 +370,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Logga ut från Supabase
-    if (supabase) {
-      try {
-        // Försök global sign-out (v2 API)
-        // @ts-ignore – tolerera olika SDK-versioner
-        await supabase.auth.signOut({ scope: "global" });
-      } catch (e) {
-        console.warn("signOut global scope unsupported, falling back", e);
-        await supabase.auth.signOut();
-      }
+    const supabase = createClient();
+    try {
+      // Försök global sign-out (v2 API)
+      // @ts-ignore – tolerera olika SDK-versioner
+      await supabase.auth.signOut({ scope: "global" });
+    } catch (e) {
+      console.warn("signOut global scope unsupported, falling back", e);
+      await supabase.auth.signOut();
     }
 
     // Extra säkerhet: rensa Supabase tokens i localStorage (sb-<ref>-auth-token)
@@ -425,7 +413,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 🛠 Public funktion för att säkerställa att en org/profil skapas nu
   async function ensureOrg() {
     try {
-      if (!supabase) return;
+      const supabase = createClient();
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
       const uid = data.session?.user?.id;

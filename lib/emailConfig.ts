@@ -6,8 +6,7 @@
  * 2. Organisations-nivå - för kundkommunikation
  */
 
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { supabase as supabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 
 // ============================================
 // SYSTEM-NIVÅ EMAIL (DogPlanner)
@@ -55,12 +54,7 @@ export interface OrgEmailConfig {
 export async function getOrgEmailConfig(
   orgId: string
 ): Promise<OrgEmailConfig> {
-  if (!supabaseClient) {
-    console.error("Supabase client not available");
-    return {};
-  }
-
-  const supabase = supabaseClient;
+  const supabase = createClient();
 
   const { data, error } = await supabase
     .from("orgs")
@@ -160,11 +154,7 @@ export async function updateOrgEmailConfig(
   orgId: string,
   config: Partial<OrgEmailConfig>
 ): Promise<{ success: boolean; error?: string }> {
-  if (!supabaseClient) {
-    return { success: false, error: "Supabase client not available" };
-  }
-
-  const supabase = supabaseClient;
+  const supabase = createClient();
 
   const { error } = await (supabase as any)
     .from("orgs")

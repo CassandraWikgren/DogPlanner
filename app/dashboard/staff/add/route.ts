@@ -1,11 +1,11 @@
 // app/api/staff/add/route.ts
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = await createClient();
 
     const { email, full_name, role = "staff", org_id } = await req.json();
 
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     //    Om trigger redan skapar profil: on conflict på id säkerställer att vi uppdaterar rätt.
     const { error: upsertErr } = await supabase.from("profiles").upsert(
       {
-        id: userId ?? undefined, // om invite inte returnerar id ännu, går det ändå att binda när användaren aktiverar kontot (men bäst om vi har id)
+        id: userId as string, // Type assertion för att fixa TypeScript-fel
         email,
         full_name: full_name || null,
         role: role || "staff",

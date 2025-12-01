@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { useEnabledServices } from "@/lib/hooks/useEnabledServices";
 import {
@@ -48,8 +48,6 @@ export default function DashboardWidgets() {
   });
   const [loading, setLoading] = useState(true);
 
-  const supabase = createClientComponentClient();
-
   useEffect(() => {
     const timer = setTimeout(() => {
       if (currentOrgId) {
@@ -64,6 +62,7 @@ export default function DashboardWidgets() {
 
   const fetchStats = async () => {
     try {
+      const supabase = createClient();
       setLoading(true);
 
       if (!currentOrgId) {
@@ -112,8 +111,8 @@ export default function DashboardWidgets() {
           .from("bookings")
           .select("id, room_id")
           .eq("org_id", currentOrgId)
-          .lte("check_in", today)
-          .gte("check_out", today)
+          .lte("start_date", today)
+          .gte("end_date", today)
           .eq("status", "confirmed"),
 
         // Incheckningar idag (Pensionat)
@@ -121,7 +120,7 @@ export default function DashboardWidgets() {
           .from("bookings")
           .select("id")
           .eq("org_id", currentOrgId)
-          .eq("check_in", today)
+          .eq("start_date", today)
           .eq("status", "confirmed"),
 
         // Utcheckningar idag (Pensionat)
@@ -129,7 +128,7 @@ export default function DashboardWidgets() {
           .from("bookings")
           .select("id")
           .eq("org_id", currentOrgId)
-          .eq("check_out", today)
+          .eq("end_date", today)
           .eq("status", "confirmed"),
 
         // Väntande bokningar (Pensionat)

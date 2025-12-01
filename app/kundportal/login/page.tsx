@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,7 +53,8 @@ function LoginPageContent() {
         throw new Error(`${ERROR_CODES.AUTH} E-post och lösenord krävs`);
       }
 
-      const supabase = createClientComponentClient();
+      // Skapa Supabase client
+      const supabase = createClient();
 
       // Logga in med Supabase Auth
       const { data, error: authError } = await supabase.auth.signInWithPassword(

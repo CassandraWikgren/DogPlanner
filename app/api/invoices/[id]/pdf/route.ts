@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import { generateOCR, formatOCR, generateSwishURL } from "@/lib/ocrGenerator";
@@ -9,9 +8,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  try {    const supabase = await createClient();
     const invoiceId = params.id;
 
     // Hämta faktura med alla relationer

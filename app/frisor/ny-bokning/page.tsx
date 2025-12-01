@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,13 +43,23 @@ interface Dog {
 
 interface GroomingHistory {
   id: string;
-  visit_date: string;
+  appointment_date: string; // Match database field
   clip_length: string | null;
   shampoo_type: string | null;
   special_treatments: string | null;
   notes: string | null;
   duration_minutes: number | null;
-  total_price: number | null;
+  final_price: number; // Match database field (required)
+  org_id: string | null;
+  dog_id: string | null;
+  service_type: string;
+  before_photos: string[] | null;
+  after_photos: string[] | null;
+  next_appointment_recommended: string | null;
+  external_customer_name: string | null;
+  external_dog_name: string | null;
+  external_dog_breed: string | null;
+  created_at: string;
 }
 
 interface ServiceOption {
@@ -83,7 +93,6 @@ const TIME_SLOTS = generateTimeSlots();
 export default function NyBokning() {
   const router = useRouter();
   const { currentOrgId, loading: authLoading } = useAuth();
-  const supabase = createClientComponentClient();
 
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [filteredDogs, setFilteredDogs] = useState<Dog[]>([]);
@@ -181,6 +190,7 @@ export default function NyBokning() {
     if (!currentOrgId) return;
 
     try {
+      const supabase = createClient();
       const { data, error: dbError } = await supabase
         .from("dogs")
         .select(
@@ -225,6 +235,7 @@ export default function NyBokning() {
     if (!currentOrgId) return;
 
     try {
+      const supabase = createClient();
       const { data, error: dbError } = await supabase
         .from("external_customers")
         .select("*")
@@ -250,6 +261,7 @@ export default function NyBokning() {
     console.log("🔄 loadGroomingPrices: Laddar priser för org:", currentOrgId);
     setLoadingServices(true);
     try {
+      const supabase = createClient();
       const { data, error: dbError } = await supabase
         .from("grooming_prices")
         .select("*")
@@ -305,12 +317,13 @@ export default function NyBokning() {
 
     setLoadingHistory(true);
     try {
+      const supabase = createClient();
       const { data, error: historyError } = await supabase
         .from("grooming_journal")
         .select("*")
         .eq("org_id", currentOrgId)
         .eq("dog_id", dogId)
-        .order("visit_date", { ascending: false })
+        .order("appointment_date", { ascending: false })
         .limit(5);
 
       if (historyError) throw historyError;
@@ -459,6 +472,7 @@ export default function NyBokning() {
         bookingData.external_dog_breed = walkinData.dog_breed;
       }
 
+      const supabase = createClient();
       const { error: insertError } = await supabase
         .from("grooming_bookings")
         .insert(bookingData);
@@ -772,7 +786,7 @@ export default function NyBokning() {
                       <p className="text-sm text-gray-600 mb-1">
                         <strong>Senaste besök:</strong>{" "}
                         {new Date(
-                          groomingHistory[0].visit_date
+                          groomingHistory[0].appointment_date
                         ).toLocaleDateString("sv-SE")}
                       </p>
                       {groomingHistory[0].clip_length && (

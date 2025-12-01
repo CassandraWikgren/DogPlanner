@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SWEDISH_LAN, KOMMUNER_BY_LAN } from "@/lib/swedishLocations";
@@ -32,6 +32,7 @@ export default function RegisterCompanyPage() {
     e.preventDefault();
     setErr(null);
 
+    const supabase = createClient();
     if (!supabase) {
       setErr("Databaskoppling saknas");
       return;

@@ -1,7 +1,6 @@
 import QRCode from "qrcode";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import PDFDocument from "pdfkit";
 import streamBuffers from "stream-buffers";
 
@@ -54,9 +53,7 @@ type InvoiceResult = {
 // ==========================
 
 export async function POST(req: Request) {
-  try {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  try {    const supabase = await createClient();
 
     const { invoiceId } = await req.json();
     if (!invoiceId) {

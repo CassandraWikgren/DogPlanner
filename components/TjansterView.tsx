@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { CheckCircle, Circle, User } from "lucide-react";
 
@@ -13,7 +13,7 @@ interface ServiceCompletion {
   completed_at: string | null;
   completed_by: string | null;
   completed_by_name: string | null;
-  scheduled_month: string; // Format: "2025-10" för oktober 2025
+  scheduled_month: string | null; // Format: "2025-10" för oktober 2025 (nullable)
   notes: string | null;
 }
 
@@ -34,7 +34,7 @@ export default function TjansterView() {
   const [dogs, setDogs] = useState<DogWithServices[]>([]);
   const [completions, setCompletions] = useState<ServiceCompletion[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const currentMonth = new Date().toLocaleString("sv-SE", { month: "long" });
   const currentYear = new Date().getFullYear();
@@ -150,7 +150,7 @@ export default function TjansterView() {
               ? new Date().toISOString()
               : null,
             completed_by_name: !existing.is_completed ? user.email : null,
-          })
+          } as any)
           .eq("id", existing.id);
 
         if (error) throw error;
@@ -166,7 +166,7 @@ export default function TjansterView() {
             completed_by_name: user.email,
             scheduled_month: scheduledMonth,
             org_id: user.org_id,
-          });
+          } as any);
 
         if (error) throw error;
       }

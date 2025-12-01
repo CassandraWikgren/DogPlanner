@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 
 export type ServiceType = "daycare" | "boarding" | "grooming";
 
@@ -22,7 +22,6 @@ interface EnabledServicesReturn {
  */
 export function useEnabledServices(): EnabledServicesReturn {
   const { currentOrgId } = useAuth();
-  const supabase = createClientComponentClient();
 
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +34,7 @@ export function useEnabledServices(): EnabledServicesReturn {
     }
 
     try {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from("orgs")
         .select("enabled_services")

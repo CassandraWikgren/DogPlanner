@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { DogBreedSelect } from "@/components/DogBreedSelect";
 
@@ -22,7 +22,8 @@ type Room = {
 };
 type OwnerRow = {
   id?: string;
-  full_name?: string | null;
+  org_id?: string;
+  full_name: string | null;
   email?: string | null;
   phone?: string | null;
   postal_code?: string | null;
@@ -74,7 +75,7 @@ export default function EditDogModal({
   onSavedAction,
   roomTypeFilter = ["daycare", "boarding", "both"], // Default: visa alla rum
 }: Props) {
-  const supabase = createClientComponentClient(); // Korrekt klient för client components
+  const supabase = createClient();
   const { user, currentOrgId } = useAuth(); // Hämta user och org_id från AuthContext
 
   // UI
@@ -561,10 +562,8 @@ export default function EditDogModal({
         contact_person_2:
           [kp2First.trim(), kp2Last.trim()].filter(Boolean).join(" ") || null,
         contact_phone_2: kp2Phone || null,
+        org_id: currentOrgId, // Alltid nödvändigt när triggers är disabled
       };
-
-      // Lägg alltid till org_id (viktigt när triggers är disabled)
-      (baseOwner as any).org_id = currentOrgId;
 
       // customer_number hanteras nu av DB-trigger (20250103_unique_customer_numbers.sql)
       // Triggern auto-genererar nästa lediga nummer om customer_number är NULL/0
@@ -592,7 +591,7 @@ export default function EditDogModal({
       if (!ownerId) {
         const { data: created } = await supabase
           .from("owners")
-          .insert([baseOwner])
+          .insert([baseOwner as any])
           .select("id, customer_number")
           .single()
           .throwOnError();
@@ -603,7 +602,7 @@ export default function EditDogModal({
       } else {
         await supabase
           .from("owners")
-          .update(baseOwner)
+          .update(baseOwner as any)
           .eq("id", ownerId)
           .throwOnError();
       }
@@ -784,13 +783,14 @@ export default function EditDogModal({
           .from("extra_service")
           .insert([
             {
+              org_id: currentOrgId,
               dogs_id: dogId,
               service_type: "finance_note",
               quantity: 1,
               price: null,
               notes: financeNote.trim(),
               performed_at: new Date().toISOString().slice(0, 10),
-            },
+            } as any,
           ])
           .throwOnError();
       }
@@ -1471,7 +1471,9 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-[#2c7a4c] font-semibold">Rumsnummer</label>
+                  <label className="text-xs text-[#2c7a4c] font-semibold">
+                    Rumsnummer
+                  </label>
                   <select
                     className="w-full border-2 rounded-lg px-3 py-2 bg-white focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                     value={roomId}
@@ -1494,7 +1496,8 @@ export default function EditDogModal({
                   </select>
                   {roomId && (
                     <p className="text-xs text-[#2c7a4c] mt-1 font-semibold">
-                      ✅ Valt rum: {rooms.find(r => r.id === roomId)?.name || roomId}
+                      ✅ Valt rum:{" "}
+                      {rooms.find((r) => r.id === roomId)?.name || roomId}
                     </p>
                   )}
                   {rooms.length === 0 && (
@@ -1540,13 +1543,15 @@ export default function EditDogModal({
                 </div>
                 {days.length > 0 && (
                   <p className="text-xs text-gray-600 mt-2">
-                    Valda dagar: <span className="font-semibold text-[#2c7a4c]">{days.join(", ")}</span>
+                    Valda dagar:{" "}
+                    <span className="font-semibold text-[#2c7a4c]">
+                      {days.join(", ")}
+                    </span>
                   </p>
                 )}
               </div>
             </div>
           )}
-
 
           {activeTab === "tillägg" && (
             <div className="rounded-xl border p-4">

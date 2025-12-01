@@ -17,7 +17,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 
 // =====================================================
@@ -86,7 +86,7 @@ export async function validateAuth(): Promise<{
   user: { id: string; email?: string };
   orgId: string;
 }> {
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = await createClient();
 
   // Check session
   const {

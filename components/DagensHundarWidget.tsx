@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { useEnabledServices } from "@/lib/hooks/useEnabledServices";
 import { PawPrint, User, Phone, AlertCircle, Home } from "lucide-react";
@@ -28,7 +28,6 @@ export default function DagensHundarWidget() {
   const { hasBoarding } = useEnabledServices();
   const [dogs, setDogs] = useState<CheckedInDog[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     if (currentOrgId) {
@@ -37,7 +36,13 @@ export default function DagensHundarWidget() {
   }, [currentOrgId]);
 
   const loadCheckedInDogs = async () => {
+    if (!currentOrgId) {
+      setLoading(false);
+      return;
+    }
+
     try {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from("dogs")
         .select(

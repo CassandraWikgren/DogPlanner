@@ -4,7 +4,7 @@
 export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Home, Send, CheckCircle, AlertCircle, Calendar } from "lucide-react";
 import OrganisationSelector from "@/components/OrganisationSelector";
@@ -16,7 +16,6 @@ import {
 import CreateAccountOffer from "@/components/CreateAccountOffer";
 
 export default function PensionatAnsokanPage() {
-  const supabase = createClientComponentClient();
   const [orgId, setOrgId] = useState<string | null>(null);
   const [orgName, setOrgName] = useState<string>("");
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { Calculator, Save, Plus, User, Calendar, Home } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import { DogBreedSelect } from "@/components/DogBreedSelect";

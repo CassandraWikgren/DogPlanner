@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { AlertTriangle, CheckCircle2, Clock } from "lucide-react";
 
 interface Dog {

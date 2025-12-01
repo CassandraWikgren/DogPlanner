@@ -20,7 +20,7 @@ import {
   AlertTriangle,
   CheckCircle,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 
 interface DailyScheduleEntry {

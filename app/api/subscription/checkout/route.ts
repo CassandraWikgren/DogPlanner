@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import Stripe from "stripe";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-
 // --- Stripe-priser (fyll i dina faktiska pris-ID:n från Stripe Dashboard) ---
 const PRICE_IDS: Record<string, string> = {
   basic: process.env.STRIPE_PRICE_ID_BASIC || "", // 149 kr/mån
@@ -46,9 +44,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Skapa Supabase-klient utan cookies-objekt (endast URL och ANON_KEY)
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    // Skapa Supabase-klient utan cookies-objekt (endast URL och ANON_KEY)    const supabase = await createClient();
 
     const { data: userData, error: userErr } =
       await supabase.auth.getUser(token);

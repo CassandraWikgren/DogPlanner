@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { X, Mail, Phone, User, FileText, Upload } from "lucide-react";
 
 // Error codes
@@ -28,7 +28,7 @@ export default function AssistedRegistrationModal({
   onSuccess,
   orgId,
 }: AssistedRegistrationModalProps) {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const [step, setStep] = useState<RegistrationType>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -106,7 +106,7 @@ export default function AssistedRegistrationModal({
           consent_text: `Assisterad registrering påbörjad av personal. Email skickat till ${emailFormData.email} för bekräftelse.`,
           consent_version: "1.0",
           created_by: (await supabase.auth.getUser()).data.user?.id,
-        });
+        } as any);
 
       if (consentError) console.error("Consent log error:", consentError);
 
@@ -206,7 +206,7 @@ export default function AssistedRegistrationModal({
           witness_staff_id: (await supabase.auth.getUser()).data.user?.id,
           witness_notes: physicalFormData.notes,
           created_by: (await supabase.auth.getUser()).data.user?.id,
-        });
+        } as any);
 
       if (consentError) console.error("Consent log error:", consentError);
 

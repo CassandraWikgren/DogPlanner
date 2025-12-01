@@ -4,14 +4,13 @@
 export const dynamic = "force-dynamic";
 
 import React, { useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Heart, Send, CheckCircle, AlertCircle } from "lucide-react";
 import OrganisationSelector from "@/components/OrganisationSelector";
 import { DogBreedSelect } from "@/components/DogBreedSelect";
 
 export default function HunddagisAnsokanPage() {
-  const supabase = createClientComponentClient();
   const [orgId, setOrgId] = useState<string | null>(null);
   const [orgName, setOrgName] = useState<string>("");
 

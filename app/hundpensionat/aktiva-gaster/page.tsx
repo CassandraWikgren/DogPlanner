@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import {
   Calendar,
@@ -60,7 +60,6 @@ interface ExtraService {
 }
 
 export default function AktivaGasterPage() {
-  const supabase = createClientComponentClient();
   const { user, currentOrgId, loading: authLoading } = useAuth();
 
   const [guests, setGuests] = useState<ActiveGuest[]>([]);

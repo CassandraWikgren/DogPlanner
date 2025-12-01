@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default function HundpensionatPage({

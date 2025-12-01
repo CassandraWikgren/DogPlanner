@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import {
   Scissors,
@@ -105,6 +105,7 @@ export default function FrisorDashboard() {
     if (!effectiveOrgId) return;
 
     try {
+      const supabase = createClient();
       const today = new Date().toISOString().split("T")[0];
 
       // Dagens bokningar
@@ -161,6 +162,7 @@ export default function FrisorDashboard() {
     if (!effectiveOrgId || searchTerm.length < 2) return;
 
     try {
+      const supabase = createClient();
       const search = searchTerm.toLowerCase();
 
       // Sök i journal (både interna och externa kunder)

@@ -15,7 +15,7 @@ import {
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 
 interface OrgSettings {
@@ -47,7 +47,6 @@ interface OrgSettings {
 
 export default function ForetagsInfoPage() {
   const { currentOrgId, loading: authLoading } = useAuth();
-  const supabase = createClientComponentClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

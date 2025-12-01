@@ -4,7 +4,7 @@
 export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { capitalize } from "@/lib/textUtils";
 import ApplicationCard from "@/components/ApplicationCard";
@@ -58,7 +58,6 @@ interface Application {
 
 export default function ApplicationsPage() {
   const { user, currentOrgId } = useAuth();
-  const supabase = createClientComponentClient();
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("pending");

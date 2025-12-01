@@ -15,7 +15,7 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import {
   useEnabledServices,
@@ -25,11 +25,11 @@ import {
 interface SubscriptionData {
   id: string;
   org_id: string;
-  plan: string;
+  plan: string | null;
   status: string;
-  trial_starts_at?: string;
-  trial_ends_at?: string;
-  created_at: string;
+  trial_starts_at?: string | null;
+  trial_ends_at?: string | null;
+  created_at: string | null;
 }
 
 const AVAILABLE_SERVICES = [
@@ -83,7 +83,6 @@ const AVAILABLE_SERVICES = [
 export default function AdminAbonnemangPage() {
   const { currentOrgId, loading: authLoading } = useAuth();
   const { services, refresh: refreshServices } = useEnabledServices();
-  const supabase = createClientComponentClient();
 
   const [subscription, setSubscription] = useState<SubscriptionData | null>(
     null
@@ -124,6 +123,7 @@ export default function AdminAbonnemangPage() {
     setError(null);
 
     try {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from("subscriptions")
         .select("*")
@@ -180,6 +180,7 @@ export default function AdminAbonnemangPage() {
       const serviceTypes = selectedServices.map((s) => serviceTypesMap[s] || s);
 
       // Uppdatera BÅDA kolumnerna
+      const supabase = createClient();
       const { error: updateError } = await supabase
         .from("orgs")
         .update({
@@ -345,6 +346,7 @@ export default function AdminAbonnemangPage() {
     setCreating(true);
     setError(null);
     try {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from("subscriptions")
         .insert([
@@ -379,6 +381,7 @@ export default function AdminAbonnemangPage() {
 
     setSaving(true);
     try {
+      const supabase = createClient();
       const { error } = await supabase
         .from("subscriptions")
         .update({ status: "paused" })
@@ -403,6 +406,7 @@ export default function AdminAbonnemangPage() {
 
     setSaving(true);
     try {
+      const supabase = createClient();
       const { error } = await supabase
         .from("subscriptions")
         .update({ status: "active" })
@@ -732,9 +736,11 @@ export default function AdminAbonnemangPage() {
                       Prenumeration startad
                     </label>
                     <p className="text-lg">
-                      {new Date(subscription.created_at).toLocaleDateString(
-                        "sv-SE"
-                      )}
+                      {subscription.created_at
+                        ? new Date(subscription.created_at).toLocaleDateString(
+                            "sv-SE"
+                          )
+                        : "Okänt"}
                     </p>
                   </div>
                 </div>

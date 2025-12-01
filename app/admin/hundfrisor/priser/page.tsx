@@ -25,7 +25,7 @@ import {
   AlertCircle,
   Check,
 } from "lucide-react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 
 interface GroomingPrice {
@@ -33,14 +33,14 @@ interface GroomingPrice {
   org_id: string;
   service_name: string;
   service_type: string;
-  description?: string;
-  dog_size?: string | null;
-  coat_type?: string | null;
+  description: string | null;
+  dog_size: string | null;
+  coat_type: string | null;
   price: number;
   duration_minutes: number;
   active: boolean;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 const SERVICE_TYPES = [
@@ -88,7 +88,6 @@ const COAT_TYPES = [
 
 export default function GroomingPricesPage() {
   const { currentOrgId, loading: authLoading } = useAuth();
-  const supabase = createClientComponentClient();
 
   const [prices, setPrices] = useState<GroomingPrice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -138,6 +137,7 @@ export default function GroomingPricesPage() {
     setError(null);
 
     try {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from("grooming_prices")
         .select("*")
@@ -184,6 +184,7 @@ export default function GroomingPricesPage() {
     setSaving(true);
     setError(null);
     try {
+      const supabase = createClient();
       const { error } = await supabase
         .from("grooming_prices")
         .update(editForm)
@@ -212,6 +213,7 @@ export default function GroomingPricesPage() {
     setSaving(true);
     setError(null);
     try {
+      const supabase = createClient();
       const { error } = await supabase
         .from("grooming_prices")
         .delete()
@@ -240,17 +242,21 @@ export default function GroomingPricesPage() {
       return;
     }
 
-    if (!newPrice.service_name || !newPrice.price) {
-      setError("Tjänstnamn och pris måste fyllas i");
+    if (!newPrice.service_name || !newPrice.service_type || !newPrice.price) {
+      setError("Tjänstnamn, tjänstetyp och pris måste fyllas i");
       return;
     }
 
     const insertData = {
-      ...newPrice,
       org_id: currentOrgId,
-      // Säkerställ att price är ett nummer
+      service_name: newPrice.service_name,
+      service_type: newPrice.service_type,
+      description: newPrice.description || null,
+      dog_size: newPrice.dog_size || null,
+      coat_type: newPrice.coat_type || null,
       price: Number(newPrice.price),
-      duration_minutes: Number(newPrice.duration_minutes),
+      duration_minutes: Number(newPrice.duration_minutes) || 60,
+      active: newPrice.active !== undefined ? newPrice.active : true,
     };
 
     console.log("🐛 DEBUG - Försöker lägga till pris:", {
@@ -263,6 +269,7 @@ export default function GroomingPricesPage() {
     setSaving(true);
     setError(null);
     try {
+      const supabase = createClient();
       const { data, error } = await supabase
         .from("grooming_prices")
         .insert([insertData])
@@ -569,7 +576,7 @@ export default function GroomingPricesPage() {
                 <div className="md:col-span-2">
                   <Label>Beskrivning (valfritt)</Label>
                   <Input
-                    value={newPrice.description}
+                    value={newPrice.description || ""}
                     onChange={(e) =>
                       setNewPrice((prev) => ({
                         ...prev,
