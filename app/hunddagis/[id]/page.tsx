@@ -146,6 +146,8 @@ function useDebugLog() {
  * ====================================================== */
 
 export default function DogProfilePage() {
+  const supabase = createClient();
+
   const { id } = useParams();
 
   // State

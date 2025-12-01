@@ -50,6 +50,7 @@ const ROLE_COLORS = {
 
 export default function UsersPage() {
   const { user: currentUser, currentOrgId } = useAuth();
+  const supabase = createClient();
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<UserProfile[]>([]);

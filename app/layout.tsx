@@ -32,6 +32,28 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Rensa gamla Supabase cookies från deprecated @supabase/auth-helpers-nextjs
+  useEffect(() => {
+    const migrationKey = "supabase_ssr_migration_done";
+    if (!localStorage.getItem(migrationKey)) {
+      // Hitta alla gamla Supabase cookies
+      const cookies = document.cookie.split(";");
+      cookies.forEach((cookie) => {
+        const cookieName = cookie.split("=")[0].trim();
+        // Ta bort gamla auth-helpers cookies
+        if (
+          cookieName.startsWith("sb-") &&
+          !cookieName.includes("-auth-token-code-verifier")
+        ) {
+          document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          console.log("🧹 Cleaned old cookie:", cookieName);
+        }
+      });
+      localStorage.setItem(migrationKey, "true");
+      console.log("✅ SSR migration cookie cleanup complete");
+    }
+  }, []);
+
   // Force viewport meta tag on client-side för att garantera korrekt scaling
   useEffect(() => {
     const metaViewport = document.querySelector('meta[name="viewport"]');

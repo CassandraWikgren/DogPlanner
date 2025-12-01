@@ -6,6 +6,8 @@ import Hero from "@/components/Hero";
 import Link from "next/link";
 
 export default function RoomsOverviewPage() {
+  const supabase = createClient();
+
   const [rooms, setRooms] = useState<any[]>([]);
   const [dogs, setDogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

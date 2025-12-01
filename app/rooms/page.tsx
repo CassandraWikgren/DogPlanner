@@ -57,6 +57,8 @@ interface Dog {
 }
 
 export default function RoomsPage() {
+  const supabase = createClient();
+
   const { user, currentOrgId, loading: authLoading } = useAuth();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [dogs, setDogs] = useState<Dog[]>([]);

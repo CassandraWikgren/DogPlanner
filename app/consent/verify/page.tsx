@@ -21,6 +21,7 @@ interface TokenPayload {
 function VerifyContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const supabase = createClient();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

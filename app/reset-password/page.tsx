@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ResetPasswordPage() {
+  const supabase = createClient();
+
   const router = useRouter();
 
   const [password, setPassword] = useState("");

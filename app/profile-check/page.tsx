@@ -6,6 +6,8 @@ import { useAuth } from "@/app/context/AuthContext";
 import Link from "next/link";
 
 export default function ProfileCheckPage() {
+  const supabase = createClient();
+
   const { user, profile, currentOrgId, role } = useAuth();
   const [dbProfile, setDbProfile] = useState<any>(null);
   const [dbOrg, setDbOrg] = useState<any>(null);

@@ -94,7 +94,6 @@ type TabType = "grundpriser" | "specialdatum" | "säsonger" | "tillval";
 
 export default function PensionatPriserPage() {
   const { currentOrgId } = useAuth();
-  const supabase = createClient();
 
   // State
   const [activeTab, setActiveTab] = useState<TabType>("grundpriser");

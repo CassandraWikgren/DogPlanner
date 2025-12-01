@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function AuthDebug() {
   const { user, profile, loading, currentOrgId, role, signOut } = useAuth();
+  const supabase = createClient();
+
   const [sessionDump, setSessionDump] = useState<any>(null);
   const [sessionErr, setSessionErr] = useState<string | null>(null);
   const [cookiesStr, setCookiesStr] = useState<string>("");

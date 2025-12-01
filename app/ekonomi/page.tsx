@@ -53,6 +53,8 @@ interface InvoiceLine {
 }
 
 export default function FakturaPage() {
+  const supabase = createClient();
+
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,7 +62,7 @@ export default function FakturaPage() {
   const [dateFilter, setDateFilter] = useState<string>("all");
   const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null);
   const [sendingInvoice, setSendingInvoice] = useState<string | null>(null);
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -75,12 +77,10 @@ export default function FakturaPage() {
   const fetchInvoices = async () => {
     try {
       setLoading(true);
-      
+
       // Bygg query med filter
-      let query = supabase
-        .from("invoices")
-        .select(
-          `
+      let query = supabase.from("invoices").select(
+        `
           *,
           owner:owners!invoices_owner_id_fkey(
             full_name,
@@ -89,8 +89,8 @@ export default function FakturaPage() {
             email
           )
         `,
-          { count: 'exact' }
-        );
+        { count: "exact" }
+      );
 
       // Applicera statusfilter
       if (statusFilter !== "all") {
@@ -101,7 +101,7 @@ export default function FakturaPage() {
       if (dateFilter !== "all") {
         const now = new Date();
         const startDate = new Date();
-        
+
         if (dateFilter === "this-month") {
           startDate.setDate(1);
         } else if (dateFilter === "last-month") {
@@ -111,7 +111,7 @@ export default function FakturaPage() {
           startDate.setMonth(0);
           startDate.setDate(1);
         }
-        
+
         query = query.gte("invoice_date", startDate.toISOString());
       }
 
@@ -124,7 +124,7 @@ export default function FakturaPage() {
         .range(from, to);
 
       if (error) throw error;
-      
+
       setInvoices(data || []);
       setTotalCount(count || 0);
     } catch (error) {
@@ -151,10 +151,10 @@ export default function FakturaPage() {
         .eq("id", id);
 
       if (error) throw error;
-      
+
       // Optimistisk UI update istället för att refetcha
-      setInvoices(prevInvoices =>
-        prevInvoices.map(inv =>
+      setInvoices((prevInvoices) =>
+        prevInvoices.map((inv) =>
           inv.id === id ? { ...inv, ...updates } : inv
         )
       );
@@ -167,21 +167,23 @@ export default function FakturaPage() {
 
   const sendInvoiceEmail = async (id: string) => {
     const invoice = invoices.find((inv) => inv.id === id);
-    
+
     if (!invoice) {
       alert("❌ Faktura hittades inte");
       return;
     }
 
     if (!invoice.owner?.email) {
-      alert("❌ Ägaren har ingen registrerad email-adress. Lägg till email för att kunna skicka faktura.");
+      alert(
+        "❌ Ägaren har ingen registrerad email-adress. Lägg till email för att kunna skicka faktura."
+      );
       return;
     }
 
     const confirmed = confirm(
       `Skicka faktura ${invoice.invoice_number} till ${invoice.owner.full_name} (${invoice.owner.email})?\n\n` +
-      `Belopp: ${invoice.total_amount.toLocaleString("sv-SE")} kr\n` +
-      `Förfallodatum: ${new Date(invoice.due_date).toLocaleDateString("sv-SE")}`
+        `Belopp: ${invoice.total_amount.toLocaleString("sv-SE")} kr\n` +
+        `Förfallodatum: ${new Date(invoice.due_date).toLocaleDateString("sv-SE")}`
     );
 
     if (!confirmed) return;
@@ -200,12 +202,16 @@ export default function FakturaPage() {
       }
 
       alert(`✅ Faktura skickad till ${invoice.owner.email}!`);
-      
+
       // Optimistisk UI update istället för att refetcha
-      setInvoices(prevInvoices =>
-        prevInvoices.map(inv =>
-          inv.id === id 
-            ? { ...inv, status: 'sent' as const, sent_at: new Date().toISOString() } 
+      setInvoices((prevInvoices) =>
+        prevInvoices.map((inv) =>
+          inv.id === id
+            ? {
+                ...inv,
+                status: "sent" as const,
+                sent_at: new Date().toISOString(),
+              }
             : inv
         )
       );
@@ -697,23 +703,29 @@ export default function FakturaPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">
-                  Visar {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, totalCount)} av {totalCount} fakturor
+                  Visar {(currentPage - 1) * itemsPerPage + 1} -{" "}
+                  {Math.min(currentPage * itemsPerPage, totalCount)} av{" "}
+                  {totalCount} fakturor
                 </div>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
                   >
                     Föregående
                   </Button>
                   <div className="flex items-center gap-1">
-                    {Array.from({ length: Math.ceil(totalCount / itemsPerPage) }, (_, i) => i + 1)
-                      .filter(page => 
-                        page === 1 || 
-                        page === Math.ceil(totalCount / itemsPerPage) ||
-                        Math.abs(page - currentPage) <= 2
+                    {Array.from(
+                      { length: Math.ceil(totalCount / itemsPerPage) },
+                      (_, i) => i + 1
+                    )
+                      .filter(
+                        (page) =>
+                          page === 1 ||
+                          page === Math.ceil(totalCount / itemsPerPage) ||
+                          Math.abs(page - currentPage) <= 2
                       )
                       .map((page, index, array) => (
                         <React.Fragment key={page}>
@@ -721,22 +733,33 @@ export default function FakturaPage() {
                             <span className="px-2 text-gray-400">...</span>
                           )}
                           <Button
-                            variant={currentPage === page ? "default" : "outline"}
+                            variant={
+                              currentPage === page ? "default" : "outline"
+                            }
                             size="sm"
                             onClick={() => setCurrentPage(page)}
-                            className={currentPage === page ? "bg-[#2c7a4c] hover:bg-[#236139]" : ""}
+                            className={
+                              currentPage === page
+                                ? "bg-[#2c7a4c] hover:bg-[#236139]"
+                                : ""
+                            }
                           >
                             {page}
                           </Button>
                         </React.Fragment>
-                      ))
-                    }
+                      ))}
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage(p => Math.min(Math.ceil(totalCount / itemsPerPage), p + 1))}
-                    disabled={currentPage >= Math.ceil(totalCount / itemsPerPage)}
+                    onClick={() =>
+                      setCurrentPage((p) =>
+                        Math.min(Math.ceil(totalCount / itemsPerPage), p + 1)
+                      )
+                    }
+                    disabled={
+                      currentPage >= Math.ceil(totalCount / itemsPerPage)
+                    }
                   >
                     Nästa
                   </Button>

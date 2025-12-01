@@ -31,6 +31,8 @@ type PriceListRecord = {
 };
 
 export default function MinaPriserPage() {
+  const supabase = createClient();
+
   const [prices, setPrices] = useState<PriceItems>({});
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);

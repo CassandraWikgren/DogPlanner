@@ -31,6 +31,8 @@ interface SimpleExtraService {
 
 // Formulär för bokning/incheckning hundpensionat
 export default function BokningsForm() {
+  const supabase = createClient();
+
   const [hundar, setHundar] = useState<SimpleDog[]>([]);
   const [rum, setRum] = useState<SimpleRoom[]>([]);
   const [tillval, setTillval] = useState<SimpleExtraService[]>([]);

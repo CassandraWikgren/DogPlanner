@@ -204,6 +204,8 @@ const COLUMN_LABELS: Record<string, string> = {
 };
 
 export default function HunddagisPage() {
+  const supabase = createClient();
+
   const { user, currentOrgId, ensureOrg } = useAuth();
   // Fallback: använd org från user_metadata om AuthContext inte hunnit sätta currentOrgId ännu
   const effectiveOrgId =

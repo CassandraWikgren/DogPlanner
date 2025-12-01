@@ -36,7 +36,6 @@ interface PriceData {
  */
 export default function AdminPriserPage() {
   const { currentOrgId } = useAuth();
-  const supabase = createClient();
   const [prices, setPrices] = useState<PriceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

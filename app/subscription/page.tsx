@@ -27,6 +27,8 @@ type Invoice = {
 };
 
 export default function SubscriptionPage() {
+  const supabase = createClient();
+
   const { user, subscription, loading } = useAuth();
   const router = useRouter();
   const [updating, setUpdating] = useState(false);

@@ -91,6 +91,7 @@ const DEFAULT_COLUMNS = [
 ];
 
 const FakturorPage = () => {
+  const supabase = createClient();
 
   // 🧠 Statehantering
   const [mounted, setMounted] = useState(false);
@@ -129,15 +130,15 @@ const FakturorPage = () => {
   // Hydration-säker initialisering
   useEffect(() => {
     setMounted(true);
-    
+
     // Öppna "Ny faktura"-modal om ?new=true finns i URL
     const params = new URLSearchParams(window.location.search);
-    if (params.get('new') === 'true') {
+    if (params.get("new") === "true") {
       setCreating(true);
       // Ta bort parametern från URL utan att ladda om sidan
-      window.history.replaceState({}, '', '/faktura');
+      window.history.replaceState({}, "", "/faktura");
     }
-    
+
     // Läs localStorage efter mount för att undvika hydration errors
     try {
       const saved = localStorage.getItem("faktura-visible-columns");
@@ -448,7 +449,11 @@ const FakturorPage = () => {
   }
 
   // ➕ Skapa ny faktura (manuell)
-  async function createInvoice(ownerId: string, belopp: number, description: string) {
+  async function createInvoice(
+    ownerId: string,
+    belopp: number,
+    description: string
+  ) {
     try {
       setCreating(true);
       logDebug(
@@ -463,9 +468,7 @@ const FakturorPage = () => {
       }
 
       if (!description || description.trim() === "") {
-        throw new Error(
-          `${ERROR_CODES.VALIDATION} Beskrivning måste anges`
-        );
+        throw new Error(`${ERROR_CODES.VALIDATION} Beskrivning måste anges`);
       }
 
       const dueDate = new Date();
@@ -491,15 +494,13 @@ const FakturorPage = () => {
       }
 
       // Lägg till fakturarad med beskrivning
-      const { error: itemError } = await supabase
-        .from("invoice_items")
-        .insert({
-          invoice_id: invoice.id,
-          description: description.trim(),
-          quantity: 1,
-          unit_price: belopp,
-          total_amount: belopp,
-        });
+      const { error: itemError } = await supabase.from("invoice_items").insert({
+        invoice_id: invoice.id,
+        description: description.trim(),
+        quantity: 1,
+        unit_price: belopp,
+        total_amount: belopp,
+      });
 
       if (itemError) {
         console.error("Kunde inte skapa fakturarad:", itemError);
@@ -971,7 +972,9 @@ const FakturorPage = () => {
                       onChange={() => toggleColumn(column.key)}
                       className="mt-0.5 rounded text-emerald-600 flex-shrink-0 w-4 h-4"
                     />
-                    <span className="text-sm text-gray-700 leading-tight">{column.label}</span>
+                    <span className="text-sm text-gray-700 leading-tight">
+                      {column.label}
+                    </span>
                   </label>
                 ))}
               </div>
