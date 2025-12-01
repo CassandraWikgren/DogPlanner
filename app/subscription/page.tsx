@@ -22,7 +22,7 @@ type Invoice = {
   amount: number;
   status: "paid" | "pending" | "overdue";
   due_date: string;
-  paid_date?: string;
+  paid_at?: string;
   invoice_number: string;
 };
 
@@ -85,7 +85,7 @@ export default function SubscriptionPage() {
         amount: inv.total_amount || 0,
         status: inv.payment_status || "pending",
         due_date: inv.due_date,
-        paid_date: inv.paid_at,
+        paid_at: inv.paid_at,
         invoice_number: inv.invoice_number || `INV-${inv.id.slice(0, 8)}`,
       }));
 

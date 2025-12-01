@@ -33,7 +33,7 @@ interface Invoice {
   status: "draft" | "sent" | "paid" | "overdue";
   notes?: string | null;
   sent_at?: string | null;
-  paid_date?: string | null;
+  paid_at?: string | null;
   owner?: {
     full_name: string;
     customer_number?: number | null;
@@ -144,7 +144,7 @@ export default function FakturaPage() {
     try {
       const updates: any = { status };
       if (status === "paid") {
-        updates.paid_date = new Date().toISOString();
+        updates.paid_at = new Date().toISOString();
         const invoice = invoices.find((inv) => inv.id === id);
         if (invoice && !invoice.paid_amount) {
           updates.paid_amount = invoice.total_amount;

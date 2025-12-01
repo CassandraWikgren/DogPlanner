@@ -23,14 +23,14 @@ interface InvoiceExportItem {
   customer_name: string;
   customer_email: string;
   customer_org_number: string | null;
-  description: string;
+  description: string | null;
   quantity: number;
   unit_price: number;
   vat_rate: number;
   vat_amount: number;
   total_amount: number;
   status: string;
-  paid_date: string | null;
+  paid_at: string | null;
   ocr_number: string;
   reminder_1_date: string | null;
   reminder_2_date: string | null;
@@ -41,7 +41,8 @@ interface InvoiceExportItem {
 }
 
 export async function GET(request: NextRequest) {
-  try {    const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
     // Autentisera användare
     const {
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
         due_date,
         total_amount,
         status,
-        paid_date,
+        paid_at,
         payment_method,
         reminder_1_date,
         reminder_2_date,
@@ -168,13 +169,13 @@ export async function GET(request: NextRequest) {
           customer_email: owner?.email || "",
           customer_org_number: owner?.org_number || null,
           description: item.description,
-          quantity: item.quantity,
-          unit_price: item.unit_price,
+          quantity: item.qty || 0,
+          unit_price: item.unit_price || 0,
           vat_rate: 0, // Hundtjänster är momsfria
           vat_amount: 0,
-          total_amount: item.total_amount,
+          total_amount: item.amount || 0,
           status: invoice.status,
-          paid_date: invoice.paid_date,
+          paid_at: invoice.paid_at,
           ocr_number: ocrNumber,
           reminder_1_date: invoice.reminder_1_date,
           reminder_2_date: invoice.reminder_2_date,
@@ -241,14 +242,14 @@ function generateCSV(data: InvoiceExportItem[]): NextResponse {
     item.customer_name,
     item.customer_email,
     item.customer_org_number || "",
-    `"${item.description.replace(/"/g, '""')}"`, // Escape quotes
+    `"${(item.description || "").replace(/"/g, '""')}"`, // Escape quotes and handle null
     item.quantity,
     item.unit_price.toFixed(2),
     item.vat_rate + "%",
     item.vat_amount.toFixed(2),
     item.total_amount.toFixed(2),
     item.status,
-    item.paid_date || "",
+    item.paid_at || "",
     item.ocr_number,
     item.reminder_1_date || "",
     item.reminder_2_date || "",
@@ -362,7 +363,7 @@ async function generateSIE(
 
     for (const item of items) {
       lines.push(
-        `  #TRANS 3000 {} -${item.total_amount.toFixed(2)} ${firstItem.invoice_date.replace(/-/g, "")} "${item.description}"`
+        `  #TRANS 3000 {} -${item.total_amount.toFixed(2)} ${firstItem.invoice_date.replace(/-/g, "")} "${item.description || ""}"`
       );
     }
 
