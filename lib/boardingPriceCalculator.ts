@@ -83,7 +83,7 @@ export async function getBasePrice(
     return null;
   }
 
-  return data;
+  return data as BoardingPrice;
 }
 
 /**
