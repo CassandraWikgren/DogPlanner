@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import {
   Scissors,
@@ -77,6 +77,7 @@ const SERVICE_LABELS: Record<string, string> = {
  * Main Component
  * =========================== */
 export default function FrisorDashboard() {
+  const supabase = createClient();
   const router = useRouter();
   const { user, currentOrgId } = useAuth();
   const effectiveOrgId = currentOrgId || user?.user_metadata?.org_id || null;
