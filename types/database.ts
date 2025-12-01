@@ -125,6 +125,52 @@ export interface Database {
           },
         ];
       };
+      customer_discounts: {
+        Row: {
+          id: string;
+          owner_id: string;
+          discount_type: "percentage" | "fixed_amount";
+          discount_value: number;
+          description: string;
+          is_permanent: boolean;
+          valid_from: string | null;
+          valid_until: string | null;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          owner_id: string;
+          discount_type: "percentage" | "fixed_amount";
+          discount_value: number;
+          description: string;
+          is_permanent?: boolean;
+          valid_from?: string | null;
+          valid_until?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          owner_id?: string;
+          discount_type?: "percentage" | "fixed_amount";
+          discount_value?: number;
+          description?: string;
+          is_permanent?: boolean;
+          valid_from?: string | null;
+          valid_until?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "customer_discounts_owner_id_fkey";
+            columns: ["owner_id"];
+            referencedRelation: "owners";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       owners: {
         Row: {
           id: string;

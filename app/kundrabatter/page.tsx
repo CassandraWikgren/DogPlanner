@@ -14,8 +14,8 @@ import { Percent, User, Calendar, Trash2, Edit, Plus } from "lucide-react";
 interface Owner {
   id: string;
   full_name: string;
-  phone?: string;
-  email?: string;
+  phone?: string | null;
+  email?: string | null;
 }
 
 interface CustomerDiscount {
