@@ -76,6 +76,7 @@ const SERVICE_LABELS: Record<string, string> = {
 };
 
 export default function DogJournalPage() {
+  const supabase = createClient();
   const router = useRouter();
   const params = useParams();
   const dogId = params?.dogId as string;
