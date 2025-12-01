@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 export async function POST(req: Request) {
-  try {    const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
     const auth = req.headers.get("authorization") || "";
     const token = auth.startsWith("Bearer ") ? auth.slice(7) : null;
@@ -37,15 +38,24 @@ export async function POST(req: Request) {
 
     if (updateError) throw updateError;
 
-    // Uppdatera organisation status
-    const { error: orgError } = await supabase
-      .from("organisations")
-      .update({
-        subscription_status: "active",
-      })
-      .eq("id", userId);
+    // Hämta användarens profil för att få org_id
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("org_id")
+      .eq("id", userId)
+      .single();
 
-    if (orgError) console.error("Org update error:", orgError);
+    // Uppdatera organisation status om org_id finns
+    if (profile?.org_id) {
+      const { error: orgError } = await supabase
+        .from("orgs")
+        .update({
+          subscription_status: "active",
+        })
+        .eq("id", profile.org_id);
+
+      if (orgError) console.error("Org update error:", orgError);
+    }
 
     return NextResponse.json({
       success: true,
