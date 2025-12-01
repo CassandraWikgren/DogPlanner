@@ -553,6 +553,24 @@ export default function EditDogModal({
         }
       }
 
+      // 4. KRITISKT: Kolla personnummer INNAN vi försöker skapa ny ägare
+      // Detta förhindrar duplicate key constraint "owners_org_personnummer_key"
+      if (!ownerId && ownerPersonnummer && isAdmin) {
+        const { data: hit4 } = await supabase
+          .from("owners")
+          .select("id, customer_number, full_name")
+          .eq("org_id", currentOrgId)
+          .eq("personnummer", ownerPersonnummer)
+          .maybeSingle();
+        if (hit4?.id) {
+          ownerId = hit4.id;
+          existingCustomerNumber = hit4.customer_number;
+          console.log(
+            `✅ Återanvänder befintlig ägare: ${hit4.full_name} (Kundnr: ${hit4.customer_number}) - matchad på personnummer`
+          );
+        }
+      }
+
       const baseOwner: OwnerRow = {
         full_name,
         email: ownerEmail || null,
