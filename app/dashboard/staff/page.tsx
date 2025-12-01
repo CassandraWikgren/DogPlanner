@@ -16,6 +16,7 @@ type Member = {
 };
 
 export default function StaffAdminPage() {
+  const supabase = createClient();
   const { user } = useAuth(); // du använder redan detta globalt:contentReference[oaicite:3]{index=3}
   const [orgId, setOrgId] = useState<string>("");
   const [role, setRole] = useState<string>("");
