@@ -20,32 +20,33 @@ import { useAuth } from "@/app/context/AuthContext";
 
 interface OrgSettings {
   id: string;
-  name: string;
-  org_number?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  contact_email?: string;
-  invoice_email?: string;
-  reply_to_email?: string;
-  email_sender_name?: string;
-  vat_included?: boolean;
-  vat_rate?: number;
-  pricing_currency?: string;
+  name: string | null;
+  org_number?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  contact_email?: string | null;
+  invoice_email?: string | null;
+  reply_to_email?: string | null;
+  email_sender_name?: string | null;
+  vat_included?: boolean | null;
+  vat_rate?: number | null;
+  pricing_currency?: string | null;
   // Betalningsinformation (fakturor)
-  bankgiro?: string;
-  plusgiro?: string;
-  swish_number?: string;
-  bank_name?: string;
-  iban?: string;
-  bic_swift?: string;
-  payment_terms_days?: number;
-  late_fee_amount?: number;
-  interest_rate?: number;
-  invoice_prefix?: string;
+  bankgiro?: string | null;
+  plusgiro?: string | null;
+  swish_number?: string | null;
+  bank_name?: string | null;
+  iban?: string | null;
+  bic_swift?: string | null;
+  payment_terms_days?: number | null;
+  late_fee_amount?: number | null;
+  interest_rate?: number | null;
+  invoice_prefix?: string | null;
 }
 
 export default function ForetagsInfoPage() {
+  const supabase = createClient();
   const { currentOrgId, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -519,7 +520,9 @@ export default function ForetagsInfoPage() {
                       <Input
                         id="bankgiro"
                         value={settings.bankgiro || ""}
-                        onChange={(e) => updateField("bankgiro", e.target.value)}
+                        onChange={(e) =>
+                          updateField("bankgiro", e.target.value)
+                        }
                         placeholder="123-4567"
                         className="text-sm"
                       />
@@ -532,7 +535,9 @@ export default function ForetagsInfoPage() {
                       <Input
                         id="plusgiro"
                         value={settings.plusgiro || ""}
-                        onChange={(e) => updateField("plusgiro", e.target.value)}
+                        onChange={(e) =>
+                          updateField("plusgiro", e.target.value)
+                        }
                         placeholder="12 34 56-7"
                         className="text-sm"
                       />
@@ -562,7 +567,9 @@ export default function ForetagsInfoPage() {
                       <Input
                         id="bank_name"
                         value={settings.bank_name || ""}
-                        onChange={(e) => updateField("bank_name", e.target.value)}
+                        onChange={(e) =>
+                          updateField("bank_name", e.target.value)
+                        }
                         placeholder="SEB, Swedbank, Nordea..."
                         className="text-sm"
                       />
