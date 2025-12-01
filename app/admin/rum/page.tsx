@@ -37,6 +37,7 @@ interface Room {
 
 export default function AdminRumPage() {
   const { currentOrgId } = useAuth();
+  const supabase = createClient();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
