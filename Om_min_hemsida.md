@@ -1,7 +1,20 @@
-DogPlanner – sammanfattning av projektet
-Övergripande syfte
+# DogPlanner – Komplett systemöversikt
 
-OBSERVERA att supabasenamn inte stämmer i den här texten, detta är en gammal varsion, bara för att få en förståelse för hur hemsidan är tänkt att vara. Vi har sedan den här texten skrivits gjort en hel del förbättringar på sidan.
+## 📌 Aktuell version (Dec 2025)
+
+Denna dokumentation är **uppdaterad och korrekt** med alla Supabase-tabeller, kopplingar och triggers.
+
+**Teknikstack:**
+
+- **Frontend**: Next.js 15.5 + React 19 + TypeScript
+- **Styling**: Tailwind CSS + ShadCN/UI komponenter
+- **Backend**: Supabase (PostgreSQL + Auth + Storage + Edge Functions)
+- **PDF**: PDFKit + QRCode + Stream-Buffers
+- **Deploy**: Vercel
+
+---
+
+## Övergripande syfte
 
 DogPlanner är en webbaserad plattform utformad för att underlätta driften av hunddagis och hundpensionat. Syftet med systemet är att ge verksamhetsägare en komplett överblick över alla aspekter av sin hundverksamhet i realtid. Samtidigt förenklas administrativa uppgifter, så att mer tid kan ägnas åt hundarna istället för åt pappersarbete. Plattformen samlar alla planeringsmoment på ett ställe – exempelvis schema, bokningar och notiser – vilket sparar tid och minskar dubbelarbete för personalen.
 Teknikstack
