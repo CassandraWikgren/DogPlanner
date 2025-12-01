@@ -36,6 +36,7 @@ interface DagisPricing {
 
 export default function DagisPriserPage() {
   const { currentOrgId } = useAuth();
+  const supabase = createClient(); // Create client at component level
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
