@@ -44,7 +44,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Skapa Supabase-klient utan cookies-objekt (endast URL och ANON_KEY)    const supabase = await createClient();
+    // Skapa Supabase-klient
+    const supabase = await createClient();
 
     const { data: userData, error: userErr } =
       await supabase.auth.getUser(token);
