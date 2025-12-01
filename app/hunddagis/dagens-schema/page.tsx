@@ -57,6 +57,7 @@ interface Dog {
  * [ERR-1001] Databaskoppling, [ERR-4001] Uppdatering, [ERR-5001] Okänt fel
  */
 export default function HunddagisDagensSchemaPage() {
+  const supabase = createClient();
   const { currentOrgId } = useAuth();
   const [scheduleEntries, setScheduleEntries] = useState<DailyScheduleEntry[]>(
     []
