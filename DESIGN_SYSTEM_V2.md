@@ -1,7 +1,31 @@
 # 🎨 DogPlanner Design System V2
 
 **Skapad: 15 november 2025**  
+**Senast uppdaterad: 2 december 2025**  
 **Syfte: Komplett, genomtänkt designspecifikation för enhetligt och professionellt utseende**
+
+---
+
+## 📋 VIKTIGA ÄNDRINGAR (2 december 2025)
+
+### ✅ Färger:
+
+- **Primära knappar**: GRÖN `bg-[#2c7a4c]` (ej slate)
+- **Tabellhuvud**: GRÖN `bg-[#2c7a4c]` med vit text
+- **Icon buttons**: Transparent med grå text, hover till grön/röd
+
+### ✅ Layout:
+
+- **Max-width**: `max-w-6xl` (1152px) - ej 7xl
+- **Padding**: `px-8 py-6` - luftigt men inte för stort
+- **Header**: Egen sektion med `border-b border-gray-200`
+- **Main**: `<main className="max-w-6xl mx-auto px-8 py-6">`
+
+### ✅ Komponenter:
+
+- **Select/Dropdown**: `border-2 border-gray-300` - ALLTID synlig kant
+- **Rubriker**: `text-[32px] font-bold text-[#2c7a4c] leading-tight`
+- **Beskrivning**: `text-base text-gray-600 mt-1`
 
 ---
 
@@ -15,7 +39,7 @@ DogPlanner ska kännas som ett **nordiskt kontorssystem för hundar** - tänk Fo
 - ✅ **Informationstätt men luftigt** - Mycket data, men det ska andas
 - ✅ **Tydlig hierarki** - Man ser direkt vad som är viktigast
 - ✅ **Minimalistiskt** - Ingen onödig dekoration
-- ✅ **Grön som accent** - Används för navigation, rubriker och viktiga element (INTE knappar)
+- ✅ **Grön som genomgående tema** - Navbar, rubriker, primära knappar, accenter
 
 ### Design-principer:
 
@@ -25,11 +49,11 @@ DogPlanner ska kännas som ett **nordiskt kontorssystem för hundar** - tänk Fo
 4. **Tillförlitlighet**: Ser genomtänkt och stabil ut
 5. **Smart kreativitet**: Innovativt men inte experimentellt
 
-### Färgstrategi (uppdaterad 2 dec 2025):
+### Färgstrategi:
 
-- **Grön (#2C7A4C)**: Navbar, rubriker, outline buttons, icons - skapar igenkänning och varumärkeskänsla
-- **Slate (#475569)**: Primära knappars bakgrund - professionellt och tydligt för call-to-action
+- **Grön (#2C7A4C)**: Primärfärg för navbar, rubriker, knappar, tabellhuvud, icons
 - **Vitt & grått**: Rena ytor och bakgrunder för optimal läsbarhet
+- **Status-färger**: Grön (success), Orange (warning), Röd (error), Blå (info)
 
 ---
 
@@ -169,34 +193,87 @@ Text shadow: 0 2px 4px rgba(0,0,0,0.25)
 ### Knappar:
 
 ```css
-/* Primary (slate - UPPDATERAD 2 dec 2025) */
+/* Primary (GRÖN - UPPDATERAD 2 dec 2025) */
 height: 40px (h-10)
 padding: 0 16px (px-4)
 border-radius: 6px (rounded-md)
 font-size: 15px, font-weight: 600
 color: #FFFFFF
-background: #475569 (slate-700) /* ÄNDRAT från #2C7A4C */
-hover:background: #334155 (slate-800) /* ÄNDRAT från #236139 */
+background: #2C7A4C /* Primär grön - för viktiga actions */
+hover:background: #236139 /* Mörkare grön vid hover */
 box-shadow: 0 1px 2px rgba(0,0,0,0.05)
 focus: ring-2 ring-[#2c7a4c] ring-offset-2
+transition: all 0.2s ease
 
-/* Secondary (grå) */
+/* Secondary (grå - för mindre viktiga actions) */
 Same as primary but:
 background: #4B5563
 hover:background: #374151
 
-/* Outline (vit med grön kant) */
+/* Outline (vit med grön kant - för tertiära actions) */
 Same as primary but:
 background: #FFFFFF
-color: #2C7A4C /* Behåller GRÖN text */
-border: 1px solid #2C7A4C /* Behåller GRÖN border */
+color: #2C7A4C /* Grön text */
+border: 1px solid #2C7A4C /* Grön border */
 hover:background: #E6F4EA
 
-/* Ghost (transparent) */
+/* Ghost (transparent - för ikoner/minimala actions) */
 background: transparent
-color: #2C7A4C /* Behåller GRÖN text */
+color: #2C7A4C
 hover:background: #E6F4EA
+
+/* Icon buttons (t.ex. edit/delete i tabeller) */
+height: 32px (h-8)
+width: 32px (w-8)
+padding: 0 (p-0)
+background: transparent
+color: #6B7280 (gray-600)
+hover:background: #F3F4F6 (gray-100)
+hover:color: #2C7A4C (för edit) eller #DC2626 (för delete)
 ```
+
+**⚠️ VIKTIGT: Knappfärger 2 dec 2025**
+
+- **Primära knappar (save, submit, create)**: GRÖN `bg-[#2c7a4c] hover:bg-[#236139]`
+- **Sekundära knappar**: Grå eller outline
+- **Destruktiva knappar (delete)**: Röd vid hover `hover:text-red-600`
+- **Icon buttons i tabeller**: Transparent med hover-effekt
+
+### Select/Dropdown (UPPDATERAD 2 dec 2025):
+
+```css
+/* SelectTrigger - samma styling som Input */
+height: 40px (h-10)
+width: 100% (w-full)
+border: 2px solid #D1D5DB (border-2 border-gray-300) /* Synlig border ALLTID */
+border-radius: 6px (rounded-md)
+padding: 0 12px (px-3)
+font-size: 16px (text-base)
+background: #FFFFFF (bg-white)
+color: #111827 (text-gray-900)
+focus:
+  outline: none
+  ring: 2px #2C7A4C (focus:ring-2 focus:ring-[#2c7a4c])
+
+/* SelectContent (dropdown-meny) */
+background: #FFFFFF
+border: 2px solid #E5E7EB (border-2 border-gray-200)
+box-shadow: 0 10px 15px rgba(0,0,0,0.1)
+z-index: 100
+max-height: 384px
+```
+
+**⚠️ KRITISKT: Select-komponenter MÅSTE ha synlig border**
+
+- Använd `border-2 border-gray-300` för tydlig kant
+- Ska se identiska ut som input-fält
+- Border ska finnas BÅDE i normal state OCH focus state
+
+background: transparent
+color: #2C7A4C /_ Behåller GRÖN text _/
+hover:background: #E6F4EA
+
+````
 
 **⚠️ VIKTIGT: Endast primära knappar har ändrats till slate!**
 
@@ -214,7 +291,7 @@ border-radius: 8px (rounded-lg)
 box-shadow: 0 1px 3px rgba(0,0,0,0.05)
 padding: 24px (p-6) standard, 16px (p-4) kompakt
 hover: shadow-md, border-color: #2C7A4C (på klickbara kort)
-```
+````
 
 ### Inputs:
 
@@ -384,44 +461,48 @@ color: #FFFFFF /* ALLTID VIT TEXT */
 
 ### TYP 2: DATA-SIDOR (huvudarbete)
 
-**Exempel**: Hunddagis, Hundpensionat, Ekonomi, Rum, Ägare  
+**Exempel**: Hunddagis, Hundpensionat, Ekonomi, Rum, Ägare, Fakturor  
 **Syfte**: Visa och hantera data (listor, tabeller, statistik)
 
-**Layout**:
+**Layout (UPPDATERAD 2 dec 2025)**:
 
 ```tsx
 <div className="min-h-screen bg-gray-50">
-  {/* Kompakt header med stats */}
-  <div className="bg-white border-b border-gray-200 shadow-sm">
-    <div className="max-w-7xl mx-auto px-6 py-6">
+  {/* Header - full bredd med border */}
+  <div className="border-b border-gray-200 bg-white shadow-sm">
+    <div className="max-w-6xl mx-auto px-8 py-6">
+      {/* Tillbaka-knapp (om relevant) */}
+      <Link
+        href="/admin"
+        className="inline-flex items-center text-[#2c7a4c] hover:text-[#236139] mb-4"
+      >
+        <ArrowLeft className="h-4 w-4 mr-2" />
+        Tillbaka till Admin
+      </Link>
+
       <div className="flex items-center justify-between">
         {/* Vänster: Rubrik + beskrivning */}
         <div>
-          <h1 className="text-[32px] font-bold text-[#2c7a4c]">Hunddagis</h1>
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-3">
+            <Icon className="h-8 w-8" />
+            Sidtitel
+          </h1>
           <p className="text-base text-gray-600 mt-1">
-            Hantera dagishundar, schema och verksamhet
+            Kort beskrivning av sidans syfte
           </p>
         </div>
 
-        {/* Höger: Kompakta stats (om relevanta) */}
-        <div className="flex items-center gap-6">
-          <StatBox number={47} label="Antagna" />
-          <StatBox number={8} label="Väntelista" color="orange" />
-        </div>
+        {/* Höger: Primär action-knapp */}
+        <Button className="bg-[#2c7a4c] hover:bg-[#236139] text-white">
+          <Plus className="h-4 w-4 mr-2" />
+          Ny post
+        </Button>
       </div>
     </div>
   </div>
 
-  {/* Action buttons */}
-  <div className="max-w-7xl mx-auto px-6 py-6">
-    <div className="flex items-center justify-between mb-6">
-      <div className="flex items-center gap-3">
-        <Button variant="primary">Ny hund</Button>
-        <Button variant="secondary">PDF-export</Button>
-        <Button variant="outline">Ladda om</Button>
-      </div>
-    </div>
-
+  {/* Main content - begränsad bredd med padding */}
+  <main className="max-w-6xl mx-auto px-8 py-6">
     {/* Sök och filter */}
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-6">
       {/* Search + filters i en rad */}
@@ -431,6 +512,42 @@ color: #FFFFFF /* ALLTID VIT TEXT */
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
       <Table />
     </div>
+  </main>
+</div>
+```
+
+**Designprinciper (UPPDATERAD 2 dec 2025)**:
+
+- ❌ INGEN hero-sektion
+- ✅ Kompakt header: titel + beskrivning vänster, action-knapp höger
+- ✅ **Max-width: 6xl (1152px)** - inte för bred
+- ✅ **Padding: px-8 py-6** - luftigt utan att ta för mycket plats
+- ✅ Header i egen sektion med border-bottom
+- ✅ Main content: `<main className="max-w-6xl mx-auto px-8 py-6">`
+- ✅ Action buttons: Tydlig rad överst i main-content
+- ✅ Sök/filter: Egen sektion med vit bakgrund
+- ✅ Tabell: Grön header (#2C7A4C), alternating rows, hover-state
+
+**⚠️ VIKTIGT: Layout-standard 2 dec 2025**
+
+```tsx
+// Header (full bredd)
+<div className="border-b border-gray-200 bg-white shadow-sm">
+  <div className="max-w-6xl mx-auto px-8 py-6">
+    {/* Content */}
+  </div>
+</div>
+
+// Main (begränsad bredd)
+<main className="max-w-6xl mx-auto px-8 py-6">
+  {/* Content */}
+</main>
+```
+
+---
+
+### TYP 3: FORMULÄR/UNDERSIDOR
+
   </div>
 </div>
 ```
