@@ -1,19 +1,19 @@
 # 🗄️ Database Quick Reference - DogPlanner
 
-**Uppdaterad:** 1 Dec 2025  
+**Uppdaterad:** 2 Dec 2025  
 **Syfte:** Snabb referens för korrekt tabellnamn och kolumnnamn
 
 ---
 
 ## ⚠️ VIKTIGA TABELLNAMN (Använd dessa!)
 
-| ❌ Fel namn     | ✅ Rätt namn             | Kommentar                 |
-| --------------- | ------------------------ | ------------------------- |
-| `organisations` | `orgs`                   | Organisationstabellen     |
-| `owners_id`     | `owner_id`               | Kolumn i dogs (singular!) |
-| `quantity`      | `qty`                    | Kolumn i invoice_items    |
-| `total_amount`  | `amount`                 | Kolumn i invoice_items    |
-| `created_at`    | `metadata->>'timestamp'` | invoice_runs har JSONB    |
+| ❌ Fel namn     | ✅ Rätt namn             | Kommentar                          |
+| --------------- | ------------------------ | ---------------------------------- |
+| `organisations` | `orgs`                   | Organisationstabellen              |
+| `owners_id`     | `owner_id`               | Kolumn i dogs (singular!)          |
+| `quantity`      | `qty`                    | Kolumn i invoice_items             |
+| `total_amount`  | `amount`                 | Kolumn i invoice_items (GENERATED) |
+| `created_at`    | `metadata->>'timestamp'` | invoice_runs har JSONB             |
 
 ---
 
@@ -84,9 +84,25 @@ status TEXT  -- 'draft', 'sent', 'paid', 'overdue'
 id UUID PRIMARY KEY
 invoice_id UUID REFERENCES invoices(id)
 description TEXT
-qty INTEGER           -- ⚠️ INTE quantity!
+qty DECIMAL(10,2)     -- ⚠️ INTE quantity!
 unit_price DECIMAL(10,2)
-amount DECIMAL(10,2)  -- ⚠️ INTE total_amount!
+amount DECIMAL(10,2)  -- ⚠️ GENERATED COLUMN = qty * unit_price
+```
+
+⚠️ **VIKTIGT:** `amount` är en **GENERATED COLUMN**!  
+Du får INTE skriva till den i INSERT eller UPDATE.  
+PostgreSQL beräknar den automatiskt: `amount = qty * unit_price`
+
+```sql
+-- ✅ RÄTT
+INSERT INTO invoice_items (invoice_id, description, qty, unit_price)
+VALUES (invoice_id, 'Hundpensionat', 10, 500);
+-- amount blir automatiskt 5000
+
+-- ❌ FEL
+INSERT INTO invoice_items (invoice_id, description, qty, unit_price, amount)
+VALUES (invoice_id, 'Hundpensionat', 10, 500, 5000);
+-- ERROR: cannot insert into generated column
 ```
 
 ### **invoice_runs** - Cron execution logs
@@ -112,6 +128,55 @@ service_type TEXT
 price DECIMAL(10,2)
 is_active BOOLEAN
 frequency TEXT  -- 'daily', 'weekly', 'monthly'
+```
+
+### **grooming_bookings** - Frisörbokningar
+
+```sql
+id UUID PRIMARY KEY
+org_id UUID REFERENCES orgs(id)
+dog_id UUID REFERENCES dogs(id)
+appointment_date DATE
+appointment_time TIME
+service_type TEXT  -- 'bath', 'bath_trim', 'full_groom', etc.
+estimated_price DECIMAL(10,2)
+status TEXT  -- 'confirmed', 'completed', 'cancelled', 'no_show'
+notes TEXT
+external_customer_name TEXT  -- För utomstående kunder
+external_dog_name TEXT
+clip_length TEXT
+shampoo_type TEXT
+```
+
+### **grooming_journal** - Frisörjournal
+
+```sql
+id UUID PRIMARY KEY
+org_id UUID REFERENCES orgs(id)
+dog_id UUID REFERENCES dogs(id)
+appointment_date DATE
+service_type TEXT
+clip_length TEXT
+shampoo_type TEXT
+coat_condition TEXT
+before_photos JSONB
+after_photos JSONB
+notes TEXT
+price_charged DECIMAL(10,2)
+external_customer_name TEXT
+external_dog_name TEXT
+```
+
+### **grooming_prices** - Frisörpriser
+
+```sql
+id UUID PRIMARY KEY
+org_id UUID REFERENCES orgs(id)
+service_label TEXT  -- 'Badning', 'Trimning', etc.
+dog_size TEXT  -- 'Liten', 'Mellan', 'Stor'
+base_price DECIMAL(10,2)
+is_active BOOLEAN
+UNIQUE(org_id, service_label, dog_size)
 ```
 
 ---
@@ -203,8 +268,14 @@ const { data } = await supabase.from("organisations").select("*"); // Tabellen h
 1. **Tabellen heter `orgs`** - INTE `organisations` eller `organizations`
 2. **`owner_id` är singular** - INTE `owners_id`
 3. **`invoice_items` använder `qty` och `amount`** - INTE `quantity` och `total_amount`
-4. **`invoice_runs` har JSONB** - Använd `metadata->>'timestamp'` för tidsstämpel
-5. **Multi-tenant:** ALLA queries måste filtrera på `org_id` (eller använd RLS)
+4. **`amount` är GENERATED COLUMN** - Får INTE skrivas till manuellt! Beräknas som `qty * unit_price`
+5. **`invoice_runs` har JSONB** - Använd `metadata->>'timestamp'` för tidsstämpel
+6. **Multi-tenant:** ALLA queries måste filtrera på `org_id` (eller använd RLS)
+7. **Grooming-tabeller:** RLS är avstängt för dev (aktivera i prod!)
+8. **SQL Triggers:**
+   - `create_prepayment_invoice()` - Skapar förskottsfaktura när booking godkänns
+   - `create_invoice_on_checkout()` - Skapar slutfaktura när gäst checkar ut
+   - Båda använder `qty` och `unit_price` (INTE `amount`!)
 
 ---
 

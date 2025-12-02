@@ -1,11 +1,31 @@
 # 🚀 START HÄR — DogPlanner Systemanalys Komplett
 
-**Senast uppdaterad:** 2025-12-01  
+**Senast uppdaterad:** 2025-12-02  
 **Status:** ✅ Komplett analys av faktisk databas med funktioner
 
 ---
 
-## ⚠️ NYTT: Supabase SSR Migration (1 dec 2025)
+## 🔧 NYTT: Invoice Triggers Fixed (2 dec 2025)
+
+**PROBLEM FIXAT:** Bokningsgodkännande failade med "column 'quantity' does not exist"
+
+**Vad som fixades:**
+
+- ✅ SQL triggers använder nu `qty` istället för `quantity`
+- ✅ `amount` är GENERATED COLUMN (beräknas från `qty * unit_price`)
+- ✅ Grooming-tabeller skapade för frisörsidan
+- ✅ RLS avstängt på grooming-tabeller (dev-miljö)
+
+**SQL-filer körda i Supabase:**
+
+- `FINAL_FIX_GENERATED_COLUMN.sql` - Trigger-funktioner uppdaterade
+- `FIX_FRISOR_TABELLER.sql` - Grooming-tabeller skapade
+
+📄 **Se detaljer:** `DATABASE_QUICK_REFERENCE.md` (uppdaterad)
+
+---
+
+## ⚠️ Supabase SSR Migration (1 dec 2025)
 
 **VIKTIGT:** Systemet har migrerats från deprecated `@supabase/auth-helpers-nextjs` till moderna `@supabase/ssr`.
 
@@ -55,7 +75,8 @@
 
 ### Denna vecka (🔴 KRITISKT):
 
-- [ ] **Läs:** `SUPABASE_SSR_MIGRATION.md` (10 min) ⭐ **NYTT**
+- [x] **Läs:** `SUPABASE_SSR_MIGRATION.md` (10 min) ⭐ **KLAR**
+- [x] **Fixat:** Invoice triggers och grooming-tabeller (2 dec 2025) ⭐ **KLAR**
 - [ ] **Läs:** `SLUTRAPPORT.md` (5 min)
 - [ ] **Kör:** `HEALTH_CHECK.sql` i Supabase SQL Editor (5 min)
 - [ ] **Implementera:** Rate limiting enligt `API_SECURITY_AUDIT.md` (2h)

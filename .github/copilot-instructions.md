@@ -19,8 +19,19 @@ Follow these concise, actionable rules when editing or extending this repo.
   - Start (prod): `npm run start`
 
 - Database: Supabase schema and helpers are in the `supabase/` folder. If the DB is broken or empty, run `complete_testdata.sql` in Supabase SQL editor — it disables RLS/triggers that commonly block development and inserts canonical test data.
+  - **⚠️ IMPORTANT Database Column Names (2 Dec 2025):**
+    - Table: `orgs` (NOT `organisations` or `organizations`)
+    - Column: `owner_id` (NOT `owners_id` - singular!)
+    - `invoice_items` uses `qty` and `amount` (NOT `quantity` and `total_amount`)
+    - **`amount` is a GENERATED COLUMN** = `qty * unit_price` (NEVER write to it in INSERT/UPDATE!)
+    - See `DATABASE_QUICK_REFERENCE.md` for full details
 
 - Triggers & RLS: The project relies on several DB triggers (organisation assignment, anonymize triggers, invoice triggers). These often cause breakage in dev. If you see missing rows or "column does not exist" errors, check `complete_testdata.sql` and `check_current_status.sql`.
+  - **Invoice Triggers (Fixed 2 Dec 2025):**
+    - `create_prepayment_invoice()` - Creates prepayment invoice when booking approved
+    - `create_invoice_on_checkout()` - Creates final invoice when guest checks out
+    - Both use `INSERT INTO invoice_items (invoice_id, description, qty, unit_price)` - NEVER include `amount`!
+    - See `INVOICE_FIX_2025-12-02.md` for details
 
 - PDF & server-side packages: The app uses `pdfkit`, `stream-buffers` and `qrcode` in server code (see `next.config.ts` for `serverExternalPackages` and `outputFileTracingIncludes`). When adding server code that requires native packages, mirror this pattern to ensure Vercel builds include the modules.
 
