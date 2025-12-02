@@ -13,15 +13,22 @@
 
 - ✅ SQL triggers använder nu `qty` istället för `quantity`
 - ✅ `amount` är GENERATED COLUMN (beräknas från `qty * unit_price`)
-- ✅ Grooming-tabeller skapade för frisörsidan
-- ✅ RLS avstängt på grooming-tabeller (dev-miljö)
+- ✅ Grooming-tabeller skapade för frisörsidan (grooming_bookings, grooming_journal, grooming_prices)
+- ✅ Pensionat-tabeller fixade (is_active column, special_dates)
+- ✅ RLS avstängt på alla nya tabeller (dev-miljö)
+- ✅ **PROPER MIGRATIONS SKAPADE** (reproducerbara fixes!)
 
-**SQL-filer körda i Supabase:**
+**Migrations (kör med `supabase db reset` eller i SQL Editor):**
 
-- `FINAL_FIX_GENERATED_COLUMN.sql` - Trigger-funktioner uppdaterade
-- `FIX_FRISOR_TABELLER.sql` - Grooming-tabeller skapade
+- `supabase/migrations/20251202120000_fix_invoice_triggers.sql`
+- `supabase/migrations/20251202120100_create_grooming_tables.sql`
+- `supabase/migrations/20251202120200_fix_pensionat_columns.sql`
 
-📄 **Se detaljer:** `DATABASE_QUICK_REFERENCE.md` (uppdaterad)
+📄 **Fullständig dokumentation:**
+
+- `INVOICE_FIX_2025-12-02.md` - Detaljerad fix-rapport
+- `HALLBARHETSANALYS_2025-12-02.md` - Långsiktig hållbarhetsanalys (6/10 → 9/10 roadmap)
+- `DATABASE_QUICK_REFERENCE.md` - Schemaöversikt med nya tabeller
 
 ---
 
@@ -77,6 +84,9 @@
 
 - [x] **Läs:** `SUPABASE_SSR_MIGRATION.md` (10 min) ⭐ **KLAR**
 - [x] **Fixat:** Invoice triggers och grooming-tabeller (2 dec 2025) ⭐ **KLAR**
+- [x] **Migrations:** Proper migration-filer skapade (2 dec 2025) ⭐ **KLAR**
+- [ ] **Testa UI:** Godkänn bokning i pensionat (5 min)
+- [ ] **Testa UI:** Besök `/frisor` och verifiera inga console errors (2 min)
 - [ ] **Läs:** `SLUTRAPPORT.md` (5 min)
 - [ ] **Kör:** `HEALTH_CHECK.sql` i Supabase SQL Editor (5 min)
 - [ ] **Implementera:** Rate limiting enligt `API_SECURITY_AUDIT.md` (2h)
