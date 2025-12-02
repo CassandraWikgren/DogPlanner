@@ -776,21 +776,22 @@ export default function GroomingPricesPage() {
                               </span>
                             </td>
                             <td className="px-4 py-3 text-right">
-                              <div className="flex justify-end gap-2">
+                              <div className="flex justify-end gap-1">
                                 <Button
                                   onClick={() => startEdit(price)}
-                                  variant="outline"
+                                  variant="ghost"
                                   size="sm"
+                                  className="h-8 w-8 p-0 hover:bg-gray-100 text-gray-600 hover:text-gray-900"
                                 >
-                                  <Edit className="h-3 w-3" />
+                                  <Edit className="h-4 w-4" />
                                 </Button>
                                 <Button
                                   onClick={() => deletePrice(price.id)}
-                                  variant="outline"
+                                  variant="ghost"
                                   size="sm"
-                                  className="text-red-600 hover:text-red-700"
+                                  className="h-8 w-8 p-0 hover:bg-red-50 text-gray-400 hover:text-red-600"
                                 >
-                                  <Trash2 className="h-3 w-3" />
+                                  <Trash2 className="h-4 w-4" />
                                 </Button>
                               </div>
                             </td>
