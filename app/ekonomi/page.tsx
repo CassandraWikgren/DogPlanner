@@ -20,6 +20,7 @@ import {
   TrendingUp,
   Receipt,
   Send,
+  HelpCircle,
 } from "lucide-react";
 
 interface Invoice {
@@ -408,9 +409,19 @@ export default function FakturaPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-                Ekonomi & Fakturor
-              </h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                  Ekonomi & Fakturor
+                </h1>
+                <Link
+                  href="/ekonomi/hjalp"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:text-[#2c7a4c] hover:bg-gray-100 rounded-md transition-colors"
+                  title="Hjälp: Så fungerar fakturering"
+                >
+                  <HelpCircle className="h-4 w-4" />
+                  <span>Hjälp</span>
+                </Link>
+              </div>
               <p className="mt-1 text-base text-gray-600">
                 Översikt över fakturor, betalningar och ekonomisk status
               </p>

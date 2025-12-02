@@ -7,7 +7,14 @@ import React, { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 
-import { Loader2, Lock, Unlock, PlusCircle, FileText } from "lucide-react";
+import {
+  Loader2,
+  Lock,
+  Unlock,
+  PlusCircle,
+  FileText,
+  HelpCircle,
+} from "lucide-react";
 
 // Simple toast replacement
 const toast = (
@@ -769,9 +776,19 @@ const FakturorPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-                💸 Fakturor och underlag
-              </h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                  💸 Fakturor och underlag
+                </h1>
+                <a
+                  href="/ekonomi/hjalp"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:text-[#2c7a4c] hover:bg-gray-100 rounded-md transition-colors"
+                  title="Hjälp: Så fungerar fakturering"
+                >
+                  <HelpCircle className="h-4 w-4" />
+                  <span>Hjälp</span>
+                </a>
+              </div>
               <p className="mt-1 text-base text-gray-600">
                 Hantera fakturor för hunddagis, pensionat och frisör.
               </p>
