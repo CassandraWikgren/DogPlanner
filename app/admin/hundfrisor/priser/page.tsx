@@ -457,7 +457,7 @@ export default function GroomingPricesPage() {
                       }));
                     }}
                   >
-                    <SelectTrigger className="h-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-gray-900">
+                    <SelectTrigger className="h-10 w-full bg-white border-2 border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
@@ -496,7 +496,7 @@ export default function GroomingPricesPage() {
                       }))
                     }
                   >
-                    <SelectTrigger className="h-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-gray-900">
+                    <SelectTrigger className="h-10 w-full bg-white border-2 border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
@@ -523,7 +523,7 @@ export default function GroomingPricesPage() {
                       }))
                     }
                   >
-                    <SelectTrigger className="h-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-gray-900">
+                    <SelectTrigger className="h-10 w-full bg-white border-2 border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
