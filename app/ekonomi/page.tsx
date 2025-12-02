@@ -104,7 +104,12 @@ export default function FakturaPage() {
             qty,
             unit_price,
             amount,
-            booking_id
+            booking_id,
+            booking:bookings(
+              id,
+              dog_id,
+              dog:dogs(name, breed)
+            )
           )
         `,
         { count: "exact" }
