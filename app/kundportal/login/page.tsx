@@ -233,10 +233,7 @@ function LoginPageContent() {
                     Har du inget konto än?
                   </p>
                   <Link href="/kundportal/registrera">
-                    <Button
-                      variant="outline"
-                      className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 h-11 rounded-lg"
-                    >
+                    <Button className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white h-11 rounded-lg font-medium transition-colors">
                       Skapa konto som hundägare
                     </Button>
                   </Link>
