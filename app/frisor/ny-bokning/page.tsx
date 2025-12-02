@@ -1344,7 +1344,7 @@ export default function NyBokning() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 bg-[#2c7a4c] hover:bg-[#245c3a]"
+                className="flex-1 bg-slate-700 hover:bg-slate-800"
                 size="sm"
               >
                 {submitting ? "Sparar..." : "Skapa Bokning"}

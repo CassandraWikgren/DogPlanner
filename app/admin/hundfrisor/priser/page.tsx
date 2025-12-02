@@ -398,7 +398,7 @@ export default function GroomingPricesPage() {
                 setError(null);
                 setSuccess(null);
               }}
-              className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+              className="bg-slate-700 hover:bg-slate-800 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               Lägg till pris
@@ -596,7 +596,7 @@ export default function GroomingPricesPage() {
                 <Button
                   onClick={addNewPrice}
                   disabled={saving}
-                  className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+                  className="bg-slate-700 hover:bg-slate-800 text-white"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   {saving ? "Sparar..." : "Spara"}
@@ -634,7 +634,7 @@ export default function GroomingPricesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-[#2c7a4c] text-white">
+                    <tr className="bg-slate-700 text-white">
                       <th className="px-4 py-3 text-left text-sm font-semibold">
                         Tjänst
                       </th>
@@ -720,7 +720,7 @@ export default function GroomingPricesPage() {
                                     onClick={saveEdit}
                                     disabled={saving}
                                     size="sm"
-                                    className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+                                    className="bg-slate-700 hover:bg-slate-800 text-white"
                                   >
                                     <Save className="h-3 w-3 mr-1" />
                                     Spara
