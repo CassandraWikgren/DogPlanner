@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import PageContainer from "@/components/PageContainer";
 import {
   ArrowLeft,
   Scissors,
@@ -370,10 +369,10 @@ export default function GroomingPricesPage() {
   }
 
   return (
-    <PageContainer>
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <Link
             href="/admin"
             className="inline-flex items-center text-[#2c7a4c] hover:text-[#236139] mb-4"
@@ -383,11 +382,11 @@ export default function GroomingPricesPage() {
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-[#2c7a4c] flex items-center gap-3">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-3">
                 <Scissors className="h-8 w-8" />
                 Priser - Hundfrisör
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-base text-gray-600 mt-1">
                 Hantera priser för klippning, bad och pälsvård med stöd för
                 olika hundstorlekar
               </p>
@@ -405,7 +404,10 @@ export default function GroomingPricesPage() {
             </Button>
           </div>
         </div>
+      </div>
 
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-8 py-6">
         {/* Success Message */}
         {success && (
           <Card className="mb-4 border-green-200 bg-green-50">
@@ -830,7 +832,7 @@ export default function GroomingPricesPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
-    </PageContainer>
+      </main>
+    </div>
   );
 }
