@@ -125,7 +125,7 @@ export function DogBreedSelect({
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full px-4 py-3 text-left bg-white border rounded-lg flex items-center justify-between transition-colors ${
           isOpen
-            ? "border-slate-700 ring-2 ring-slate-700/20"
+            ? "border-[#2c7a4c] ring-2 ring-[#2c7a4c]/20"
             : "border-gray-300 hover:border-gray-400"
         }`}
         aria-haspopup="listbox"
@@ -157,7 +157,7 @@ export function DogBreedSelect({
                   setHighlightedIndex(0);
                 }}
                 placeholder="Sök hundras..."
-                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700/20 focus:border-slate-700"
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]/20 focus:border-[#2c7a4c]"
               />
             </div>
             <p className="mt-2 text-xs text-gray-500">

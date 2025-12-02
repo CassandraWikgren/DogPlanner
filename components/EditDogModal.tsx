@@ -38,7 +38,7 @@ type OwnerRow = {
 /** Liten sektionstitel */
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-700 mb-3">
+    <h3 className="text-sm font-semibold uppercase tracking-wide text-[#2c7a4c] mb-3">
       {children}
     </h3>
   );
@@ -60,8 +60,8 @@ function TabButton({
       onClick={onClick}
       className={`px-3 py-1.5 rounded-full text-sm font-medium border transition ${
         active
-          ? "bg-slate-700 text-white border-slate-700"
-          : "bg-white text-slate-700 border-slate-700 hover:bg-slate-50"
+          ? "bg-[#2c7a4c] text-white border-[#2c7a4c]"
+          : "bg-white text-[#2c7a4c] border-[#2c7a4c] hover:bg-[#e6f4ea]"
       }`}
     >
       {children}
@@ -1000,7 +1000,7 @@ export default function EditDogModal({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-slate-700 text-white grid place-content-center">
+            <div className="h-9 w-9 rounded-full bg-[#2c7a4c] text-white grid place-content-center">
               🐶
             </div>
             <div>
@@ -1084,7 +1084,7 @@ export default function EditDogModal({
               <SectionTitle>Ägare</SectionTitle>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">Förnamn</label>
+                  <label className="text-xs text-[#2c7a4c]">Förnamn</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     value={ownerFirst}
@@ -1092,7 +1092,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">Efternamn</label>
+                  <label className="text-xs text-[#2c7a4c]">Efternamn</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     value={ownerLast}
@@ -1101,7 +1101,7 @@ export default function EditDogModal({
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-700">Personnummer</label>
+                  <label className="text-xs text-[#2c7a4c]">Personnummer</label>
                   <input
                     disabled={!isAdmin}
                     placeholder="ååååmmdd-xxxx"
@@ -1113,7 +1113,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Kundnummer</label>
+                  <label className="text-xs text-[#2c7a4c]">Kundnummer</label>
                   <input
                     disabled={!isAdmin}
                     className={`w-full border rounded-lg px-3 py-2 ${
@@ -1126,7 +1126,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">E-postadress</label>
+                  <label className="text-xs text-[#2c7a4c]">E-postadress</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     type="email"
@@ -1135,7 +1135,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Telefonnummer
                   </label>
                   <input
@@ -1146,7 +1146,7 @@ export default function EditDogModal({
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">Adress</label>
+                  <label className="text-xs text-[#2c7a4c]">Adress</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     value={ownerAddress}
@@ -1154,7 +1154,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Postnummer</label>
+                  <label className="text-xs text-[#2c7a4c]">Postnummer</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     value={ownerZip}
@@ -1162,7 +1162,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Ort</label>
+                  <label className="text-xs text-[#2c7a4c]">Ort</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     value={ownerCity}
@@ -1177,7 +1177,7 @@ export default function EditDogModal({
                   <SectionTitle>Kontaktperson 2</SectionTitle>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">Förnamn</label>
+                  <label className="text-xs text-[#2c7a4c]">Förnamn</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     value={kp2First}
@@ -1185,7 +1185,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">Efternamn</label>
+                  <label className="text-xs text-[#2c7a4c]">Efternamn</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     value={kp2Last}
@@ -1193,7 +1193,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Telefonnummer
                   </label>
                   <input
@@ -1223,7 +1223,7 @@ export default function EditDogModal({
                     Ingen bild
                   </div>
                 )}
-                <label className="text-xs text-slate-700 bg-slate-700/10 px-3 py-1 rounded cursor-pointer hover:bg-slate-700/20">
+                <label className="text-xs text-[#2c7a4c] bg-[#2c7a4c]/10 px-3 py-1 rounded cursor-pointer hover:bg-[#2c7a4c]/20">
                   {uploading ? "Laddar..." : "Ladda upp bild"}
                   <input
                     type="file"
@@ -1236,7 +1236,7 @@ export default function EditDogModal({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">Hundens namn</label>
+                  <label className="text-xs text-[#2c7a4c]">Hundens namn</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     value={name}
@@ -1244,7 +1244,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Ras</label>
+                  <label className="text-xs text-[#2c7a4c]">Ras</label>
                   <DogBreedSelect
                     value={breed}
                     onChange={(newBreed) => setBreed(newBreed)}
@@ -1252,7 +1252,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Mankhöjd (cm)
                   </label>
                   <input
@@ -1264,7 +1264,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Födelsedatum</label>
+                  <label className="text-xs text-[#2c7a4c]">Födelsedatum</label>
                   <input
                     type="date"
                     className="w-full border rounded-lg px-3 py-2"
@@ -1273,7 +1273,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Kön</label>
+                  <label className="text-xs text-[#2c7a4c]">Kön</label>
                   <select
                     className="w-full border rounded-lg px-3 py-2 bg-white"
                     value={gender}
@@ -1351,7 +1351,7 @@ export default function EditDogModal({
               <SectionTitle>Hälsa</SectionTitle>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Försäkringsbolag
                   </label>
                   <input
@@ -1361,7 +1361,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Försäkringsnummer
                   </label>
                   <input
@@ -1371,7 +1371,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Vaccination DHP (3 år)
                   </label>
                   <input
@@ -1382,7 +1382,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Vaccination PI (1 år)
                   </label>
                   <input
@@ -1393,7 +1393,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Vård / Medicin
                   </label>
                   <textarea
@@ -1403,7 +1403,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">Allergier</label>
+                  <label className="text-xs text-[#2c7a4c]">Allergier</label>
                   <textarea
                     className="w-full border rounded-lg px-3 py-2 min-h-[60px]"
                     value={allergies}
@@ -1412,7 +1412,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">Mediciner</label>
+                  <label className="text-xs text-[#2c7a4c]">Mediciner</label>
                   <textarea
                     className="w-full border rounded-lg px-3 py-2 min-h-[60px]"
                     value={medications}
@@ -1421,7 +1421,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">Specialbehov</label>
+                  <label className="text-xs text-[#2c7a4c]">Specialbehov</label>
                   <textarea
                     className="w-full border rounded-lg px-3 py-2 min-h-[60px]"
                     value={specialNeeds}
@@ -1430,7 +1430,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Beteendeanteckningar
                   </label>
                   <textarea
@@ -1475,7 +1475,7 @@ export default function EditDogModal({
               <SectionTitle>Kommentarer</SectionTitle>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Journalanteckning (ny)
                   </label>
                   <textarea
@@ -1488,7 +1488,7 @@ export default function EditDogModal({
                   {/* Journalhistorik */}
                   {journalHistory.length > 0 && (
                     <div className="mt-4">
-                      <div className="text-xs font-semibold text-slate-700 mb-2">
+                      <div className="text-xs font-semibold text-[#2c7a4c] mb-2">
                         Tidigare journalanteckningar
                       </div>
                       <div className="space-y-2 max-h-[300px] overflow-y-auto">
@@ -1521,7 +1521,7 @@ export default function EditDogModal({
                   )}
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Kommentarer ägare
                   </label>
                   <textarea
@@ -1531,7 +1531,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Foder</label>
+                  <label className="text-xs text-[#2c7a4c]">Foder</label>
                   <textarea
                     className="w-full border rounded-lg px-3 py-2 min-h-[120px]"
                     value={foodInfo}
@@ -1547,7 +1547,7 @@ export default function EditDogModal({
               <SectionTitle>Abonnemang</SectionTitle>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
-                  <label className="text-xs text-slate-700">Typ</label>
+                  <label className="text-xs text-[#2c7a4c]">Typ</label>
                   <select
                     className="w-full border rounded-lg px-3 py-2 bg-white"
                     value={subscription}
@@ -1562,7 +1562,7 @@ export default function EditDogModal({
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Startdatum</label>
+                  <label className="text-xs text-[#2c7a4c]">Startdatum</label>
                   <input
                     type="date"
                     className="w-full border rounded-lg px-3 py-2"
@@ -1571,7 +1571,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Slutdatum</label>
+                  <label className="text-xs text-[#2c7a4c]">Slutdatum</label>
                   <input
                     type="date"
                     className="w-full border rounded-lg px-3 py-2"
@@ -1580,11 +1580,11 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700 font-semibold">
+                  <label className="text-xs text-[#2c7a4c] font-semibold">
                     Rumsnummer
                   </label>
                   <select
-                    className="w-full border-2 rounded-lg px-3 py-2 bg-white focus:border-slate-700 focus:ring-2 focus:ring-slate-700 focus:ring-opacity-20"
+                    className="w-full border-2 rounded-lg px-3 py-2 bg-white focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                     value={roomId}
                     onChange={(e) => {
                       console.log("🏠 Rum valt:", e.target.value);
@@ -1604,7 +1604,7 @@ export default function EditDogModal({
                     ))}
                   </select>
                   {roomId && (
-                    <p className="text-xs text-slate-700 mt-1 font-semibold">
+                    <p className="text-xs text-[#2c7a4c] mt-1 font-semibold">
                       ✅ Valt rum:{" "}
                       {rooms.find((r) => r.id === roomId)?.name || roomId}
                     </p>
@@ -1631,7 +1631,7 @@ export default function EditDogModal({
 
               {/* Veckodagar */}
               <div className="mt-3">
-                <label className="block text-xs text-slate-700 mb-2 font-semibold">
+                <label className="block text-xs text-[#2c7a4c] mb-2 font-semibold">
                   Veckodagar
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -1642,7 +1642,7 @@ export default function EditDogModal({
                       onClick={() => toggleDay(d)}
                       className={`rounded-lg border-2 px-4 py-2 text-sm font-semibold transition-all ${
                         days.includes(d)
-                          ? "border-slate-700 bg-slate-700 text-white shadow-md scale-105"
+                          ? "border-[#2c7a4c] bg-[#2c7a4c] text-white shadow-md scale-105"
                           : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400"
                       }`}
                     >
@@ -1653,7 +1653,7 @@ export default function EditDogModal({
                 {days.length > 0 && (
                   <p className="text-xs text-gray-600 mt-2">
                     Valda dagar:{" "}
-                    <span className="font-semibold text-slate-700">
+                    <span className="font-semibold text-[#2c7a4c]">
                       {days.join(", ")}
                     </span>
                   </p>
@@ -1669,7 +1669,7 @@ export default function EditDogModal({
               {/* Lista över tillagda addons */}
               {addons.length > 0 && (
                 <div className="mb-4 space-y-2">
-                  <label className="text-xs text-slate-700 font-semibold">
+                  <label className="text-xs text-[#2c7a4c] font-semibold">
                     Tillagda tilläggsabonnemang:
                   </label>
                   {addons.map((addon) => (
@@ -1682,7 +1682,7 @@ export default function EditDogModal({
                         <span className="text-gray-600 ml-2">
                           ({addon.qty} ggr/mån)
                         </span>
-                        <span className="text-slate-700 ml-2 font-semibold">
+                        <span className="text-[#2c7a4c] ml-2 font-semibold">
                           {addon.price} kr
                         </span>
                         {addon.start && (
@@ -1728,7 +1728,7 @@ export default function EditDogModal({
 
               <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
                 <div className="md:col-span-2">
-                  <label className="text-xs text-slate-700">
+                  <label className="text-xs text-[#2c7a4c]">
                     Tilläggsabonnemang
                   </label>
                   <select
@@ -1760,7 +1760,7 @@ export default function EditDogModal({
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Gånger/månad</label>
+                  <label className="text-xs text-[#2c7a4c]">Gånger/månad</label>
                   <input
                     className="w-full border rounded-lg px-3 py-2"
                     value={currentAddonQty}
@@ -1771,7 +1771,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Start</label>
+                  <label className="text-xs text-[#2c7a4c]">Start</label>
                   <input
                     type="date"
                     className="w-full border rounded-lg px-3 py-2"
@@ -1780,7 +1780,7 @@ export default function EditDogModal({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-700">Slut</label>
+                  <label className="text-xs text-[#2c7a4c]">Slut</label>
                   <input
                     type="date"
                     className="w-full border rounded-lg px-3 py-2"
@@ -1814,7 +1814,7 @@ export default function EditDogModal({
                       setCurrentAddonStart("");
                       setCurrentAddonEnd("");
                     }}
-                    className="w-full bg-slate-700 text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-green-700"
+                    className="w-full bg-[#2c7a4c] text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-green-700"
                   >
                     + Lägg till
                   </button>
@@ -1822,7 +1822,7 @@ export default function EditDogModal({
               </div>
 
               <div className="mt-4 md:col-span-6">
-                <label className="text-xs text-slate-700">
+                <label className="text-xs text-[#2c7a4c]">
                   Anvisningar till ekonomi
                 </label>
                 <input
@@ -1852,7 +1852,7 @@ export default function EditDogModal({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="rounded-lg bg-slate-700 px-6 py-2 text-sm font-semibold text-white shadow hover:bg-green-700 disabled:opacity-60"
+            className="rounded-lg bg-[#2c7a4c] px-6 py-2 text-sm font-semibold text-white shadow hover:bg-green-700 disabled:opacity-60"
           >
             {saving ? "Sparar..." : "Spara"}
           </button>

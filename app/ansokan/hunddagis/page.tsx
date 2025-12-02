@@ -711,14 +711,14 @@ export default function HunddagisAnsokanPage() {
                           }
                           className={`p-4 border-2 rounded-lg text-left transition-all ${
                             formData.subscription_type === option.value
-                              ? "border-slate-700 bg-white shadow-md ring-2 ring-slate-700/20"
+                              ? "border-[#2c7a4c] bg-white shadow-md ring-2 ring-[#2c7a4c]/20"
                               : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
                           }`}
                         >
                           <div
                             className={`font-semibold ${
                               formData.subscription_type === option.value
-                                ? "text-slate-700"
+                                ? "text-[#2c7a4c]"
                                 : "text-gray-800"
                             }`}
                           >
@@ -753,7 +753,7 @@ export default function HunddagisAnsokanPage() {
                             key={day}
                             className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
                               formData.preferred_days.includes(day)
-                                ? "border-slate-700 bg-white shadow-sm"
+                                ? "border-[#2c7a4c] bg-white shadow-sm"
                                 : "border-gray-200 bg-white hover:border-gray-300"
                             }`}
                           >
@@ -761,12 +761,12 @@ export default function HunddagisAnsokanPage() {
                               type="checkbox"
                               checked={formData.preferred_days.includes(day)}
                               onChange={() => toggleDay(day)}
-                              className="w-5 h-5 text-slate-700 border-gray-300 rounded focus:ring-slate-700"
+                              className="w-5 h-5 text-[#2c7a4c] border-gray-300 rounded focus:ring-[#2c7a4c]"
                             />
                             <span
                               className={`font-medium ${
                                 formData.preferred_days.includes(day)
-                                  ? "text-slate-700"
+                                  ? "text-[#2c7a4c]"
                                   : "text-gray-700"
                               }`}
                             >

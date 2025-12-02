@@ -385,7 +385,7 @@ export default function OwnersPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-slate-700 leading-tight">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                 Ägare
               </h1>
               <p className="mt-1 text-base text-gray-600">
@@ -396,7 +396,7 @@ export default function OwnersPage() {
             {/* Statistik inline höger */}
             <div className="flex items-center gap-4 ml-8">
               <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <p className="text-2xl font-bold text-slate-700">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
                   {owners.length}
                 </p>
                 <p className="text-xs text-gray-600 mt-0.5">Totalt</p>
@@ -436,7 +436,7 @@ export default function OwnersPage() {
                 resetForm();
                 setShowAddModal(true);
               }}
-              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-slate-700 hover:bg-slate-800 shadow-sm transition-colors"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors"
             >
               <Plus className="h-4 w-4 mr-2" />
               Ny ägare
@@ -454,14 +454,14 @@ export default function OwnersPage() {
                 placeholder="Sök på namn, e-post, telefon eller hundnamn..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
               />
             </div>
             <button
               onClick={() => setShowActiveOnly(!showActiveOnly)}
               className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 showActiveOnly
-                  ? "bg-slate-700 text-white"
+                  ? "bg-[#2c7a4c] text-white"
                   : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
               }`}
             >
@@ -605,7 +605,7 @@ export default function OwnersPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => startEditing(owner)}
-                            className="bg-slate-700 hover:bg-slate-800 text-white"
+                            className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -613,7 +613,7 @@ export default function OwnersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="bg-slate-700 hover:bg-slate-800 text-white"
+                              className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                             >
                               <FileText className="h-4 w-4" />
                             </Button>
@@ -663,7 +663,7 @@ export default function OwnersPage() {
             <div className="w-full max-w-md bg-white rounded-lg shadow-xl">
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-slate-700">
+                <h2 className="text-xl font-semibold text-[#2c7a4c]">
                   {editingOwner ? "Redigera ägare" : "Ny ägare"}
                 </h2>
                 <button
@@ -681,7 +681,7 @@ export default function OwnersPage() {
               {/* Content */}
               <div className="px-6 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Fullständigt namn *
                   </label>
                   <Input
@@ -694,12 +694,12 @@ export default function OwnersPage() {
                     }
                     placeholder="Anna Andersson"
                     required
-                    className="h-10 border-2 border-gray-300 focus:border-slate-700 focus:ring-2 focus:ring-slate-700 focus:ring-opacity-20"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     E-postadress
                   </label>
                   <Input
@@ -712,12 +712,12 @@ export default function OwnersPage() {
                       }))
                     }
                     placeholder="anna@exempel.se"
-                    className="h-10 border-2 border-gray-300 focus:border-slate-700 focus:ring-2 focus:ring-slate-700 focus:ring-opacity-20"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Telefonnummer
                   </label>
                   <Input
@@ -730,12 +730,12 @@ export default function OwnersPage() {
                       }))
                     }
                     placeholder="070-123 45 67"
-                    className="h-10 border-2 border-gray-300 focus:border-slate-700 focus:ring-2 focus:ring-slate-700 focus:ring-opacity-20"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Adress
                   </label>
                   <Input
@@ -747,12 +747,12 @@ export default function OwnersPage() {
                       }))
                     }
                     placeholder="Storgatan 123"
-                    className="h-10 border-2 border-gray-300 focus:border-slate-700 focus:ring-2 focus:ring-slate-700 focus:ring-opacity-20"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Kontaktperson 2
                   </label>
                   <Input
@@ -764,12 +764,12 @@ export default function OwnersPage() {
                       }))
                     }
                     placeholder="Namn på extra kontaktperson"
-                    className="h-10 border-2 border-gray-300 focus:border-slate-700 focus:ring-2 focus:ring-slate-700 focus:ring-opacity-20"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Telefon (kontakt 2)
                   </label>
                   <Input
@@ -782,12 +782,12 @@ export default function OwnersPage() {
                       }))
                     }
                     placeholder="070-987 65 43"
-                    className="h-10 border-2 border-gray-300 focus:border-slate-700 focus:ring-2 focus:ring-slate-700 focus:ring-opacity-20"
+                    className="h-10 border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Kundnummer
                   </label>
                   <Input
@@ -801,7 +801,7 @@ export default function OwnersPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="block text-sm font-semibold text-[#2c7a4c] mb-2">
                     Anteckningar
                   </label>
                   <Textarea
@@ -814,7 +814,7 @@ export default function OwnersPage() {
                     }
                     placeholder="Särskilda önskemål eller anteckningar..."
                     rows={3}
-                    className="border-2 border-gray-300 focus:border-slate-700 focus:ring-2 focus:ring-slate-700 focus:ring-opacity-20"
+                    className="border-2 border-gray-300 focus:border-[#2c7a4c] focus:ring-2 focus:ring-[#2c7a4c] focus:ring-opacity-20"
                   />
                 </div>
               </div>
@@ -833,7 +833,7 @@ export default function OwnersPage() {
                 </button>
                 <button
                   onClick={saveOwner}
-                  className="px-4 py-2 h-10 rounded-md bg-slate-700 hover:bg-slate-800 text-white font-semibold shadow-sm transition-colors"
+                  className="px-4 py-2 h-10 rounded-md bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold shadow-sm transition-colors"
                 >
                   {editingOwner ? "Spara ändringar" : "Skapa ägare"}
                 </button>

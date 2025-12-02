@@ -212,7 +212,7 @@ export default function TjansterView() {
 
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-slate-700 text-white">
+          <thead className="bg-[#2c7a4c] text-white">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                 Hund
@@ -245,7 +245,7 @@ export default function TjansterView() {
                         />
                       ) : (
                         <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                          <span className="text-slate-700 font-medium">
+                          <span className="text-[#2c7a4c] font-medium">
                             {dog.name.charAt(0).toUpperCase()}
                           </span>
                         </div>

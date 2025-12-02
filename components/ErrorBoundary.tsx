@@ -102,7 +102,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => window.location.reload()}
-                className="px-6 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium"
+                className="px-6 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235a3a] transition-colors font-medium"
               >
                 Ladda om sidan
               </button>

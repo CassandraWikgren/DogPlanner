@@ -29,28 +29,26 @@ DogPlanner ska kännas som ett **nordiskt kontorssystem för hundar** - tänk Fo
 
 ## 🎨 FÄRGPALETT
 
-**UPPDATERAD 2 DECEMBER 2025** - Migrering från grön till professionell slate-färgpalett
-
-### Primärfärger (SLATE):
+### Primärfärger:
 
 ```css
---primary-slate: #475569; /* slate-700 - knappar, rubriker, accenter */
---primary-hover: #334155; /* slate-800 - hover-state */
---light-slate: #f1f5f9; /* slate-50 - subtil bakgrund, hover */
+--primary-green: #2c7a4c; /* Huvudgrön - knappar, rubriker, accenter */
+--primary-hover: #236139; /* Hover-state för grön */
+--light-green: #e6f4ea; /* Subtil bakgrund, hover */
 ```
 
 ### Neutraler:
 
 ```css
 --white: #ffffff; /* Kort, tabeller, modaler */
---background: #f8fafc; /* slate-50 - Sidbackground */
+--background: #f5f5f5; /* Sidbackground */
 --gray-50: #f9fafb; /* Alternerande rader */
 --gray-100: #f3f4f6; /* Hover på rader */
 --gray-200: #e5e7eb; /* Borders */
 --gray-300: #d1d5db; /* Input borders */
 --gray-600: #4b5563; /* Sekundär text */
---text-primary: #1e293b; /* slate-800 - Huvudtext */
---text-secondary: #64748b; /* slate-500 - Mindre viktig text */
+--text-primary: #333333; /* Huvudtext */
+--text-secondary: #6b7280; /* Mindre viktig text */
 ```
 
 ### Status-färger:
@@ -64,18 +62,9 @@ DogPlanner ska kännas som ett **nordiskt kontorssystem för hundar** - tänk Fo
 
 ### Användning:
 
-- **Primär slate (#475569 / slate-700)**: Knappar, rubriker (H1/H2/H3), viktig accent
-- **Hover slate (#334155 / slate-800)**: Hover-states på knappar och interaktiva element
-- **Ljus slate (#f1f5f9 / slate-50)**: Subtila bakgrunder, hover på outline-knappar
-- **Bakgrunder**: Sidor #f8fafc (slate-50), kort #FFFFFF
-- **Text**: Mörkgrå (#1e293b / slate-800) huvudtext, slate-500 (#64748b) sekundär
-
-**MIGRATION NOTES (2 Dec 2025):**
-
-- Alla instanser av `#2c7a4c` → `slate-700` (#475569)
-- Alla instanser av `#236139` / `#245c3a` → `slate-800` (#334155)
-- Alla instanser av `#e6f4ea` → `slate-50` (#f1f5f9)
-- Systemet har nu en professionell, neutral färgpalett istället för "plåttig" grön
+- **Primärgrön (#2C7A4C)**: Endast på knappar, rubriker (H1/H2/H3), viktig accent
+- **Bakgrunder**: Sidor #F5F5F5, kort #FFFFFF
+- **Text**: Svart (#333333) huvudtext, grå (#6B7280) sekundär
 
 ---
 
@@ -91,18 +80,18 @@ font-family: "Inter", "Roboto", "Segoe UI", system-ui, sans-serif;
 
 ```css
 /* Rubriker */
-H1: 32px (2rem), font-weight: 700 (bold), color: #475569 (slate-700), line-height: 1.6
-H2: 24px (1.5rem), font-weight: 600 (semibold), color: #475569 (slate-700), line-height: 1.6
-H3: 18px (1.125rem), font-weight: 500 (medium), color: #475569 (slate-700), line-height: 1.6
+H1: 32px (2rem), font-weight: 700 (bold), color: #2C7A4C, line-height: 1.6
+H2: 24px (1.5rem), font-weight: 600 (semibold), color: #2C7A4C, line-height: 1.6
+H3: 18px (1.125rem), font-weight: 500 (medium), color: #2C7A4C, line-height: 1.6
 
 /* Brödtext */
-Body: 16px (1rem), font-weight: 400 (normal), color: #1e293b (slate-800), line-height: 1.6
-Small: 14px (0.875rem), font-weight: 400, color: #64748b (slate-500)
-Tiny: 12px (0.75rem), font-weight: 400, color: #64748b (slate-500)
+Body: 16px (1rem), font-weight: 400 (normal), color: #333333, line-height: 1.6
+Small: 14px (0.875rem), font-weight: 400, color: #6B7280
+Tiny: 12px (0.75rem), font-weight: 400, color: #6B7280
 
 /* UI-element */
 Button: 15px (0.9375rem), font-weight: 600 (semibold)
-Input label: 15px, font-weight: 600, color: #475569 (slate-700)
+Input label: 15px, font-weight: 600, color: #2C7A4C
 Table header: 14px (0.875rem), font-weight: 600
 ```
 
@@ -157,33 +146,33 @@ Text shadow: 0 2px 4px rgba(0,0,0,0.25)
 ### Knappar:
 
 ```css
-/* Primary (slate) */
+/* Primary (grön) */
 height: 40px (h-10)
 padding: 0 16px (px-4)
 border-radius: 6px (rounded-md)
 font-size: 15px, font-weight: 600
 color: #FFFFFF
-background: #475569 (bg-slate-700)
-hover:background: #334155 (hover:bg-slate-800)
+background: #2C7A4C
+hover:background: #236139
 box-shadow: 0 1px 2px rgba(0,0,0,0.05)
-focus: ring-2 ring-slate-700 ring-offset-2
+focus: ring-2 ring-[#2c7a4c] ring-offset-2
 
-/* Secondary (mörkare grå) */
+/* Secondary (grå) */
 Same as primary but:
-background: #4B5563 (bg-gray-600)
-hover:background: #374151 (hover:bg-gray-700)
+background: #4B5563
+hover:background: #374151
 
-/* Outline (vit med slate kant) */
+/* Outline (vit med grön kant) */
 Same as primary but:
 background: #FFFFFF
-color: #475569 (text-slate-700)
-border: 1px solid #475569 (border-slate-700)
-hover:background: #f1f5f9 (hover:bg-slate-50)
+color: #2C7A4C
+border: 1px solid #2C7A4C
+hover:background: #E6F4EA
 
 /* Ghost (transparent) */
 background: transparent
-color: #475569 (text-slate-700)
-hover:background: #f1f5f9 (hover:bg-slate-50)
+color: #2C7A4C
+hover:background: #E6F4EA
 ```
 
 ### Kort (Cards):
@@ -194,7 +183,7 @@ border: 1px solid #E5E7EB
 border-radius: 8px (rounded-lg)
 box-shadow: 0 1px 3px rgba(0,0,0,0.05)
 padding: 24px (p-6) standard, 16px (p-4) kompakt
-hover: shadow-md, border-color: #475569 (slate-700) (på klickbara kort)
+hover: shadow-md, border-color: #2C7A4C (på klickbara kort)
 ```
 
 ### Inputs:
@@ -208,7 +197,7 @@ font-size: 16px
 background: #FFFFFF
 focus:
   outline: none
-  ring: 2px #475569 (slate-700)
+  ring: 2px #2C7A4C
   border-color: transparent
 ```
 
@@ -238,7 +227,7 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.05)
 overflow: hidden
 
 /* Header */
-background: #475569 (bg-slate-700)
+background: #2C7A4C
 color: #FFFFFF
 height: 44px
 font-size: 14px, font-weight: 600
@@ -250,13 +239,13 @@ background: alternating #FFFFFF / #F9FAFB
 hover: #F3F4F6
 padding: 12px 16px (px-4 py-3)
 font-size: 16px
-color: #1e293b (slate-800)
+color: #333333
 border-bottom: none (använd alternating colors istället)
 
 /* Empty state */
 padding: 48px (py-12)
 text-align: center
-color: #64748b (slate-500)
+color: #6B7280
 font-size: 16px
 ```
 
@@ -309,10 +298,10 @@ color: #FFFFFF /* ALLTID VIT TEXT */
 
 **Rekommenderade färgkombinationer:**
 
-- Slate bakgrund (#475569 / bg-slate-700) → VIT text (#FFFFFF)
-- Vit bakgrund (#FFFFFF) → Slate-800 text (#1e293b)
-- Ljus slate bakgrund (#f1f5f9 / bg-slate-50) → Slate-800 text (#1e293b)
-- Grå bakgrund (#F8FAFC) → Slate-800 text (#1e293b)
+- Grön bakgrund (#2C7A4C) → VIT text (#FFFFFF)
+- Vit bakgrund (#FFFFFF) → Svart/mörkgrå text (#333333 eller #1F2937)
+- Ljusgrön bakgrund (#E6F4EA) → Mörkgrå text (#333333)
+- Grå bakgrund (#F5F5F5) → Mörkgrå text (#333333)
 
 ---
 
@@ -331,7 +320,7 @@ color: #FFFFFF /* ALLTID VIT TEXT */
 
   <div className="bg-white border-b border-gray-200 shadow-sm">
     <div className="max-w-7xl mx-auto px-6 py-6">
-      <h1 className="text-[32px] font-bold text-slate-700">Dashboard</h1>
+      <h1 className="text-[32px] font-bold text-[#2c7a4c]">Dashboard</h1>
       <p className="text-base text-gray-600 mt-1">
         Välkommen tillbaka, här är en snabb överblick
       </p>
@@ -378,7 +367,7 @@ color: #FFFFFF /* ALLTID VIT TEXT */
       <div className="flex items-center justify-between">
         {/* Vänster: Rubrik + beskrivning */}
         <div>
-          <h1 className="text-[32px] font-bold text-slate-700">Hunddagis</h1>
+          <h1 className="text-[32px] font-bold text-[#2c7a4c]">Hunddagis</h1>
           <p className="text-base text-gray-600 mt-1">
             Hantera dagishundar, schema och verksamhet
           </p>
@@ -440,7 +429,7 @@ color: #FFFFFF /* ALLTID VIT TEXT */
   <div className="bg-white border-b border-gray-200 shadow-sm">
     <div className="max-w-3xl mx-auto px-6 py-6">
       <BackButton />
-      <h1 className="text-[32px] font-bold text-slate-700 mt-4">Ny hund</h1>
+      <h1 className="text-[32px] font-bold text-[#2c7a4c] mt-4">Ny hund</h1>
       <p className="text-base text-gray-600 mt-1">
         Fyll i hundens information nedan
       </p>
@@ -496,14 +485,14 @@ text-xl (20px)   /* Inline i text, stats */
 }
 <div className="flex flex-col items-center text-center">
   <div className="text-3xl mb-3">🐕</div>
-  <h2 className="text-lg font-semibold text-slate-700">Hunddagis</h2>
+  <h2 className="text-lg font-semibold text-[#2c7a4c]">Hunddagis</h2>
   <p className="text-sm text-gray-600">Beskrivning...</p>
 </div>;
 
 {
   /* Sidhuvud - emoji inline */
 }
-<h1 className="text-[32px] font-bold text-slate-700">
+<h1 className="text-[32px] font-bold text-[#2c7a4c]">
   <span className="text-2xl mr-2">🏨</span>
   Hundpensionat
 </h1>;
@@ -520,7 +509,7 @@ Två varianter beroende på kontext:
 ```tsx
 <div className="flex items-center gap-6">
   <div className="text-center bg-white rounded-lg px-4 py-3 border border-gray-200 shadow-sm">
-    <p className="text-2xl font-bold text-slate-700">47</p>
+    <p className="text-2xl font-bold text-[#2c7a4c]">47</p>
     <p className="text-sm text-gray-600 mt-1">Antagna</p>
   </div>
 </div>
@@ -561,7 +550,7 @@ Behåll som den är men gör lite kompaktare:
 height: 60px (istället för 80px)
 padding: px-6 py-3
 logo-height: 48px (istället för 60px+)
-background: #475569 (bg-slate-700)
+background: #2C7A4C
 ```
 
 **Innehåll**:
@@ -633,27 +622,25 @@ För att implementera denna design på alla sidor:
 
 ## 🎨 FÄRG-BESLUT PER ELEMENT
 
-**UPPDATERAD 2 DECEMBER 2025** - Nya slate-färger
-
 För att undvika förvirring, här är exakt när varje färg används:
 
-| Element               | Färg                                                      | Användning                        |
-| --------------------- | --------------------------------------------------------- | --------------------------------- |
-| **Rubriker H1/H2/H3** | `#475569 (slate-700)`                                     | Alla rubriker                     |
-| **Primär knapp**      | Background `slate-700`, Text `#FFFFFF`                    | Huvudåtgärder                     |
-| **Sekundär knapp**    | Background `gray-600`, Text `#FFFFFF`                     | Mindre viktiga åtgärder           |
-| **Outline knapp**     | Border `slate-700`, Text `slate-700`, Hover bg `slate-50` | Återställ, Avbryt                 |
-| **Sidbackgrund**      | `#F8FAFC (slate-50)`                                      | Alla sidor                        |
-| **Kort background**   | `#FFFFFF`                                                 | Alla kort, tabeller               |
-| **Kort border**       | `#E5E7EB`                                                 | Standard border                   |
-| **Kort hover border** | `#475569 (slate-700)`                                     | Klickbara kort                    |
-| **Input border**      | `#D1D5DB`                                                 | Normal state                      |
-| **Input focus ring**  | `#475569 (slate-700)`                                     | Focus state                       |
-| **Tabell header**     | Background `slate-700`, Text `#FFFFFF`                    | Alla tabeller                     |
-| **Tabell rader**      | Alternating `#FFFFFF` / `#F9FAFB`                         | Datavisning                       |
-| **Tabell hover**      | `#F3F4F6`                                                 | Hover på rad                      |
-| **Text primary**      | `#1e293b (slate-800)`                                     | Huvudtext                         |
-| **Text secondary**    | `#64748b (slate-500)`                                     | Beskrivningar, mindre viktig text |
+| Element               | Färg                                                 | Användning                        |
+| --------------------- | ---------------------------------------------------- | --------------------------------- |
+| **Rubriker H1/H2/H3** | `#2C7A4C`                                            | Alla rubriker                     |
+| **Primär knapp**      | Background `#2C7A4C`, Text `#FFFFFF`                 | Huvudåtgärder                     |
+| **Sekundär knapp**    | Background `#4B5563`, Text `#FFFFFF`                 | Mindre viktiga åtgärder           |
+| **Outline knapp**     | Border `#2C7A4C`, Text `#2C7A4C`, Hover bg `#E6F4EA` | Återställ, Avbryt                 |
+| **Sidbackgrund**      | `#F5F5F5`                                            | Alla sidor                        |
+| **Kort background**   | `#FFFFFF`                                            | Alla kort, tabeller               |
+| **Kort border**       | `#E5E7EB`                                            | Standard border                   |
+| **Kort hover border** | `#2C7A4C`                                            | Klickbara kort                    |
+| **Input border**      | `#D1D5DB`                                            | Normal state                      |
+| **Input focus ring**  | `#2C7A4C`                                            | Focus state                       |
+| **Tabell header**     | Background `#2C7A4C`, Text `#FFFFFF`                 | Alla tabeller                     |
+| **Tabell rader**      | Alternating `#FFFFFF` / `#F9FAFB`                    | Datavisning                       |
+| **Tabell hover**      | `#F3F4F6`                                            | Hover på rad                      |
+| **Text primary**      | `#333333`                                            | Huvudtext                         |
+| **Text secondary**    | `#6B7280`                                            | Beskrivningar, mindre viktig text |
 
 ---
 

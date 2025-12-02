@@ -50,7 +50,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-700 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c] mx-auto mb-4"></div>
           <p className="text-gray-600">Laddar dashboard...</p>
         </div>
       </div>
@@ -62,7 +62,7 @@ export default function Dashboard() {
       {/* Kompakt header - INGEN HERO */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-[32px] font-bold text-slate-700 leading-tight">
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
             Dashboard
           </h1>
           <p className="text-base text-gray-600 mt-1">
@@ -94,11 +94,11 @@ export default function Dashboard() {
               <StandardCard
                 padding="sm"
                 rounded="lg"
-                className="h-full hover:border-slate-700 hover:shadow-md transition-all"
+                className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
               >
                 <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
                   <div className="text-3xl mb-2">🐕</div>
-                  <h2 className="text-base font-semibold text-slate-700 mb-1">
+                  <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                     Hunddagis
                   </h2>
                   <p className="text-xs text-gray-600 leading-relaxed px-2">
@@ -115,11 +115,11 @@ export default function Dashboard() {
               <StandardCard
                 padding="sm"
                 rounded="lg"
-                className="h-full hover:border-slate-700 hover:shadow-md transition-all"
+                className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
               >
                 <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
                   <div className="text-3xl mb-2">🏨</div>
-                  <h2 className="text-base font-semibold text-slate-700 mb-1">
+                  <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                     Hundpensionat
                   </h2>
                   <p className="text-xs text-gray-600 leading-relaxed px-2">
@@ -136,11 +136,11 @@ export default function Dashboard() {
               <StandardCard
                 padding="sm"
                 rounded="lg"
-                className="h-full hover:border-slate-700 hover:shadow-md transition-all"
+                className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
               >
                 <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
                   <div className="text-3xl mb-2">✂️</div>
-                  <h2 className="text-base font-semibold text-slate-700 mb-1">
+                  <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                     Hundfrisör
                   </h2>
                   <p className="text-xs text-gray-600 leading-relaxed px-2">
@@ -156,11 +156,11 @@ export default function Dashboard() {
             <StandardCard
               padding="sm"
               rounded="lg"
-              className="h-full hover:border-slate-700 hover:shadow-md transition-all"
+              className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
             >
               <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
                 <div className="text-3xl mb-2">⚙️</div>
-                <h2 className="text-base font-semibold text-slate-700 mb-1">
+                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
                   Admin
                 </h2>
                 <p className="text-xs text-gray-600 leading-relaxed px-2">

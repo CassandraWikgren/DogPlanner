@@ -212,7 +212,7 @@ export default function HundrumView() {
         </p>
         <a
           href="/admin/rum"
-          className="inline-flex items-center px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 transition-colors"
+          className="inline-flex items-center px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors"
         >
           <Plus className="w-4 h-4 mr-2" />
           Skapa hundrum
@@ -232,7 +232,7 @@ export default function HundrumView() {
               onClick={() => setSelectedDay(day)}
               className={`px-4 py-2 rounded-md font-medium transition-colors ${
                 selectedDay === day
-                  ? "bg-slate-700 text-white"
+                  ? "bg-[#2c7a4c] text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -371,7 +371,7 @@ export default function HundrumView() {
                         />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                          <span className="text-slate-700 font-medium text-sm">
+                          <span className="text-[#2c7a4c] font-medium text-sm">
                             {dog.name.charAt(0).toUpperCase()}
                           </span>
                         </div>

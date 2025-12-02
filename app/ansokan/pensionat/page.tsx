@@ -196,12 +196,12 @@ export default function PensionatAnsokanPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-b from-[#2c7a4c]/10 to-white flex items-center justify-center p-6">
         <div className="max-w-2xl w-full space-y-6">
           {/* Success meddelande */}
           <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             <div className="mb-6">
-              <CheckCircle className="h-16 w-16 text-slate-700 mx-auto" />
+              <CheckCircle className="h-16 w-16 text-[#2c7a4c] mx-auto" />
             </div>
             <h1 className="text-2xl font-bold text-gray-800 mb-3">
               Tack för din ansökan till {orgName}!
@@ -228,7 +228,7 @@ export default function PensionatAnsokanPage() {
             </p>
             <Link
               href="/"
-              className="inline-block px-6 py-3 bg-slate-700 text-white font-semibold rounded-lg hover:bg-slate-800 transition"
+              className="inline-block px-6 py-3 bg-[#2c7a4c] text-white font-semibold rounded-lg hover:bg-[#236139] transition"
             >
               Tillbaka till startsidan
             </Link>
@@ -251,12 +251,12 @@ export default function PensionatAnsokanPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-[#2c7a4c]/10 to-white">
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-700/10 rounded-full mb-4">
-            <Home className="h-8 w-8 text-slate-700" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#2c7a4c]/10 rounded-full mb-4">
+            <Home className="h-8 w-8 text-[#2c7a4c]" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             Ansök om pensionatsbokning
@@ -273,9 +273,9 @@ export default function PensionatAnsokanPage() {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition ${
                   s === step
-                    ? "bg-slate-700 text-white"
+                    ? "bg-[#2c7a4c] text-white"
                     : s < step
-                      ? "bg-slate-700/30 text-slate-700"
+                      ? "bg-[#2c7a4c]/30 text-[#2c7a4c]"
                       : "bg-gray-200 text-gray-500"
                 }`}
               >
@@ -284,7 +284,7 @@ export default function PensionatAnsokanPage() {
               {s < 4 && (
                 <div
                   className={`w-12 h-1 rounded ${
-                    s < step ? "bg-slate-700" : "bg-gray-200"
+                    s < step ? "bg-[#2c7a4c]" : "bg-gray-200"
                   }`}
                 />
               )}
@@ -355,7 +355,7 @@ export default function PensionatAnsokanPage() {
                   </label>
                   <input
                     type="text"
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                     value={formData.owner_name}
                     onChange={(e) =>
                       setFormData({ ...formData, owner_name: e.target.value })
@@ -370,7 +370,7 @@ export default function PensionatAnsokanPage() {
                   </label>
                   <input
                     type="email"
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                     value={formData.owner_email}
                     onChange={(e) =>
                       setFormData({ ...formData, owner_email: e.target.value })
@@ -385,7 +385,7 @@ export default function PensionatAnsokanPage() {
                   </label>
                   <input
                     type="tel"
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                     value={formData.owner_phone}
                     onChange={(e) =>
                       setFormData({ ...formData, owner_phone: e.target.value })
@@ -400,7 +400,7 @@ export default function PensionatAnsokanPage() {
                   </label>
                   <input
                     type="text"
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                     value={formData.owner_address}
                     onChange={(e) =>
                       setFormData({
@@ -419,7 +419,7 @@ export default function PensionatAnsokanPage() {
                     </label>
                     <input
                       type="text"
-                      className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                      className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                       value={formData.owner_postal_code}
                       onChange={(e) =>
                         setFormData({
@@ -436,7 +436,7 @@ export default function PensionatAnsokanPage() {
                     </label>
                     <input
                       type="text"
-                      className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                      className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                       value={formData.owner_city}
                       onChange={(e) =>
                         setFormData({
@@ -465,7 +465,7 @@ export default function PensionatAnsokanPage() {
                   </label>
                   <input
                     type="text"
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                     value={formData.dog_name}
                     onChange={(e) =>
                       setFormData({ ...formData, dog_name: e.target.value })
@@ -494,7 +494,7 @@ export default function PensionatAnsokanPage() {
                   </label>
                   <input
                     type="date"
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                     value={formData.dog_birth}
                     onChange={(e) =>
                       setFormData({ ...formData, dog_birth: e.target.value })
@@ -507,7 +507,7 @@ export default function PensionatAnsokanPage() {
                     Kön <span className="text-red-600">*</span>
                   </label>
                   <select
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                     value={formData.dog_gender}
                     onChange={(e) =>
                       setFormData({
@@ -528,7 +528,7 @@ export default function PensionatAnsokanPage() {
                   </label>
                   <input
                     type="number"
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                     value={formData.dog_height_cm}
                     onChange={(e) =>
                       setFormData({
@@ -548,7 +548,7 @@ export default function PensionatAnsokanPage() {
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="w-5 h-5 text-slate-700 rounded focus:ring-slate-700"
+                      className="w-5 h-5 text-[#2c7a4c] rounded focus:ring-[#2c7a4c]"
                       checked={formData.is_neutered}
                       onChange={(e) =>
                         setFormData({
@@ -565,7 +565,7 @@ export default function PensionatAnsokanPage() {
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="w-5 h-5 text-slate-700 rounded focus:ring-slate-700"
+                      className="w-5 h-5 text-[#2c7a4c] rounded focus:ring-[#2c7a4c]"
                       checked={formData.is_escape_artist}
                       onChange={(e) =>
                         setFormData({
@@ -582,7 +582,7 @@ export default function PensionatAnsokanPage() {
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="w-5 h-5 text-slate-700 rounded focus:ring-slate-700"
+                      className="w-5 h-5 text-[#2c7a4c] rounded focus:ring-[#2c7a4c]"
                       checked={formData.destroys_things}
                       onChange={(e) =>
                         setFormData({
@@ -597,7 +597,7 @@ export default function PensionatAnsokanPage() {
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="w-5 h-5 text-slate-700 rounded focus:ring-slate-700"
+                      className="w-5 h-5 text-[#2c7a4c] rounded focus:ring-[#2c7a4c]"
                       checked={formData.not_house_trained}
                       onChange={(e) =>
                         setFormData({
@@ -612,7 +612,7 @@ export default function PensionatAnsokanPage() {
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="w-5 h-5 text-slate-700 rounded focus:ring-slate-700"
+                      className="w-5 h-5 text-[#2c7a4c] rounded focus:ring-[#2c7a4c]"
                       checked={formData.has_allergies}
                       onChange={(e) =>
                         setFormData({
@@ -627,7 +627,7 @@ export default function PensionatAnsokanPage() {
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="w-5 h-5 text-slate-700 rounded focus:ring-slate-700"
+                      className="w-5 h-5 text-[#2c7a4c] rounded focus:ring-[#2c7a4c]"
                       checked={formData.needs_medication}
                       onChange={(e) =>
                         setFormData({
@@ -645,7 +645,7 @@ export default function PensionatAnsokanPage() {
                     Medicinska anteckningar
                   </label>
                   <textarea
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                     rows={3}
                     value={formData.medical_notes}
                     onChange={(e) =>
@@ -675,7 +675,7 @@ export default function PensionatAnsokanPage() {
                     </label>
                     <input
                       type="date"
-                      className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                      className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                       value={formData.checkin_date}
                       onChange={(e) =>
                         setFormData({
@@ -692,7 +692,7 @@ export default function PensionatAnsokanPage() {
                     </label>
                     <input
                       type="date"
-                      className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                      className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                       value={formData.checkout_date}
                       onChange={(e) =>
                         setFormData({
@@ -709,8 +709,8 @@ export default function PensionatAnsokanPage() {
                 </div>
 
                 {formData.checkin_date && formData.checkout_date && (
-                  <div className="p-4 bg-slate-700/5 border border-slate-700/20 rounded-lg">
-                    <div className="flex items-center gap-2 text-slate-700 mb-1">
+                  <div className="p-4 bg-[#2c7a4c]/5 border border-[#2c7a4c]/20 rounded-lg">
+                    <div className="flex items-center gap-2 text-[#2c7a4c] mb-1">
                       <Calendar className="h-5 w-5" />
                       <span className="font-semibold text-sm">Vistelse</span>
                     </div>
@@ -725,11 +725,11 @@ export default function PensionatAnsokanPage() {
                       })()}
                     </p>
                     {formData.dog_height_cm && (
-                      <div className="mt-3 pt-3 border-t border-slate-700/20">
+                      <div className="mt-3 pt-3 border-t border-[#2c7a4c]/20">
                         <p className="text-sm font-semibold text-gray-900 mb-1">
                           Uppskattat pris
                         </p>
-                        <p className="text-lg font-bold text-slate-700">
+                        <p className="text-lg font-bold text-[#2c7a4c]">
                           {(() => {
                             const nights = Math.ceil(
                               (new Date(formData.checkout_date).getTime() -
@@ -767,7 +767,7 @@ export default function PensionatAnsokanPage() {
                     Särskilda önskemål
                   </label>
                   <textarea
-                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-slate-700 focus:border-slate-700"
+                    className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#2c7a4c] focus:border-[#2c7a4c]"
                     rows={4}
                     value={formData.special_requests}
                     onChange={(e) =>
@@ -845,7 +845,7 @@ export default function PensionatAnsokanPage() {
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="w-5 h-5 text-slate-700 rounded focus:ring-slate-700 mt-0.5 flex-shrink-0"
+                    className="w-5 h-5 text-[#2c7a4c] rounded focus:ring-[#2c7a4c] mt-0.5 flex-shrink-0"
                     checked={formData.terms_accepted}
                     onChange={(e) =>
                       setFormData({
@@ -867,7 +867,7 @@ export default function PensionatAnsokanPage() {
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="w-5 h-5 text-slate-700 rounded focus:ring-slate-700 mt-0.5 flex-shrink-0"
+                    className="w-5 h-5 text-[#2c7a4c] rounded focus:ring-[#2c7a4c] mt-0.5 flex-shrink-0"
                     checked={formData.gdpr_consent}
                     onChange={(e) =>
                       setFormData({
@@ -881,7 +881,7 @@ export default function PensionatAnsokanPage() {
                     <Link
                       href="/gdpr"
                       target="_blank"
-                      className="text-slate-700 hover:underline font-medium"
+                      className="text-[#2c7a4c] hover:underline font-medium"
                     >
                       DogPlanners integritetspolicy
                     </Link>{" "}
@@ -924,7 +924,7 @@ export default function PensionatAnsokanPage() {
             {step < 4 ? (
               <button
                 onClick={handleNext}
-                className="flex-1 px-6 py-3 bg-slate-700 text-white font-semibold rounded-lg hover:bg-slate-800 transition"
+                className="flex-1 px-6 py-3 bg-[#2c7a4c] text-white font-semibold rounded-lg hover:bg-[#236139] transition"
               >
                 Nästa
               </button>
@@ -932,7 +932,7 @@ export default function PensionatAnsokanPage() {
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-700 text-white font-semibold rounded-lg hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white font-semibold rounded-lg hover:bg-[#236139] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? (
                   <>
@@ -957,7 +957,7 @@ export default function PensionatAnsokanPage() {
             dig!
           </p>
           <p className="mt-2">
-            <Link href="/" className="text-slate-700 hover:underline">
+            <Link href="/" className="text-[#2c7a4c] hover:underline">
               ← Tillbaka till startsidan
             </Link>
           </p>

@@ -11,7 +11,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PawPrint, User, Users, AlertCircle, CheckCircle } from "lucide-react";
-import { DogBreedSelect } from "@/components/DogBreedSelect";
+import { DOG_BREEDS } from "@/lib/dogBreeds";
 import { FormErrorBoundary } from "@/components/ErrorBoundaries";
 
 // Felkoder enligt systemet
@@ -314,7 +314,7 @@ export default function CustomerRegisterPage() {
               </Button>
             </Link>
             <div className="flex items-center justify-center mb-4">
-              <PawPrint className="h-10 w-10 text-slate-700 mr-3" />
+              <PawPrint className="h-10 w-10 text-[#2c7a4c] mr-3" />
               <h1 className="text-3xl font-bold text-gray-800">
                 Skapa konto som hundägare
               </h1>
@@ -326,7 +326,7 @@ export default function CustomerRegisterPage() {
               Driver du ett hundföretag?{" "}
               <Link
                 href="/register"
-                className="text-slate-700 hover:underline font-medium"
+                className="text-[#2c7a4c] hover:underline font-medium"
               >
                 Registrera företag här
               </Link>
@@ -344,7 +344,7 @@ export default function CustomerRegisterPage() {
                         currentStep > step
                           ? "bg-green-600 text-white"
                           : currentStep === step
-                            ? "bg-slate-700 text-white ring-4 ring-slate-700/20 scale-110"
+                            ? "bg-[#2c7a4c] text-white ring-4 ring-[#2c7a4c]/20 scale-110"
                             : "bg-gray-200 text-gray-500"
                       }`}
                     >
@@ -352,7 +352,7 @@ export default function CustomerRegisterPage() {
                     </div>
                     <span
                       className={`mt-2 text-xs font-medium transition-colors ${
-                        currentStep >= step ? "text-slate-700" : "text-gray-400"
+                        currentStep >= step ? "text-[#2c7a4c]" : "text-gray-400"
                       }`}
                     >
                       {step === 1 && "Ägaruppgifter"}
@@ -410,7 +410,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleOwnerChange("firstName", e.target.value)
                         }
-                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent transition-all"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="Anna"
                         required
                       />
@@ -426,7 +426,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleOwnerChange("lastName", e.target.value)
                         }
-                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent transition-all"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="Andersson"
                         required
                       />
@@ -442,7 +442,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleOwnerChange("personalNumber", e.target.value)
                         }
-                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent transition-all"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="YYYYMMDD-XXXX"
                         required
                       />
@@ -458,7 +458,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleOwnerChange("email", e.target.value)
                         }
-                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent transition-all"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="anna@exempel.se"
                         required
                       />
@@ -477,7 +477,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleOwnerChange("phone", e.target.value)
                         }
-                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent transition-all"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="070-123 45 67"
                         required
                       />
@@ -493,7 +493,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleOwnerChange("address", e.target.value)
                         }
-                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent transition-all"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="Exempelgatan 123"
                       />
                     </div>
@@ -508,7 +508,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleOwnerChange("zipCode", e.target.value)
                         }
-                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent transition-all"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="123 45"
                       />
                     </div>
@@ -523,7 +523,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleOwnerChange("city", e.target.value)
                         }
-                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent transition-all"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="Stockholm"
                       />
                     </div>
@@ -538,7 +538,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleOwnerChange("password", e.target.value)
                         }
-                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent transition-all"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="Minst 6 tecken"
                         minLength={6}
                         required
@@ -559,7 +559,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleOwnerChange("confirmPassword", e.target.value)
                         }
-                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent transition-all"
+                        className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
                         placeholder="Samma som ovan"
                         minLength={6}
                         required
@@ -579,7 +579,7 @@ export default function CustomerRegisterPage() {
                               e.target.checked.toString()
                             )
                           }
-                          className="mt-1 h-4 w-4 text-slate-700 focus:ring-slate-700 border-gray-300 rounded"
+                          className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
                         />
                         <label
                           htmlFor="gdprConsent"
@@ -589,7 +589,7 @@ export default function CustomerRegisterPage() {
                           enligt{" "}
                           <Link
                             href="/gdpr"
-                            className="text-slate-700 underline hover:text-slate-800"
+                            className="text-[#2c7a4c] underline hover:text-[#245a3e]"
                             target="_blank"
                           >
                             GDPR
@@ -597,7 +597,7 @@ export default function CustomerRegisterPage() {
                           och{" "}
                           <Link
                             href="/terms"
-                            className="text-slate-700 underline hover:text-slate-800"
+                            className="text-[#2c7a4c] underline hover:text-[#245a3e]"
                             target="_blank"
                           >
                             användarvillkoren
@@ -617,7 +617,7 @@ export default function CustomerRegisterPage() {
                               e.target.checked.toString()
                             )
                           }
-                          className="mt-1 h-4 w-4 text-slate-700 focus:ring-slate-700 border-gray-300 rounded"
+                          className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
                         />
                         <label
                           htmlFor="marketingConsent"
@@ -654,7 +654,7 @@ export default function CustomerRegisterPage() {
                           onChange={(e) =>
                             handleContactChange("firstName", e.target.value)
                           }
-                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                           placeholder="Erik"
                         />
                       </div>
@@ -669,7 +669,7 @@ export default function CustomerRegisterPage() {
                           onChange={(e) =>
                             handleContactChange("lastName", e.target.value)
                           }
-                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                           placeholder="Andersson"
                         />
                       </div>
@@ -684,7 +684,7 @@ export default function CustomerRegisterPage() {
                           onChange={(e) =>
                             handleContactChange("phone", e.target.value)
                           }
-                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                          className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                           placeholder="070-987 65 43"
                         />
                       </div>
@@ -710,7 +710,7 @@ export default function CustomerRegisterPage() {
                             onChange={(e) =>
                               handleDogChange("name", e.target.value)
                             }
-                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                             placeholder="Bella"
                           />
                         </div>
@@ -719,13 +719,21 @@ export default function CustomerRegisterPage() {
                           <label className="block text-sm font-medium mb-1">
                             Ras <span className="text-red-500">*</span>
                           </label>
-                          <DogBreedSelect
+                          <select
                             value={dogData.breed}
-                            onChange={(breed) =>
-                              handleDogChange("breed", breed)
+                            onChange={(e) =>
+                              handleDogChange("breed", e.target.value)
                             }
-                            placeholder="Välj hundras..."
-                          />
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+                            required
+                          >
+                            <option value="">Välj hundras...</option>
+                            {DOG_BREEDS.map((breed) => (
+                              <option key={breed} value={breed}>
+                                {breed}
+                              </option>
+                            ))}
+                          </select>
                         </div>
 
                         <div>
@@ -738,7 +746,7 @@ export default function CustomerRegisterPage() {
                             onChange={(e) =>
                               handleDogChange("birthDate", e.target.value)
                             }
-                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                             required
                           />
                         </div>
@@ -752,7 +760,7 @@ export default function CustomerRegisterPage() {
                             onChange={(e) =>
                               handleDogChange("gender", e.target.value)
                             }
-                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                             required
                           >
                             <option value="">Välj kön</option>
@@ -772,7 +780,7 @@ export default function CustomerRegisterPage() {
                             onChange={(e) =>
                               handleDogChange("shoulderHeight", e.target.value)
                             }
-                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                             placeholder="55"
                             min="1"
                             max="150"
@@ -799,7 +807,7 @@ export default function CustomerRegisterPage() {
                             onChange={(e) =>
                               handleDogChange("isCastrated", e.target.checked)
                             }
-                            className="mt-1 h-4 w-4 text-slate-700 focus:ring-slate-700 border-gray-300 rounded"
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
                           />
                           <span className="text-sm text-gray-700">
                             Kastrerad/Steriliserad
@@ -816,7 +824,7 @@ export default function CustomerRegisterPage() {
                                 e.target.checked
                               )
                             }
-                            className="mt-1 h-4 w-4 text-slate-700 focus:ring-slate-700 border-gray-300 rounded"
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
                           />
                           <span className="text-sm text-gray-700">
                             Rymningsbenägen / Klättrar över staket
@@ -833,7 +841,7 @@ export default function CustomerRegisterPage() {
                                 e.target.checked
                               )
                             }
-                            className="mt-1 h-4 w-4 text-slate-700 focus:ring-slate-700 border-gray-300 rounded"
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
                           />
                           <span className="text-sm text-gray-700">
                             Biter sönder saker
@@ -850,7 +858,7 @@ export default function CustomerRegisterPage() {
                                 e.target.checked
                               )
                             }
-                            className="mt-1 h-4 w-4 text-slate-700 focus:ring-slate-700 border-gray-300 rounded"
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
                           />
                           <span className="text-sm text-gray-700">
                             Ej rumsren
@@ -864,7 +872,7 @@ export default function CustomerRegisterPage() {
                             onChange={(e) =>
                               handleDogChange("allergies", e.target.checked)
                             }
-                            className="mt-1 h-4 w-4 text-slate-700 focus:ring-slate-700 border-gray-300 rounded"
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
                           />
                           <span className="text-sm text-gray-700">
                             Allergier
@@ -881,7 +889,7 @@ export default function CustomerRegisterPage() {
                                 e.target.checked
                               )
                             }
-                            className="mt-1 h-4 w-4 text-slate-700 focus:ring-slate-700 border-gray-300 rounded"
+                            className="mt-1 h-4 w-4 text-[#2c7a4c] focus:ring-[#2c7a4c] border-gray-300 rounded"
                           />
                           <span className="text-sm text-gray-700">
                             Tar medicin
@@ -900,7 +908,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleDogChange("careNotes", e.target.value)
                         }
-                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                         placeholder="T.ex. allergier, mediciner, särskilda behov..."
                         rows={3}
                       />
@@ -923,7 +931,7 @@ export default function CustomerRegisterPage() {
                                 e.target.value
                               )
                             }
-                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                             placeholder="Folksam"
                           />
                         </div>
@@ -938,7 +946,7 @@ export default function CustomerRegisterPage() {
                             onChange={(e) =>
                               handleDogChange("insuranceNumber", e.target.value)
                             }
-                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                             placeholder="123456789"
                           />
                         </div>
@@ -953,7 +961,7 @@ export default function CustomerRegisterPage() {
                             onChange={(e) =>
                               handleDogChange("vaccinationDHP", e.target.value)
                             }
-                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                           />
                         </div>
 
@@ -967,7 +975,7 @@ export default function CustomerRegisterPage() {
                             onChange={(e) =>
                               handleDogChange("vaccinationPi", e.target.value)
                             }
-                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                           />
                         </div>
                       </div>
@@ -983,7 +991,7 @@ export default function CustomerRegisterPage() {
                         onChange={(e) =>
                           handleDogChange("specialNotes", e.target.value)
                         }
-                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+                        className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                         placeholder="Inga mediciner"
                         rows={3}
                       />
@@ -1037,7 +1045,7 @@ export default function CustomerRegisterPage() {
                         setError(null);
                         setCurrentStep(currentStep + 1);
                       }}
-                      className="bg-slate-700 hover:bg-slate-800 px-8"
+                      className="bg-[#2c7a4c] hover:bg-[#245a3e] px-8"
                     >
                       Nästa →
                     </Button>
@@ -1045,7 +1053,7 @@ export default function CustomerRegisterPage() {
                     <Button
                       onClick={handleSubmit}
                       disabled={loading}
-                      className="bg-slate-700 hover:bg-slate-800 px-8 min-w-[160px]"
+                      className="bg-[#2c7a4c] hover:bg-[#245a3e] px-8 min-w-[160px]"
                     >
                       {loading ? (
                         <span className="flex items-center gap-2">

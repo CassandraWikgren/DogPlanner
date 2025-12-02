@@ -9,7 +9,7 @@ export default function GDPRPage() {
       {/* Header - EXAKT som Hunddagis */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-[32px] font-bold text-slate-700 leading-tight">
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
             Integritetspolicy & GDPR
           </h1>
           <p className="mt-1 text-base text-gray-600">

@@ -38,7 +38,7 @@ export default function BookingOptionsModal({
           </button>
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-[#e6f4ea] rounded-lg">
-              <PawPrint className="h-7 w-7 text-slate-700" />
+              <PawPrint className="h-7 w-7 text-[#2c7a4c]" />
             </div>
             <div>
               <DialogTitle className="text-2xl font-bold text-gray-900">
@@ -54,7 +54,7 @@ export default function BookingOptionsModal({
         <div className="space-y-4 pt-2">
           {/* Alternativ 1: Snabboka utan konto - REKOMMENDERAT */}
           <Link href={bookingPath} onClick={onClose} className="block">
-            <div className="relative p-5 border-2 border-slate-700 bg-gradient-to-br from-slate-50 to-white rounded-xl hover:shadow-lg transition-all cursor-pointer group">
+            <div className="relative p-5 border-2 border-[#2c7a4c] bg-gradient-to-br from-[#e6f4ea] to-white rounded-xl hover:shadow-lg transition-all cursor-pointer group">
               <div className="absolute top-3 right-3">
                 <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                   ⚡ SNABBAST

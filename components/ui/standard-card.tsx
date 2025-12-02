@@ -90,7 +90,7 @@ export function StandardCardTitle({
 }: StandardCardTitleProps) {
   return (
     <h3
-      className={cn("text-lg font-semibold text-slate-700", className)}
+      className={cn("text-lg font-semibold text-[#2c7a4c]", className)}
       {...props}
     >
       {children}

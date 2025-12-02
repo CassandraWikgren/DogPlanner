@@ -227,7 +227,7 @@ export default function OrganisationSelector({
                 onClick={() => onSelect(org.id, org.name)}
                 className={`w-full p-4 border rounded-lg text-left transition-all ${
                   selectedOrgId === org.id
-                    ? "border-slate-700 bg-white shadow-sm ring-1 ring-slate-700"
+                    ? "border-[#2c7a4c] bg-white shadow-sm ring-1 ring-[#2c7a4c]"
                     : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
                 }`}
               >
@@ -253,7 +253,7 @@ export default function OrganisationSelector({
                   </div>
                   {selectedOrgId === org.id && (
                     <div className="ml-3 flex-shrink-0">
-                      <div className="w-5 h-5 bg-slate-700 rounded-full flex items-center justify-center">
+                      <div className="w-5 h-5 bg-[#2c7a4c] rounded-full flex items-center justify-center">
                         <svg
                           className="w-3 h-3 text-white"
                           fill="currentColor"
@@ -288,7 +288,7 @@ export default function OrganisationSelector({
       {/* Selected organisation display */}
       {selectedOrg && (
         <div className="mt-4 p-3 bg-[#f0f9f4] border border-[#c6e7d4] rounded-lg">
-          <p className="text-sm text-slate-700">
+          <p className="text-sm text-[#2c7a4c]">
             ✓ Du har valt:{" "}
             <span className="font-medium">{selectedOrg.name}</span>
           </p>

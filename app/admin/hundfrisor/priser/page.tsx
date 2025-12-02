@@ -346,7 +346,7 @@ export default function GroomingPricesPage() {
       <PageContainer>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-700 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c7a4c] mx-auto mb-4"></div>
             <p className="text-gray-600">Laddar priser...</p>
           </div>
         </div>
@@ -376,14 +376,14 @@ export default function GroomingPricesPage() {
         <div className="mb-6">
           <Link
             href="/admin"
-            className="inline-flex items-center text-slate-700 hover:text-slate-800 mb-4"
+            className="inline-flex items-center text-[#2c7a4c] hover:text-[#236139] mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Tillbaka till Admin
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-700 flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-[#2c7a4c] flex items-center gap-3">
                 <Scissors className="h-8 w-8" />
                 Priser - Hundfrisör
               </h1>
@@ -432,9 +432,9 @@ export default function GroomingPricesPage() {
 
         {/* Add New Price Form */}
         {showAddForm && (
-          <Card className="mb-6 border-slate-700">
-            <CardHeader className="bg-slate-50">
-              <CardTitle className="text-lg text-slate-700">
+          <Card className="mb-6 border-[#2c7a4c]">
+            <CardHeader className="bg-[#e6f4ea]">
+              <CardTitle className="text-lg text-[#2c7a4c]">
                 Lägg till nytt pris
               </CardTitle>
             </CardHeader>

@@ -227,7 +227,7 @@ export default function AssistedRegistrationModal({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div>
-            <h2 className="text-xl font-bold text-slate-700">
+            <h2 className="text-xl font-bold text-[#2c7a4c]">
               Ny kund - Assisterad registrering
             </h2>
             <p className="text-xs text-gray-600 mt-0.5">
@@ -357,7 +357,7 @@ export default function AssistedRegistrationModal({
                         full_name: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="Anna Andersson"
                   />
                 </div>
@@ -376,7 +376,7 @@ export default function AssistedRegistrationModal({
                         email: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="anna@example.com"
                   />
                 </div>
@@ -395,7 +395,7 @@ export default function AssistedRegistrationModal({
                         phone: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="070-123 45 67"
                   />
                 </div>
@@ -413,7 +413,7 @@ export default function AssistedRegistrationModal({
                         address: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="Storgatan 1"
                   />
                 </div>
@@ -431,7 +431,7 @@ export default function AssistedRegistrationModal({
                         city: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="Stockholm"
                   />
                 </div>
@@ -449,7 +449,7 @@ export default function AssistedRegistrationModal({
                         postal_code: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="123 45"
                   />
                 </div>
@@ -484,7 +484,7 @@ export default function AssistedRegistrationModal({
                     !emailFormData.email ||
                     !emailFormData.phone
                   }
-                  className="px-4 py-2 text-sm bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-sm bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   {loading ? "Skickar..." : "Skicka bekräftelse-email"}
                 </button>
@@ -519,7 +519,7 @@ export default function AssistedRegistrationModal({
                         full_name: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="Anna Andersson"
                   />
                 </div>
@@ -538,7 +538,7 @@ export default function AssistedRegistrationModal({
                         phone: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="070-123 45 67"
                   />
                 </div>
@@ -556,7 +556,7 @@ export default function AssistedRegistrationModal({
                         email: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="anna@example.com"
                   />
                 </div>
@@ -574,7 +574,7 @@ export default function AssistedRegistrationModal({
                         address: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="Storgatan 1, 123 45 Stockholm"
                   />
                 </div>
@@ -584,7 +584,7 @@ export default function AssistedRegistrationModal({
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Signerad blankett <span className="text-red-500">*</span>
                   </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-slate-700 transition-colors">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#2c7a4c] transition-colors">
                     <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                     <p className="text-sm text-gray-600 mb-2">
                       Ta ett foto eller scanna den signerade blanketten
@@ -598,7 +598,7 @@ export default function AssistedRegistrationModal({
                     />
                     <label
                       htmlFor="form-upload"
-                      className="inline-block px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 cursor-pointer"
+                      className="inline-block px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] cursor-pointer"
                     >
                       Välj fil
                     </label>
@@ -623,7 +623,7 @@ export default function AssistedRegistrationModal({
                       })
                     }
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="T.ex. särskilda önskemål eller omständigheter kring signeringen"
                   />
                 </div>
@@ -650,7 +650,7 @@ export default function AssistedRegistrationModal({
                     !physicalFormData.phone ||
                     !formFile
                   }
-                  className="px-6 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="px-6 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   {loading ? "Sparar..." : "Skapa konto"}
                 </button>

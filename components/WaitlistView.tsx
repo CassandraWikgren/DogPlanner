@@ -123,7 +123,7 @@ export default function WaitlistView({
     return (
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-12">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-slate-700"></div>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c]"></div>
           <p className="mt-2 text-gray-600">Laddar väntelista...</p>
         </div>
       </div>
@@ -139,7 +139,7 @@ export default function WaitlistView({
           placeholder="Sök på namn, e-post eller telefon..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
         />
       </div>
 

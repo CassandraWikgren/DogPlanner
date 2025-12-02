@@ -282,7 +282,7 @@ export default function InterestApplicationModal({
                     type="text"
                     value={parentName}
                     onChange={(e) => setParentName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -293,7 +293,7 @@ export default function InterestApplicationModal({
                     type="tel"
                     value={parentPhone}
                     onChange={(e) => setParentPhone(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   />
                 </div>
                 <div className="col-span-2">
@@ -304,7 +304,7 @@ export default function InterestApplicationModal({
                     type="email"
                     value={parentEmail}
                     onChange={(e) => setParentEmail(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   />
                 </div>
               </div>
@@ -324,7 +324,7 @@ export default function InterestApplicationModal({
                     type="text"
                     value={dogName}
                     onChange={(e) => setDogName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -335,7 +335,7 @@ export default function InterestApplicationModal({
                     type="text"
                     value={dogBreed}
                     onChange={(e) => setDogBreed(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -350,7 +350,7 @@ export default function InterestApplicationModal({
                         e.target.value ? parseInt(e.target.value) : null
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -361,7 +361,7 @@ export default function InterestApplicationModal({
                     type="date"
                     value={dogBirth}
                     onChange={(e) => setDogBirth(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -371,7 +371,7 @@ export default function InterestApplicationModal({
                   <select
                     value={dogSize}
                     onChange={(e) => setDogSize(e.target.value as any)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   >
                     <option value="small">Liten (under 35cm mankhöjd)</option>
                     <option value="medium">Medium (35-54cm mankhöjd)</option>
@@ -395,7 +395,7 @@ export default function InterestApplicationModal({
                     type="date"
                     value={firstContactDate}
                     onChange={(e) => setFirstContactDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -405,7 +405,7 @@ export default function InterestApplicationModal({
                   <select
                     value={priority}
                     onChange={(e) => setPriority(parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   >
                     <option value="-1">Låg</option>
                     <option value="0">Normal</option>
@@ -420,7 +420,7 @@ export default function InterestApplicationModal({
                     value={firstContactNotes}
                     onChange={(e) => setFirstContactNotes(e.target.value)}
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="T.ex. 'Ringde och pratade med ägaren...'"
                   />
                 </div>
@@ -432,7 +432,7 @@ export default function InterestApplicationModal({
                     type="date"
                     value={visitBookedDate}
                     onChange={(e) => setVisitBookedDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -443,7 +443,7 @@ export default function InterestApplicationModal({
                     type="time"
                     value={visitBookedTime}
                     onChange={(e) => setVisitBookedTime(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     placeholder="13:00"
                   />
                 </div>
@@ -454,7 +454,7 @@ export default function InterestApplicationModal({
                   <select
                     value={visitStatus}
                     onChange={(e) => setVisitStatus(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   >
                     <option value="">Ej bokat</option>
                     <option value="booked">Bokat</option>
@@ -473,7 +473,7 @@ export default function InterestApplicationModal({
                         type="date"
                         value={visitCompletedDate}
                         onChange={(e) => setVisitCompletedDate(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                       />
                     </div>
                     <div>
@@ -483,7 +483,7 @@ export default function InterestApplicationModal({
                       <select
                         value={visitResult}
                         onChange={(e) => setVisitResult(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                       >
                         <option value="">Välj resultat</option>
                         <option value="approved">Godkänd ✅</option>
@@ -506,7 +506,7 @@ export default function InterestApplicationModal({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                 placeholder="Övrig information..."
               />
             </div>
@@ -534,7 +534,7 @@ export default function InterestApplicationModal({
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="inline-flex items-center px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                className="inline-flex items-center px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {saving ? "Sparar..." : "Spara ändringar"}
