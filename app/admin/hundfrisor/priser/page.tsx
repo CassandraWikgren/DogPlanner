@@ -398,7 +398,7 @@ export default function GroomingPricesPage() {
                 setError(null);
                 setSuccess(null);
               }}
-              className="bg-slate-700 hover:bg-slate-800 text-white"
+              className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               Lägg till pris
@@ -455,7 +455,7 @@ export default function GroomingPricesPage() {
                       }));
                     }}
                   >
-                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                    <SelectTrigger className="h-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-gray-900">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
@@ -494,7 +494,7 @@ export default function GroomingPricesPage() {
                       }))
                     }
                   >
-                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                    <SelectTrigger className="h-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-gray-900">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
@@ -521,7 +521,7 @@ export default function GroomingPricesPage() {
                       }))
                     }
                   >
-                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                    <SelectTrigger className="h-10 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-gray-900">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
@@ -596,7 +596,7 @@ export default function GroomingPricesPage() {
                 <Button
                   onClick={addNewPrice}
                   disabled={saving}
-                  className="bg-slate-700 hover:bg-slate-800 text-white"
+                  className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   {saving ? "Sparar..." : "Spara"}
@@ -634,7 +634,7 @@ export default function GroomingPricesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-slate-700 text-white">
+                    <tr className="bg-[#2c7a4c] text-white">
                       <th className="px-4 py-3 text-left text-sm font-semibold">
                         Tjänst
                       </th>
@@ -720,7 +720,7 @@ export default function GroomingPricesPage() {
                                     onClick={saveEdit}
                                     disabled={saving}
                                     size="sm"
-                                    className="bg-slate-700 hover:bg-slate-800 text-white"
+                                    className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                                   >
                                     <Save className="h-3 w-3 mr-1" />
                                     Spara

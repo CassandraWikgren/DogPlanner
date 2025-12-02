@@ -406,7 +406,7 @@ export default function FakturaPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Kompakt header med inline stats */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-3">
@@ -453,7 +453,7 @@ export default function FakturaPage() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-6">
+      <main className="max-w-6xl mx-auto px-8 py-6">
         {/* Actions */}
         <div className="flex justify-between items-center mb-6">
           <Link
