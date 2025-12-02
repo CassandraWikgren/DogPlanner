@@ -781,7 +781,7 @@ export default function GroomingPricesPage() {
                                   onClick={() => startEdit(price)}
                                   variant="ghost"
                                   size="sm"
-                                  className="h-8 w-8 p-0 hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                  className="h-8 w-8 p-0 bg-transparent hover:bg-gray-100 text-gray-600 hover:text-[#2c7a4c]"
                                 >
                                   <Edit className="h-4 w-4" />
                                 </Button>
@@ -789,7 +789,7 @@ export default function GroomingPricesPage() {
                                   onClick={() => deletePrice(price.id)}
                                   variant="ghost"
                                   size="sm"
-                                  className="h-8 w-8 p-0 hover:bg-red-50 text-gray-400 hover:text-red-600"
+                                  className="h-8 w-8 p-0 bg-transparent hover:bg-red-50 text-gray-600 hover:text-red-600"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
