@@ -292,7 +292,7 @@ export default function FrisorDashboard() {
             </div>
             <div className="flex items-center gap-3">
               <Link href="/frisor/kalender">
-                <button className="h-10 px-4 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center gap-2 font-semibold text-[15px] shadow-sm">
+                <button className="h-10 px-4 bg-slate-700 hover:bg-slate-800 text-white rounded-md transition flex items-center gap-2 font-semibold text-[15px] shadow-sm">
                   <Calendar className="h-5 w-5" />
                   <span className="hidden sm:inline">Kalender</span>
                 </button>

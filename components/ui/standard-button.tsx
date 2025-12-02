@@ -12,8 +12,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-interface StandardButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface StandardButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
   size?: "sm" | "md" | "lg";
   children: React.ReactNode;
@@ -31,7 +30,7 @@ export function StandardButton({
     "inline-flex items-center justify-center font-semibold transition-colors rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variantStyles = {
-    primary: "bg-[#2c7a4c] text-white hover:bg-[#236139] shadow-sm",
+    primary: "bg-slate-700 text-white hover:bg-slate-800 shadow-sm",
     secondary: "bg-gray-500 text-white hover:bg-gray-600 shadow-sm",
     outline:
       "bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA]",

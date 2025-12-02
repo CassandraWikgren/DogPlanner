@@ -365,7 +365,7 @@ export default function CustomerDashboard() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Link href="/kundportal/ny-bokning">
-                    <Button className="w-full h-20 bg-[#2c7a4c] hover:bg-[#245a3e] flex flex-col">
+                    <Button className="w-full h-20 bg-slate-700 hover:bg-slate-800 flex flex-col">
                       <Plus className="h-6 w-6 mb-2" />
                       Ny bokning
                     </Button>
@@ -516,7 +516,7 @@ export default function CustomerDashboard() {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Mina hundar</h2>
-              <Button className="bg-[#2c7a4c] hover:bg-[#245a3e]">
+              <Button className="bg-slate-700 hover:bg-slate-800">
                 <Plus className="h-4 w-4 mr-2" />
                 Lägg till hund
               </Button>
@@ -580,7 +580,7 @@ export default function CustomerDashboard() {
                   <p className="text-gray-500 mb-4">
                     Lägg till din första hund för att komma igång med bokningar
                   </p>
-                  <Button className="bg-[#2c7a4c] hover:bg-[#245a3e]">
+                  <Button className="bg-slate-700 hover:bg-slate-800">
                     <Plus className="h-4 w-4 mr-2" />
                     Lägg till hund
                   </Button>
@@ -595,7 +595,7 @@ export default function CustomerDashboard() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">Mina bokningar</h2>
               <Link href="/kundportal/boka">
-                <Button className="bg-[#2c7a4c] hover:bg-[#245a3e]">
+                <Button className="bg-slate-700 hover:bg-slate-800">
                   <Plus className="h-4 w-4 mr-2" />
                   Ny bokning
                 </Button>
@@ -679,7 +679,7 @@ export default function CustomerDashboard() {
                     Skapa din första bokning för att se den här
                   </p>
                   <Link href="/kundportal/boka">
-                    <Button className="bg-[#2c7a4c] hover:bg-[#245a3e]">
+                    <Button className="bg-slate-700 hover:bg-slate-800">
                       <Plus className="h-4 w-4 mr-2" />
                       Ny bokning
                     </Button>

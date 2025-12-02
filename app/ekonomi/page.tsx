@@ -697,7 +697,7 @@ export default function FakturaPage() {
                   : "Skapa din första faktura för att komma igång med faktureringen."}
               </p>
               <Link href="/faktura/new">
-                <Button className="bg-[#2c7a4c] hover:bg-[#236139] text-white">
+                <Button className="bg-slate-700 hover:bg-slate-800 text-white">
                   <Plus className="h-4 w-4 mr-2" />
                   Skapa första fakturan
                 </Button>

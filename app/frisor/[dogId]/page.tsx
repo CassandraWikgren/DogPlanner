@@ -165,7 +165,7 @@ export default function DogJournalPage() {
             {error || "Hund hittades inte"}
           </p>
           <Link href="/frisor">
-            <button className="h-10 px-4 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition font-semibold text-[15px]">
+            <button className="h-10 px-4 bg-slate-700 hover:bg-slate-800 text-white rounded-md transition font-semibold text-[15px]">
               Tillbaka till översikt
             </button>
           </Link>
