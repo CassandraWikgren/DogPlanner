@@ -97,19 +97,6 @@ export default function FakturaPage() {
             customer_number,
             phone,
             email
-          ),
-          invoice_items(
-            id,
-            description,
-            qty,
-            unit_price,
-            amount,
-            booking_id,
-            booking:bookings(
-              id,
-              dog_id,
-              dog:dogs(name, breed)
-            )
           )
         `,
         { count: "exact" }
