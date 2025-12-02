@@ -40,16 +40,25 @@ interface Invoice {
     phone?: string | null;
     email?: string | null;
   };
-  invoice_lines?: InvoiceLine[];
+  invoice_items?: InvoiceItem[];
   created_at: string | null;
 }
 
-interface InvoiceLine {
+interface InvoiceItem {
   id: string;
   description: string;
-  quantity: number;
+  qty: number;
   unit_price: number;
-  total_price: number;
+  amount: number;
+  booking_id?: string | null;
+  booking?: {
+    id: string;
+    dog_id?: string | null;
+    dog?: {
+      name: string;
+      breed?: string | null;
+    };
+  };
 }
 
 export default function FakturaPage() {
@@ -78,7 +87,7 @@ export default function FakturaPage() {
     try {
       setLoading(true);
 
-      // Bygg query med filter
+      // Bygg query med filter och inkludera invoice_items med booking/dog info
       let query = supabase.from("invoices").select(
         `
           *,
@@ -87,6 +96,19 @@ export default function FakturaPage() {
             customer_number,
             phone,
             email
+          ),
+          invoice_items(
+            id,
+            description,
+            qty,
+            unit_price,
+            amount,
+            booking_id,
+            booking:bookings(
+              id,
+              dog_id,
+              dog:dogs(name, breed)
+            )
           )
         `,
         { count: "exact" }
@@ -125,10 +147,14 @@ export default function FakturaPage() {
 
       if (error) throw error;
 
-      // Cast status to correct type
-      const typedData = (data || []).map((invoice) => ({
+      // Cast status to correct type and process nested data
+      const typedData = (data || []).map((invoice: any) => ({
         ...invoice,
         status: invoice.status as "draft" | "sent" | "paid" | "overdue",
+        invoice_items: (invoice.invoice_items || []).map((item: any) => ({
+          ...item,
+          booking: Array.isArray(item.booking) ? item.booking[0] : item.booking,
+        })),
       }));
 
       setInvoices(typedData);
@@ -311,7 +337,7 @@ export default function FakturaPage() {
     return matchesSearch && matchesStatus && matchesDate;
   });
 
-  // Ladda ner PDF
+  // Ladda ner/Visa PDF
   const downloadPdf = async (invoiceId: string, invoiceNumber: string) => {
     try {
       setDownloadingPdf(invoiceId);
@@ -323,6 +349,11 @@ export default function FakturaPage() {
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
+
+      // Öppna PDF i ny flik först (för att visa)
+      window.open(url, "_blank");
+
+      // Skapa också nedladdningslänk
       const a = document.createElement("a");
       a.href = url;
       a.download = `Faktura-${invoiceNumber}.pdf`;
@@ -332,7 +363,9 @@ export default function FakturaPage() {
       document.body.removeChild(a);
     } catch (error) {
       console.error("Error downloading PDF:", error);
-      alert("Kunde inte ladda ner PDF. Försök igen.");
+      alert(
+        "Kunde inte generera PDF. Kontrollera att fakturan har kompletta uppgifter."
+      );
     } finally {
       setDownloadingPdf(null);
     }
@@ -505,11 +538,28 @@ export default function FakturaPage() {
                       <FileText className="h-5 w-5 text-[#2c7a4c]" />
                       Faktura #{invoice.invoice_number}
                     </CardTitle>
-                    <p className="text-gray-600 text-sm">
-                      {invoice.owner?.full_name}
+                    <p className="text-gray-900 font-medium text-sm">
+                      {invoice.owner?.full_name || "Ingen kund angiven"}
                       {invoice.owner?.customer_number &&
                         ` (Kund #${invoice.owner.customer_number})`}
                     </p>
+                    {/* Visa hundar från invoice_items */}
+                    {invoice.invoice_items &&
+                      invoice.invoice_items.some(
+                        (item) => item.booking?.dog
+                      ) && (
+                        <p className="text-sm text-gray-600 mt-1">
+                          🐕{" "}
+                          {invoice.invoice_items
+                            .filter((item) => item.booking?.dog)
+                            .map((item) => item.booking!.dog!.name)
+                            .filter(
+                              (name, index, self) =>
+                                self.indexOf(name) === index
+                            ) // Remove duplicates
+                            .join(", ")}
+                        </p>
+                      )}
                   </div>
                   <Badge className={getStatusColor(invoice.status)}>
                     <div className="flex items-center gap-1">
@@ -560,21 +610,28 @@ export default function FakturaPage() {
                 </div>
 
                 {/* Fakturaradder */}
-                {invoice.invoice_lines && invoice.invoice_lines.length > 0 && (
+                {invoice.invoice_items && invoice.invoice_items.length > 0 && (
                   <div>
                     <h4 className="font-medium text-gray-900 mb-2">
                       Fakturaradder
                     </h4>
                     <div className="bg-gray-50 rounded-lg p-3 space-y-2">
-                      {invoice.invoice_lines.map((line) => (
+                      {invoice.invoice_items.map((item) => (
                         <div
-                          key={line.id}
+                          key={item.id}
                           className="flex justify-between items-center text-sm"
                         >
-                          <span>{line.description}</span>
-                          <span>
-                            {line.quantity} × {line.unit_price} kr ={" "}
-                            {line.total_price.toLocaleString()} kr
+                          <span className="flex-1">
+                            {item.description}
+                            {item.booking?.dog && (
+                              <span className="text-gray-500 ml-2">
+                                ({item.booking.dog.name})
+                              </span>
+                            )}
+                          </span>
+                          <span className="text-right whitespace-nowrap">
+                            {item.qty} × {item.unit_price} kr ={" "}
+                            {item.amount?.toLocaleString()} kr
                           </span>
                         </div>
                       ))}
@@ -623,14 +680,6 @@ export default function FakturaPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-gray-300 hover:bg-gray-50"
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    Visa
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
                     onClick={() =>
                       downloadPdf(
                         invoice.id,
@@ -640,24 +689,33 @@ export default function FakturaPage() {
                     disabled={downloadingPdf === invoice.id}
                     className="border-gray-300 hover:bg-gray-50"
                   >
-                    <Download className="h-4 w-4 mr-2" />
-                    {downloadingPdf === invoice.id
-                      ? "Genererar..."
-                      : "Ladda ner PDF"}
+                    {downloadingPdf === invoice.id ? (
+                      <>
+                        <Download className="h-4 w-4 mr-2 animate-spin" />
+                        Genererar PDF...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="h-4 w-4 mr-2" />
+                        Visa/Ladda ner PDF
+                      </>
+                    )}
                   </Button>
+
                   {invoice.status === "draft" && (
                     <Button
                       onClick={() => sendInvoiceEmail(invoice.id)}
                       disabled={sendingInvoice === invoice.id}
-                      className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+                      className="bg-slate-700 hover:bg-slate-800 text-white"
                       size="sm"
                     >
                       <Send className="h-4 w-4 mr-2" />
                       {sendingInvoice === invoice.id
-                        ? "Skickar..."
-                        : "Skicka faktura"}
+                        ? "Skickar email..."
+                        : "Skicka via email"}
                     </Button>
                   )}
+
                   {invoice.status === "sent" && (
                     <Button
                       onClick={() => updateInvoiceStatus(invoice.id, "paid")}
@@ -666,15 +724,6 @@ export default function FakturaPage() {
                     >
                       <CheckCircle className="h-4 w-4 mr-2" />
                       Markera som betald
-                    </Button>
-                  )}
-                  {invoice.status === "draft" && (
-                    <Button
-                      onClick={() => updateInvoiceStatus(invoice.id, "sent")}
-                      className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
-                      size="sm"
-                    >
-                      Skicka faktura
                     </Button>
                   )}
                 </div>
