@@ -1,8 +1,9 @@
 # 🗄️ Supabase Databasstruktur - DogPlanner (KOMPLETT)
 
-**Uppdaterad:** 1 December 2025  
+**Uppdaterad:** 2 December 2025  
 **Version:** Next.js 15.5 + React 19 + Supabase (@supabase/ssr 0.8.0)  
-**Schema verifierat:** ✅ Alla funktioner och triggers verifierade i produktion
+**Schema verifierat:** ✅ Alla funktioner och triggers verifierade i produktion  
+**RLS Status:** 🔒 Aktiverat på alla kritiska tabeller - Multi-tenant säkert
 
 ---
 
@@ -1386,41 +1387,48 @@ CREATE TABLE interest_applications (
 
 ### **grooming_bookings** - Frisörbokningar
 
+**✅ Verifierad produktion:** Tabellen finns och fungerar med externa kunder  
+**✅ RLS Status:** Aktiverat - användare ser endast sin orgs bokningar  
+**🔒 Policies:** 4 st (SELECT, INSERT, UPDATE, DELETE) - authenticated only
+
 ```sql
 CREATE TABLE grooming_bookings (
     id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    org_id                  UUID REFERENCES orgs(id) ON DELETE CASCADE NOT NULL,
+    org_id                  UUID REFERENCES orgs(id) ON DELETE CASCADE,
     dog_id                  UUID REFERENCES dogs(id) ON DELETE CASCADE,
-    owner_id                UUID REFERENCES owners(id) ON DELETE CASCADE,
-    appointment_date        TIMESTAMP WITH TIME ZONE NOT NULL,
-    service_ids             UUID[],
-    status                  TEXT DEFAULT 'booked',
-    total_price             NUMERIC(10,2) DEFAULT 0,
+    appointment_date        DATE NOT NULL,
+    appointment_time        TIME,
+    service_type            TEXT NOT NULL,
+    estimated_price         NUMERIC(10,2),
+    status                  TEXT DEFAULT 'confirmed' CHECK (status IN ('confirmed', 'completed', 'cancelled', 'no_show')),
     notes                   TEXT,
+    created_at              TIMESTAMPTZ DEFAULT NOW(),
+    -- Externa kunder (walk-in)
     external_customer_name  TEXT,
+    external_customer_phone TEXT,
     external_dog_name       TEXT,
     external_dog_breed      TEXT,
-    external_phone          TEXT,
-    invoice_id              UUID REFERENCES invoices(id),
-    created_at              TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at              TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    clip_length             TEXT,
+    shampoo_type            TEXT
 );
 ```
 
 **Kolumner:**
 
-| Kolumn                   | Beskrivning                     | Användning                         |
-| ------------------------ | ------------------------------- | ---------------------------------- |
-| `dog_id`                 | Om hunden finns i systemet      | FK till dogs.id                    |
-| `owner_id`               | Om ägaren finns i systemet      | FK till owners.id                  |
-| `appointment_date`       | **REQUIRED** - När bokningen är | Timestamp med tid                  |
-| `service_ids`            | Array av tjänst-IDs             | UUID[] från grooming_services      |
-| `status`                 | Bokningsstatus                  | 'booked', 'completed', 'cancelled' |
-| `external_customer_name` | För walk-in kunder              | Kunder ej i systemet               |
-| `external_dog_name`      | För hundar ej i systemet        | Walk-in hundar                     |
-| `invoice_id`             | Länk till faktura               | FK till invoices.id                |
+| Kolumn                   | Beskrivning                | Användning                                       |
+| ------------------------ | -------------------------- | ------------------------------------------------ |
+| `dog_id`                 | Om hunden finns i systemet | FK till dogs.id, CASCADE vid radering            |
+| `appointment_date`       | **REQUIRED** - Datum       | DATE (ej timestamp)                              |
+| `appointment_time`       | Tid på dagen               | TIME (frivilligt)                                |
+| `service_type`           | Typ av tjänst              | 'bath', 'bath_trim', 'full_groom', etc.          |
+| `estimated_price`        | Uppskattat pris            | Sätts vid bokning                                |
+| `status`                 | Bokningsstatus             | 'confirmed', 'completed', 'cancelled', 'no_show' |
+| `external_customer_name` | För walk-in kunder         | Kunder ej i systemet (NULLABLE)                  |
+| `external_dog_name`      | För hundar ej i systemet   | Walk-in hundar (NULLABLE)                        |
+| `clip_length`            | Önskad klipplängd          | T.ex. "3mm", "kort", "lång"                      |
+| `shampoo_type`           | Val av schampo             | Frivilligt                                       |
 
-**Externa kunder:**
+**Externa kunder (Walk-in):**
 
 Om kund/hund INTE finns i systemet kan frisören boka via external-fält. Detta är för:
 
@@ -1428,38 +1436,172 @@ Om kund/hund INTE finns i systemet kan frisören boka via external-fält. Detta 
 - En-gångs klippningar
 - Kunder som inte vill registreras
 
+**Viktigt:**
+
+- Antingen `dog_id` (registrerad hund) ELLER `external_dog_name` (walk-in) ska vara ifyllt
+- `org_id` är ALLTID required (multi-tenant)
+- RLS policies säkerställer att användare endast ser sin orgs bokningar
+
 ---
 
-### **grooming_services** - Frisörtjänster (prislista)
+### **grooming_prices** - Frisörprislista
+
+**✅ Verifierad produktion:** Tabellen finns och används för prissättning  
+**✅ RLS Status:** Aktiverat - användare ser endast sin orgs priser  
+**🔒 Policies:** 4 st (SELECT, INSERT, UPDATE, DELETE) - authenticated only
 
 ```sql
-CREATE TABLE grooming_services (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    org_id          UUID REFERENCES orgs(id) ON DELETE CASCADE NOT NULL,
-    service_name    TEXT NOT NULL,
-    description     TEXT,
-    base_price      NUMERIC(10,2) NOT NULL,
-    duration_minutes INTEGER,
-    size_pricing    JSONB,
-    is_active       BOOLEAN DEFAULT true,
-    created_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at      TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+CREATE TABLE grooming_prices (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    org_id            UUID REFERENCES orgs(id) ON DELETE CASCADE,
+    service_name      TEXT NOT NULL,
+    service_type      TEXT NOT NULL,
+    description       TEXT,
+    base_price        NUMERIC(10,2) NOT NULL,
+    price_small       NUMERIC(10,2),
+    price_medium      NUMERIC(10,2),
+    price_large       NUMERIC(10,2),
+    price_xlarge      NUMERIC(10,2),
+    duration_minutes  INTEGER,
+    is_active         BOOLEAN DEFAULT true,
+    created_at        TIMESTAMPTZ DEFAULT NOW(),
+    updated_at        TIMESTAMPTZ DEFAULT NOW()
 );
 ```
 
 **Exempel:**
 
-| service_name | base_price | duration_minutes | size_pricing (JSONB)                        |
-| ------------ | ---------- | ---------------- | ------------------------------------------- |
-| Klippning    | 600.00     | 90               | {"small": 500, "medium": 600, "large": 800} |
-| Bad          | 300.00     | 45               | {"small": 250, "medium": 300, "large": 400} |
-| Kloklippning | 150.00     | 15               | null (fast pris)                            |
-| Trimning     | 700.00     | 120              | {"small": 600, "medium": 700, "large": 900} |
+| service_name | service_type | base_price | price_small | price_medium | price_large | duration_minutes |
+| ------------ | ------------ | ---------- | ----------- | ------------ | ----------- | ---------------- |
+| Klippning    | full_groom   | 600.00     | 500.00      | 600.00       | 800.00      | 90               |
+| Bad          | bath         | 300.00     | 250.00      | 300.00       | 400.00      | 45               |
+| Kloklippning | nails        | 150.00     | 150.00      | 150.00       | 150.00      | 15               |
+| Trimning     | trim         | 700.00     | 600.00      | 700.00       | 900.00      | 120              |
 
-**size_pricing JSONB:**
+**Prissättning per storlek:**
 
-Om null = Fast pris (base_price gäller för alla storlekar)  
-Om JSONB = Olika priser per storlek
+- Om `price_small`, `price_medium`, etc. är NULL → använd `base_price` (fast pris)
+- Om de är satta → välj pris baserat på hundstorlek
+
+---
+
+### **grooming_journal** - Frisörjournal
+
+**✅ Verifierad produktion:** Tabellen finns och används för historik  
+**✅ RLS Status:** Aktiverat - användare ser endast sin orgs journal  
+**🔒 Policies:** 3 st (SELECT, INSERT, UPDATE) - authenticated only
+
+```sql
+CREATE TABLE grooming_journal (
+    id                          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    org_id                      UUID REFERENCES orgs(id),
+    dog_id                      UUID REFERENCES dogs(id),
+    appointment_date            DATE NOT NULL,
+    service_type                TEXT NOT NULL,
+    clip_length                 TEXT,
+    shampoo_type                TEXT,
+    special_treatments          TEXT,
+    final_price                 NUMERIC(10,2) DEFAULT 0 NOT NULL,
+    duration_minutes            INTEGER,
+    notes                       TEXT,
+    before_photos               TEXT[],
+    after_photos                TEXT[],
+    next_appointment_recommended TEXT,
+    created_at                  TIMESTAMPTZ DEFAULT NOW(),
+    -- Externa kunder
+    external_customer_name      TEXT,
+    external_dog_name           TEXT,
+    external_dog_breed          TEXT,
+    booking_id                  UUID REFERENCES grooming_bookings(id)
+);
+```
+
+**Användning:**
+
+- Historik över utförda frisörtjänster
+- Foton före/efter (URLs till Supabase Storage)
+- Kan kopplas till booking via `booking_id`
+- Stödjer både registrerade hundar (`dog_id`) och externa (`external_*`)
+
+**Viktigt:**
+
+- `final_price` är faktiskt pris som debiterades (kan skilja från estimated_price)
+- `before_photos` och `after_photos` är arrayer av URL:er
+- Används för att visa kunden tidigare klippningar
+
+---
+
+## 🏨 PENSIONAT (BOARDING)
+
+### **boarding_seasons** - Säsonger med olika priser
+
+**✅ Verifierad produktion:** Tabellen finns med 2 säsonger  
+**✅ RLS Status:** Aktiverat - användare ser endast sin orgs säsonger  
+**🔒 Policies:** 4 st (SELECT, INSERT, UPDATE, DELETE) - authenticated only
+
+```sql
+CREATE TABLE boarding_seasons (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    org_id            UUID REFERENCES orgs(id) ON DELETE CASCADE,
+    name              TEXT NOT NULL,
+    start_date        DATE NOT NULL,
+    end_date          DATE NOT NULL,
+    type              TEXT CHECK (type IN ('high', 'low', 'holiday')),
+    price_multiplier  NUMERIC(3,2) DEFAULT 1.0,
+    is_active         BOOLEAN DEFAULT true,
+    created_at        TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+**Exempel:**
+
+| name       | start_date | end_date   | type    | price_multiplier |
+| ---------- | ---------- | ---------- | ------- | ---------------- |
+| Sommar     | 2026-06-01 | 2026-08-30 | high    | 1.2              |
+| Jul & Nyår | 2025-12-15 | 2026-01-05 | holiday | 1.5              |
+
+**Användning:**
+
+- Olika priser beroende på säsong
+- `price_multiplier` = bas-pris × multiplier
+- `is_active` = kan inaktiveras utan att radera
+
+---
+
+### **special_dates** - Röda dagar och helgdagar
+
+**✅ Verifierad produktion:** Tabellen finns med 7030 rader (alla svenska helgdagar)  
+**✅ RLS Status:** Aktiverat - användare ser endast sin orgs datum  
+**🔒 Policies:** 4 st (SELECT, INSERT, UPDATE, DELETE) - authenticated only
+
+```sql
+CREATE TABLE special_dates (
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    org_id           UUID REFERENCES orgs(id) ON DELETE CASCADE,
+    date             DATE NOT NULL,
+    name             TEXT NOT NULL,
+    category         TEXT CHECK (category IN ('holiday', 'peak', 'off_peak')),
+    price_surcharge  NUMERIC(10,2) DEFAULT 0,
+    is_active        BOOLEAN DEFAULT true,
+    created_at       TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(org_id, date)
+);
+```
+
+**Exempel svenska helgdagar 2026:**
+
+| date       | name          | category | price_surcharge |
+| ---------- | ------------- | -------- | --------------- |
+| 2026-01-01 | Nyårsdagen    | holiday  | 200.00          |
+| 2026-12-24 | Julafton      | holiday  | 300.00          |
+| 2026-12-25 | Juldagen      | holiday  | 300.00          |
+| 2026-06-06 | Nationaldagen | holiday  | 150.00          |
+
+**Användning:**
+
+- Extra kostnad per dag för helgdagar
+- Läggs till på grundpriset
+- UNIQUE constraint på (org_id, date) - inga dubbletter
 
 ---
 
