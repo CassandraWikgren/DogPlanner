@@ -15,7 +15,7 @@ DogPlanner ska kännas som ett **nordiskt kontorssystem för hundar** - tänk Fo
 - ✅ **Informationstätt men luftigt** - Mycket data, men det ska andas
 - ✅ **Tydlig hierarki** - Man ser direkt vad som är viktigast
 - ✅ **Minimalistiskt** - Ingen onödig dekoration
-- ✅ **Grön som accent** - Inte dominant, används strategiskt
+- ✅ **Grön som accent** - Används för navigation, rubriker och viktiga element (INTE knappar)
 
 ### Design-principer:
 
@@ -25,6 +25,12 @@ DogPlanner ska kännas som ett **nordiskt kontorssystem för hundar** - tänk Fo
 4. **Tillförlitlighet**: Ser genomtänkt och stabil ut
 5. **Smart kreativitet**: Innovativt men inte experimentellt
 
+### Färgstrategi (uppdaterad 2 dec 2025):
+
+- **Grön (#2C7A4C)**: Navbar, rubriker, outline buttons, icons - skapar igenkänning och varumärkeskänsla
+- **Slate (#475569)**: Primära knappars bakgrund - professionellt och tydligt för call-to-action
+- **Vitt & grått**: Rena ytor och bakgrunder för optimal läsbarhet
+
 ---
 
 ## 🎨 FÄRGPALETT
@@ -32,12 +38,12 @@ DogPlanner ska kännas som ett **nordiskt kontorssystem för hundar** - tänk Fo
 ### Primärfärger:
 
 ```css
---primary-green: #2c7a4c; /* Huvudgrön - knappar, rubriker, accenter */
---primary-hover: #236139; /* Hover-state för grön */
+--primary-green: #2c7a4c; /* Huvudgrön - navbar, rubriker, accenter, outline buttons */
+--primary-hover: #236139; /* Hover-state för gröna element */
 --light-green: #e6f4ea; /* Subtil bakgrund, hover */
 ```
 
-### Neutraler:
+### Neutraler & Knappar (UPPDATERAD 2 dec 2025):
 
 ```css
 --white: #ffffff; /* Kort, tabeller, modaler */
@@ -49,6 +55,8 @@ DogPlanner ska kännas som ett **nordiskt kontorssystem för hundar** - tänk Fo
 --gray-600: #4b5563; /* Sekundär text */
 --text-primary: #333333; /* Huvudtext */
 --text-secondary: #6b7280; /* Mindre viktig text */
+--button-primary: #475569; /* slate-700 - Primära knappars bakgrund */
+--button-primary-hover: #334155; /* slate-800 - Primära knappars hover */
 ```
 
 ### Status-färger:
@@ -62,9 +70,24 @@ DogPlanner ska kännas som ett **nordiskt kontorssystem för hundar** - tänk Fo
 
 ### Användning:
 
-- **Primärgrön (#2C7A4C)**: Endast på knappar, rubriker (H1/H2/H3), viktig accent
+- **Primärgrön (#2C7A4C)**: Navbar bakgrund, rubriker (H1/H2/H3), outline/ghost buttons text och borders, viktig accent, icons
+- **Slate (#475569)**: ENDAST primära knappars bakgrundsfärg
 - **Bakgrunder**: Sidor #F5F5F5, kort #FFFFFF
 - **Text**: Svart (#333333) huvudtext, grå (#6B7280) sekundär
+
+**VIKTIGT: Grön används fortfarande för:**
+
+- ✅ Navbar bakgrund
+- ✅ Alla rubriker (H1/H2/H3)
+- ✅ Outline buttons (text och border)
+- ✅ Ghost buttons (text)
+- ✅ Icons och accenter
+- ✅ Input focus rings
+- ✅ Hover borders på kort
+
+**Slate används ENDAST för:**
+
+- 🔘 Primära knappars bakgrundsfärg (bg-slate-700, hover:bg-slate-800)
 
 ---
 
@@ -146,14 +169,14 @@ Text shadow: 0 2px 4px rgba(0,0,0,0.25)
 ### Knappar:
 
 ```css
-/* Primary (grön) */
+/* Primary (slate - UPPDATERAD 2 dec 2025) */
 height: 40px (h-10)
 padding: 0 16px (px-4)
 border-radius: 6px (rounded-md)
 font-size: 15px, font-weight: 600
 color: #FFFFFF
-background: #2C7A4C
-hover:background: #236139
+background: #475569 (slate-700) /* ÄNDRAT från #2C7A4C */
+hover:background: #334155 (slate-800) /* ÄNDRAT från #236139 */
 box-shadow: 0 1px 2px rgba(0,0,0,0.05)
 focus: ring-2 ring-[#2c7a4c] ring-offset-2
 
@@ -165,15 +188,22 @@ hover:background: #374151
 /* Outline (vit med grön kant) */
 Same as primary but:
 background: #FFFFFF
-color: #2C7A4C
-border: 1px solid #2C7A4C
+color: #2C7A4C /* Behåller GRÖN text */
+border: 1px solid #2C7A4C /* Behåller GRÖN border */
 hover:background: #E6F4EA
 
 /* Ghost (transparent) */
 background: transparent
-color: #2C7A4C
+color: #2C7A4C /* Behåller GRÖN text */
 hover:background: #E6F4EA
 ```
+
+**⚠️ VIKTIGT: Endast primära knappar har ändrats till slate!**
+
+- Outline och Ghost buttons behåller GRÖN text och borders
+- Alla rubriker är fortfarande gröna
+- Navbar är fortfarande grön
+- Icons och accenter är fortfarande gröna
 
 ### Kort (Cards):
 
@@ -624,23 +654,27 @@ För att implementera denna design på alla sidor:
 
 För att undvika förvirring, här är exakt när varje färg används:
 
-| Element               | Färg                                                 | Användning                        |
-| --------------------- | ---------------------------------------------------- | --------------------------------- |
-| **Rubriker H1/H2/H3** | `#2C7A4C`                                            | Alla rubriker                     |
-| **Primär knapp**      | Background `#2C7A4C`, Text `#FFFFFF`                 | Huvudåtgärder                     |
-| **Sekundär knapp**    | Background `#4B5563`, Text `#FFFFFF`                 | Mindre viktiga åtgärder           |
-| **Outline knapp**     | Border `#2C7A4C`, Text `#2C7A4C`, Hover bg `#E6F4EA` | Återställ, Avbryt                 |
-| **Sidbackgrund**      | `#F5F5F5`                                            | Alla sidor                        |
-| **Kort background**   | `#FFFFFF`                                            | Alla kort, tabeller               |
-| **Kort border**       | `#E5E7EB`                                            | Standard border                   |
-| **Kort hover border** | `#2C7A4C`                                            | Klickbara kort                    |
-| **Input border**      | `#D1D5DB`                                            | Normal state                      |
-| **Input focus ring**  | `#2C7A4C`                                            | Focus state                       |
-| **Tabell header**     | Background `#2C7A4C`, Text `#FFFFFF`                 | Alla tabeller                     |
-| **Tabell rader**      | Alternating `#FFFFFF` / `#F9FAFB`                    | Datavisning                       |
-| **Tabell hover**      | `#F3F4F6`                                            | Hover på rad                      |
-| **Text primary**      | `#333333`                                            | Huvudtext                         |
-| **Text secondary**    | `#6B7280`                                            | Beskrivningar, mindre viktig text |
+| Element                | Färg                                                        | Användning                        |
+| ---------------------- | ----------------------------------------------------------- | --------------------------------- |
+| **Rubriker H1/H2/H3**  | `#2C7A4C` (GRÖN)                                            | Alla rubriker                     |
+| **Primär knapp**       | Background `#475569` (slate-700), Text `#FFFFFF`            | Huvudåtgärder (UPPDATERAD 2 dec)  |
+| **Primär knapp hover** | Background `#334155` (slate-800)                            | Hover-state primärknappar         |
+| **Sekundär knapp**     | Background `#4B5563`, Text `#FFFFFF`                        | Mindre viktiga åtgärder           |
+| **Outline knapp**      | Border `#2C7A4C` (GRÖN), Text `#2C7A4C`, Hover bg `#E6F4EA` | Återställ, Avbryt                 |
+| **Ghost knapp**        | Text `#2C7A4C` (GRÖN), Hover bg `#E6F4EA`                   | Subtila åtgärder                  |
+| **Navbar background**  | `#2C7A4C` (GRÖN)                                            | Huvudnavigation                   |
+| **Sidbackgrund**       | `#F5F5F5`                                                   | Alla sidor                        |
+| **Kort background**    | `#FFFFFF`                                                   | Alla kort, tabeller               |
+| **Kort border**        | `#E5E7EB`                                                   | Standard border                   |
+| **Kort hover border**  | `#2C7A4C` (GRÖN)                                            | Klickbara kort                    |
+| **Input border**       | `#D1D5DB`                                                   | Normal state                      |
+| **Input focus ring**   | `#2C7A4C` (GRÖN)                                            | Focus state                       |
+| **Tabell header**      | Background `#2C7A4C` (GRÖN), Text `#FFFFFF`                 | Alla tabeller                     |
+| **Tabell rader**       | Alternating `#FFFFFF` / `#F9FAFB`                           | Datavisning                       |
+| **Tabell hover**       | `#F3F4F6`                                                   | Hover på rad                      |
+| **Text primary**       | `#333333`                                                   | Huvudtext                         |
+| **Text secondary**     | `#6B7280`                                                   | Beskrivningar, mindre viktig text |
+| **Icons & accenter**   | `#2C7A4C` (GRÖN)                                            | Icons, viktiga markeringar        |
 
 ---
 
