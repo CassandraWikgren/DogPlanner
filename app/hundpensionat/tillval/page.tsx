@@ -203,7 +203,7 @@ export default function TillvalstjansterPage() {
 
       {/* Header - Hunddagis template */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
@@ -226,7 +226,7 @@ export default function TillvalstjansterPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <main className="max-w-6xl mx-auto px-8 py-6">
         <button
           onClick={() => router.push("/hundpensionat")}
           className="mb-6 flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-semibold text-sm"

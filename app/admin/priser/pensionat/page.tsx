@@ -559,9 +559,9 @@ export default function PensionatPriserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - Symmetrisk layout */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-8 py-4">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
             {/* Vänster: Tillbaka-länk */}
             <Link
@@ -576,10 +576,10 @@ export default function PensionatPriserPage() {
             <div className="flex items-center gap-3 absolute left-1/2 transform -translate-x-1/2">
               <div className="text-2xl">🏨</div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
+                <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                   Priser - Hundpensionat
                 </h1>
-                <p className="text-xs text-gray-600">
+                <p className="text-sm text-gray-600">
                   3-lagers prissystem: Grundpriser → Specialdatum → Säsonger
                 </p>
               </div>
@@ -601,7 +601,7 @@ export default function PensionatPriserPage() {
 
       {/* Tabs - Clean och tydlig */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-5xl mx-auto px-8">
+        <div className="max-w-6xl mx-auto px-8">
           <div className="flex gap-1">
             <button
               onClick={() => setActiveTab("grundpriser")}
@@ -678,8 +678,8 @@ export default function PensionatPriserPage() {
         </div>
       </div>
 
-      {/* Main Content - Luftig layout med max-w-5xl */}
-      <main className="max-w-5xl mx-auto px-8 py-6">
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-8 py-6">
         {/* Messages - Kompakta */}
         {success && (
           <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-2.5 flex items-center gap-2">
@@ -949,7 +949,7 @@ export default function PensionatPriserPage() {
                     <Label htmlFor="sd-category">Kategori</Label>
                     <select
                       id="sd-category"
-                      className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      className="w-full border-2 border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                       value={newSpecialDate.category}
                       onChange={(e) =>
                         setNewSpecialDate({
@@ -1255,7 +1255,7 @@ export default function PensionatPriserPage() {
                     <Label htmlFor="service-unit">Enhet</Label>
                     <select
                       id="service-unit"
-                      className="w-full border border-gray-300 rounded-md px-3 py-2"
+                      className="w-full border-2 border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
                       value={newService.unit}
                       onChange={(e) =>
                         setNewService({

@@ -576,7 +576,7 @@ export default function PensionatAnsokningarPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header - Compact & Professional */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-8 py-6">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-[#2c7a4c]">
@@ -608,7 +608,7 @@ export default function PensionatAnsokningarPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-8 py-6">
+      <main className="max-w-6xl mx-auto px-8 py-6">
         <Link
           href="/hundpensionat"
           className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm"

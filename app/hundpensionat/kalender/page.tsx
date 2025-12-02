@@ -435,7 +435,7 @@ export default function KalenderPage() {
 
       {/* Header med Hunddagis-struktur */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
@@ -471,7 +471,7 @@ export default function KalenderPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <main className="max-w-6xl mx-auto px-8 py-6">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm text-center">
             <p className="text-sm font-semibold text-gray-600 mb-1">

@@ -333,7 +333,7 @@ export default function RapporterPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="border-b border-gray-200 bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="max-w-6xl mx-auto px-8 py-6">
             <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
               Rapporter
             </h1>
@@ -342,7 +342,7 @@ export default function RapporterPage() {
             </p>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-6 py-12 text-center">
+        <div className="max-w-6xl mx-auto px-8 py-12 text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c7a4c] mx-auto"></div>
         </div>
       </div>
@@ -353,13 +353,13 @@ export default function RapporterPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="border-b border-gray-200 bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="max-w-6xl mx-auto px-8 py-6">
             <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
               Rapporter
             </h1>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="max-w-6xl mx-auto px-8 py-12">
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
             <div className="text-5xl mb-4">📊</div>
             <p className="text-yellow-800 font-medium text-lg mb-2">
@@ -448,7 +448,7 @@ export default function RapporterPage() {
       </div>
 
       {/* Main Content - EXAKT som Hunddagis */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <main className="max-w-6xl mx-auto px-8 py-6">
         {/* Datumfilter */}
         <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm mb-6">
           <div className="flex items-center gap-2 mb-4">

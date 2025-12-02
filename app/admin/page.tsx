@@ -13,7 +13,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header med titel och statistik - EXAKT som Hunddagis */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
@@ -27,8 +27,8 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* Main Content Area - EXAKT som Hunddagis: max-w-7xl mx-auto px-6 py-6 */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      {/* Main Content Area - max-w-6xl mx-auto px-8 py-6 */}
+      <div className="max-w-6xl mx-auto px-8 py-6">
         {/* Statistik-sektion */}
         {currentOrgId && (
           <div className="mb-8">

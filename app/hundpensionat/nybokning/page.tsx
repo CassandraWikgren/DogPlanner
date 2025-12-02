@@ -353,7 +353,7 @@ export default function NewPensionatBooking() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
             Ny pensionatsbokning
           </h1>
@@ -364,7 +364,7 @@ export default function NewPensionatBooking() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <main className="max-w-6xl mx-auto px-8 py-6">
         <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
           {/* STEG 1: VÄLJ KUNDTYP (endast om ingen hund är vald) */}
           {!selectedDog && (

@@ -177,9 +177,9 @@ export default function DagisPriserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - Symmetrisk layout */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-8 py-4">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
             {/* Vänster: Tillbaka-länk */}
             <Link
@@ -194,10 +194,10 @@ export default function DagisPriserPage() {
             <div className="flex items-center gap-3 absolute left-1/2 transform -translate-x-1/2">
               <div className="text-2xl">🐕</div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
+                <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                   Priser - Hunddagis
                 </h1>
-                <p className="text-xs text-gray-600">
+                <p className="text-sm text-gray-600">
                   Hantera priser för dagisabonnemang och enstaka dagar
                 </p>
               </div>
@@ -209,8 +209,8 @@ export default function DagisPriserPage() {
         </div>
       </div>
 
-      {/* Main Content - Luftig layout med max-w-5xl */}
-      <main className="max-w-5xl mx-auto px-8 py-6">
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-8 py-6">
         {/* Messages - Kompakta */}
         {success && (
           <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-2.5 flex items-center gap-2">

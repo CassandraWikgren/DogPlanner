@@ -411,9 +411,9 @@ export default function HundpensionatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Kompakt header med inline stats - som Hunddagis */}
+      {/* Kompakt header med inline stats */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
@@ -449,8 +449,8 @@ export default function HundpensionatPage() {
         </div>
       </div>
 
-      {/* Main Content - Kompakt padding */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-8 py-6">
         {/* Action buttons row */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">

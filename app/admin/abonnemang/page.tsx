@@ -499,7 +499,7 @@ export default function AdminAbonnemangPage() {
       </div>
 
       {/* Innehåll */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-8 py-8">
         {/* Success/Error meddelanden */}
         {success && (
           <Card className="mb-6 border-green-200 bg-green-50">
