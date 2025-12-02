@@ -342,29 +342,47 @@ export default function GroomingPricesPage() {
 
   if (authLoading || loading) {
     return (
-      <PageContainer>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c7a4c] mx-auto mb-4"></div>
-            <p className="text-gray-600">Laddar priser...</p>
+      <div className="min-h-screen bg-gray-50">
+        <div className="border-b border-gray-200 bg-white shadow-sm">
+          <div className="max-w-6xl mx-auto px-8 py-6">
+            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+              Priser för hundfrisör
+            </h1>
           </div>
         </div>
-      </PageContainer>
+        <main className="max-w-6xl mx-auto px-8 py-6">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c7a4c] mx-auto mb-4"></div>
+              <p className="text-gray-600">Laddar priser...</p>
+            </div>
+          </div>
+        </main>
+      </div>
     );
   }
 
   if (!currentOrgId) {
     return (
-      <PageContainer>
-        <Card className="max-w-2xl mx-auto mt-8">
-          <CardContent className="pt-6 text-center">
-            <AlertCircle className="h-12 w-12 text-orange-600 mx-auto mb-4" />
-            <p className="text-gray-600">
-              Ingen organisation tilldelad. Kontakta admin.
-            </p>
-          </CardContent>
-        </Card>
-      </PageContainer>
+      <div className="min-h-screen bg-gray-50">
+        <div className="border-b border-gray-200 bg-white shadow-sm">
+          <div className="max-w-6xl mx-auto px-8 py-6">
+            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+              Priser för hundfrisör
+            </h1>
+          </div>
+        </div>
+        <main className="max-w-6xl mx-auto px-8 py-6">
+          <Card className="max-w-2xl mx-auto mt-8">
+            <CardContent className="pt-6 text-center">
+              <AlertCircle className="h-12 w-12 text-orange-600 mx-auto mb-4" />
+              <p className="text-gray-600">
+                Ingen organisation tilldelad. Kontakta admin.
+              </p>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
     );
   }
 
