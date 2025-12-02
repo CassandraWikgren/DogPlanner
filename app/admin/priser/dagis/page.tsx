@@ -146,7 +146,7 @@ export default function DagisPriserPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-700 mx-auto mb-4"></div>
           <p className="text-gray-600">Laddar priser...</p>
         </div>
       </div>
@@ -166,7 +166,7 @@ export default function DagisPriserPage() {
           </p>
           <Link
             href="/login"
-            className="mt-4 inline-block text-[#2c7a4c] hover:underline"
+            className="mt-4 inline-block text-slate-700 hover:underline"
           >
             Gå till inloggning →
           </Link>
@@ -184,7 +184,7 @@ export default function DagisPriserPage() {
             {/* Vänster: Tillbaka-länk */}
             <Link
               href="/admin"
-              className="inline-flex items-center text-sm text-gray-600 hover:text-[#2c7a4c] transition-colors"
+              className="inline-flex items-center text-sm text-gray-600 hover:text-slate-700 transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-1.5" />
               Tillbaka till Admin
@@ -230,7 +230,7 @@ export default function DagisPriserPage() {
           <Card className="shadow-sm">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#2c7a4c]" />
+                <Calendar className="w-5 h-5 text-slate-700" />
                 Abonnemangspriser (per månad)
               </CardTitle>
               <p className="text-sm text-gray-600 mt-2">
@@ -389,7 +389,7 @@ export default function DagisPriserPage() {
           <Card className="shadow-sm">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-[#2c7a4c]" />
+                <DollarSign className="w-5 h-5 text-slate-700" />
                 Övriga priser
               </CardTitle>
             </CardHeader>
@@ -530,7 +530,7 @@ export default function DagisPriserPage() {
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-[#2c7a4c] hover:bg-[#236139] text-white px-8 py-3"
+            className="bg-slate-700 hover:bg-slate-800 text-white px-8 py-3"
           >
             <Save className="w-4 h-4 mr-2" />
             {saving ? "Sparar..." : "Spara priser"}

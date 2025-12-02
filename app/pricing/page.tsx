@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PageContainer from "@/components/PageContainer";
 
-const PRIMARY_GREEN = "#2c7a4c";
+const PRIMARY_SLATE = "#475569"; // slate-700
 
 type PriceItems = {
   heltid?: number;
@@ -119,11 +119,11 @@ export default function MinaPriserPage() {
           <div className="flex items-center gap-4">
             <a
               href="/dashboard"
-              className="text-gray-600 hover:text-[#2C7A4C] transition-colors"
+              className="text-gray-600 hover:text-slate-700 transition-colors"
             >
               ← Tillbaka
             </a>
-            <h1 className="text-2xl font-bold text-[#2C7A4C] leading-tight">
+            <h1 className="text-2xl font-bold text-slate-700 leading-tight">
               Mina priser
             </h1>
           </div>
@@ -215,7 +215,7 @@ export default function MinaPriserPage() {
           <button
             onClick={savePrices}
             disabled={saving}
-            className="px-6 py-2 bg-[#2C7A4C] text-white rounded-md hover:bg-[#236139] font-semibold transition disabled:opacity-50 text-sm"
+            className="px-6 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 font-semibold transition disabled:opacity-50 text-sm"
           >
             {saving ? "💾 Sparar…" : "Spara priser"}
           </button>
@@ -278,7 +278,7 @@ function PriceField({
 }) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-[#2C7A4C] mb-2">
+      <label className="block text-sm font-semibold text-slate-700 mb-2">
         {label}
       </label>
       <Input

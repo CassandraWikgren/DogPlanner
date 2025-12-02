@@ -31,11 +31,11 @@ export function StandardHeading({
   const levelStyles = {
     1: hero
       ? "text-4xl font-bold text-white text-center"
-      : "text-[32px] font-bold text-[#2c7a4c]",
+      : "text-[32px] font-bold text-slate-700",
     2: hero
       ? "text-2xl font-semibold text-white text-center opacity-90"
-      : "text-2xl font-semibold text-[#2c7a4c]",
-    3: "text-lg font-medium text-[#2c7a4c]",
+      : "text-2xl font-semibold text-slate-700",
+    3: "text-lg font-medium text-slate-700",
   };
 
   const heroShadow = hero ? "drop-shadow-[0_2px_4px_rgba(0,0,0,0.25)]" : "";

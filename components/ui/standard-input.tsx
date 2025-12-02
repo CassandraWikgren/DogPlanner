@@ -27,7 +27,7 @@ export const StandardInput = React.forwardRef<
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-[15px] font-bold text-[#2c7a4c] mb-2">
+        <label className="block text-[15px] font-bold text-slate-700 mb-2">
           {label}
         </label>
       )}
@@ -69,7 +69,7 @@ export const StandardTextarea = React.forwardRef<
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-[15px] font-bold text-[#2c7a4c] mb-2">
+        <label className="block text-[15px] font-bold text-slate-700 mb-2">
           {label}
         </label>
       )}
@@ -111,7 +111,7 @@ export const StandardSelect = React.forwardRef<
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-[15px] font-bold text-[#2c7a4c] mb-2">
+        <label className="block text-[15px] font-bold text-slate-700 mb-2">
           {label}
         </label>
       )}

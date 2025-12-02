@@ -538,7 +538,7 @@ export default function NyBokning() {
             </p>
             <Button
               onClick={() => router.push("/frisor")}
-              className="bg-[#2c7a4c] hover:bg-[#245c3a]"
+              className="bg-slate-700 hover:bg-slate-800"
               size="sm"
             >
               Gå till frisör
@@ -561,9 +561,9 @@ export default function NyBokning() {
             </Button>
           </Link>
           <div className="flex items-center gap-3">
-            <Scissors className="h-8 w-8 text-[#2c7a4c]" />
+            <Scissors className="h-8 w-8 text-slate-700" />
             <div>
-              <h1 className="text-[32px] font-bold text-[#2c7a4c]">
+              <h1 className="text-[32px] font-bold text-slate-700">
                 Ny Frisörbokning
               </h1>
               <p className="text-base text-gray-600 mt-1">
@@ -592,7 +592,7 @@ export default function NyBokning() {
           {/* Customer Type Selection - Compact */}
           <Card className="border border-gray-200">
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg text-[#2c7a4c]">
+              <CardTitle className="flex items-center gap-2 text-lg text-slate-700">
                 <User className="h-5 w-5" />
                 Välj Kundtyp
               </CardTitle>
@@ -701,10 +701,10 @@ export default function NyBokning() {
                             key={dog.id}
                             type="button"
                             onClick={() => handleDogSelect(dog)}
-                            className="flex items-center gap-4 p-4 bg-white border border-gray-300 rounded-lg hover:border-[#2c7a4c] hover:bg-[#e6f4ea] transition-colors text-left shadow-sm"
+                            className="flex items-center gap-4 p-4 bg-white border border-gray-300 rounded-lg hover:border-slate-700 hover:bg-slate-50 transition-colors text-left shadow-sm"
                           >
-                            <div className="w-12 h-12 rounded-full bg-[#e6f4ea] flex items-center justify-center">
-                              <span className="text-[#2c7a4c] font-bold text-lg">
+                            <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center">
+                              <span className="text-slate-700 font-bold text-lg">
                                 {dog.name.charAt(0).toUpperCase()}
                               </span>
                             </div>
@@ -860,10 +860,10 @@ export default function NyBokning() {
                                   });
                                   setExternalSearchTerm("");
                                 }}
-                                className="flex items-center gap-3 p-3 bg-white border border-gray-300 rounded-lg hover:border-[#2c7a4c] hover:bg-[#e6f4ea] transition-colors text-left"
+                                className="flex items-center gap-3 p-3 bg-white border border-gray-300 rounded-lg hover:border-slate-700 hover:bg-slate-50 transition-colors text-left"
                               >
-                                <div className="w-10 h-10 rounded-full bg-[#e6f4ea] flex items-center justify-center flex-shrink-0">
-                                  <span className="text-[#2c7a4c] font-bold text-sm">
+                                <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center flex-shrink-0">
+                                  <span className="text-slate-700 font-bold text-sm">
                                     {customer.dog_name.charAt(0).toUpperCase()}
                                   </span>
                                 </div>
@@ -1018,7 +1018,7 @@ export default function NyBokning() {
                           appointment_time: e.target.value,
                         }))
                       }
-                      className="w-full px-3 py-2 text-sm h-9 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm h-9 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-700 focus:border-transparent"
                       required
                     >
                       <option value="">Välj tid...</option>
@@ -1090,7 +1090,7 @@ export default function NyBokning() {
 
                   {loadingServices ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c] mx-auto mb-2"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-700 mx-auto mb-2"></div>
                       <p className="text-sm text-gray-600">
                         Laddar tjänster...
                       </p>
@@ -1188,8 +1188,8 @@ export default function NyBokning() {
                                         s.dog_size === service.dog_size &&
                                         s.coat_type === service.coat_type
                                     )
-                                      ? "bg-white text-[#2c7a4c] border-white"
-                                      : "bg-white text-[#2c7a4c] border-[#2c7a4c]"
+                                      ? "bg-white text-slate-700 border-white"
+                                      : "bg-white text-slate-700 border-slate-700"
                                   }`}
                                 >
                                   {service.basePrice > 0

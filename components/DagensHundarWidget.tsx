@@ -77,11 +77,11 @@ export default function DagensHundarWidget() {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <PawPrint className="h-5 w-5 text-[#2c7a4c]" />
+          <PawPrint className="h-5 w-5 text-slate-700" />
           Dagens hundar
         </h2>
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c]"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-700"></div>
         </div>
       </div>
     );
@@ -91,10 +91,10 @@ export default function DagensHundarWidget() {
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-          <PawPrint className="h-5 w-5 text-[#2c7a4c]" />
+          <PawPrint className="h-5 w-5 text-slate-700" />
           Dagens hundar
         </h2>
-        <span className="px-3 py-1 bg-[#2c7a4c]/10 text-[#2c7a4c] rounded-full text-sm font-semibold">
+        <span className="px-3 py-1 bg-slate-700/10 text-slate-700 rounded-full text-sm font-semibold">
           {dogs.length} {dogs.length === 1 ? "hund" : "hundar"}
         </span>
       </div>
@@ -105,7 +105,7 @@ export default function DagensHundarWidget() {
           <p className="text-gray-500 text-sm">Inga hundar incheckade idag</p>
           <Link
             href="/hundpensionat"
-            className="inline-block mt-3 text-[#2c7a4c] hover:underline text-sm font-medium"
+            className="inline-block mt-3 text-slate-700 hover:underline text-sm font-medium"
           >
             Visa alla bokningar →
           </Link>
@@ -115,7 +115,7 @@ export default function DagensHundarWidget() {
           {dogs.map((dog) => (
             <div
               key={dog.id}
-              className="p-3 border border-gray-200 rounded-lg hover:border-[#2c7a4c] transition-colors"
+              className="p-3 border border-gray-200 rounded-lg hover:border-slate-700 transition-colors"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
@@ -151,7 +151,7 @@ export default function DagensHundarWidget() {
                           <Phone className="h-3.5 w-3.5 flex-shrink-0" />
                           <a
                             href={`tel:${dog.owners.phone}`}
-                            className="hover:text-[#2c7a4c] truncate"
+                            className="hover:text-slate-700 truncate"
                           >
                             {dog.owners.phone}
                           </a>
@@ -180,7 +180,7 @@ export default function DagensHundarWidget() {
         <div className="mt-4 pt-4 border-t border-gray-200">
           <Link
             href="/hundpensionat"
-            className="block text-center text-[#2c7a4c] hover:underline text-sm font-medium"
+            className="block text-center text-slate-700 hover:underline text-sm font-medium"
           >
             Visa alla bokningar →
           </Link>

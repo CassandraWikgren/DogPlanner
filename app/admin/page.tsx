@@ -16,7 +16,7 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+              <h1 className="text-[32px] font-bold text-slate-700 leading-tight">
                 Administration
               </h1>
               <p className="mt-1 text-base text-gray-600">
@@ -33,7 +33,7 @@ export default function AdminPage() {
         {currentOrgId && (
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-1 h-6 bg-[#2c7a4c] rounded-full"></div>
+              <div className="w-1 h-6 bg-slate-700 rounded-full"></div>
               <h2 className="text-xl font-bold text-[#333333]">Översikt</h2>
             </div>
             <DashboardWidgets />
@@ -43,17 +43,17 @@ export default function AdminPage() {
         {/* Åtgärder - Grid enligt stilguide */}
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-1 h-6 bg-[#2c7a4c] rounded-full"></div>
+            <div className="w-1 h-6 bg-slate-700 rounded-full"></div>
             <h2 className="text-xl font-bold text-[#333333]">Hantera</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Rapporter */}
             <Link href="/admin/rapporter">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-slate-700 transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">📊</div>
-                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                  <h3 className="text-lg font-semibold text-slate-700 group-hover:text-slate-800">
                     Rapporter & Statistik
                   </h3>
                 </div>
@@ -66,10 +66,10 @@ export default function AdminPage() {
 
             {/* Ekonomi & Fakturor */}
             <Link href="/ekonomi">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-slate-700 transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">💰</div>
-                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                  <h3 className="text-lg font-semibold text-slate-700 group-hover:text-slate-800">
                     Ekonomi & Fakturor
                   </h3>
                 </div>
@@ -82,10 +82,10 @@ export default function AdminPage() {
             {/* Priser - Hunddagis */}
             <ServiceGuard service="daycare">
               <Link href="/admin/priser/dagis">
-                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-slate-700 transition-all group">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="text-3xl">🐕</div>
-                    <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                    <h3 className="text-lg font-semibold text-slate-700 group-hover:text-slate-800">
                       Priser - Hunddagis
                     </h3>
                   </div>
@@ -99,10 +99,10 @@ export default function AdminPage() {
             {/* Priser - Hundpensionat */}
             <ServiceGuard service="boarding">
               <Link href="/admin/priser/pensionat">
-                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-slate-700 transition-all group">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="text-3xl">🏨</div>
-                    <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                    <h3 className="text-lg font-semibold text-slate-700 group-hover:text-slate-800">
                       Priser - Pensionat
                     </h3>
                   </div>
@@ -116,10 +116,10 @@ export default function AdminPage() {
             {/* Priser - Hundfrisör */}
             <ServiceGuard service="grooming">
               <Link href="/admin/hundfrisor/priser">
-                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+                <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-slate-700 transition-all group">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="text-3xl">✂️</div>
-                    <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                    <h3 className="text-lg font-semibold text-slate-700 group-hover:text-slate-800">
                       Priser - Frisör
                     </h3>
                   </div>
@@ -132,10 +132,10 @@ export default function AdminPage() {
 
             {/* Företagsinformation */}
             <Link href="/foretagsinformation">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-slate-700 transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">🏢</div>
-                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                  <h3 className="text-lg font-semibold text-slate-700 group-hover:text-slate-800">
                     Företagsinformation
                   </h3>
                 </div>
@@ -147,10 +147,10 @@ export default function AdminPage() {
 
             {/* Kunder & Hundägare */}
             <Link href="/owners">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-slate-700 transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">👥</div>
-                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                  <h3 className="text-lg font-semibold text-slate-700 group-hover:text-slate-800">
                     Kunder & Hundägare
                   </h3>
                 </div>
@@ -162,10 +162,10 @@ export default function AdminPage() {
 
             {/* Rum-hantering */}
             <Link href="/admin/rum">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-slate-700 transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">🚪</div>
-                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                  <h3 className="text-lg font-semibold text-slate-700 group-hover:text-slate-800">
                     Rum & Platser
                   </h3>
                 </div>
@@ -177,10 +177,10 @@ export default function AdminPage() {
 
             {/* Användarhantering */}
             <Link href="/admin/users">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-slate-700 transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">🔐</div>
-                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                  <h3 className="text-lg font-semibold text-slate-700 group-hover:text-slate-800">
                     Användarhantering
                   </h3>
                 </div>
@@ -192,10 +192,10 @@ export default function AdminPage() {
 
             {/* Abonnemang DogPlanner */}
             <Link href="/subscription">
-              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-[#2c7a4c] transition-all group">
+              <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm h-full hover:border-slate-700 transition-all group">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="text-3xl">💳</div>
-                  <h3 className="text-lg font-semibold text-[#2c7a4c] group-hover:text-[#236139]">
+                  <h3 className="text-lg font-semibold text-slate-700 group-hover:text-slate-800">
                     Ditt Abonnemang
                   </h3>
                 </div>

@@ -43,7 +43,7 @@ export function StandardTableHeader({
   ...props
 }: StandardTableHeaderProps) {
   return (
-    <thead className={cn("bg-[#2c7a4c] text-white", className)} {...props}>
+    <thead className={cn("bg-slate-700 text-white", className)} {...props}>
       {children}
     </thead>
   );

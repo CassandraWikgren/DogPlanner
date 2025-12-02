@@ -23,7 +23,7 @@ export default function Navbar() {
   const { hasDaycare, hasBoarding, hasGrooming } = useEnabledServices();
 
   return (
-    <nav className="bg-[#2c7a4c] text-white shadow-md fixed top-0 left-0 w-full z-50">
+    <nav className="bg-slate-700 text-white shadow-md fixed top-0 left-0 w-full z-50">
       <div className="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
         {/* Mobil: hamburgermeny - visas alltid när inloggad - VÄNSTER SIDA */}
         {user && (
@@ -75,7 +75,7 @@ export default function Navbar() {
               </div>
               <button
                 onClick={logout}
-                className="bg-white text-[#2c7a4c] px-4 py-2 rounded-md text-sm font-semibold hover:bg-green-50 transition"
+                className="bg-white text-slate-700 px-4 py-2 rounded-md text-sm font-semibold hover:bg-green-50 transition"
               >
                 Logga ut
               </button>
@@ -106,7 +106,7 @@ export default function Navbar() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "-100%", opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="fixed top-0 left-0 w-64 h-full bg-[#2c7a4c] z-50 md:hidden shadow-2xl"
+              className="fixed top-0 left-0 w-64 h-full bg-slate-700 z-50 md:hidden shadow-2xl"
             >
               <div className="flex flex-col px-6 py-6 space-y-3 text-base text-white">
                 {/* Stäng-knapp */}
@@ -194,7 +194,7 @@ export default function Navbar() {
                         logout();
                         setMenuOpen(false);
                       }}
-                      className="w-full bg-white text-[#2c7a4c] px-4 py-3 rounded-md font-semibold hover:bg-green-50 transition shadow-sm"
+                      className="w-full bg-white text-slate-700 px-4 py-3 rounded-md font-semibold hover:bg-green-50 transition shadow-sm"
                     >
                       Logga ut
                     </button>
@@ -202,7 +202,7 @@ export default function Navbar() {
                     <Link
                       href={"/login" as const}
                       onClick={() => setMenuOpen(false)}
-                      className="block text-center bg-white text-[#2c7a4c] px-4 py-3 rounded-md font-semibold hover:bg-green-50 transition shadow-sm"
+                      className="block text-center bg-white text-slate-700 px-4 py-3 rounded-md font-semibold hover:bg-green-50 transition shadow-sm"
                     >
                       Logga in
                     </Link>

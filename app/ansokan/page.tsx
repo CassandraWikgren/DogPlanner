@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DogBreedSelect } from "@/components/DogBreedSelect";
 import { createClient } from "@/lib/supabase/client";
 import { Database } from "@/types/database";
 import { PawPrint, Heart, CheckCircle, ArrowLeft } from "lucide-react";
@@ -450,18 +451,15 @@ export default function AnsokanPage() {
                     <Label htmlFor="dog_breed" className="text-green-700">
                       Ras
                     </Label>
-                    <Input
-                      id="dog_breed"
-                      type="text"
+                    <DogBreedSelect
                       value={formData.dog_breed}
-                      onChange={(e) =>
+                      onChange={(breed) =>
                         setFormData((prev) => ({
                           ...prev,
-                          dog_breed: e.target.value,
+                          dog_breed: breed,
                         }))
                       }
-                      placeholder="Golden Retriever"
-                      className="mt-1"
+                      placeholder="Välj hundras..."
                     />
                   </div>
                 </div>

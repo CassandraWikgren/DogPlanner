@@ -156,11 +156,11 @@ export default function CreateAccountOffer({
 
   if (!showPasswordForm) {
     return (
-      <Card className="border-[#2c7a4c] bg-gradient-to-br from-green-50 to-blue-50">
+      <Card className="border-slate-700 bg-gradient-to-br from-green-50 to-blue-50">
         <CardContent className="pt-6">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-[#2c7a4c]/10 rounded-lg">
-              <Sparkles className="h-6 w-6 text-[#2c7a4c]" />
+            <div className="p-3 bg-slate-700/10 rounded-lg">
+              <Sparkles className="h-6 w-6 text-slate-700" />
             </div>
             <div className="flex-1">
               <h3 className="font-bold text-gray-900 mb-2">
@@ -171,26 +171,26 @@ export default function CreateAccountOffer({
               </p>
               <ul className="text-sm text-gray-700 space-y-1 mb-4">
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-[#2c7a4c]" />
+                  <CheckCircle className="h-4 w-4 text-slate-700" />
                   Boka snabbare nästa gång
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-[#2c7a4c]" />
+                  <CheckCircle className="h-4 w-4 text-slate-700" />
                   Se alla dina bokningar
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-[#2c7a4c]" />
+                  <CheckCircle className="h-4 w-4 text-slate-700" />
                   Uppdatera hunduppgifter enkelt
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-[#2c7a4c]" />
+                  <CheckCircle className="h-4 w-4 text-slate-700" />
                   Få ett unikt kundnummer som gäller överallt
                 </li>
               </ul>
               <div className="flex gap-2">
                 <Button
                   onClick={() => setShowPasswordForm(true)}
-                  className="bg-[#2c7a4c] hover:bg-[#245a3e]"
+                  className="bg-slate-700 hover:bg-slate-800"
                 >
                   Ja, skapa konto!
                 </Button>
@@ -206,11 +206,11 @@ export default function CreateAccountOffer({
   }
 
   return (
-    <Card className="border-[#2c7a4c]">
+    <Card className="border-slate-700">
       <CardContent className="pt-6">
         <div className="flex items-start gap-4 mb-4">
-          <div className="p-3 bg-[#2c7a4c]/10 rounded-lg">
-            <Lock className="h-6 w-6 text-[#2c7a4c]" />
+          <div className="p-3 bg-slate-700/10 rounded-lg">
+            <Lock className="h-6 w-6 text-slate-700" />
           </div>
           <div>
             <h3 className="font-bold text-gray-900 mb-1">Välj ett lösenord</h3>
@@ -229,7 +229,7 @@ export default function CreateAccountOffer({
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
               placeholder="Välj ett säkert lösenord"
               required
               minLength={6}
@@ -244,7 +244,7 @@ export default function CreateAccountOffer({
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
+              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
               placeholder="Skriv lösenordet igen"
               required
               minLength={6}
@@ -262,7 +262,7 @@ export default function CreateAccountOffer({
             <Button
               type="submit"
               disabled={creating}
-              className="flex-1 bg-[#2c7a4c] hover:bg-[#245a3e]"
+              className="flex-1 bg-slate-700 hover:bg-slate-800"
             >
               {creating ? "Skapar konto..." : "Skapa konto"}
             </Button>

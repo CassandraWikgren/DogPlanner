@@ -20,7 +20,7 @@ export function PageErrorBoundary({ children }: { children: ReactNode }) {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235a3a] transition-colors"
+              className="px-6 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-colors"
             >
               Ladda om
             </button>

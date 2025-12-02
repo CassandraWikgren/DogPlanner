@@ -83,7 +83,7 @@ export default function ApplicationCard({
           </div>
           <button
             onClick={() => setShowDetails(!showDetails)}
-            className="text-sm text-[#2c7a4c] hover:underline"
+            className="text-sm text-slate-700 hover:underline"
           >
             {showDetails ? "Dölj" : "Visa mer"}
           </button>
@@ -121,7 +121,7 @@ export default function ApplicationCard({
           <button
             onClick={handleQuickContact}
             disabled={isUpdating}
-            className="flex items-center gap-2 text-sm text-[#2c7a4c] hover:text-[#235a3a] disabled:opacity-50"
+            className="flex items-center gap-2 text-sm text-slate-700 hover:text-slate-800 disabled:opacity-50"
           >
             <Phone className="h-4 w-4" />
             Markera som kontaktad
@@ -153,7 +153,7 @@ export default function ApplicationCard({
           <button
             onClick={handleBookVisit}
             disabled={isUpdating}
-            className="flex items-center gap-2 text-sm text-[#2c7a4c] hover:text-[#235a3a] disabled:opacity-50"
+            className="flex items-center gap-2 text-sm text-slate-700 hover:text-slate-800 disabled:opacity-50"
           >
             <Calendar className="h-4 w-4" />
             Boka visning

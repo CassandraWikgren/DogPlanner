@@ -769,7 +769,7 @@ const FakturorPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+              <h1 className="text-[32px] font-bold text-slate-700 leading-tight">
                 💸 Fakturor och underlag
               </h1>
               <p className="mt-1 text-base text-gray-600">
@@ -779,13 +779,13 @@ const FakturorPage = () => {
             <div className="flex gap-3 ml-4">
               <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
                 <div className="text-xs text-gray-600">Fakturor</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
+                <div className="text-xl font-bold text-slate-700">
                   {invoices.length}
                 </div>
               </div>
               <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
                 <div className="text-xs text-gray-600">Totalt</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
+                <div className="text-xl font-bold text-slate-700">
                   {totals.total.toLocaleString()} kr
                 </div>
               </div>
@@ -841,7 +841,7 @@ const FakturorPage = () => {
           <button
             onClick={() => setCreating(true)}
             disabled={locked}
-            className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 font-semibold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <PlusCircle size={16} /> Ny faktura
           </button>
@@ -897,7 +897,7 @@ const FakturorPage = () => {
                 placeholder="Sök kund, faktura, belopp eller status..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
+                className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700 text-sm"
               />
               {search && (
                 <button
@@ -1002,7 +1002,7 @@ const FakturorPage = () => {
         {/* 💵 Prisöversikt (kollapsbar sektion) */}
         <div className="w-full mt-4">
           <details className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <summary className="px-4 py-3 cursor-pointer text-[#2c7a4c] font-bold text-sm hover:bg-gray-50">
+            <summary className="px-4 py-3 cursor-pointer text-slate-700 font-bold text-sm hover:bg-gray-50">
               💰 Visa prisöversikt
             </summary>
             <div className="p-6 border-t border-gray-200">
@@ -1146,19 +1146,19 @@ const FakturorPage = () => {
             <div className="flex gap-2 p-2">
               <button
                 onClick={() => setActiveTab("dagis")}
-                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "dagis" ? "bg-[#2c7a4c] text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "dagis" ? "bg-slate-700 text-white" : "text-gray-700 hover:bg-gray-100"}`}
               >
                 🐾 Hunddagis
               </button>
               <button
                 onClick={() => setActiveTab("pensionat")}
-                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "pensionat" ? "bg-[#2c7a4c] text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "pensionat" ? "bg-slate-700 text-white" : "text-gray-700 hover:bg-gray-100"}`}
               >
                 🏕️ Hundpensionat
               </button>
               <button
                 onClick={() => setActiveTab("frisör")}
-                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "frisör" ? "bg-[#2c7a4c] text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "frisör" ? "bg-slate-700 text-white" : "text-gray-700 hover:bg-gray-100"}`}
               >
                 ✂️ Hundfrisör
               </button>
@@ -1478,19 +1478,19 @@ const FakturorPage = () => {
                   type="text"
                   placeholder="Kund-ID"
                   id="ownerId"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700 text-sm"
                 />
                 <input
                   type="text"
                   placeholder="Beskrivning (t.ex. 'Hunddagis November 2025')"
                   id="description"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700 text-sm"
                 />
                 <input
                   type="number"
                   placeholder="Belopp (SEK)"
                   id="amount"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-700 text-sm"
                 />
               </div>
               <div className="p-6 border-t border-gray-200 flex justify-end gap-2">
@@ -1515,7 +1515,7 @@ const FakturorPage = () => {
                     await createInvoice(ownerId, belopp, description);
                     // Modal stängs efter skapande
                   }}
-                  className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
+                  className="px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 font-semibold text-sm"
                 >
                   Skapa
                 </button>

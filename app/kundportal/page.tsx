@@ -15,7 +15,7 @@ export default function CustomerPortalPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       {/* Header */}
-      <header className="bg-[#2c7a4c] text-white shadow-lg">
+      <header className="bg-slate-700 text-white shadow-lg">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <Link
@@ -35,13 +35,13 @@ export default function CustomerPortalPage() {
               <Link href="/kundportal/login">
                 <Button
                   variant="outline"
-                  className="text-white border-white hover:bg-white hover:text-[#2c7a4c]"
+                  className="text-white border-white hover:bg-white hover:text-slate-700"
                 >
                   Logga in
                 </Button>
               </Link>
               <Link href="/kundportal/registrera">
-                <Button className="bg-white text-[#2c7a4c] hover:bg-gray-100">
+                <Button className="bg-white text-slate-700 hover:bg-gray-100">
                   Skapa konto
                 </Button>
               </Link>
@@ -65,7 +65,7 @@ export default function CustomerPortalPage() {
             <Link href="/kundportal/registrera">
               <Button
                 size="lg"
-                className="bg-[#2c7a4c] hover:bg-[#245a3e] text-white px-8 py-3"
+                className="bg-slate-700 hover:bg-slate-800 text-white px-8 py-3"
               >
                 Kom igång - Skapa konto
               </Button>
@@ -74,7 +74,7 @@ export default function CustomerPortalPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white px-8 py-3"
+                className="border-slate-700 text-slate-700 hover:bg-slate-700 hover:text-white px-8 py-3"
               >
                 Har redan konto? Logga in
               </Button>
@@ -93,7 +93,7 @@ export default function CustomerPortalPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card className="text-center p-6 hover:shadow-lg transition-shadow">
               <CardContent>
-                <User className="h-12 w-12 text-[#2c7a4c] mx-auto mb-4" />
+                <User className="h-12 w-12 text-slate-700 mx-auto mb-4" />
                 <h4 className="text-xl font-semibold mb-3">1. Skapa profil</h4>
                 <p className="text-gray-600">
                   Registrera dig och fyll i dina uppgifter samt kontaktperson
@@ -103,7 +103,7 @@ export default function CustomerPortalPage() {
 
             <Card className="text-center p-6 hover:shadow-lg transition-shadow">
               <CardContent>
-                <PawPrint className="h-12 w-12 text-[#2c7a4c] mx-auto mb-4" />
+                <PawPrint className="h-12 w-12 text-slate-700 mx-auto mb-4" />
                 <h4 className="text-xl font-semibold mb-3">
                   2. Lägg till hund
                 </h4>
@@ -116,7 +116,7 @@ export default function CustomerPortalPage() {
 
             <Card className="text-center p-6 hover:shadow-lg transition-shadow">
               <CardContent>
-                <Calendar className="h-12 w-12 text-[#2c7a4c] mx-auto mb-4" />
+                <Calendar className="h-12 w-12 text-slate-700 mx-auto mb-4" />
                 <h4 className="text-xl font-semibold mb-3">
                   3. Boka pensionat
                 </h4>
@@ -129,7 +129,7 @@ export default function CustomerPortalPage() {
 
             <Card className="text-center p-6 hover:shadow-lg transition-shadow">
               <CardContent>
-                <FileText className="h-12 w-12 text-[#2c7a4c] mx-auto mb-4" />
+                <FileText className="h-12 w-12 text-slate-700 mx-auto mb-4" />
                 <h4 className="text-xl font-semibold mb-3">
                   4. Få bekräftelse
                 </h4>
@@ -144,7 +144,7 @@ export default function CustomerPortalPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 bg-[#2c7a4c] text-white">
+      <section className="py-16 px-4 bg-slate-700 text-white">
         <div className="container mx-auto text-center">
           <Heart className="h-16 w-16 mx-auto mb-6 text-pink-200" />
           <h3 className="text-3xl font-bold mb-4">
@@ -156,7 +156,7 @@ export default function CustomerPortalPage() {
           <Link href="/kundportal/registrera">
             <Button
               size="lg"
-              className="bg-white text-[#2c7a4c] hover:bg-gray-100 px-8 py-3"
+              className="bg-white text-slate-700 hover:bg-gray-100 px-8 py-3"
             >
               Börja nu - det är gratis!
             </Button>
