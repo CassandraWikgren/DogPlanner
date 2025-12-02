@@ -644,9 +644,9 @@ BEGIN
       INSERT INTO invoice_items (
         invoice_id,
         description,
-        quantity,
+        qty,
         unit_price,
-        total_amount
+        amount
       )
       VALUES (
         v_invoice_id,
@@ -685,9 +685,9 @@ BEGIN
         INSERT INTO invoice_items (
           invoice_id,
           description,
-          quantity,
+          qty,
           unit_price,
-          total_amount
+          amount
         )
         VALUES (
           v_invoice_id,
@@ -754,9 +754,9 @@ BEGIN
         INSERT INTO invoice_items (
           invoice_id,
           description,
-          quantity,
+          qty,
           unit_price,
-          total_amount
+          amount
         )
         VALUES (
           v_invoice_id,
@@ -777,9 +777,9 @@ BEGIN
       INSERT INTO invoice_items (
         invoice_id,
         description,
-        quantity,
+        qty,
         unit_price,
-        total_amount
+        amount
       )
       VALUES (
         v_invoice_id,
@@ -917,9 +917,9 @@ BEGIN
     INSERT INTO invoice_items (
       invoice_id,
       description,
-      quantity,
+      qty,
       unit_price,
-      total_amount
+      amount
     )
     VALUES (
       v_invoice_id,
