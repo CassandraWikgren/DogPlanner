@@ -497,7 +497,7 @@ export default function FakturaPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base"
+              className="h-10 px-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-base"
             >
               <option value="all">Alla status</option>
               <option value="draft">Utkast</option>
@@ -508,7 +508,7 @@ export default function FakturaPage() {
             <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
-              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base"
+              className="h-10 px-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-base"
             >
               <option value="all">Alla perioder</option>
               <option value="this-month">Denna månad</option>
@@ -717,7 +717,7 @@ export default function FakturaPage() {
                     <Button
                       onClick={() => sendInvoiceEmail(invoice.id)}
                       disabled={sendingInvoice === invoice.id}
-                      className="bg-slate-700 hover:bg-slate-800 text-white"
+                      className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                       size="sm"
                     >
                       <Send className="h-4 w-4 mr-2" />
@@ -730,7 +730,7 @@ export default function FakturaPage() {
                   {invoice.status === "sent" && (
                     <Button
                       onClick={() => updateInvoiceStatus(invoice.id, "paid")}
-                      className="bg-green-600 hover:bg-green-700 text-white"
+                      className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                       size="sm"
                     >
                       <CheckCircle className="h-4 w-4 mr-2" />
@@ -757,7 +757,7 @@ export default function FakturaPage() {
                   : "Skapa din första faktura för att komma igång med faktureringen."}
               </p>
               <Link href="/faktura/new">
-                <Button className="bg-slate-700 hover:bg-slate-800 text-white">
+                <Button className="bg-[#2c7a4c] hover:bg-[#236139] text-white">
                   <Plus className="h-4 w-4 mr-2" />
                   Skapa första fakturan
                 </Button>

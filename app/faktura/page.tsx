@@ -773,7 +773,7 @@ const FakturorPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-center gap-3">
@@ -820,7 +820,7 @@ const FakturorPage = () => {
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-6 py-6">
+      <main className="max-w-6xl mx-auto px-8 py-6">
         {loading && (
           <div className="flex items-center gap-2 text-gray-600 mb-6 text-sm">
             <Loader2 className="animate-spin" /> Laddar fakturor…
@@ -934,7 +934,7 @@ const FakturorPage = () => {
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white min-w-[180px]"
+                className="px-3 py-2 border-2 border-gray-300 rounded-md text-sm bg-white min-w-[180px] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
               >
                 <option value="all">Alla månader</option>
                 {generateMonthOptions().map((option) => (
@@ -953,7 +953,7 @@ const FakturorPage = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white min-w-[150px]"
+                className="px-3 py-2 border-2 border-gray-300 rounded-md text-sm bg-white min-w-[150px] focus:outline-none focus:ring-2 focus:ring-[#2c7a4c]"
               >
                 <option value="all">Alla status</option>
                 <option value="draft">Utkast</option>
