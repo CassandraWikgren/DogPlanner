@@ -581,7 +581,7 @@ export default function RapporterPage() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

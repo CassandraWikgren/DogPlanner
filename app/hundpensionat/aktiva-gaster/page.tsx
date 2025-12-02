@@ -614,7 +614,7 @@ export default function AktivaGasterPage() {
             </div>
           )}
         </div>
-      </div>
+      </main>
 
       {/* Checkout Modal */}
       {showCheckoutModal && selectedBooking && (

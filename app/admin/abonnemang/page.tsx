@@ -940,7 +940,7 @@ export default function AdminAbonnemangPage() {
             </Card>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

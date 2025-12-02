@@ -160,9 +160,8 @@ export default function PensionatAnsokningarPage() {
 
       // Beräkna om priser för bokningar som har 0 eller null som total_price
       if (data && data.length > 0) {
-        const { calculateBookingPrice } = await import(
-          "@/lib/boardingPriceCalculator"
-        );
+        const { calculateBookingPrice } =
+          await import("@/lib/boardingPriceCalculator");
 
         const updatedBookings = await Promise.all(
           data.map(async (booking: PendingBooking) => {
@@ -303,9 +302,8 @@ export default function PensionatAnsokningarPage() {
           return;
         }
 
-        const { calculateBookingPrice } = await import(
-          "@/lib/boardingPriceCalculator"
-        );
+        const { calculateBookingPrice } =
+          await import("@/lib/boardingPriceCalculator");
         const startDate = new Date(booking.start_date);
         const endDate = new Date(booking.end_date);
 
@@ -871,7 +869,7 @@ export default function PensionatAnsokningarPage() {
             })
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
 }

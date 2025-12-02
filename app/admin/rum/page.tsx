@@ -538,7 +538,7 @@ export default function AdminRumPage() {
             ))
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
