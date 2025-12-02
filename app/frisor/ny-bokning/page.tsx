@@ -1129,7 +1129,7 @@ export default function NyBokning() {
                                   s.dog_size === service.dog_size &&
                                   s.coat_type === service.coat_type
                               )
-                                ? "border-[#2c7a4c] bg-white shadow-sm"
+                                ? "border-[#2c7a4c] bg-[#2c7a4c] shadow-sm"
                                 : "border-gray-200 hover:border-[#2c7a4c]/50 hover:bg-gray-50"
                             }`}
                           >
@@ -1141,7 +1141,7 @@ export default function NyBokning() {
                                     s.dog_size === service.dog_size &&
                                     s.coat_type === service.coat_type
                                 )
-                                  ? "bg-[#2c7a4c] text-white"
+                                  ? "bg-white text-[#2c7a4c]"
                                   : "bg-gray-100 text-gray-600"
                               }`}
                             >
@@ -1149,27 +1149,80 @@ export default function NyBokning() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between mb-0.5">
-                                <p className="font-semibold text-gray-900 text-sm">
+                                <p
+                                  className={`font-semibold text-sm ${
+                                    selectedServices.some(
+                                      (s) =>
+                                        s.value === service.value &&
+                                        s.dog_size === service.dog_size &&
+                                        s.coat_type === service.coat_type
+                                    )
+                                      ? "text-white"
+                                      : "text-gray-900"
+                                  }`}
+                                >
                                   {service.label}
                                   {service.dog_size && (
-                                    <span className="text-xs text-gray-500 ml-2">
+                                    <span
+                                      className={`text-xs ml-2 ${
+                                        selectedServices.some(
+                                          (s) =>
+                                            s.value === service.value &&
+                                            s.dog_size === service.dog_size &&
+                                            s.coat_type === service.coat_type
+                                        )
+                                          ? "text-white/80"
+                                          : "text-gray-500"
+                                      }`}
+                                    >
                                       ({service.dog_size})
                                     </span>
                                   )}
                                 </p>
                                 <Badge
                                   variant="outline"
-                                  className="bg-white text-[#2c7a4c] border-[#2c7a4c] text-xs font-semibold"
+                                  className={`text-xs font-semibold ${
+                                    selectedServices.some(
+                                      (s) =>
+                                        s.value === service.value &&
+                                        s.dog_size === service.dog_size &&
+                                        s.coat_type === service.coat_type
+                                    )
+                                      ? "bg-white text-[#2c7a4c] border-white"
+                                      : "bg-white text-[#2c7a4c] border-[#2c7a4c]"
+                                  }`}
                                 >
                                   {service.basePrice > 0
                                     ? `${service.basePrice} kr`
                                     : "Anpassat"}
                                 </Badge>
                               </div>
-                              <p className="text-xs text-gray-600 mb-0.5">
+                              <p
+                                className={`text-xs mb-0.5 ${
+                                  selectedServices.some(
+                                    (s) =>
+                                      s.value === service.value &&
+                                      s.dog_size === service.dog_size &&
+                                      s.coat_type === service.coat_type
+                                  )
+                                    ? "text-white/90"
+                                    : "text-gray-600"
+                                }`}
+                              >
                                 {service.description}
                               </p>
-                              <p className="text-xs text-gray-500 flex items-center">
+                              <p
+                                className={`text-xs flex items-center ${
+                                  selectedServices.some(
+                                    (s) =>
+                                      s.value === service.value &&
+                                      s.dog_size === service.dog_size &&
+                                      s.coat_type === service.coat_type
+                                  )
+                                    ? "text-white/80"
+                                    : "text-gray-500"
+                                }`}
+                              >
                                 <Clock className="h-3 w-3 mr-1" />
                                 {service.duration} min
                               </p>
