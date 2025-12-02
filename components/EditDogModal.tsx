@@ -147,6 +147,84 @@ export default function EditDogModal({
           setAvailableServices(servicesData ?? []);
         }
 
+        // Hämta abonnemangsalternativ från daycare_pricing
+        const { data: pricingData } = await supabase
+          .from("daycare_pricing")
+          .select("*")
+          .eq("org_id", currentOrgId)
+          .single();
+
+        if (pricingData) {
+          const options: Array<{
+            value: string;
+            label: string;
+            daysPerWeek: number;
+          }> = [];
+
+          if (
+            pricingData.subscription_1day &&
+            pricingData.subscription_1day > 0
+          ) {
+            options.push({
+              value: "1 dag/vecka",
+              label: "1 dag/vecka",
+              daysPerWeek: 1,
+            });
+          }
+          if (
+            pricingData.subscription_2days &&
+            pricingData.subscription_2days > 0
+          ) {
+            options.push({
+              value: "2 dagar/vecka",
+              label: "2 dagar/vecka",
+              daysPerWeek: 2,
+            });
+          }
+          if (
+            pricingData.subscription_3days &&
+            pricingData.subscription_3days > 0
+          ) {
+            options.push({
+              value: "3 dagar/vecka",
+              label: "3 dagar/vecka",
+              daysPerWeek: 3,
+            });
+          }
+          if (
+            pricingData.subscription_4days &&
+            pricingData.subscription_4days > 0
+          ) {
+            options.push({
+              value: "4 dagar/vecka",
+              label: "4 dagar/vecka",
+              daysPerWeek: 4,
+            });
+          }
+          if (
+            pricingData.subscription_5days &&
+            pricingData.subscription_5days > 0
+          ) {
+            options.push({
+              value: "5 dagar/vecka",
+              label: "5 dagar/vecka",
+              daysPerWeek: 5,
+            });
+          }
+          if (
+            pricingData.single_day_price &&
+            pricingData.single_day_price > 0
+          ) {
+            options.push({
+              value: "Dagshund",
+              label: "Dagshund",
+              daysPerWeek: 0,
+            });
+          }
+
+          setSubscriptionOptions(options);
+        }
+
         // Hämta roll (admin-låsningar)
         const { data: me } = await supabase.auth.getUser();
         const userId = me.user?.id;
@@ -257,6 +335,9 @@ export default function EditDogModal({
 
   // --- ABONNEMANG ---
   const [subscription, setSubscription] = React.useState("");
+  const [subscriptionOptions, setSubscriptionOptions] = React.useState<
+    Array<{ value: string; label: string; daysPerWeek: number }>
+  >([]);
   const [subStart, setSubStart] = React.useState<string>("");
   const [subEnd, setSubEnd] = React.useState<string>("");
   const [roomId, setRoomId] = React.useState<string>("");
@@ -308,7 +389,8 @@ export default function EditDogModal({
     // Endast tillåt kända abonnemangstyper
     if (
       subscription &&
-      !["Heltid", "Deltid 3", "Deltid 2", "Dagshund"].includes(subscription)
+      subscriptionOptions.length > 0 &&
+      !subscriptionOptions.some((opt) => opt.value === subscription)
     ) {
       return "Ogiltig abonnemangstyp.";
     }
@@ -1472,10 +1554,11 @@ export default function EditDogModal({
                     onChange={(e) => setSubscription(e.target.value)}
                   >
                     <option value="">Välj...</option>
-                    <option value="Heltid">Heltid</option>
-                    <option value="Deltid 3">Deltid 3</option>
-                    <option value="Deltid 2">Deltid 2</option>
-                    <option value="Dagshund">Dagshund</option>
+                    {subscriptionOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>

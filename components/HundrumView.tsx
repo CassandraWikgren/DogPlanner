@@ -21,7 +21,7 @@ interface Dog {
   photo_url: string | null;
   birth: string | null;
   days: string | null; // "Måndag,Onsdag,Fredag"
-  subscription: string | null; // "Heltid", "Deltid 2", "Deltid 3"
+  subscription: string | null; // "1 dag/vecka", "2 dagar/vecka", etc.
   allergies: string | null;
   medications: string | null;
   special_needs: string | null;

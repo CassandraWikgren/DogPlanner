@@ -3,12 +3,19 @@
 // Förhindra prerendering för att undvika build-fel
 export const dynamic = "force-dynamic";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Heart, Send, CheckCircle, AlertCircle } from "lucide-react";
 import OrganisationSelector from "@/components/OrganisationSelector";
 import { DogBreedSelect } from "@/components/DogBreedSelect";
+
+interface SubscriptionOption {
+  value: string;
+  label: string;
+  desc: string;
+  daysPerWeek: number;
+}
 
 export default function HunddagisAnsokanPage() {
   const supabase = createClient();
@@ -19,6 +26,11 @@ export default function HunddagisAnsokanPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Dynamiska abonnemangsalternativ baserat på organisationens priser
+  const [subscriptionOptions, setSubscriptionOptions] = useState<
+    SubscriptionOption[]
+  >([]);
 
   // Formulärdata
   const [formData, setFormData] = useState({
@@ -37,12 +49,7 @@ export default function HunddagisAnsokanPage() {
     dog_height_cm: "",
 
     // Abonnemang
-    subscription_type: "" as
-      | "Heltid"
-      | "Deltid 2"
-      | "Deltid 3"
-      | "Dagshund"
-      | "",
+    subscription_type: "",
     preferred_days: [] as string[],
     preferred_start_date: "",
 
@@ -59,6 +66,94 @@ export default function HunddagisAnsokanPage() {
   });
 
   const dayOptions = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
+
+  // Hämta tillgängliga abonnemang när organisation väljs
+  useEffect(() => {
+    if (!orgId) return;
+
+    const fetchSubscriptionOptions = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("daycare_pricing")
+          .select("*")
+          .eq("org_id", orgId)
+          .single();
+
+        if (error || !data) {
+          // Om inga priser finns, visa default-alternativ
+          setSubscriptionOptions([
+            {
+              value: "Dagshund",
+              label: "Dagshund",
+              desc: "Per dag",
+              daysPerWeek: 0,
+            },
+          ]);
+          return;
+        }
+
+        const options: SubscriptionOption[] = [];
+
+        // Lägg till abonnemang som har pris > 0
+        if (data.subscription_1day && data.subscription_1day > 0) {
+          options.push({
+            value: "1 dag/vecka",
+            label: "1 dag/vecka",
+            desc: `${data.subscription_1day} kr/månad`,
+            daysPerWeek: 1,
+          });
+        }
+        if (data.subscription_2days && data.subscription_2days > 0) {
+          options.push({
+            value: "2 dagar/vecka",
+            label: "2 dagar/vecka",
+            desc: `${data.subscription_2days} kr/månad`,
+            daysPerWeek: 2,
+          });
+        }
+        if (data.subscription_3days && data.subscription_3days > 0) {
+          options.push({
+            value: "3 dagar/vecka",
+            label: "3 dagar/vecka",
+            desc: `${data.subscription_3days} kr/månad`,
+            daysPerWeek: 3,
+          });
+        }
+        if (data.subscription_4days && data.subscription_4days > 0) {
+          options.push({
+            value: "4 dagar/vecka",
+            label: "4 dagar/vecka",
+            desc: `${data.subscription_4days} kr/månad`,
+            daysPerWeek: 4,
+          });
+        }
+        if (data.subscription_5days && data.subscription_5days > 0) {
+          options.push({
+            value: "5 dagar/vecka",
+            label: "5 dagar/vecka",
+            desc: `${data.subscription_5days} kr/månad`,
+            daysPerWeek: 5,
+          });
+        }
+
+        // Lägg alltid till Dagshund om single_day_price finns
+        if (data.single_day_price && data.single_day_price > 0) {
+          options.push({
+            value: "Dagshund",
+            label: "Dagshund",
+            desc: `${data.single_day_price} kr/dag`,
+            daysPerWeek: 0,
+          });
+        }
+
+        setSubscriptionOptions(options);
+      } catch (err) {
+        console.error("Error fetching subscription options:", err);
+      }
+    };
+
+    fetchSubscriptionOptions();
+  }, [orgId]);
 
   const toggleDay = (day: string) => {
     setFormData((prev) => ({
@@ -97,12 +192,20 @@ export default function HunddagisAnsokanPage() {
 
   const validateStep4 = () => {
     if (!formData.subscription_type) return "Välj önskat abonnemang";
-    if (
-      (formData.subscription_type === "Deltid 2" ||
-        formData.subscription_type === "Deltid 3") &&
-      formData.preferred_days.length === 0
-    ) {
-      return "Välj vilka dagar hunden ska gå";
+
+    // Hitta det valda abonnemanget för att kolla daysPerWeek
+    const selectedOption = subscriptionOptions.find(
+      (opt) => opt.value === formData.subscription_type
+    );
+
+    // Om det är ett abonnemang (inte Dagshund) som kräver specifika dagar
+    if (selectedOption && selectedOption.daysPerWeek > 0) {
+      if (formData.preferred_days.length === 0) {
+        return "Välj vilka dagar hunden ska gå";
+      }
+      if (formData.preferred_days.length !== selectedOption.daysPerWeek) {
+        return `Välj exakt ${selectedOption.daysPerWeek} ${selectedOption.daysPerWeek === 1 ? "dag" : "dagar"}`;
+      }
     }
     if (!formData.preferred_start_date) return "Ange önskat startdatum";
     if (!formData.terms_accepted)
@@ -589,105 +692,97 @@ export default function HunddagisAnsokanPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Typ av abonnemang <span className="text-red-600">*</span>
                   </label>
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      {
-                        value: "Heltid",
-                        label: "Heltid",
-                        desc: "5 dagar/vecka",
-                      },
-                      {
-                        value: "Deltid 3",
-                        label: "Deltid 3",
-                        desc: "3 dagar/vecka",
-                      },
-                      {
-                        value: "Deltid 2",
-                        label: "Deltid 2",
-                        desc: "2 dagar/vecka",
-                      },
-                      { value: "Dagshund", label: "Dagshund", desc: "Per dag" },
-                    ].map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() =>
-                          setFormData({
-                            ...formData,
-                            subscription_type: option.value as any,
-                            preferred_days: [], // Rensa valda dagar när man byter abonnemang
-                          })
-                        }
-                        className={`p-4 border-2 rounded-lg text-left transition-all ${
-                          formData.subscription_type === option.value
-                            ? "border-[#2c7a4c] bg-white shadow-md ring-2 ring-[#2c7a4c]/20"
-                            : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
-                        }`}
-                      >
-                        <div
-                          className={`font-semibold ${
+                  {subscriptionOptions.length === 0 ? (
+                    <div className="text-gray-500 p-4 bg-gray-50 rounded-lg">
+                      Laddar tillgängliga abonnemang...
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-4">
+                      {subscriptionOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() =>
+                            setFormData({
+                              ...formData,
+                              subscription_type: option.value,
+                              preferred_days: [], // Rensa valda dagar när man byter abonnemang
+                            })
+                          }
+                          className={`p-4 border-2 rounded-lg text-left transition-all ${
                             formData.subscription_type === option.value
-                              ? "text-[#2c7a4c]"
-                              : "text-gray-800"
+                              ? "border-[#2c7a4c] bg-white shadow-md ring-2 ring-[#2c7a4c]/20"
+                              : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
                           }`}
                         >
-                          {option.label}
-                        </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          {option.desc}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {(formData.subscription_type === "Deltid 2" ||
-                  formData.subscription_type === "Deltid 3") && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <label className="block text-sm font-medium text-gray-800 mb-3">
-                      Välj specifika veckodagar{" "}
-                      <span className="text-red-600">*</span>
-                    </label>
-                    <p className="text-sm text-gray-600 mb-4">
-                      {formData.subscription_type === "Deltid 2"
-                        ? "Välj exakt 2 dagar"
-                        : "Välj exakt 3 dagar"}
-                    </p>
-                    <div className="space-y-2">
-                      {dayOptions.map((day) => (
-                        <label
-                          key={day}
-                          className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                            formData.preferred_days.includes(day)
-                              ? "border-[#2c7a4c] bg-white shadow-sm"
-                              : "border-gray-200 bg-white hover:border-gray-300"
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={formData.preferred_days.includes(day)}
-                            onChange={() => toggleDay(day)}
-                            className="w-5 h-5 text-[#2c7a4c] border-gray-300 rounded focus:ring-[#2c7a4c]"
-                          />
-                          <span
-                            className={`font-medium ${
-                              formData.preferred_days.includes(day)
+                          <div
+                            className={`font-semibold ${
+                              formData.subscription_type === option.value
                                 ? "text-[#2c7a4c]"
-                                : "text-gray-700"
+                                : "text-gray-800"
                             }`}
                           >
-                            {day}
-                          </span>
-                        </label>
+                            {option.label}
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">
+                            {option.desc}
+                          </div>
+                        </button>
                       ))}
                     </div>
-                    <p className="text-xs text-gray-500 mt-3">
-                      Valt: {formData.preferred_days.length} av{" "}
-                      {formData.subscription_type === "Deltid 2" ? "2" : "3"}{" "}
-                      dagar
-                    </p>
-                  </div>
-                )}
+                  )}
+                </div>
+
+                {(() => {
+                  const selectedOption = subscriptionOptions.find(
+                    (opt) => opt.value === formData.subscription_type
+                  );
+                  return selectedOption && selectedOption.daysPerWeek > 0 ? (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <label className="block text-sm font-medium text-gray-800 mb-3">
+                        Välj specifika veckodagar{" "}
+                        <span className="text-red-600">*</span>
+                      </label>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Välj exakt {selectedOption.daysPerWeek}{" "}
+                        {selectedOption.daysPerWeek === 1 ? "dag" : "dagar"}
+                      </p>
+                      <div className="space-y-2">
+                        {dayOptions.map((day) => (
+                          <label
+                            key={day}
+                            className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                              formData.preferred_days.includes(day)
+                                ? "border-[#2c7a4c] bg-white shadow-sm"
+                                : "border-gray-200 bg-white hover:border-gray-300"
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={formData.preferred_days.includes(day)}
+                              onChange={() => toggleDay(day)}
+                              className="w-5 h-5 text-[#2c7a4c] border-gray-300 rounded focus:ring-[#2c7a4c]"
+                            />
+                            <span
+                              className={`font-medium ${
+                                formData.preferred_days.includes(day)
+                                  ? "text-[#2c7a4c]"
+                                  : "text-gray-700"
+                              }`}
+                            >
+                              {day}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-3">
+                        Valt: {formData.preferred_days.length} av{" "}
+                        {selectedOption.daysPerWeek}{" "}
+                        {selectedOption.daysPerWeek === 1 ? "dag" : "dagar"}
+                      </p>
+                    </div>
+                  ) : null;
+                })()}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
