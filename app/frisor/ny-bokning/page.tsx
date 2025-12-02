@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { DogBreedSelect } from "@/components/DogBreedSelect";
 import {
   ArrowLeft,
   Calendar,
@@ -607,15 +608,15 @@ export default function NyBokning() {
                   }}
                   className={`p-3 border-2 rounded-md transition-all ${
                     customerType === "existing"
-                      ? "border-[#2c7a4c] bg-[#e6f4ea]"
-                      : "border-gray-300 hover:border-[#2c7a4c]/50"
+                      ? "border-slate-700 bg-slate-50"
+                      : "border-gray-300 hover:border-slate-400"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         customerType === "existing"
-                          ? "bg-[#2c7a4c] text-white"
+                          ? "bg-slate-700 text-white"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
@@ -639,15 +640,15 @@ export default function NyBokning() {
                   }}
                   className={`p-3 border-2 rounded-md transition-all ${
                     customerType === "walkin"
-                      ? "border-[#2c7a4c] bg-[#e6f4ea]"
-                      : "border-gray-300 hover:border-[#2c7a4c]/50"
+                      ? "border-slate-700 bg-slate-50"
+                      : "border-gray-300 hover:border-slate-400"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         customerType === "walkin"
-                          ? "bg-[#2c7a4c] text-white"
+                          ? "bg-slate-700 text-white"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
@@ -730,9 +731,9 @@ export default function NyBokning() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-4 p-4 bg-[#e6f4ea] border border-[#2c7a4c] rounded-lg">
-                    <div className="w-16 h-16 rounded-full bg-[#2c7a4c]/10 flex items-center justify-center">
-                      <span className="text-[#2c7a4c] font-bold text-2xl">
+                  <div className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-300 rounded-lg">
+                    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
+                      <span className="text-slate-700 font-bold text-2xl">
                         {selectedDog.name.charAt(0).toUpperCase()}
                       </span>
                     </div>
@@ -952,13 +953,12 @@ export default function NyBokning() {
                       <label className="block text-xs font-medium text-gray-700 mb-1.5">
                         Ras *
                       </label>
-                      <Input
-                        placeholder="Golden Retriever"
+                      <DogBreedSelect
                         value={walkinData.dog_breed}
-                        onChange={(e) =>
+                        onChange={(value) =>
                           setWalkinData((prev) => ({
                             ...prev,
-                            dog_breed: e.target.value,
+                            dog_breed: value,
                           }))
                         }
                         required
@@ -1129,8 +1129,8 @@ export default function NyBokning() {
                                   s.dog_size === service.dog_size &&
                                   s.coat_type === service.coat_type
                               )
-                                ? "border-[#2c7a4c] bg-[#2c7a4c] shadow-sm"
-                                : "border-gray-200 hover:border-[#2c7a4c]/50 hover:bg-gray-50"
+                                ? "border-slate-700 bg-slate-700 shadow-sm"
+                                : "border-gray-200 hover:border-slate-400 hover:bg-gray-50"
                             }`}
                           >
                             <div
@@ -1141,7 +1141,7 @@ export default function NyBokning() {
                                     s.dog_size === service.dog_size &&
                                     s.coat_type === service.coat_type
                                 )
-                                  ? "bg-white text-[#2c7a4c]"
+                                  ? "bg-white text-slate-700"
                                   : "bg-gray-100 text-gray-600"
                               }`}
                             >
