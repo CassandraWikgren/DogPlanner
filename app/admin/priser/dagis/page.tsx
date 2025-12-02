@@ -233,6 +233,11 @@ export default function DagisPriserPage() {
                 <Calendar className="w-5 h-5 text-[#2c7a4c]" />
                 Abonnemangspriser (per månad)
               </CardTitle>
+              <p className="text-sm text-gray-600 mt-2">
+                💡 <strong>Tips:</strong> Lämna fältet tomt (0 kr) för
+                abonnemang du inte erbjuder. Endast abonnemang med pris visas
+                för kunder.
+              </p>
             </CardHeader>
             <CardContent className="space-y-4 pt-0">
               <div>
