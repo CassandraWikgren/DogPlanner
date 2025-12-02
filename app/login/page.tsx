@@ -112,7 +112,7 @@ export default function LoginPage() {
           Hundägare?{" "}
           <a
             href="/kundportal/login"
-            className="text-slate-700 hover:text-slate-900 font-medium underline"
+            className="text-[#2c7a4c] hover:text-[#236139] font-medium underline"
           >
             Logga in här istället
           </a>
@@ -132,7 +132,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="exempel@hunddagis.se"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent bg-white text-base"
+              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] bg-white text-base"
             />
           </div>
 
@@ -147,7 +147,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent bg-white text-base"
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] bg-white text-base"
               />
             </div>
           )}
@@ -166,7 +166,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2.5 rounded-lg transition disabled:opacity-60 text-base"
+            className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white font-medium py-2.5 rounded-lg transition disabled:opacity-60 text-base"
           >
             {loading
               ? "Bearbetar..."
@@ -184,7 +184,7 @@ export default function LoginPage() {
                 setError(null);
                 setMessage(null);
               }}
-              className="text-sm text-slate-700 hover:text-slate-900 hover:underline"
+              className="text-sm text-[#2c7a4c] hover:text-[#236139] hover:underline"
             >
               Har du glömt ditt lösenord?
             </button>
@@ -199,7 +199,7 @@ export default function LoginPage() {
                 setError(null);
                 setMessage(null);
               }}
-              className="text-sm text-slate-700 hover:text-slate-900 font-medium"
+              className="text-sm text-[#2c7a4c] hover:text-[#236139] font-medium"
             >
               Tillbaka till inloggning
             </button>
@@ -211,7 +211,7 @@ export default function LoginPage() {
             Har du inget konto?{" "}
             <a
               href="/register"
-              className="text-slate-700 font-medium hover:text-slate-900"
+              className="text-[#2c7a4c] font-medium hover:text-[#236139]"
             >
               Skapa konto
             </a>

@@ -137,7 +137,7 @@ function LoginPageContent() {
               Driver du ett hundföretag?{" "}
               <Link
                 href="/login"
-                className="text-slate-700 hover:text-slate-900 font-medium underline"
+                className="text-[#2c7a4c] hover:text-[#236139] font-medium underline"
               >
                 Logga in här istället
               </Link>
@@ -171,7 +171,7 @@ function LoginPageContent() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all bg-white"
+                    className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] transition-all bg-white"
                     placeholder="din@epost.se"
                     required
                   />
@@ -186,7 +186,7 @@ function LoginPageContent() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all bg-white"
+                    className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] transition-all bg-white"
                     placeholder="Ditt lösenord"
                     required
                   />
@@ -204,7 +204,7 @@ function LoginPageContent() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-slate-700 hover:bg-slate-800 text-white h-10 text-base font-medium rounded-lg"
+                  className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white h-10 text-base font-medium rounded-lg"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -222,7 +222,7 @@ function LoginPageContent() {
                 <div className="text-center">
                   <Link
                     href="/kundportal/forgot-password"
-                    className="text-sm text-slate-700 hover:text-slate-900 hover:underline"
+                    className="text-sm text-[#2c7a4c] hover:text-[#236139] hover:underline"
                   >
                     Glömt lösenord?
                   </Link>
