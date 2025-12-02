@@ -8,15 +8,15 @@
 
 UPDATE dogs
 SET subscription = '5 dagar/vecka'
-WHERE subscription = 'Heltid';
+WHERE LOWER(subscription) = 'heltid';
 
 UPDATE dogs
 SET subscription = '3 dagar/vecka'
-WHERE subscription = 'Deltid 3';
+WHERE LOWER(subscription) IN ('deltid 3', 'deltid_3');
 
 UPDATE dogs
 SET subscription = '2 dagar/vecka'
-WHERE subscription = 'Deltid 2';
+WHERE LOWER(subscription) IN ('deltid 2', 'deltid_2');
 
 -- Dagshund behåller samma namn
 -- NULL-värden behåller NULL
@@ -27,15 +27,15 @@ WHERE subscription = 'Deltid 2';
 
 UPDATE interest_applications
 SET subscription_type = '5 dagar/vecka'
-WHERE subscription_type = 'Heltid';
+WHERE LOWER(subscription_type) = 'heltid';
 
 UPDATE interest_applications
 SET subscription_type = '3 dagar/vecka'
-WHERE subscription_type = 'Deltid 3';
+WHERE LOWER(subscription_type) IN ('deltid 3', 'deltid_3');
 
 UPDATE interest_applications
 SET subscription_type = '2 dagar/vecka'
-WHERE subscription_type = 'Deltid 2';
+WHERE LOWER(subscription_type) IN ('deltid 2', 'deltid_2');
 
 -- Dagshund behåller samma namn
 
