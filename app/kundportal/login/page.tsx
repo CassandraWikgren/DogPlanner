@@ -105,145 +105,163 @@ function LoginPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center py-8 px-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/">
-            <Button variant="ghost" className="mb-4">
-              ← Tillbaka till startsidan
-            </Button>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
+          >
+            <span className="text-sm">← Tillbaka till startsidan</span>
           </Link>
+          <div className="flex items-center gap-2">
+            <PawPrint className="h-6 w-6 text-slate-700" />
+            <span className="font-semibold text-gray-900">DogPlanner</span>
+          </div>
+        </div>
+      </div>
 
-          <div className="flex items-center justify-center mb-4">
-            <PawPrint className="h-10 w-10 text-[#2c7a4c] mr-3" />
-            <h1 className="text-4xl font-bold text-gray-800">
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          {/* Title Section */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Logga in som hundägare
             </h1>
+            <p className="text-gray-600">
+              Välkommen tillbaka! Logga in för att hantera dina bokningar.
+            </p>
+            <p className="text-sm text-gray-500 mt-3">
+              Driver du ett hundföretag?{" "}
+              <Link
+                href="/login"
+                className="text-slate-700 hover:text-slate-900 font-medium underline"
+              >
+                Logga in här istället
+              </Link>
+            </p>
           </div>
 
-          <p className="text-gray-600 mb-2">
-            Välkommen tillbaka! Logga in för att hantera dina bokningar.
-          </p>
-          <p className="text-sm text-gray-500">
-            Driver du ett hundföretag?{" "}
-            <Link
-              href="/login"
-              className="text-[#2c7a4c] hover:underline font-medium"
-            >
-              Logga in här istället
-            </Link>
-          </p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center">Kundinloggning</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {message && (
-              <div className="bg-green-50 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-lg mb-4 flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                <p className="text-sm">{message}</p>
-              </div>
-            )}
-
-            <form onSubmit={handleLogin} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  <Mail className="inline h-4 w-4 mr-1" />
-                  E-postadress
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                  placeholder="din@epost.se"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  <Lock className="inline h-4 w-4 mr-1" />
-                  Lösenord
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border rounded-lg px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all"
-                  placeholder="Ditt lösenord"
-                  required
-                />
-              </div>
-
-              {error && (
-                <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm">{error}</p>
+          {/* Login Card */}
+          <Card className="shadow-sm border-gray-200">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl font-semibold text-gray-900">
+                Kundinloggning
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              {/* Success Message */}
+              {message && (
+                <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-green-800">{message}</p>
                 </div>
               )}
 
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-[#2c7a4c] hover:bg-[#245a3e] h-12 text-base font-medium"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Loggar in...
-                  </span>
-                ) : (
-                  "Logga in"
+              {/* Login Form */}
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <Mail className="inline h-4 w-4 mr-1" />
+                    E-postadress
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all bg-white"
+                    placeholder="din@epost.se"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <Lock className="inline h-4 w-4 mr-1" />
+                    Lösenord
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all bg-white"
+                    placeholder="Ditt lösenord"
+                    required
+                  />
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-red-800">{error}</p>
+                  </div>
                 )}
-              </Button>
-            </form>
 
-            <div className="mt-6 text-center space-y-3">
-              <Link
-                href="/kundportal/forgot-password"
-                className="text-[#2c7a4c] hover:underline text-sm"
-              >
-                Glömt lösenord?
-              </Link>
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-slate-700 hover:bg-slate-800 text-white h-11 text-base font-medium rounded-lg transition-colors"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Loggar in...
+                    </span>
+                  ) : (
+                    "Logga in"
+                  )}
+                </Button>
+              </form>
 
-              <div className="border-t pt-3">
-                <p className="text-sm text-gray-600 mb-2">
-                  Har du inget konto än?
-                </p>
-                <Link href="/kundportal/registrera">
-                  <Button variant="outline" className="w-full">
-                    Skapa konto som hundägare
-                  </Button>
-                </Link>
+              {/* Links Section */}
+              <div className="space-y-4 pt-2">
+                <div className="text-center">
+                  <Link
+                    href="/kundportal/forgot-password"
+                    className="text-sm text-slate-700 hover:text-slate-900 hover:underline"
+                  >
+                    Glömt lösenord?
+                  </Link>
+                </div>
+
+                <div className="border-t border-gray-200 pt-4">
+                  <p className="text-sm text-gray-600 text-center mb-3">
+                    Har du inget konto än?
+                  </p>
+                  <Link href="/kundportal/registrera">
+                    <Button
+                      variant="outline"
+                      className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 h-11 rounded-lg"
+                    >
+                      Skapa konto som hundägare
+                    </Button>
+                  </Link>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Demo login för testning */}
-        <Card className="mt-4 bg-blue-50 border-blue-200">
-          <CardContent className="p-4">
-            <p className="text-sm text-blue-700 text-center mb-2">
-              <strong>För testning:</strong> Använd test-konto
+          {/* Test Account Info */}
+          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-sm font-medium text-blue-900 text-center mb-2">
+              För testning: Använd test-konto
             </p>
-            <p className="text-xs text-blue-600 text-center mb-3">
-              E-post: <strong>test@dogplanner.se</strong>
+            <p className="text-xs text-blue-700 text-center mb-3">
+              E-post: <span className="font-mono">test@dogplanner.se</span>
             </p>
             <Button
-              onClick={() => {
-                setEmail("test@dogplanner.se");
-              }}
+              onClick={() => setEmail("test@dogplanner.se")}
               variant="outline"
-              className="w-full border-blue-300 text-blue-700 hover:bg-blue-100"
+              className="w-full border-blue-300 text-blue-700 hover:bg-blue-100 h-9 text-sm"
             >
               Fyll i test-epost
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
