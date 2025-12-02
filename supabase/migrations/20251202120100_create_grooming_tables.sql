@@ -56,12 +56,6 @@ CREATE TABLE IF NOT EXISTS public.grooming_journal (
 -- Create grooming_prices table
 CREATE TABLE IF NOT EXISTS public.grooming_prices (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID NOT NULL REFERENCES organisations(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
--- Create grooming_prices table
-CREATE TABLE IF NOT EXISTS public.grooming_prices (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   org_id UUID REFERENCES orgs(id) ON DELETE CASCADE,
   service_name TEXT NOT NULL,
   service_type TEXT NOT NULL,
@@ -75,17 +69,23 @@ CREATE TABLE IF NOT EXISTS public.grooming_prices (
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
-);EATE INDEX IF NOT EXISTS idx_grooming_bookings_status ON public.grooming_bookings(status);
+);
 
-CREATE INDEX IF NOT EXISTS idx_grooming_journal_org_id ON public.grooming_journal(org_id);
-CREATE INDEX IF NOT EXISTS idx_grooming_journal_booking_id ON public.grooming_journal(booking_id);
-CREATE INDEX IF NOT EXISTS idx_grooming_journal_dog_id ON public.grooming_journal(dog_id);
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_grooming_bookings_org_date ON public.grooming_bookings(org_id, appointment_date);
 CREATE INDEX IF NOT EXISTS idx_grooming_bookings_dog_id ON public.grooming_bookings(dog_id);
 CREATE INDEX IF NOT EXISTS idx_grooming_bookings_status ON public.grooming_bookings(status);
 
+CREATE INDEX IF NOT EXISTS idx_grooming_journal_org_date ON public.grooming_journal(org_id, appointment_date);
+CREATE INDEX IF NOT EXISTS idx_grooming_journal_dog_id ON public.grooming_journal(dog_id);
+CREATE INDEX IF NOT EXISTS idx_grooming_journal_booking_id ON public.grooming_journal(booking_id);
+
+CREATE INDEX IF NOT EXISTS idx_grooming_prices_org_id ON public.grooming_prices(org_id);
+CREATE INDEX IF NOT EXISTS idx_grooming_prices_active ON public.grooming_prices(is_active);
+
 -- Create updated_at trigger for grooming_prices
+CREATE OR REPLACE FUNCTION public.update_grooming_price_updated_at()
+RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
