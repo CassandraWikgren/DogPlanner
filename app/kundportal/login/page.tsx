@@ -126,14 +126,14 @@ function LoginPageContent() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           {/* Title Section */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Logga in som hundägare
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm text-gray-600">
               Välkommen tillbaka! Logga in för att hantera dina bokningar.
             </p>
-            <p className="text-sm text-gray-500 mt-3">
+            <p className="text-xs text-gray-500 mt-3">
               Driver du ett hundföretag?{" "}
               <Link
                 href="/login"
@@ -147,11 +147,11 @@ function LoginPageContent() {
           {/* Login Card */}
           <Card className="shadow-sm border-gray-200">
             <CardHeader className="pb-4">
-              <CardTitle className="text-xl font-semibold text-gray-900">
+              <CardTitle className="text-lg font-semibold text-gray-900">
                 Kundinloggning
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-5">
+            <CardContent className="space-y-4">
               {/* Success Message */}
               {message && (
                 <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 flex items-start gap-3">
@@ -204,7 +204,7 @@ function LoginPageContent() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-slate-700 hover:bg-slate-800 text-white h-11 text-base font-medium rounded-lg transition-colors"
+                  className="w-full bg-slate-700 hover:bg-slate-800 text-white h-10 text-base font-medium rounded-lg"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -218,7 +218,7 @@ function LoginPageContent() {
               </form>
 
               {/* Links Section */}
-              <div className="space-y-4 pt-2">
+              <div className="space-y-3 pt-2">
                 <div className="text-center">
                   <Link
                     href="/kundportal/forgot-password"

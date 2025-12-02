@@ -100,19 +100,19 @@ export default function LoginPage() {
       : null;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-10 border border-gray-100">
-        <h1 className="text-3xl font-bold text-[#2c7a4c] text-center mb-2">
+    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-sm p-8 border border-gray-200">
+        <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
           {resetMode ? "Återställ lösenord" : "Logga in som företag"}
         </h1>
-        <p className="text-center text-gray-600 text-sm mb-6">
+        <p className="text-center text-sm text-gray-600 mb-4">
           För hundföretag och verksamheter
         </p>
-        <p className="text-center text-xs text-gray-500 mb-8 pb-4 border-b">
+        <p className="text-center text-xs text-gray-500 mb-6 pb-4 border-b">
           Hundägare?{" "}
           <a
             href="/kundportal/login"
-            className="text-[#2c7a4c] hover:underline font-medium"
+            className="text-slate-700 hover:text-slate-900 font-medium underline"
           >
             Logga in här istället
           </a>
@@ -120,10 +120,10 @@ export default function LoginPage() {
 
         <form
           onSubmit={resetMode ? handleResetPassword : handleLogin}
-          className="space-y-6"
+          className="space-y-4"
         >
           <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-900">
+            <label className="block text-sm font-medium mb-1.5 text-gray-700">
               E-postadress
             </label>
             <input
@@ -132,13 +132,13 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="exempel@hunddagis.se"
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white text-base"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent bg-white text-base"
             />
           </div>
 
           {!resetMode && (
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">
+              <label className="block text-sm font-medium mb-1.5 text-gray-700">
                 Lösenord
               </label>
               <input
@@ -147,18 +147,18 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white text-base"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent bg-white text-base"
               />
             </div>
           )}
 
           {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700 text-sm font-medium">
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700 text-sm">
               {error}
             </div>
           )}
           {message && (
-            <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-700 text-sm font-medium">
+            <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-700 text-sm">
               {message}
             </div>
           )}
@@ -166,7 +166,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white font-bold py-4 rounded-lg transition disabled:opacity-60 shadow-sm text-lg"
+            className="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2.5 rounded-lg transition disabled:opacity-60 text-base"
           >
             {loading
               ? "Bearbetar..."
@@ -177,14 +177,14 @@ export default function LoginPage() {
         </form>
 
         {!resetMode && (
-          <div className="text-center mt-6">
+          <div className="text-center mt-4">
             <button
               onClick={() => {
                 setResetMode(true);
                 setError(null);
                 setMessage(null);
               }}
-              className="text-sm text-gray-600 hover:text-[#2c7a4c] font-medium transition"
+              className="text-sm text-slate-700 hover:text-slate-900 hover:underline"
             >
               Har du glömt ditt lösenord?
             </button>
@@ -192,14 +192,14 @@ export default function LoginPage() {
         )}
 
         {resetMode && (
-          <div className="text-center mt-6">
+          <div className="text-center mt-4">
             <button
               onClick={() => {
                 setResetMode(false);
                 setError(null);
                 setMessage(null);
               }}
-              className="text-sm text-[#2c7a4c] hover:text-[#236139] font-semibold transition"
+              className="text-sm text-slate-700 hover:text-slate-900 font-medium"
             >
               Tillbaka till inloggning
             </button>
@@ -207,11 +207,11 @@ export default function LoginPage() {
         )}
 
         {!resetMode && (
-          <p className="text-center text-base text-gray-700 mt-6 pt-6 border-t border-gray-200">
+          <p className="text-center text-sm text-gray-700 mt-4 pt-4 border-t border-gray-200">
             Har du inget konto?{" "}
             <a
               href="/register"
-              className="text-[#2c7a4c] font-bold hover:text-[#236139] transition"
+              className="text-slate-700 font-medium hover:text-slate-900"
             >
               Skapa konto
             </a>
