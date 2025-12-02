@@ -455,7 +455,7 @@ export default function GroomingPricesPage() {
                       }));
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
@@ -479,6 +479,7 @@ export default function GroomingPricesPage() {
                       }))
                     }
                     placeholder="t.ex. Badning"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
 
@@ -493,7 +494,7 @@ export default function GroomingPricesPage() {
                       }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
@@ -520,7 +521,7 @@ export default function GroomingPricesPage() {
                       }))
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-gray-900 z-[100] shadow-xl border-2 border-gray-200">
@@ -553,6 +554,7 @@ export default function GroomingPricesPage() {
                       }))
                     }
                     placeholder="t.ex. 300"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
 
@@ -570,6 +572,7 @@ export default function GroomingPricesPage() {
                       }))
                     }
                     placeholder="60"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
 
@@ -584,6 +587,7 @@ export default function GroomingPricesPage() {
                       }))
                     }
                     placeholder="t.ex. Grundläggande badning med hundschampo"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
               </div>
