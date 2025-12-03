@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
                   timme.
                 </p>
                 <Link href="/kundportal/login">
-                  <Button className="w-full bg-slate-700 hover:bg-slate-800">
+                  <Button className="w-full bg-[#2c7a4c] hover:bg-[#236139]">
                     Tillbaka till inloggning
                   </Button>
                 </Link>

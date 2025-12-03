@@ -616,7 +616,7 @@ export default function NyBokning() {
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         customerType === "existing"
-                          ? "bg-slate-700 text-white"
+                          ? "bg-[#2c7a4c] text-white"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
@@ -648,7 +648,7 @@ export default function NyBokning() {
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         customerType === "walkin"
-                          ? "bg-slate-700 text-white"
+                          ? "bg-[#2c7a4c] text-white"
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
@@ -1129,7 +1129,7 @@ export default function NyBokning() {
                                   s.dog_size === service.dog_size &&
                                   s.coat_type === service.coat_type
                               )
-                                ? "border-slate-700 bg-slate-700 shadow-sm"
+                                ? "border-[#2c7a4c] bg-[#2c7a4c] shadow-sm"
                                 : "border-gray-200 hover:border-slate-400 hover:bg-gray-50"
                             }`}
                           >
@@ -1344,7 +1344,7 @@ export default function NyBokning() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 bg-slate-700 hover:bg-slate-800"
+                className="flex-1 bg-[#2c7a4c] hover:bg-[#236139]"
                 size="sm"
               >
                 {submitting ? "Sparar..." : "Skapa Bokning"}

@@ -716,7 +716,7 @@ För att implementera denna design på alla sidor:
 
 ### Steg 1: Uppdatera alla DATA-SIDOR
 
-- [ ] Hunddag is
+- [ ] Hunddagis
 - [ ] Hundpensionat
 - [ ] Ekonomi
 - [ ] Rum
