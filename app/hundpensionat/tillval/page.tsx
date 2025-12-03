@@ -490,7 +490,7 @@ export default function TillvalstjansterPage() {
             )}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

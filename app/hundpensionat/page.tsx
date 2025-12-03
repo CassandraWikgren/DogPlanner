@@ -837,7 +837,7 @@ export default function HundpensionatPage() {
             </p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

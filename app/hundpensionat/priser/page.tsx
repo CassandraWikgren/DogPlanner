@@ -750,7 +750,7 @@ export default function PriserPage() {
             </p>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

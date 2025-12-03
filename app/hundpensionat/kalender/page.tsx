@@ -1159,7 +1159,7 @@ export default function KalenderPage() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

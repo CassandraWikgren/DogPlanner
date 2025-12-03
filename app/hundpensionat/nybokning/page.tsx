@@ -823,7 +823,7 @@ export default function NewPensionatBooking() {
             </form>
           )}
         </div>
-      </div>
+      </main>
 
       {/* MODALS */}
 
