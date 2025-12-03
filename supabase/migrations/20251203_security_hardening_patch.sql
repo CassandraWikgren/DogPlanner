@@ -156,12 +156,21 @@ COMMENT ON VIEW internal.rls_audit IS
 -- ============================================================
 -- ✅ SECURITY HARDENING PATCH COMPLETE
 -- ============================================================
--- Verify with:
---   SELECT * FROM internal.rls_audit WHERE status LIKE 'ERROR%' OR status LIKE 'WARNING%';
---   SELECT * FROM internal.users_without_org LIMIT 5;  -- (via service_role only)
---   SELECT schemaname, viewname FROM pg_views WHERE viewname = 'users_without_org';
 -- 
--- Expected results:
--- - No errors in rls_audit
--- - users_without_org only exists in internal schema
--- - boarding_prices and system_config have RLS enabled
+-- VIKTIGT: Efter migreringen, kör dessa verifieringsfrågor MANUELLT:
+--
+-- 1. Kontrollera RLS-status:
+--    SELECT * FROM internal.rls_audit WHERE status LIKE 'ERROR%' OR status LIKE 'WARNING%';
+--
+-- 2. Kontrollera users_without_org flyttad:
+--    SELECT schemaname, viewname FROM pg_views WHERE viewname = 'users_without_org';
+--
+-- 3. Kontrollera RLS på specifika tabeller:
+--    SELECT relname, relrowsecurity 
+--    FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace 
+--    WHERE n.nspname='public' AND relname IN ('boarding_prices','system_config');
+--
+-- Förväntade resultat:
+-- - Inga ERROR i rls_audit
+-- - users_without_org finns bara i internal schema
+-- - boarding_prices och system_config har relrowsecurity = true
