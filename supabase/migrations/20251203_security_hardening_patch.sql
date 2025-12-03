@@ -52,8 +52,7 @@ BEGIN
     -- Create safer version in internal using only profiles
     CREATE OR REPLACE VIEW internal.users_without_org AS
     SELECT 
-      p.user_id,
-      p.id AS profile_id,
+      p.id AS user_id,
       p.created_at,
       p.full_name,
       p.email
