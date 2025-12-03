@@ -25,12 +25,10 @@ BEGIN
     END IF;
 
     -- Recreate the view in internal based ONLY on profiles
-    EXECUTE $$
-      CREATE OR REPLACE VIEW internal.users_without_org AS
-      SELECT p.user_id
-      FROM public.profiles p
-      WHERE p.org_id IS NULL;
-    $$;
+    EXECUTE 'CREATE OR REPLACE VIEW internal.users_without_org AS\n'
+         || 'SELECT p.user_id\n'
+         || 'FROM public.profiles p\n'
+         || 'WHERE p.org_id IS NULL;';
 
     -- Drop the public view
     EXECUTE 'DROP VIEW IF EXISTS public.users_without_org';
@@ -59,32 +57,26 @@ BEGIN
   IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='invoice_runs_summary') THEN
     EXECUTE 'DROP VIEW public.invoice_runs_summary';
     -- Recreate minimal safe version (adjust SELECT as per actual implementation)
-    EXECUTE $$
-      CREATE VIEW public.invoice_runs_summary AS
-      SELECT ir.id, ir.month_id, ir.status, ir.created_at
-      FROM public.invoice_runs ir;
-    $$;
+    EXECUTE 'CREATE VIEW public.invoice_runs_summary AS\n'
+         || 'SELECT ir.id, ir.month_id, ir.status, ir.created_at\n'
+         || 'FROM public.invoice_runs ir;';
   END IF;
 
   IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='trigger_health_summary') THEN
     EXECUTE 'DROP VIEW public.trigger_health_summary';
-    EXECUTE $$
-      CREATE VIEW public.trigger_health_summary AS
-      SELECT tg.tgname AS trigger_name, c.relname AS table_name
-      FROM pg_trigger tg
-      JOIN pg_class c ON c.oid = tg.tgrelid
-      WHERE tg.tgisinternal = false;
-    $$;
+    EXECUTE 'CREATE VIEW public.trigger_health_summary AS\n'
+         || 'SELECT tg.tgname AS trigger_name, c.relname AS table_name\n'
+         || 'FROM pg_trigger tg\n'
+         || 'JOIN pg_class c ON c.oid = tg.tgrelid\n'
+         || 'WHERE tg.tgisinternal = false;';
   END IF;
 
   IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='recent_trigger_failures') THEN
     EXECUTE 'DROP VIEW public.recent_trigger_failures';
-    EXECUTE $$
-      CREATE VIEW public.recent_trigger_failures AS
-      SELECT id, trigger_name, error_message, created_at
-      FROM public.trigger_logs
-      WHERE created_at > now() - interval '30 days';
-    $$;
+    EXECUTE 'CREATE VIEW public.recent_trigger_failures AS\n'
+         || 'SELECT id, trigger_name, error_message, created_at\n'
+         || 'FROM public.trigger_logs\n'
+         || 'WHERE created_at > now() - interval ''30 days'';';
   END IF;
 END$$;
 
