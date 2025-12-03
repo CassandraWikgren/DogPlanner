@@ -9,6 +9,14 @@
 -- Notes: All operations check current state first
 -- ============================================================
 
+-- 0) Ensure internal schema exists first (needed for views)
+CREATE SCHEMA IF NOT EXISTS internal;
+
+-- Grant access to internal schema for service_role
+GRANT USAGE ON SCHEMA internal TO service_role;
+GRANT SELECT ON ALL TABLES IN SCHEMA internal TO service_role;
+GRANT SELECT ON ALL SEQUENCES IN SCHEMA internal TO service_role;
+
 -- 1) Force-enable RLS on tables that still lack it
 -- Check first if they exist and lack RLS
 DO $$
@@ -41,12 +49,6 @@ BEGIN
   WHERE schemaname = 'public' AND viewname = 'users_without_org';
   
   IF FOUND AND view_def ILIKE '%auth.users%' THEN
-    -- Create internal schema if missing
-    IF NOT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'internal') THEN
-      CREATE SCHEMA internal;
-      RAISE NOTICE 'Created schema: internal';
-    END IF;
-
     -- Create safer version in internal using only profiles
     CREATE OR REPLACE VIEW internal.users_without_org AS
     SELECT 
@@ -117,6 +119,7 @@ BEGIN
 END$$;
 
 -- 4) Create RLS audit view for ongoing monitoring
+-- (Must be after internal schema creation)
 CREATE OR REPLACE VIEW internal.rls_audit AS
 SELECT 
   c.relname AS table_name,
@@ -149,12 +152,6 @@ ORDER BY
 
 COMMENT ON VIEW internal.rls_audit IS 
 'RLS status audit for all public tables. Check regularly to ensure security compliance.';
-
--- 5) Grant access to internal views for service_role
--- (authenticated users should not access internal.* directly)
-GRANT USAGE ON SCHEMA internal TO service_role;
-GRANT SELECT ON ALL TABLES IN SCHEMA internal TO service_role;
-GRANT SELECT ON ALL SEQUENCES IN SCHEMA internal TO service_role;
 
 -- ============================================================
 -- ✅ SECURITY HARDENING PATCH COMPLETE
