@@ -19,34 +19,37 @@ BEGIN
     WHERE schemaname = 'public' AND viewname = 'users_without_org'
   ) THEN
     -- Create internal schema if missing
-    PERFORM 1 FROM pg_namespace WHERE nspname = 'internal';
-    IF NOT FOUND THEN
-      EXECUTE 'CREATE SCHEMA internal';
+    IF NOT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'internal') THEN
+      CREATE SCHEMA internal;
     END IF;
 
     -- Recreate the view in internal based ONLY on profiles
-    EXECUTE 'CREATE OR REPLACE VIEW internal.users_without_org AS\n'
-         || 'SELECT p.user_id\n'
-         || 'FROM public.profiles p\n'
-         || 'WHERE p.org_id IS NULL;';
+    EXECUTE 'CREATE OR REPLACE VIEW internal.users_without_org AS ' ||
+            'SELECT p.id AS user_id, p.created_at, p.full_name, p.email ' ||
+            'FROM public.profiles p WHERE p.org_id IS NULL';
 
     -- Drop the public view
-    EXECUTE 'DROP VIEW IF EXISTS public.users_without_org';
+    DROP VIEW IF EXISTS public.users_without_org;
   END IF;
 END$$;
 
 -- 2) Enable RLS on public tables that have policies but RLS disabled
 -- Guarded enables (no error if already enabled)
 DO $$
+DECLARE
+  tbl TEXT;
 BEGIN
-  FOR r IN SELECT relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-           WHERE n.nspname = 'public' AND c.relkind = 'r'
-             AND relname IN (
-               'bookings','consent_logs','dogs','owners','org_subscriptions',
-               'invoice_counters','subscription_types','gdpr_deletion_log','boarding_prices','system_config'
-             )
+  FOR tbl IN 
+    SELECT c.relname 
+    FROM pg_class c 
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public' AND c.relkind = 'r'
+      AND c.relname IN (
+        'bookings','consent_logs','dogs','owners','org_subscriptions',
+        'invoice_counters','subscription_types','gdpr_deletion_log','boarding_prices','system_config'
+      )
   LOOP
-    EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', r.relname);
+    EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', tbl);
   END LOOP;
 END$$;
 
@@ -55,28 +58,37 @@ END$$;
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='invoice_runs_summary') THEN
-    EXECUTE 'DROP VIEW public.invoice_runs_summary';
-    -- Recreate minimal safe version (adjust SELECT as per actual implementation)
-    EXECUTE 'CREATE VIEW public.invoice_runs_summary AS\n'
-         || 'SELECT ir.id, ir.month_id, ir.status, ir.created_at\n'
-         || 'FROM public.invoice_runs ir;';
+    DROP VIEW public.invoice_runs_summary;
+    -- Recreate from actual view definition
+    EXECUTE 'CREATE VIEW public.invoice_runs_summary AS ' ||
+            'SELECT month_id, count(*) AS total_runs, ' ||
+            'count(*) FILTER (WHERE status = ''success'') AS successful_runs, ' ||
+            'count(*) FILTER (WHERE status = ''failed'') AS failed_runs, ' ||
+            'sum(invoices_created) AS total_invoices_created, ' ||
+            'max(run_at) AS last_run_at ' ||
+            'FROM invoice_runs GROUP BY month_id ORDER BY month_id DESC';
   END IF;
 
   IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='trigger_health_summary') THEN
-    EXECUTE 'DROP VIEW public.trigger_health_summary';
-    EXECUTE 'CREATE VIEW public.trigger_health_summary AS\n'
-         || 'SELECT tg.tgname AS trigger_name, c.relname AS table_name\n'
-         || 'FROM pg_trigger tg\n'
-         || 'JOIN pg_class c ON c.oid = tg.tgrelid\n'
-         || 'WHERE tg.tgisinternal = false;';
+    DROP VIEW public.trigger_health_summary;
+    EXECUTE 'CREATE VIEW public.trigger_health_summary AS ' ||
+            'SELECT trigger_name, table_name, count(*) AS total_executions, ' ||
+            'count(*) FILTER (WHERE success = true) AS successful, ' ||
+            'count(*) FILTER (WHERE success = false) AS failed, ' ||
+            'round(avg(execution_time_ms), 2) AS avg_execution_ms, ' ||
+            'max(executed_at) AS last_execution ' ||
+            'FROM trigger_execution_log WHERE executed_at > now() - interval ''24 hours'' ' ||
+            'GROUP BY trigger_name, table_name ' ||
+            'ORDER BY count(*) FILTER (WHERE success = false) DESC, count(*) DESC';
   END IF;
 
   IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname='public' AND viewname='recent_trigger_failures') THEN
-    EXECUTE 'DROP VIEW public.recent_trigger_failures';
-    EXECUTE 'CREATE VIEW public.recent_trigger_failures AS\n'
-         || 'SELECT id, trigger_name, error_message, created_at\n'
-         || 'FROM public.trigger_logs\n'
-         || 'WHERE created_at > now() - interval ''30 days'';';
+    DROP VIEW public.recent_trigger_failures;
+    EXECUTE 'CREATE VIEW public.recent_trigger_failures AS ' ||
+            'SELECT id, trigger_name, table_name, operation, row_id, error_message, new_data, executed_at ' ||
+            'FROM trigger_execution_log ' ||
+            'WHERE success = false AND executed_at > now() - interval ''7 days'' ' ||
+            'ORDER BY executed_at DESC LIMIT 100';
   END IF;
 END$$;
 
