@@ -456,14 +456,14 @@ export default function HundpensionatPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/hundpensionat/nybokning"
-              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
             >
               <Plus className="h-4 w-4 mr-2" />
               Ny bokning
             </Link>
             <Link
               href="/hundpensionat/ansokningar"
-              className="relative inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-gray-500 hover:bg-gray-600 shadow-sm transition-colors"
+              className="relative inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-gray-500 hover:bg-gray-600 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
               <ClipboardList className="h-4 w-4 mr-2" />
               Ansökningar
@@ -476,7 +476,7 @@ export default function HundpensionatPage() {
             <button
               onClick={loadBookings}
               disabled={isLoading}
-              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors disabled:opacity-50"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 disabled:opacity-50"
             >
               <RefreshCcw
                 className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
@@ -760,27 +760,27 @@ export default function HundpensionatPage() {
                     </td>
                   </tr>
                 ) : (
-                  sorted.map((booking) => (
+                  sorted.map((booking, index) => (
                     <tr
                       key={booking.id}
-                      className="hover:bg-emerald-50/50 transition-colors"
+                      className={`cursor-pointer transition-colors ${index % 2 === 0 ? "bg-white hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-100"}`}
                     >
-                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.rooms?.name ?? "—"}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.dogs?.name ?? "—"}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.dogs?.owners?.full_name ?? "—"}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.start_date}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.end_date}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm">
+                      <td className="px-4 py-2.5 whitespace-nowrap text-sm">
                         <span
                           className={`px-2 py-1 inline-flex items-center text-xs font-medium rounded-full ${
                             booking.status === "confirmed"
@@ -798,12 +798,12 @@ export default function HundpensionatPage() {
                           {booking.status || "—"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm font-semibold text-gray-900">
+                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.total_price
                           ? `${Number(booking.total_price).toLocaleString()} kr`
                           : "—"}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.discount_amount
                           ? `${Number(booking.discount_amount).toLocaleString()} kr`
                           : "—"}
