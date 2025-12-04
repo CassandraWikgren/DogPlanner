@@ -224,7 +224,7 @@ export default function ForetagsInfoPage() {
         )}
 
         <Tabs defaultValue="general" className="space-y-6">
-          <TabsList>
+          <TabsList className="gap-2">
             <TabsTrigger value="general">Allmänt</TabsTrigger>
             <TabsTrigger value="email">Email-inställningar</TabsTrigger>
             <TabsTrigger value="billing">Fakturering</TabsTrigger>
