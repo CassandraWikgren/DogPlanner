@@ -416,7 +416,7 @@ export default function HundpensionatPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+              <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
                 Hundpensionat
               </h1>
               <p className="mt-1 text-base text-gray-600">
