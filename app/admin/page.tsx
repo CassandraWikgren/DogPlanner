@@ -32,9 +32,9 @@ export default function AdminPage() {
         {/* Statistik-sektion */}
         {currentOrgId && (
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-5">
               <div className="w-1 h-6 bg-[#2c7a4c] rounded-full"></div>
-              <h2 className="text-xl font-bold text-[#333333]">Översikt</h2>
+              <h2 className="text-lg font-semibold text-[#2c7a4c]">Översikt</h2>
             </div>
             <DashboardWidgets />
           </div>
@@ -42,50 +42,56 @@ export default function AdminPage() {
 
         {/* Åtgärder - Grid enligt stilguide */}
         <div>
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-5">
             <div className="w-1 h-6 bg-[#2c7a4c] rounded-full"></div>
-            <h2 className="text-xl font-bold text-[#333333]">Hantera</h2>
+            <h2 className="text-lg font-semibold text-[#2c7a4c]">Hantera</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Rapporter */}
             <Link href="/admin/rapporter">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center hover:border-[#2c7a4c] transition group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="text-3xl mb-2">📊</div>
-                <h3 className="text-base font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
-                  Rapporter & Statistik
-                </h3>
-                <p className="text-sm text-gray-600 text-center">
-                  Intäkter, beläggning och bokningsstatistik. Exportera till
-                  Excel.
-                </p>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
+                    Rapporter & Statistik
+                  </h3>
+                  <p className="text-xs text-gray-600 text-center">
+                    Intäkter, beläggning och bokningsstatistik. Exportera till
+                    Excel.
+                  </p>
+                </div>
               </div>
             </Link>
 
             {/* Ekonomi & Fakturor */}
             <Link href="/ekonomi">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center hover:border-[#2c7a4c] transition group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="text-3xl mb-2">💰</div>
-                <h3 className="text-base font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
-                  Ekonomi & Fakturor
-                </h3>
-                <p className="text-sm text-gray-600 text-center">
-                  Hantera fakturor, betalningar och ekonomirapporter.
-                </p>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
+                    Ekonomi & Fakturor
+                  </h3>
+                  <p className="text-xs text-gray-600 text-center">
+                    Hantera fakturor, betalningar och ekonomirapporter.
+                  </p>
+                </div>
               </div>
             </Link>
 
             {/* Priser - Hunddagis */}
             <ServiceGuard service="daycare">
               <Link href="/admin/priser/dagis">
-                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center hover:border-[#2c7a4c] transition group">
+                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                   <div className="text-3xl mb-2">🐕</div>
-                  <h3 className="text-base font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
-                    Priser - Hunddagis
-                  </h3>
-                  <p className="text-sm text-gray-600 text-center">
-                    Ändra priser för dagisabonnemang och enstaka dagar.
-                  </p>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
+                      Priser - Hunddagis
+                    </h3>
+                    <p className="text-xs text-gray-600 text-center">
+                      Ändra priser för dagisabonnemang och enstaka dagar.
+                    </p>
+                  </div>
                 </div>
               </Link>
             </ServiceGuard>
@@ -93,14 +99,16 @@ export default function AdminPage() {
             {/* Priser - Hundpensionat */}
             <ServiceGuard service="boarding">
               <Link href="/admin/priser/pensionat">
-                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center hover:border-[#2c7a4c] transition group">
+                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                   <div className="text-3xl mb-2">🏨</div>
-                  <h3 className="text-base font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
-                    Priser - Pensionat
-                  </h3>
-                  <p className="text-sm text-gray-600 text-center">
-                    Ändra priser för pensionatsbokningar och tilläggstjänster.
-                  </p>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
+                      Priser - Pensionat
+                    </h3>
+                    <p className="text-xs text-gray-600 text-center">
+                      Ändra priser för pensionatsbokningar och tilläggstjänster.
+                    </p>
+                  </div>
                 </div>
               </Link>
             </ServiceGuard>
@@ -108,80 +116,92 @@ export default function AdminPage() {
             {/* Priser - Hundfrisör */}
             <ServiceGuard service="grooming">
               <Link href="/admin/hundfrisor/priser">
-                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center hover:border-[#2c7a4c] transition group">
+                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                   <div className="text-3xl mb-2">✂️</div>
-                  <h3 className="text-base font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
-                    Priser - Frisör
-                  </h3>
-                  <p className="text-sm text-gray-600 text-center">
-                    Ändra priser för klippning, bad och pälsvård.
-                  </p>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
+                      Priser - Frisör
+                    </h3>
+                    <p className="text-xs text-gray-600 text-center">
+                      Ändra priser för klippning, bad och pälsvård.
+                    </p>
+                  </div>
                 </div>
               </Link>
             </ServiceGuard>
 
             {/* Företagsinformation */}
             <Link href="/foretagsinformation">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center hover:border-[#2c7a4c] transition group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="text-3xl mb-2">🏢</div>
-                <h3 className="text-base font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
-                  Företagsinformation
-                </h3>
-                <p className="text-sm text-gray-600 text-center">
-                  Hantera företagsuppgifter, kontaktinfo och adress.
-                </p>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
+                    Företagsinformation
+                  </h3>
+                  <p className="text-xs text-gray-600 text-center">
+                    Hantera företagsuppgifter, kontaktinfo och adress.
+                  </p>
+                </div>
               </div>
             </Link>
 
             {/* Kunder & Hundägare */}
             <Link href="/owners">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center hover:border-[#2c7a4c] transition group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="text-3xl mb-2">👥</div>
-                <h3 className="text-base font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
-                  Kunder & Hundägare
-                </h3>
-                <p className="text-sm text-gray-600 text-center">
-                  Hantera kundregister och kontaktuppgifter.
-                </p>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
+                    Kunder & Hundägare
+                  </h3>
+                  <p className="text-xs text-gray-600 text-center">
+                    Hantera kundregister och kontaktuppgifter.
+                  </p>
+                </div>
               </div>
             </Link>
 
             {/* Rum-hantering */}
             <Link href="/admin/rum">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center hover:border-[#2c7a4c] transition group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="text-3xl mb-2">🚪</div>
-                <h3 className="text-base font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
-                  Rum & Platser
-                </h3>
-                <p className="text-sm text-gray-600 text-center">
-                  Hantera rum för dagis och pensionat.
-                </p>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
+                    Rum & Platser
+                  </h3>
+                  <p className="text-xs text-gray-600 text-center">
+                    Hantera rum för dagis och pensionat.
+                  </p>
+                </div>
               </div>
             </Link>
 
             {/* Användarhantering */}
             <Link href="/admin/users">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center hover:border-[#2c7a4c] transition group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="text-3xl mb-2">🔐</div>
-                <h3 className="text-base font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
-                  Användarhantering
-                </h3>
-                <p className="text-sm text-gray-600 text-center">
-                  Skapa inlogg för kollegor och hantera behörigheter.
-                </p>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
+                    Användarhantering
+                  </h3>
+                  <p className="text-xs text-gray-600 text-center">
+                    Skapa inlogg för kollegor och hantera behörigheter.
+                  </p>
+                </div>
               </div>
             </Link>
 
             {/* Abonnemang DogPlanner */}
             <Link href="/admin/abonnemang">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center hover:border-[#2c7a4c] transition group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="text-3xl mb-2">💳</div>
-                <h3 className="text-base font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
-                  Ditt Abonnemang
-                </h3>
-                <p className="text-sm text-gray-600 text-center">
-                  Hantera ditt DogPlanner-abonnemang och betalning.
-                </p>
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] mb-1 text-center">
+                    Ditt Abonnemang
+                  </h3>
+                  <p className="text-xs text-gray-600 text-center">
+                    Hantera ditt DogPlanner-abonnemang och betalning.
+                  </p>
+                </div>
               </div>
             </Link>
           </div>
