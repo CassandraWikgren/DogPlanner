@@ -410,7 +410,7 @@ export default function HundpensionatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
       {/* Header - enligt DESIGN_STANDARD_IMPLEMENTATION.md */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -834,6 +834,6 @@ export default function HundpensionatPage() {
           </div>
         )}
       </main>
-    </div>
+    </>
   );
 }
