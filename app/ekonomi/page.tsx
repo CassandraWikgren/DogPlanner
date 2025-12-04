@@ -366,10 +366,17 @@ export default function FakturaPage() {
       const response = await fetch(`/api/invoices/${invoiceId}/pdf`);
 
       if (!response.ok) {
-        throw new Error("Kunde inte generera PDF");
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData?.details || `HTTP ${response.status}`;
+        throw new Error(`PDF-generering misslyckades: ${errorMessage}`);
       }
 
       const blob = await response.blob();
+
+      if (blob.size === 0) {
+        throw new Error("PDF-filen är tom");
+      }
+
       const url = window.URL.createObjectURL(blob);
 
       // Öppna PDF i ny flik först (för att visa)
@@ -383,10 +390,10 @@ export default function FakturaPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error downloading PDF:", error);
       alert(
-        "Kunde inte generera PDF. Kontrollera att fakturan har kompletta uppgifter."
+        `❌ Kunde inte generera PDF:\n\n${error.message}\n\nKontrollera att fakturan har:\n- Organisationens betalningsinformation\n- Kundadress\n- Fakturarader`
       );
     } finally {
       setDownloadingPdf(null);
