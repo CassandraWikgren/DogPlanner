@@ -458,7 +458,7 @@ export default function FakturaPage() {
         <div className="flex justify-between items-center mb-6">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#2c7a4c] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#2c7a4c] transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 rounded-md"
           >
             <ArrowLeft className="h-4 w-4" />
             Tillbaka till Dashboard
@@ -466,14 +466,14 @@ export default function FakturaPage() {
           <div className="flex gap-3">
             <Link
               href="/faktura?new=true"
-              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
             >
               <Plus className="h-4 w-4 mr-2" />
               Ny faktura
             </Link>
             <Link
               href="/faktura"
-              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
             >
               <FileText className="h-4 w-4 mr-2" />
               Alla fakturor
@@ -497,7 +497,7 @@ export default function FakturaPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-10 px-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-base"
+              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 text-base"
             >
               <option value="all">Alla status</option>
               <option value="draft">Utkast</option>
@@ -508,7 +508,7 @@ export default function FakturaPage() {
             <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
-              className="h-10 px-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-base"
+              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 text-base"
             >
               <option value="all">Alla perioder</option>
               <option value="this-month">Denna månad</option>
@@ -521,7 +521,7 @@ export default function FakturaPage() {
                 setStatusFilter("all");
                 setDateFilter("all");
               }}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="h-10 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
             >
               Rensa filter
             </button>
@@ -698,7 +698,7 @@ export default function FakturaPage() {
                       )
                     }
                     disabled={downloadingPdf === invoice.id}
-                    className="border-gray-300 hover:bg-gray-50"
+                    className="border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                   >
                     {downloadingPdf === invoice.id ? (
                       <>
@@ -717,7 +717,7 @@ export default function FakturaPage() {
                     <Button
                       onClick={() => sendInvoiceEmail(invoice.id)}
                       disabled={sendingInvoice === invoice.id}
-                      className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+                      className="bg-[#2c7a4c] hover:bg-[#236139] text-white focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                       size="sm"
                     >
                       <Send className="h-4 w-4 mr-2" />
@@ -730,7 +730,7 @@ export default function FakturaPage() {
                   {invoice.status === "sent" && (
                     <Button
                       onClick={() => updateInvoiceStatus(invoice.id, "paid")}
-                      className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+                      className="bg-[#2c7a4c] hover:bg-[#236139] text-white focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                       size="sm"
                     >
                       <CheckCircle className="h-4 w-4 mr-2" />
@@ -757,7 +757,7 @@ export default function FakturaPage() {
                   : "Skapa din första faktura för att komma igång med faktureringen."}
               </p>
               <Link href="/faktura/new">
-                <Button className="bg-[#2c7a4c] hover:bg-[#236139] text-white">
+                <Button className="bg-[#2c7a4c] hover:bg-[#236139] text-white focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2">
                   <Plus className="h-4 w-4 mr-2" />
                   Skapa första fakturan
                 </Button>
