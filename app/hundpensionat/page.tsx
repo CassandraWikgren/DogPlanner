@@ -660,11 +660,11 @@ export default function HundpensionatPage() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gradient-to-r from-[#2c7a4c] to-[#236139]">
+              <thead className="bg-[#2c7a4c] text-white">
                 <tr>
                   <th
                     onClick={() => handleSort("room")}
-                    className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
+                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
                   >
                     <div className="flex items-center gap-1">
                       Rum {sortKey === "room" && (sortAsc ? "↑" : "↓")}
@@ -672,7 +672,7 @@ export default function HundpensionatPage() {
                   </th>
                   <th
                     onClick={() => handleSort("dog")}
-                    className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
+                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
                   >
                     <div className="flex items-center gap-1">
                       Hund {sortKey === "dog" && (sortAsc ? "↑" : "↓")}
@@ -680,7 +680,7 @@ export default function HundpensionatPage() {
                   </th>
                   <th
                     onClick={() => handleSort("owner")}
-                    className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
+                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
                   >
                     <div className="flex items-center gap-1">
                       Ägare {sortKey === "owner" && (sortAsc ? "↑" : "↓")}
@@ -688,7 +688,7 @@ export default function HundpensionatPage() {
                   </th>
                   <th
                     onClick={() => handleSort("start_date")}
-                    className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
+                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
                   >
                     <div className="flex items-center gap-1">
                       Startdatum{" "}
@@ -697,7 +697,7 @@ export default function HundpensionatPage() {
                   </th>
                   <th
                     onClick={() => handleSort("end_date")}
-                    className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
+                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
                   >
                     <div className="flex items-center gap-1">
                       Slutdatum{" "}
@@ -706,7 +706,7 @@ export default function HundpensionatPage() {
                   </th>
                   <th
                     onClick={() => handleSort("status")}
-                    className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
+                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
                   >
                     <div className="flex items-center gap-1">
                       Status {sortKey === "status" && (sortAsc ? "↑" : "↓")}
@@ -714,14 +714,14 @@ export default function HundpensionatPage() {
                   </th>
                   <th
                     onClick={() => handleSort("total_price")}
-                    className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider cursor-pointer hover:bg-[#1e5a2d] transition-colors"
+                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
                   >
                     <div className="flex items-center gap-1">
                       Totalpris{" "}
                       {sortKey === "total_price" && (sortAsc ? "↑" : "↓")}
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-sm font-semibold">
                     Rabatt
                   </th>
                 </tr>
