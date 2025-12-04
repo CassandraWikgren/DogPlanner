@@ -11,28 +11,28 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header med titel och statistik - EXAKT som Hunddagis */}
+      {/* Header - enligt DESIGN_STANDARD_IMPLEMENTATION.md */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-8 py-6">
+        <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                 Administration
               </h1>
               <p className="mt-1 text-base text-gray-600">
-                Hantera ekonomi, priser, företagsinformation och användare
+                Hantera allt från ekonomi till användarhantering
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content Area - max-w-6xl mx-auto px-8 py-6 */}
-      <div className="max-w-6xl mx-auto px-8 py-6">
+      {/* Main Content Area - enligt DESIGN_STANDARD_IMPLEMENTATION.md */}
+      <div className="max-w-6xl mx-auto px-6 py-6">
         {/* Statistik-sektion */}
         {currentOrgId && (
           <div className="mb-8">
-            <div className="flex items-center gap-2 mb-5">
+            <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-6 bg-[#2c7a4c] rounded-full"></div>
               <h2 className="text-lg font-semibold text-[#2c7a4c]">Översikt</h2>
             </div>
@@ -40,9 +40,9 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Åtgärder - Grid enligt stilguide */}
+        {/* Hantera-sektion */}
         <div>
-          <div className="flex items-center gap-2 mb-5">
+          <div className="flex items-center gap-2 mb-4">
             <div className="w-1 h-6 bg-[#2c7a4c] rounded-full"></div>
             <h2 className="text-lg font-semibold text-[#2c7a4c]">Hantera</h2>
           </div>
