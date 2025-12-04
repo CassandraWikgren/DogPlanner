@@ -773,11 +773,11 @@ const FakturorPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-8 py-6">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-center gap-3">
-                <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
                   💸 Fakturor och underlag
                 </h1>
                 <a
@@ -820,7 +820,7 @@ const FakturorPage = () => {
         </div>
       </div>
 
-      <main className="max-w-6xl mx-auto px-8 py-6">
+      <main className="max-w-7xl mx-auto px-6 py-6">
         {loading && (
           <div className="flex items-center gap-2 text-gray-600 mb-6 text-sm">
             <Loader2 className="animate-spin" /> Laddar fakturor…
@@ -842,7 +842,7 @@ const FakturorPage = () => {
               );
               toast("CSV-fil exporterad", "success");
             }}
-            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
+            className="px-6 py-2.5 h-10 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
           >
             <FileText size={16} />
             Exportera CSV
@@ -850,7 +850,7 @@ const FakturorPage = () => {
 
           <button
             onClick={toggleLock}
-            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
+            className="px-6 py-2.5 h-10 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
           >
             {locked ? <Unlock size={16} /> : <Lock size={16} />}
             {locked ? "Avlås månad" : "Lås månad"}
@@ -858,7 +858,7 @@ const FakturorPage = () => {
           <button
             onClick={() => setCreating(true)}
             disabled={locked}
-            className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2.5 h-10 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <PlusCircle size={16} /> Ny faktura
           </button>
@@ -973,7 +973,7 @@ const FakturorPage = () => {
                     dropdown.classList.toggle("hidden");
                   }
                 }}
-                className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
+                className="px-6 py-2.5 h-10 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
               >
                 Kolumner ({visibleColumns.length})
               </button>
@@ -1513,7 +1513,7 @@ const FakturorPage = () => {
               <div className="p-6 border-t border-gray-200 flex justify-end gap-2">
                 <button
                   onClick={() => setCreating(false)}
-                  className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
+                  className="px-6 py-2.5 h-10 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
                 >
                   Avbryt
                 </button>
@@ -1532,7 +1532,7 @@ const FakturorPage = () => {
                     await createInvoice(ownerId, belopp, description);
                     // Modal stängs efter skapande
                   }}
-                  className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
+                  className="px-6 py-2.5 h-10 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
                 >
                   Skapa
                 </button>
