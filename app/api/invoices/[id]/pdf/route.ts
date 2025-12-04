@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import { generateOCR, formatOCR, generateSwishURL } from "@/lib/ocrGenerator";
@@ -9,8 +8,20 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Använd service_role key för att bypass RLS
-    const supabase = await createClient();
+    // ⚠️ CRITICAL: Använd service_role key för att bypass RLS
+    // Normala createClient() använder anon_key som blockeras av RLS-policyer
+    const { createClient: createServiceClient } =
+      await import("@supabase/supabase-js");
+    const supabase = createServiceClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
     const invoiceId = params.id;
 
     // Hämta faktura med alla relationer
