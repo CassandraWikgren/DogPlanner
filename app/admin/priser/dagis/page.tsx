@@ -178,33 +178,28 @@ export default function DagisPriserPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
+      <div className="border-b border-gray-200 bg-white shadow-sm">
         <div className="max-w-6xl mx-auto px-8 py-6">
-          <div className="flex items-center justify-between">
-            {/* Vänster: Tillbaka-länk */}
-            <Link
-              href="/admin"
-              className="inline-flex items-center text-sm text-gray-600 hover:text-[#2c7a4c] transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1.5" />
-              Tillbaka till Admin
-            </Link>
+          {/* Tillbaka-knapp */}
+          <Link
+            href="/admin"
+            className="inline-flex items-center text-[#2c7a4c] hover:text-[#236139] mb-4 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Tillbaka till Admin
+          </Link>
 
-            {/* Center: Rubrik */}
-            <div className="flex items-center gap-3 absolute left-1/2 transform -translate-x-1/2">
-              <div className="text-2xl">🐕</div>
-              <div>
-                <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-                  Priser - Hunddagis
-                </h1>
-                <p className="text-sm text-gray-600">
-                  Hantera priser för dagisabonnemang och enstaka dagar
-                </p>
-              </div>
+          {/* Rubrik + Beskrivning */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-3">
+                <span className="text-2xl">🐕</span>
+                Priser - Hunddagis
+              </h1>
+              <p className="text-base text-gray-600 mt-1">
+                Hantera priser för dagisabonnemang och enstaka dagar
+              </p>
             </div>
-
-            {/* Höger: Tom för symmetri */}
-            <div className="w-32"></div>
           </div>
         </div>
       </div>
@@ -227,256 +222,259 @@ export default function DagisPriserPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Abonnemangspriser */}
-          <Card className="shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#2c7a4c]" />
+          <Card className="shadow-sm border border-gray-200">
+            <CardHeader className="pb-3 border-b border-gray-200">
+              <CardTitle className="text-lg font-semibold text-[#2c7a4c] flex items-center gap-2">
+                <Calendar className="w-5 h-5" />
                 Abonnemangspriser (per månad)
               </CardTitle>
-              <p className="text-sm text-gray-600 mt-2">
-                💡 <strong>Tips:</strong> Lämna fältet tomt (0 kr) för
-                abonnemang du inte erbjuder. Endast abonnemang med pris visas
-                för kunder.
-              </p>
             </CardHeader>
-            <CardContent className="space-y-4 pt-0">
-              <div>
-                <Label
-                  htmlFor="sub1day"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  1 dag/vecka
-                </Label>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Input
-                    id="sub1day"
-                    type="number"
-                    value={pricing.subscription_1day}
-                    onChange={(e) =>
-                      handleChange(
-                        "subscription_1day",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="flex-1 h-9 text-sm"
-                  />
-                  <span className="text-sm text-gray-600 whitespace-nowrap">
-                    kr/mån
-                  </span>
+            <CardContent className="pt-4">
+              <p className="text-xs text-gray-600 mb-4 pb-3 border-b border-gray-100">
+                💡 <strong>Tips:</strong> Lämna fältet tomt (0 kr) för
+                abonnemang du inte erbjuder.
+              </p>
+              <div className="space-y-4">
+                <div>
+                  <Label
+                    htmlFor="sub1day"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    1 dag/vecka
+                  </Label>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Input
+                      id="sub1day"
+                      type="number"
+                      value={pricing.subscription_1day}
+                      onChange={(e) =>
+                        handleChange(
+                          "subscription_1day",
+                          parseFloat(e.target.value)
+                        )
+                      }
+                      className="flex-1 h-9 text-sm"
+                    />
+                    <span className="text-sm text-gray-600 whitespace-nowrap">
+                      kr/mån
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">En fast veckodag</p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">En fast veckodag</p>
-              </div>
 
-              <div>
-                <Label
-                  htmlFor="sub2days"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  2 dagar/vecka
-                </Label>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Input
-                    id="sub2days"
-                    type="number"
-                    value={pricing.subscription_2days}
-                    onChange={(e) =>
-                      handleChange(
-                        "subscription_2days",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="flex-1 h-9 text-sm"
-                  />
-                  <span className="text-sm text-gray-600 whitespace-nowrap">
-                    kr/mån
-                  </span>
+                <div>
+                  <Label
+                    htmlFor="sub2days"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    2 dagar/vecka
+                  </Label>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Input
+                      id="sub2days"
+                      type="number"
+                      value={pricing.subscription_2days}
+                      onChange={(e) =>
+                        handleChange(
+                          "subscription_2days",
+                          parseFloat(e.target.value)
+                        )
+                      }
+                      className="flex-1 h-9 text-sm"
+                    />
+                    <span className="text-sm text-gray-600 whitespace-nowrap">
+                      kr/mån
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Två fasta veckodagar
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Två fasta veckodagar
-                </p>
-              </div>
 
-              <div>
-                <Label
-                  htmlFor="sub3days"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  3 dagar/vecka
-                </Label>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Input
-                    id="sub3days"
-                    type="number"
-                    value={pricing.subscription_3days}
-                    onChange={(e) =>
-                      handleChange(
-                        "subscription_3days",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="flex-1 h-9 text-sm"
-                  />
-                  <span className="text-sm text-gray-600 whitespace-nowrap">
-                    kr/mån
-                  </span>
+                <div>
+                  <Label
+                    htmlFor="sub3days"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    3 dagar/vecka
+                  </Label>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Input
+                      id="sub3days"
+                      type="number"
+                      value={pricing.subscription_3days}
+                      onChange={(e) =>
+                        handleChange(
+                          "subscription_3days",
+                          parseFloat(e.target.value)
+                        )
+                      }
+                      className="flex-1 h-9 text-sm"
+                    />
+                    <span className="text-sm text-gray-600 whitespace-nowrap">
+                      kr/mån
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Tre fasta veckodagar
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Tre fasta veckodagar
-                </p>
-              </div>
 
-              <div>
-                <Label
-                  htmlFor="sub4days"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  4 dagar/vecka
-                </Label>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Input
-                    id="sub4days"
-                    type="number"
-                    value={pricing.subscription_4days}
-                    onChange={(e) =>
-                      handleChange(
-                        "subscription_4days",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="flex-1 h-9 text-sm"
-                  />
-                  <span className="text-sm text-gray-600 whitespace-nowrap">
-                    kr/mån
-                  </span>
+                <div>
+                  <Label
+                    htmlFor="sub4days"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    4 dagar/vecka
+                  </Label>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Input
+                      id="sub4days"
+                      type="number"
+                      value={pricing.subscription_4days}
+                      onChange={(e) =>
+                        handleChange(
+                          "subscription_4days",
+                          parseFloat(e.target.value)
+                        )
+                      }
+                      className="flex-1 h-9 text-sm"
+                    />
+                    <span className="text-sm text-gray-600 whitespace-nowrap">
+                      kr/mån
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Fyra fasta veckodagar
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Fyra fasta veckodagar
-                </p>
-              </div>
 
-              <div>
-                <Label
-                  htmlFor="sub5days"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  5 dagar/vecka (Heltid)
-                </Label>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Input
-                    id="sub5days"
-                    type="number"
-                    value={pricing.subscription_5days}
-                    onChange={(e) =>
-                      handleChange(
-                        "subscription_5days",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="flex-1 h-9 text-sm"
-                  />
-                  <span className="text-sm text-gray-600 whitespace-nowrap">
-                    kr/mån
-                  </span>
+                <div>
+                  <Label
+                    htmlFor="sub5days"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    5 dagar/vecka (Heltid)
+                  </Label>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Input
+                      id="sub5days"
+                      type="number"
+                      value={pricing.subscription_5days}
+                      onChange={(e) =>
+                        handleChange(
+                          "subscription_5days",
+                          parseFloat(e.target.value)
+                        )
+                      }
+                      className="flex-1 h-9 text-sm"
+                    />
+                    <span className="text-sm text-gray-600 whitespace-nowrap">
+                      kr/mån
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Måndag till fredag, alla veckodagar
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Måndag till fredag, alla veckodagar
-                </p>
               </div>
             </CardContent>
           </Card>
 
           {/* Övriga priser */}
-          <Card className="shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-[#2c7a4c]" />
+          <Card className="shadow-sm border border-gray-200">
+            <CardHeader className="pb-3 border-b border-gray-200">
+              <CardTitle className="text-lg font-semibold text-[#2c7a4c] flex items-center gap-2">
+                <DollarSign className="w-5 h-5" />
                 Övriga priser
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 pt-0">
-              <div>
-                <Label
-                  htmlFor="single"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Dagshund (enstaka dag)
-                </Label>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Input
-                    id="single"
-                    type="number"
-                    value={pricing.single_day_price}
-                    onChange={(e) =>
-                      handleChange(
-                        "single_day_price",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="flex-1 h-9 text-sm"
-                  />
-                  <span className="text-sm text-gray-600 whitespace-nowrap">
-                    kr/dag
-                  </span>
+            <CardContent className="pt-4">
+              <div className="space-y-4">
+                <div>
+                  <Label
+                    htmlFor="single"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Dagshund (enstaka dag)
+                  </Label>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Input
+                      id="single"
+                      type="number"
+                      value={pricing.single_day_price}
+                      onChange={(e) =>
+                        handleChange(
+                          "single_day_price",
+                          parseFloat(e.target.value)
+                        )
+                      }
+                      className="flex-1 h-9 text-sm"
+                    />
+                    <span className="text-sm text-gray-600 whitespace-nowrap">
+                      kr/dag
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    För kunder utan abonnemang (drop-in)
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  För kunder utan abonnemang (drop-in)
-                </p>
-              </div>
 
-              <div>
-                <Label
-                  htmlFor="trial"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Provdag
-                </Label>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Input
-                    id="trial"
-                    type="number"
-                    value={pricing.trial_day_price}
-                    onChange={(e) =>
-                      handleChange(
-                        "trial_day_price",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="flex-1 h-9 text-sm"
-                  />
-                  <span className="text-sm text-gray-600 whitespace-nowrap">
-                    kr/dag
-                  </span>
+                <div>
+                  <Label
+                    htmlFor="trial"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Provdag
+                  </Label>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Input
+                      id="trial"
+                      type="number"
+                      value={pricing.trial_day_price}
+                      onChange={(e) =>
+                        handleChange(
+                          "trial_day_price",
+                          parseFloat(e.target.value)
+                        )
+                      }
+                      className="flex-1 h-9 text-sm"
+                    />
+                    <span className="text-sm text-gray-600 whitespace-nowrap">
+                      kr/dag
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Första gången en hund testar dagiset
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Första gången en hund testar dagiset
-                </p>
-              </div>
 
-              <div>
-                <Label
-                  htmlFor="sibling"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Syskonrabatt
-                </Label>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Input
-                    id="sibling"
-                    type="number"
-                    value={pricing.sibling_discount_percent}
-                    onChange={(e) =>
-                      handleChange(
-                        "sibling_discount_percent",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="flex-1 h-9 text-sm"
-                  />
-                  <span className="text-sm text-gray-600">%</span>
+                <div>
+                  <Label
+                    htmlFor="sibling"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Syskonrabatt
+                  </Label>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Input
+                      id="sibling"
+                      type="number"
+                      value={pricing.sibling_discount_percent}
+                      onChange={(e) =>
+                        handleChange(
+                          "sibling_discount_percent",
+                          parseFloat(e.target.value)
+                        )
+                      }
+                      className="flex-1 h-9 text-sm"
+                    />
+                    <span className="text-sm text-gray-600">%</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Rabatt på andra hunden från samma ägare
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Rabatt på andra hunden från samma ägare
-                </p>
               </div>
             </CardContent>
           </Card>
@@ -526,11 +524,11 @@ export default function DagisPriserPage() {
         </Card>
 
         {/* Save Button */}
-        <div className="mt-8 flex justify-end">
+        <div className="mt-8 flex justify-end gap-3">
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-[#2c7a4c] hover:bg-[#236139] text-white px-8 py-3"
+            className="bg-[#2c7a4c] hover:bg-[#236139] text-white h-10 px-6"
           >
             <Save className="w-4 h-4 mr-2" />
             {saving ? "Sparar..." : "Spara priser"}
