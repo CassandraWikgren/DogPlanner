@@ -399,8 +399,8 @@ export default function FrisorDashboard() {
 
           {/* Höger kolumn: Sök & Journal */}
           <div className="lg:col-span-2">
-            {/* Sökruta - kompaktare */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-5">
+            {/* Sökruta */}
+            <div className="mb-5">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
@@ -408,7 +408,7 @@ export default function FrisorDashboard() {
                   placeholder="Sök på hundnamn, ägare eller kundnummer..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 h-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-sm"
+                  className="w-full pl-10 pr-4 py-2 h-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-sm bg-white"
                 />
               </div>
               {searchTerm && (
