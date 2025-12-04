@@ -113,25 +113,31 @@ export default function MinaPriserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Kompakt header */}
+      {/* Header */}
       <div className="bg-white border-b shadow-sm">
-        <div className="max-w-3xl mx-auto px-6 py-4">
-          <div className="flex items-center gap-4">
-            <a
-              href="/dashboard"
-              className="text-gray-600 hover:text-[#2C7A4C] transition-colors"
-            >
-              ← Tillbaka
-            </a>
-            <h1 className="text-2xl font-bold text-[#2C7A4C] leading-tight">
-              Mina priser
-            </h1>
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <a
+                href="/dashboard"
+                className="text-gray-600 hover:text-[#2c7a4c] transition-colors text-sm font-medium"
+              >
+                ← Tillbaka till Admin
+              </a>
+            </div>
           </div>
+          <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight mb-2">
+            Mina priser
+          </h1>
+          <p className="text-gray-600">
+            Hantera prissättning för hunddagis, hundpensionat och
+            tilläggstjänster
+          </p>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="max-w-3xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {message && (
           <div className="mb-4 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 text-sm">
             {message}
@@ -215,7 +221,7 @@ export default function MinaPriserPage() {
           <button
             onClick={savePrices}
             disabled={saving}
-            className="px-6 py-2 bg-[#2C7A4C] text-white rounded-md hover:bg-[#236139] font-semibold transition disabled:opacity-50 text-sm"
+            className="px-6 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] font-semibold transition disabled:opacity-60 text-sm h-10 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
           >
             {saving ? "💾 Sparar…" : "Spara priser"}
           </button>
@@ -266,7 +272,6 @@ export default function MinaPriserPage() {
   );
 }
 
-/* Komponent för varje prisfält */
 function PriceField({
   label,
   value,
@@ -278,14 +283,14 @@ function PriceField({
 }) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-[#2C7A4C] mb-2">
+      <label className="block text-sm font-medium text-gray-700 mb-1.5">
         {label}
       </label>
       <Input
         type="number"
         value={value ?? ""}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="h-10"
+        className="h-10 px-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
       />
     </div>
   );
