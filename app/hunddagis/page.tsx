@@ -731,104 +731,103 @@ export default function HunddagisPage() {
           </div>
         </div>
 
-        {/* Search and Filter Row - ENLIGT STILGUIDE */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-6">
-          <div className="flex flex-row items-center space-x-4">
-            {/* Sökruta - stilguide: h-10, rounded-md */}
-            <div className="flex-1 min-w-[400px]">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Sök på hundnamn, ägarnamn, telefon, ras..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
-                />
-              </div>
+        {/* Search and Filter Row */}
+        <div className="flex flex-row items-center space-x-4 mb-6">
+          {/* Sökruta */}
+          <div className="flex-1 min-w-[400px]">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Sök på hundnamn, ägarnamn, telefon, ras..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white"
+              />
             </div>
+          </div>
 
-            {/* Filter dropdowns - stilguide: h-10, rounded-md */}
-            <div className="flex space-x-3 items-center">
-              <select
-                value={filterSubscription}
-                onChange={(e) => setFilterSubscription(e.target.value)}
-                className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base whitespace-nowrap"
+          {/* Filter dropdowns */}
+          <div className="flex space-x-3 items-center">
+            <select
+              value={filterSubscription}
+              onChange={(e) => setFilterSubscription(e.target.value)}
+              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base whitespace-nowrap bg-white"
+            >
+              <option value="all">Våra hundar</option>
+              <option value="services">Tjänster</option>
+              <option value="hundrum">Hundrum</option>
+              <option value="vantelista">Väntelistan</option>
+            </select>
+
+            <select
+              value={filterMonth}
+              onChange={(e) => setFilterMonth(e.target.value)}
+              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base whitespace-nowrap bg-white"
+            >
+              <option value="all">Alla månader</option>
+              <option value="0">Januari</option>
+              <option value="1">Februari</option>
+              <option value="2">Mars</option>
+              <option value="3">April</option>
+              <option value="4">Maj</option>
+              <option value="5">Juni</option>
+              <option value="6">Juli</option>
+              <option value="7">Augusti</option>
+              <option value="8">September</option>
+              <option value="9">Oktober</option>
+              <option value="10">November</option>
+              <option value="11">December</option>
+            </select>
+
+            {/* Kolumner knapp - stilguide: outline variant */}
+            <div className="relative" ref={columnSettingsRef}>
+              <button
+                onClick={() => setShowColumnSettings(!showColumnSettings)}
+                className="inline-flex items-center h-10 px-4 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
               >
-                <option value="all">Våra hundar</option>
-                <option value="services">Tjänster</option>
-                <option value="hundrum">Hundrum</option>
-                <option value="vantelista">Väntelistan</option>
-              </select>
+                <Settings2 className="h-4 w-4 mr-2" />
+                Kolumner
+              </button>
 
-              <select
-                value={filterMonth}
-                onChange={(e) => setFilterMonth(e.target.value)}
-                className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base whitespace-nowrap"
-              >
-                <option value="all">Alla månader</option>
-                <option value="0">Januari</option>
-                <option value="1">Februari</option>
-                <option value="2">Mars</option>
-                <option value="3">April</option>
-                <option value="4">Maj</option>
-                <option value="5">Juni</option>
-                <option value="6">Juli</option>
-                <option value="7">Augusti</option>
-                <option value="8">September</option>
-                <option value="9">Oktober</option>
-                <option value="10">November</option>
-                <option value="11">December</option>
-              </select>
-
-              {/* Kolumner knapp - stilguide: outline variant */}
-              <div className="relative" ref={columnSettingsRef}>
-                <button
-                  onClick={() => setShowColumnSettings(!showColumnSettings)}
-                  className="inline-flex items-center h-10 px-4 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
-                >
-                  <Settings2 className="h-4 w-4 mr-2" />
-                  Kolumner
-                </button>
-
-                {/* Dropdown meny för kolumner */}
-                {showColumnSettings && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[500px] overflow-y-auto">
-                    <div className="p-4">
-                      <div className="flex items-center justify-between mb-3 pb-2 border-b">
-                        <p className="text-sm font-semibold text-gray-900">
-                          Dölj/visa kolumner
-                        </p>
-                        <button
-                          onClick={() => setShowColumnSettings(false)}
-                          className="text-gray-400 hover:text-gray-600"
+              {/* Dropdown meny för kolumner */}
+              {showColumnSettings && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[500px] overflow-y-auto">
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3 pb-2 border-b">
+                      <p className="text-sm font-semibold text-gray-900">
+                        Dölj/visa kolumner
+                      </p>
+                      <button
+                        onClick={() => setShowColumnSettings(false)}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {ALL_COLUMNS.map((key) => (
+                        <label
+                          key={key}
+                          className="flex items-center space-x-3 cursor-pointer group py-1 hover:bg-gray-50 rounded px-2"
                         >
-                          ✕
-                        </button>
-                      </div>
-                      <div className="space-y-2">
-                        {ALL_COLUMNS.map((key) => (
-                          <label
-                            key={key}
-                            className="flex items-center space-x-3 cursor-pointer group py-1 hover:bg-gray-50 rounded px-2"
-                          >
-                            <div className="relative">
-                              <input
-                                type="checkbox"
-                                checked={columns.includes(key)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setColumns([...columns, key]);
-                                  } else {
-                                    setColumns(
-                                      columns.filter((col) => col !== key)
-                                    );
-                                  }
-                                }}
-                                className="sr-only"
-                              />
-                              <div
-                                className={`
+                          <div className="relative">
+                            <input
+                              type="checkbox"
+                              checked={columns.includes(key)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setColumns([...columns, key]);
+                                } else {
+                                  setColumns(
+                                    columns.filter((col) => col !== key)
+                                  );
+                                }
+                              }}
+                              className="sr-only"
+                            />
+                            <div
+                              className={`
                                   w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200
                                   ${
                                     columns.includes(key)
@@ -836,36 +835,33 @@ export default function HunddagisPage() {
                                       : "bg-white border-gray-300 group-hover:border-[#2c7a4c]"
                                   }
                                 `}
-                              >
-                                {columns.includes(key) && (
-                                  <svg
-                                    className="w-3 h-3 text-white"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                )}
-                              </div>
+                            >
+                              {columns.includes(key) && (
+                                <svg
+                                  className="w-3 h-3 text-white"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              )}
                             </div>
-                            <span className="text-sm text-gray-700 select-none">
-                              {COLUMN_LABELS[key]}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
+                          </div>
+                          <span className="text-sm text-gray-700 select-none">
+                            {COLUMN_LABELS[key]}
+                          </span>
+                        </label>
+                      ))}
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Ta bort den gamla column settings sectionen */}
         </div>
 
         {/* Conditional rendering: Show different views based on selection */}
