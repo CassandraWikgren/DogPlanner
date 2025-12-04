@@ -538,7 +538,7 @@ export default function NyBokning() {
             </p>
             <Button
               onClick={() => router.push("/frisor")}
-              className="bg-[#2c7a4c] hover:bg-[#245c3a]"
+              className="bg-[#2c7a4c] hover:bg-[#245c3a] text-white"
               size="sm"
             >
               Gå till frisör
@@ -1344,7 +1344,7 @@ export default function NyBokning() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 bg-[#2c7a4c] hover:bg-[#236139]"
+                className="flex-1 bg-[#2c7a4c] hover:bg-[#236139] text-white"
                 size="sm"
               >
                 {submitting ? "Sparar..." : "Skapa Bokning"}

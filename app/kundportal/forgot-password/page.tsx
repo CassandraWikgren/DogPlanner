@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
                   timme.
                 </p>
                 <Link href="/kundportal/login">
-                  <Button className="w-full bg-[#2c7a4c] hover:bg-[#236139]">
+                  <Button className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white">
                     Tillbaka till inloggning
                   </Button>
                 </Link>
@@ -121,7 +121,7 @@ export default function ForgotPasswordPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#2c7a4c] hover:bg-[#245a3e]"
+                className="w-full bg-[#2c7a4c] hover:bg-[#245a3e] text-white"
               >
                 {loading ? "Skickar..." : "Skicka återställningslänk"}
               </Button>

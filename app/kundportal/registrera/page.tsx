@@ -1045,7 +1045,7 @@ export default function CustomerRegisterPage() {
                         setError(null);
                         setCurrentStep(currentStep + 1);
                       }}
-                      className="bg-[#2c7a4c] hover:bg-[#245a3e] px-8"
+                      className="bg-[#2c7a4c] hover:bg-[#245a3e] text-white px-8"
                     >
                       Nästa →
                     </Button>
@@ -1053,7 +1053,7 @@ export default function CustomerRegisterPage() {
                     <Button
                       onClick={handleSubmit}
                       disabled={loading}
-                      className="bg-[#2c7a4c] hover:bg-[#245a3e] px-8 min-w-[160px]"
+                      className="bg-[#2c7a4c] hover:bg-[#245a3e] text-white px-8 min-w-[160px]"
                     >
                       {loading ? (
                         <span className="flex items-center gap-2">

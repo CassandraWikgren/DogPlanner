@@ -341,9 +341,8 @@ function BookingPageContent() {
       const pensionatSettings = pensionatData as { org_id: string };
 
       // Beräkna pris med calculateBookingPrice från boardingPriceCalculator
-      const { calculateBookingPrice } = await import(
-        "@/lib/boardingPriceCalculator"
-      );
+      const { calculateBookingPrice } =
+        await import("@/lib/boardingPriceCalculator");
       const priceData = await calculateBookingPrice(
         checkinDate,
         checkoutDate,
@@ -611,7 +610,7 @@ function BookingPageContent() {
               <Button
                 onClick={() => setStep(2)}
                 disabled={!selectedDog || !selectedPensionat}
-                className="bg-[#2c7a4c] hover:bg-[#245a3e]"
+                className="bg-[#2c7a4c] hover:bg-[#245a3e] text-white"
               >
                 Nästa: Välj datum
               </Button>
@@ -728,7 +727,7 @@ function BookingPageContent() {
               <Button
                 onClick={() => setStep(3)}
                 disabled={!checkinDate || !checkoutDate}
-                className="bg-[#2c7a4c] hover:bg-[#245a3e]"
+                className="bg-[#2c7a4c] hover:bg-[#245a3e] text-white"
               >
                 Nästa: Bekräfta
               </Button>
@@ -818,7 +817,7 @@ function BookingPageContent() {
                 </Button>
                 <Button
                   onClick={handleBooking}
-                  className="bg-[#2c7a4c] hover:bg-[#245a3e]"
+                  className="bg-[#2c7a4c] hover:bg-[#245a3e] text-white"
                 >
                   Bekräfta bokning
                 </Button>
