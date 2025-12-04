@@ -292,21 +292,21 @@ export default function FrisorDashboard() {
             </div>
             <div className="flex items-center gap-3">
               <Link href="/frisor/kalender">
-                <button className="h-10 px-4 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center gap-2 font-semibold text-[15px] shadow-sm">
+                <button className="h-10 px-4 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center gap-2 font-semibold text-[15px] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2">
                   <Calendar className="h-5 w-5" />
                   <span className="hidden sm:inline">Kalender</span>
                 </button>
               </Link>
               <button
                 onClick={loadData}
-                className="h-10 w-10 bg-[#4b5563] hover:bg-[#374151] text-white rounded-md transition flex items-center justify-center shadow-sm"
+                className="h-10 w-10 bg-[#4b5563] hover:bg-[#374151] text-white rounded-md transition flex items-center justify-center shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:ring-offset-2"
                 title="Uppdatera"
               >
                 <RefreshCcw className="h-5 w-5" />
               </button>
               <Link href="/admin/hundfrisor/priser">
                 <button
-                  className="h-10 w-10 bg-[#4b5563] hover:bg-[#374151] text-white rounded-md transition flex items-center justify-center shadow-sm"
+                  className="h-10 w-10 bg-[#4b5563] hover:bg-[#374151] text-white rounded-md transition flex items-center justify-center shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:ring-offset-2"
                   title="Inställningar"
                 >
                   <Settings2 className="h-5 w-5" />
@@ -330,7 +330,7 @@ export default function FrisorDashboard() {
                 </h2>
                 <Link href="/frisor/ny-bokning">
                   <button
-                    className="h-9 w-9 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center justify-center shadow-sm"
+                    className="h-9 w-9 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center justify-center shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                     title="Ny bokning"
                   >
                     <Plus className="h-5 w-5" />
@@ -353,7 +353,7 @@ export default function FrisorDashboard() {
                           router.push(`/frisor/${booking.dog_id}`);
                         }
                       }}
-                      className="w-full text-left p-3 border border-gray-200 rounded-md hover:bg-[#e6f4ea] hover:border-[#2c7a4c] transition group"
+                      className="w-full text-left p-3 border border-gray-200 rounded-md hover:bg-[#e6f4ea] hover:border-[#2c7a4c] transition group focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
@@ -443,7 +443,7 @@ export default function FrisorDashboard() {
                           }
                         }}
                         disabled={!dogId}
-                        className="w-full text-left p-3 hover:bg-gray-50 transition group disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full text-left p-3 hover:bg-gray-50 transition group disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
