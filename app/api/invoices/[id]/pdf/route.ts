@@ -8,6 +8,63 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // ⚠️ CRITICAL SECURITY: Verify user authentication first
+    // Get user session from cookies to verify identity
+    const { createServerClient } = await import("@supabase/ssr");
+    const { cookies } = await import("next/headers");
+    const userCookies = await cookies();
+    const userSupabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return userCookies.getAll();
+          },
+          setAll(cookiesToSet: any) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }: any) =>
+                userCookies.set(name, value, options)
+              );
+            } catch {
+              // Ignore errors in Server Component context
+            }
+          },
+        },
+      }
+    );
+
+    // Get authenticated user
+    const {
+      data: { user },
+      error: authError,
+    } = await userSupabase.auth.getUser();
+
+    if (authError || !user) {
+      console.error("PDF Auth error:", authError);
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Get user's organization
+    const { data: profile, error: profileError } = await userSupabase
+      .from("profiles")
+      .select("org_id")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError || !profile || !profile.org_id) {
+      console.error("PDF Profile error:", profileError);
+      return new Response(
+        JSON.stringify({ error: "User not associated with organization" }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const userOrgId = profile.org_id;
+
     // ⚠️ CRITICAL: Använd service_role key för att bypass RLS
     // Normala createClient() använder anon_key som blockeras av RLS-policyer
     const { createClient: createServiceClient } =
@@ -58,16 +115,41 @@ export async function GET(
 
     if (invoiceError) {
       console.error("Invoice fetch error:", invoiceError);
-      return NextResponse.json(
-        { error: "Faktura hittades inte", details: invoiceError.message },
-        { status: 404 }
+      return new Response(
+        JSON.stringify({
+          error: "Faktura hittades inte",
+          details: invoiceError.message,
+        }),
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     if (!invoice) {
-      return NextResponse.json(
-        { error: "Faktura hittades inte" },
-        { status: 404 }
+      return new Response(JSON.stringify({ error: "Faktura hittades inte" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // ⚠️ CRITICAL SECURITY: Verify invoice belongs to user's organization
+    if (invoice.org_id !== userOrgId) {
+      console.error(
+        `Security: User ${user.id} (org ${userOrgId}) attempted to access invoice from org ${invoice.org_id}`
+      );
+      return new Response(
+        JSON.stringify({ error: "Unauthorized to access this invoice" }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // ⚠️ CRITICAL SECURITY: Verify invoice belongs to user's organization
+    if (invoice.org_id !== userOrgId) {
+      console.error(
+        `Security: User ${user.id} (org ${userOrgId}) attempted to access invoice from org ${invoice.org_id}`
+      );
+      return new Response(
+        JSON.stringify({ error: "Unauthorized to access this invoice" }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
       );
     }
 
