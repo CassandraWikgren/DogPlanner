@@ -1,11 +1,12 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { AuthContext } from "@/app/context/AuthContext";
 import {
   DollarSign,
   FileText,
@@ -65,6 +66,7 @@ interface InvoiceItem {
 
 export default function FakturaPage() {
   const supabase = createClient();
+  const { currentOrgId } = useContext(AuthContext);
 
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,14 +84,23 @@ export default function FakturaPage() {
   const statusTypes = ["all", "draft", "sent", "paid", "overdue"];
 
   useEffect(() => {
-    fetchInvoices();
-  }, [currentPage, statusFilter, dateFilter]);
+    if (currentOrgId) {
+      fetchInvoices();
+    } else {
+      setLoading(false);
+    }
+  }, [currentPage, statusFilter, dateFilter, currentOrgId]);
 
   const fetchInvoices = async () => {
+    if (!currentOrgId) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
 
-      // Steg 1: Hämta fakturor med ägare-info
+      // Steg 1: Hämta fakturor med ägare-info för denna organisation
       let query = supabase.from("invoices").select(
         `
           *,
@@ -102,6 +113,9 @@ export default function FakturaPage() {
         `,
         { count: "exact" }
       );
+
+      // **CRITICAL: Filter by org_id**
+      query = query.eq("org_id", currentOrgId);
 
       // Applicera statusfilter
       if (statusFilter !== "all") {
@@ -405,6 +419,28 @@ export default function FakturaPage() {
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // Show error if org_id is missing
+  if (!currentOrgId) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="max-w-md border-red-200 bg-red-50">
+          <CardContent className="pt-6">
+            <h2 className="text-xl font-bold text-red-900 mb-2">
+              Ingen organisation tilldelad
+            </h2>
+            <p className="text-red-800 mb-4">
+              Du måste tilldelas en organisation för att se fakturor. Kontakta
+              din administratör.
+            </p>
+            <Link href="/dashboard" className="text-blue-600 hover:underline">
+              Tillbaka till dashboard
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     );
   }
