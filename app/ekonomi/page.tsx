@@ -88,7 +88,7 @@ export default function FakturaPage() {
     try {
       setLoading(true);
 
-      // Bygg query med filter och inkludera invoice_items med booking/dog info
+      // Steg 1: Hämta fakturor med ägare-info
       let query = supabase.from("invoices").select(
         `
           *,
@@ -97,19 +97,6 @@ export default function FakturaPage() {
             customer_number,
             phone,
             email
-          ),
-          invoice_items(
-            id,
-            description,
-            qty,
-            unit_price,
-            amount,
-            booking_id,
-            booking:bookings(
-              id,
-              dog_id,
-              dog:dogs(name, breed)
-            )
           )
         `,
         { count: "exact" }
@@ -148,17 +135,36 @@ export default function FakturaPage() {
 
       if (error) throw error;
 
-      // Cast status to correct type and process nested data
-      const typedData = (data || []).map((invoice: any) => ({
+      // Steg 2: Hämta invoice_items för varje faktura (separat query)
+      const invoiceIds = (data || []).map((inv) => inv.id);
+      let invoicesWithItems: Invoice[] = (data || []).map((invoice: any) => ({
         ...invoice,
         status: invoice.status as "draft" | "sent" | "paid" | "overdue",
-        invoice_items: (invoice.invoice_items || []).map((item: any) => ({
-          ...item,
-          booking: Array.isArray(item.booking) ? item.booking[0] : item.booking,
-        })),
+        invoice_items: [],
       }));
 
-      setInvoices(typedData);
+      if (invoiceIds.length > 0) {
+        const { data: itemsData, error: itemsError } = await supabase
+          .from("invoice_items")
+          .select(
+            "id, description, qty, unit_price, amount, booking_id, invoice_id"
+          )
+          .in("invoice_id", invoiceIds);
+
+        if (itemsError) {
+          console.warn("Varning: Kunde inte hämta invoice_items:", itemsError);
+        } else {
+          // Länka items till respektive faktura
+          invoicesWithItems = invoicesWithItems.map((invoice) => ({
+            ...invoice,
+            invoice_items: (itemsData || []).filter(
+              (item) => item.invoice_id === invoice.id
+            ),
+          }));
+        }
+      }
+
+      setInvoices(invoicesWithItems);
       setTotalCount(count || 0);
     } catch (error) {
       console.error("Fel vid hämtning av fakturor:", error);
