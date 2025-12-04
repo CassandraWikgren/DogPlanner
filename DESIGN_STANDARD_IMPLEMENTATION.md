@@ -44,15 +44,53 @@ Det är otroligt viktigt att allt ska vara symetriskt, cleant och användarvänl
 
 ### Container widths:
 
-- **Data-sidor (Hunddagis, Frisör, etc):** `max-w-7xl` (BRED)
-- **Admin-sidor:** `max-w-6xl` (normalt)
-- **Form-sidor:** `max-w-3xl` (smal)
+- **Data-sidor (Hunddagis, Frisör, Owners, Ekonomi, etc):** `max-w-7xl` (1280px)
+- **Admin-sidor:** `max-w-6xl` (1152px)
+- **Form-sidor:** `max-w-3xl` (768px)
 
 ### Main wrapper:
 
 - **Bakgrund:** `bg-gray-50` (ljusgrå, inte helt vit)
-- **Padding:** `px-6 py-6` (symmetrisk)
+- **Padding:** `px-6 py-6` (24px horisontellt, 24px vertikalt)
 - **Min-height:** `min-h-screen`
+
+### ⚠️ KRITISKT - Container-alignment:
+
+**ALLT innehåll måste börja vid EXAKT samma X-position:**
+
+```tsx
+// ✅ KORREKT struktur:
+<div className="min-h-screen bg-gray-50">
+  {/* Header */}
+  <div className="border-b border-gray-200 bg-white shadow-sm">
+    <div className="max-w-7xl mx-auto px-6 py-4">
+      {/* Rubrik, undertext, stats */}
+    </div>
+  </div>
+
+  {/* Main content */}
+  <main className="max-w-7xl mx-auto px-6 py-6">
+    {/* Knappar, filter, innehåll */}
+    {/* INGET får ha extra wrapper med padding! */}
+  </main>
+</div>
+```
+
+**❌ FEL - Lägg INTE till extra padding-lager:**
+
+```tsx
+// ❌ FEL: Denna wrapper förskjuter innehållet
+<main className="max-w-7xl mx-auto px-6 py-6">
+  <div className="bg-white p-4">  {/* ❌ Extra padding! */}
+    <input ... />
+  </div>
+</main>
+
+// ✅ RÄTT: Inga extra lager
+<main className="max-w-7xl mx-auto px-6 py-6">
+  <input className="bg-white ..." />  {/* ✅ Direkt i main */}
+</main>
+```
 
 ---
 
@@ -61,9 +99,9 @@ Det är otroligt viktigt att allt ska vara symetriskt, cleant och användarvänl
 ### Primär grön (DogPlanner brand):
 
 ```
-Namn:           #2c7a4c
-Hover/Darker:   #236139
-Ljus bakgrund:  #E6F4EA
+Namn:           #2c7a4c (rgb(44, 122, 76))
+Hover/Darker:   #236139 (rgb(35, 97, 57))
+Ljus bakgrund:  #E6F4EA (rgb(230, 244, 234))
 ```
 
 ### Använd i:
@@ -75,30 +113,33 @@ Ljus bakgrund:  #E6F4EA
 - ✅ Links
 - ✅ Accent-linjer
 
-### Gra-skala:
+### Grå-skala:
 
 ```
-Text mörk:      #333333
-Text ljus:      #666666
-Text help:      #999999
-Disabled:       #CCCCCC
+Text mörk:      #333333 (rgb(51, 51, 51))
+Text ljus:      #666666 (rgb(102, 102, 102))
+Text help:      #999999 (rgb(153, 153, 153))
+Disabled:       #CCCCCC (rgb(204, 204, 204))
+Border:         #E0E0E0 (rgb(224, 224, 224)) / border-gray-200
 ```
 
 ### Secondary färger:
 
 ```
-Orange (badges): #FF9800 / bg-orange-100 text-orange-600
-Röd (error):     #F44336
-Grön (success):  #4CAF50 / text-green-600
+Orange (badges): #FF9800 (rgb(255, 152, 0)) / bg-orange-100 text-orange-600
+Röd (error):     #F44336 (rgb(244, 67, 54)) / bg-red-600
+Grön (success):  #4CAF50 (rgb(76, 175, 80)) / text-green-600
+Blå (links):     text-blue-600 hover:underline
 ```
 
 ### Bakgrunder:
 
 ```
-Main bg:        #F5F5F5 (bg-gray-50)
-Component bg:   #FFFFFF (bg-white)
-Border:         #E0E0E0 (border-gray-200)
-Hover:          #FAFAFA (hover:bg-gray-100)
+Main bg:        #F5F5F5 (bg-gray-50) - ljusgrå sidebakgrund
+Component bg:   #FFFFFF (bg-white) - vita kort/komponenter
+Border:         border-gray-200 - ljusgrå ramar
+Hover:          hover:bg-gray-100 - diskret hover-effekt
+Hover (rows):   hover:bg-gray-100 - tabellrader
 ```
 
 ---
@@ -113,10 +154,38 @@ Hover:          #FAFAFA (hover:bg-gray-100)
 className = "text-[32px] font-bold text-[#2c7a4c] leading-tight";
 ```
 
-- Size: 32px
-- Weight: bold (700)
-- Color: #2c7a4c
-- Line-height: tight (1.25)
+- **Size:** 32px (exakt, ej text-3xl)
+- **Weight:** font-bold (700)
+- **Color:** #2c7a4c (grön)
+- **Line-height:** leading-tight (1.25)
+- **Margin:** Ingen top-margin
+
+**Exempel:**
+
+```tsx
+<h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+  Hunddagis
+</h1>
+```
+
+#### H1 Undertext (beskrivning under rubrik)
+
+```tsx
+className = "mt-1 text-base text-gray-600";
+```
+
+- **Size:** text-base (16px)
+- **Weight:** normal (400)
+- **Color:** text-gray-600 (#666666)
+- **Margin-top:** mt-1 (4px)
+
+**Exempel:**
+
+```tsx
+<p className="mt-1 text-base text-gray-600">
+  Översikt över fakturor, betalningar och ekonomisk status
+</p>
+```
 
 #### H2 (Sektionsrubrik)
 
@@ -124,9 +193,9 @@ className = "text-[32px] font-bold text-[#2c7a4c] leading-tight";
 className = "text-lg font-semibold text-[#2c7a4c]";
 ```
 
-- Size: 18px
-- Weight: semibold (600)
-- Color: #2c7a4c
+- **Size:** text-lg (18px)
+- **Weight:** font-semibold (600)
+- **Color:** #2c7a4c (grön)
 
 #### H3 (Underrubrik)
 
@@ -134,50 +203,61 @@ className = "text-lg font-semibold text-[#2c7a4c]";
 className = "text-base font-semibold text-gray-900";
 ```
 
-- Size: 16px
-- Weight: semibold (600)
-- Color: gray-900
+- **Size:** text-base (16px)
+- **Weight:** font-semibold (600)
+- **Color:** text-gray-900 (#111111)
 
 ### Body text
 
-#### Primär text
+#### Primär text (brödtext)
 
 ```tsx
 className = "text-base text-gray-600";
 ```
 
-- Size: 16px
-- Weight: normal (400)
-- Color: #666666
+- **Size:** 16px
+- **Weight:** normal (400)
+- **Color:** #666666
 
-#### Sekundär text (labels, help)
+#### Sekundär text (labels, metadata)
 
 ```tsx
-className = "text-sm text-gray-600 mt-1";
+className = "text-sm text-gray-600";
 ```
 
-- Size: 14px
-- Weight: normal
-- Color: #666666
+- **Size:** 14px
+- **Weight:** normal (400)
+- **Color:** #666666
 
-#### Small text (metadata, badges)
+#### Small text (hjälptext, badges)
 
 ```tsx
 className = "text-xs text-gray-600";
 ```
 
-- Size: 12px
-- Weight: normal
-- Color: #666666
+- **Size:** 12px
+- **Weight:** normal (400)
+- **Color:** #666666
 
-#### Table cells
+#### Table header text
+
+```tsx
+className = "text-sm font-semibold text-white";
+```
+
+- **Size:** 14px
+- **Weight:** font-semibold (600)
+- **Color:** text-white (på grön bakgrund)
+
+#### Table cell text
 
 ```tsx
 className = "text-sm text-[#333333]";
 ```
 
-- Size: 14px
-- Color: #333333
+- **Size:** 14px
+- **Weight:** normal (400)
+- **Color:** #333333 (mörkgrå, ej text-gray-900!)
 
 ---
 
@@ -193,34 +273,76 @@ className = "text-sm text-[#333333]";
   </div>
 
   {/* Main content */}
-  <div className="max-w-7xl mx-auto px-6 py-6">{/* Content */}</div>
+  <main className="max-w-7xl mx-auto px-6 py-6">{/* Content */}</main>
 </div>
 ```
 
-### Key spacing values:
+### Key spacing values (exakta mått):
+
+**Container padding:**
 
 ```
-px: px-6 (24px)          ← Standard horizontal padding
-py: py-4 (16px)         ← Header vertical padding
-py: py-6 (24px)         ← Main content vertical padding
-gap: gap-3 / gap-4      ← Between elements
-mb: mb-4 / mb-6         ← Bottom margin between sections
+px-6        = 24px (horisontell padding, ALLTID samma)
+py-4        = 16px (header vertikal padding)
+py-6        = 24px (main content vertikal padding)
 ```
 
-### Component padding:
+**Element spacing:**
 
 ```
-Buttons:     px-4 py-2.5    (16px x 10px)
-Inputs:      px-4 py-2.5    (16px x 10px)
-Cards:       p-4            (16px all around)
-Table cells: px-4 py-2.5    (16px x 10px)
+gap-2       = 8px  (mellan små element)
+gap-3       = 12px (mellan knappar/badges)
+gap-4       = 16px (mellan större element)
+gap-6       = 24px (mellan sektioner)
+
+mb-4        = 16px (bottom margin mellan komponenter)
+mb-6        = 24px (bottom margin mellan stora sektioner)
+
+mt-1        = 4px  (mellan rubrik och undertext)
+mt-2        = 8px  (mellan närliggande element)
+```
+
+**Component padding (exakta mått):**
+
+```
+Buttons:     px-4 py-2.5     = 16px x 10px
+Inputs:      px-4 (höjd h-10) = 16px x 40px total höjd
+Table cells: px-4 py-2.5     = 16px x 10px (VIKTIGT: py-2.5, ej py-4!)
+Cards:       p-4 / p-5       = 16px / 20px all around
+```
+
+**Element heights (exakta mått):**
+
+```
+h-10        = 40px  (buttons, inputs, selects - STANDARD)
+h-9         = 36px  (kompakta knappar)
+```
+
+### Borders:
+
+```
+border              = 1px (ALDRIG border-2 på inputs/selects!)
+border-gray-200     = #E5E7EB (ljusgrå)
+border-gray-300     = #D1D5DB (lite mörkare för inputs)
+rounded-md          = 6px border radius
+rounded-lg          = 8px border radius (kort, modaler)
+```
+
+### Shadows:
+
+```
+shadow-sm           = Subtil skugga för kort
+shadow-xl           = Djupare skugga för modaler
+hover:shadow-xl     = Hover-effekt på kort
 ```
 
 ---
 
 ## 🧩 Komponenter
 
-### 1. HEADER
+### 1. HEADER (Sidrubrik-sektion)
+
+**Struktur:**
 
 ```tsx
 <div className="border-b border-gray-200 bg-white shadow-sm">
@@ -229,17 +351,16 @@ Table cells: px-4 py-2.5    (16px x 10px)
       <div className="flex-1">
         {/* Rubrik */}
         <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-          Sidtitel
+          Sidans titel
         </h1>
-
         {/* Undertext */}
         <p className="mt-1 text-base text-gray-600">Beskrivning av sidan</p>
       </div>
 
-      {/* Stats-boxar (optional, höger) */}
+      {/* Statistik-boxar (valfritt) */}
       <div className="flex items-center gap-4 ml-8">
         <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-          <p className="text-2xl font-bold text-[#2c7a4c]">6</p>
+          <p className="text-2xl font-bold text-[#2c7a4c]">42</p>
           <p className="text-xs text-gray-600 mt-0.5">Label</p>
         </div>
       </div>
@@ -247,6 +368,193 @@ Table cells: px-4 py-2.5    (16px x 10px)
   </div>
 </div>
 ```
+
+**Mått:**
+
+- Container: `max-w-7xl mx-auto px-6 py-4`
+- Rubrik: `text-[32px]` (32px, exakt!)
+- Undertext: `mt-1 text-base` (4px margin, 16px text)
+- Stats-boxar: `px-4 py-2` padding
+- Gap mellan stats: `gap-4` (16px)
+
+---
+
+### 2. PRIMARY BUTTON (Primär knapp)
+
+```tsx
+<button className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2">
+  <Plus className="h-4 w-4 mr-2" />
+  Knapptext
+</button>
+```
+
+**Mått:**
+
+- Padding: `px-4 py-2.5` (16px x 10px)
+- Text: `text-[15px] font-semibold` (15px, semibold)
+- Border-radius: `rounded-md` (6px)
+- Icon: `h-4 w-4 mr-2` (16px icon, 8px margin)
+- **Focus ring:** `focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2`
+
+---
+
+### 3. SECONDARY BUTTON (Sekundär knapp)
+
+```tsx
+<button className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2">
+  Knapptext
+</button>
+```
+
+**Mått:** Samma som primary, men annan färgschema.
+
+---
+
+### 4. INPUT FIELD (Textfält)
+
+```tsx
+<input
+  type="text"
+  placeholder="Placeholder..."
+  className="w-full h-10 px-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white"
+/>
+```
+
+**Mått:**
+
+- Höjd: `h-10` (40px - STANDARD)
+- Padding: `px-4` (16px horisontellt)
+- Text: `text-base` (16px)
+- Border: `border` (1px, ALDRIG border-2!)
+- Border-color: `border-gray-300`
+- **Focus ring:** `focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent`
+
+---
+
+### 5. SELECT DROPDOWN
+
+```tsx
+<select className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 text-base bg-white">
+  <option value="all">Alla status</option>
+</select>
+```
+
+**Mått:**
+
+- Höjd: `h-10` (40px)
+- Padding: `px-3` (12px, lite mindre än input)
+- Border: `border` (1px, ej border-2!)
+- **Focus ring:** `focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2`
+
+---
+
+### 6. TABLE (Datatabell)
+
+**Table structure:**
+
+```tsx
+<div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+  <table className="w-full">
+    <thead className="bg-[#2c7a4c]">
+      <tr>
+        <th className="px-4 py-2.5 text-left text-sm font-semibold text-white hover:bg-[#236139] cursor-pointer transition-colors">
+          Kolumnnamn
+        </th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-gray-200">
+      {data.map((row, index) => (
+        <tr
+          key={row.id}
+          className={`cursor-pointer transition-colors ${
+            index % 2 === 0
+              ? "bg-white hover:bg-gray-100"
+              : "bg-gray-50 hover:bg-gray-100"
+          }`}
+        >
+          <td className="px-4 py-2.5 text-sm text-[#333333]">Cellinnehåll</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+```
+
+**Mått:**
+
+- **Table header:**
+  - Background: `bg-[#2c7a4c]` (grön)
+  - Text: `text-sm font-semibold text-white` (14px, semibold, vit)
+  - Padding: `px-4 py-2.5` (16px x 10px)
+  - Hover: `hover:bg-[#236139]` (mörkare grön)
+
+- **Table cells:**
+  - Padding: `px-4 py-2.5` (16px x 10px - VIKTIGT: py-2.5, ej py-4!)
+  - Text: `text-sm text-[#333333]` (14px, mörkgrå)
+- **Table rows:**
+  - Alternerande: `index % 2 === 0 ? "bg-white" : "bg-gray-50"`
+  - Hover: `hover:bg-gray-100` (BÅDA radtyper)
+
+---
+
+### 7. CARD (Informationskort)
+
+```tsx
+<Card className="hover:shadow-xl transition-all duration-300 border border-gray-200">
+  <CardHeader className="pb-4">
+    <CardTitle className="text-lg flex items-center gap-2 mb-2">
+      <Icon className="h-5 w-5 text-[#2c7a4c]" />
+      Titel
+    </CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-4">{/* Innehåll */}</CardContent>
+</Card>
+```
+
+**Mått:**
+
+- Border: `border border-gray-200`
+- Hover: `hover:shadow-xl transition-all duration-300`
+- CardHeader padding: `pb-4` (16px bottom)
+- CardContent spacing: `space-y-4` (16px mellan barn)
+
+---
+
+### 8. BADGE (Status-badge)
+
+```tsx
+<Badge className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">
+  Status
+</Badge>
+```
+
+**Mått:**
+
+- Text: `text-xs` (12px)
+- Padding: `px-2 py-0.5` (8px x 2px)
+- Border-radius: `rounded-full`
+
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+            Sidtitel
+          </h1>
+
+          {/* Undertext */}
+          <p className="mt-1 text-base text-gray-600">Beskrivning av sidan</p>
+        </div>
+
+        {/* Stats-boxar (optional, höger) */}
+        <div className="flex items-center gap-4 ml-8">
+          <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+            <p className="text-2xl font-bold text-[#2c7a4c]">6</p>
+            <p className="text-xs text-gray-600 mt-0.5">Label</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+````
 
 ### 2. ACTION BUTTONS ROW
 
@@ -272,7 +580,7 @@ Table cells: px-4 py-2.5    (16px x 10px)
     </button>
   </div>
 </div>
-```
+````
 
 **Button variants:**
 
@@ -576,11 +884,3 @@ export default function HunddagisPage() {
 - [ ] Alternerad radtyp i tabeller (vit/grå)
 
 ---
-
-## 🎯 Nästa steg
-
-1. Uppdatera admin-sidan enligt denna standard
-2. Säkerställ att alla datasidor (hunddagis, frisör, ekonomi, etc) följer denna
-3. Uppdatera alla formular-sidor
-4. Standardisera alla komponenter (Button, Input, Select, etc)
-5. Testa på flera skärmstorlekar (responsiveness)
