@@ -773,12 +773,12 @@ const FakturorPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-center gap-3">
                 <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
-                  💸 Fakturor och underlag
+                  Fakturor och underlag
                 </h1>
                 <a
                   href="/ekonomi/hjalp"
