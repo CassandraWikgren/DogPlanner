@@ -426,7 +426,7 @@ export default function OwnersPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={exportToPDF}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
             >
               <Download className="h-4 w-4 mr-2" />
               PDF-export
@@ -436,7 +436,7 @@ export default function OwnersPage() {
                 resetForm();
                 setShowAddModal(true);
               }}
-              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors"
+              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
             >
               <Plus className="h-4 w-4 mr-2" />
               Ny ägare
@@ -459,7 +459,7 @@ export default function OwnersPage() {
             </div>
             <button
               onClick={() => setShowActiveOnly(!showActiveOnly)}
-              className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 ${
                 showActiveOnly
                   ? "bg-[#2c7a4c] text-white"
                   : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
@@ -501,10 +501,10 @@ export default function OwnersPage() {
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-[#2c7a4c] text-white">
                   <tr>
                     <th
-                      className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-100"
+                      className="text-left py-3 px-4 text-sm font-semibold cursor-pointer hover:bg-[#236139]"
                       onClick={() => handleSort("full_name")}
                     >
                       <div className="flex items-center gap-2">
@@ -517,11 +517,11 @@ export default function OwnersPage() {
                           ))}
                       </div>
                     </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">
+                    <th className="text-left py-3 px-4 text-sm font-semibold">
                       Kontakt
                     </th>
                     <th
-                      className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-100"
+                      className="text-left py-3 px-4 text-sm font-semibold cursor-pointer hover:bg-[#236139]"
                       onClick={() => handleSort("dog_count")}
                     >
                       <div className="flex items-center gap-2">
@@ -534,24 +534,29 @@ export default function OwnersPage() {
                           ))}
                       </div>
                     </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700">
+                    <th className="text-left py-3 px-4 text-sm font-semibold">
                       Åtgärder
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredAndSortedOwners.map((owner) => (
-                    <tr key={owner.id} className="border-b hover:bg-gray-50">
-                      <td className="py-4 px-4">
+                  {filteredAndSortedOwners.map((owner, index) => (
+                    <tr
+                      key={owner.id}
+                      className={`cursor-pointer transition-colors ${index % 2 === 0 ? "bg-white hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-100"}`}
+                    >
+                      <td className="py-2.5 px-4">
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-[#333333]">
                             {owner.full_name}
                           </p>
                           <p className="text-xs text-gray-600 font-mono">
                             {owner.customer_number ? (
                               `Kund #${owner.customer_number}`
                             ) : (
-                              <span className="text-red-600">⚠️ Saknar kundnummer</span>
+                              <span className="text-red-600">
+                                ⚠️ Saknar kundnummer
+                              </span>
                             )}
                           </p>
                           {owner.address && (
@@ -561,7 +566,7 @@ export default function OwnersPage() {
                           )}
                         </div>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-2.5 px-4">
                         <div className="space-y-1">
                           {owner.email && (
                             <div className="flex items-center gap-2 text-sm">
@@ -587,7 +592,7 @@ export default function OwnersPage() {
                           )}
                         </div>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-2.5 px-4">
                         <div className="flex flex-col gap-1">
                           <Badge variant="secondary" className="w-fit">
                             {owner.dogs?.length || 0} hundar
@@ -599,13 +604,13 @@ export default function OwnersPage() {
                           )}
                         </div>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-2.5 px-4">
                         <div className="flex items-center gap-2">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => startEditing(owner)}
-                            className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+                            className="bg-[#2c7a4c] hover:bg-[#236139] text-white focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -613,7 +618,7 @@ export default function OwnersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+                              className="bg-[#2c7a4c] hover:bg-[#236139] text-white focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                             >
                               <FileText className="h-4 w-4" />
                             </Button>
@@ -622,7 +627,7 @@ export default function OwnersPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => deleteOwner(owner)}
-                            className="bg-red-600 hover:bg-red-700 text-white"
+                            className="bg-red-600 hover:bg-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -646,7 +651,7 @@ export default function OwnersPage() {
                       resetForm();
                       setShowAddModal(true);
                     }}
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Lägg till första ägaren
@@ -672,7 +677,7 @@ export default function OwnersPage() {
                     setEditingOwner(null);
                     resetForm();
                   }}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -827,13 +832,13 @@ export default function OwnersPage() {
                     setEditingOwner(null);
                     resetForm();
                   }}
-                  className="px-4 py-2 h-10 rounded-md border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 h-10 rounded-md border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                 >
                   Avbryt
                 </button>
                 <button
                   onClick={saveOwner}
-                  className="px-4 py-2 h-10 rounded-md bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold shadow-sm transition-colors"
+                  className="px-4 py-2 h-10 rounded-md bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                 >
                   {editingOwner ? "Spara ändringar" : "Skapa ägare"}
                 </button>
