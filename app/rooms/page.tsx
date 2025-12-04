@@ -296,13 +296,12 @@ export default function RoomsPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
-                <Home className="h-8 w-8" />
-                Hundrum
+              <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
+                Rum & Platser
               </h1>
               <p className="mt-1 text-base text-gray-600">
-                Hantera hundrum och övervaka beläggning enligt Jordbruksverkets
-                inomhuskrav (SJVFS 2019:2 § 7-8).
+                Hantera hundrum - ange kvadratmeter, systemet räknar ut
+                kapacitet
               </p>
             </div>
             <div className="flex gap-3 ml-4">
