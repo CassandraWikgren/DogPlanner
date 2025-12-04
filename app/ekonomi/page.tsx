@@ -404,9 +404,9 @@ export default function FakturaPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Kompakt header med inline stats */}
+      {/* Header - enligt DESIGN_STANDARD_IMPLEMENTATION.md */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-8 py-6">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-3">
@@ -452,8 +452,8 @@ export default function FakturaPage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-8 py-6">
+      {/* Main Content - enligt DESIGN_STANDARD_IMPLEMENTATION.md */}
+      <main className="max-w-7xl mx-auto px-6 py-6">
         {/* Actions */}
         <div className="flex justify-between items-center mb-6">
           <Link

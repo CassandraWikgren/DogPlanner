@@ -38,6 +38,8 @@ Alla sidor måste följa denna struktur:
 │     MAIN CONTENT (Table/Cards/etc)      │
 │ White background, green headers, rows   │
 └─────────────────────────────────────────┘
+
+Det är otroligt viktigt att allt ska vara symetriskt, cleant och användarvänligt.
 ```
 
 ### Container widths:
