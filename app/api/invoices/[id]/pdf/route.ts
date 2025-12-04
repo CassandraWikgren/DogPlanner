@@ -9,6 +9,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Använd service_role key för att bypass RLS
     const supabase = await createClient();
     const invoiceId = params.id;
 
@@ -44,7 +45,15 @@ export async function GET(
       .eq("id", invoiceId)
       .single();
 
-    if (invoiceError || !invoice) {
+    if (invoiceError) {
+      console.error("Invoice fetch error:", invoiceError);
+      return NextResponse.json(
+        { error: "Faktura hittades inte", details: invoiceError.message },
+        { status: 404 }
+      );
+    }
+
+    if (!invoice) {
       return NextResponse.json(
         { error: "Faktura hittades inte" },
         { status: 404 }
@@ -58,8 +67,9 @@ export async function GET(
       .eq("invoice_id", invoiceId);
 
     if (itemsError) {
+      console.error("Invoice items fetch error:", itemsError);
       return NextResponse.json(
-        { error: "Kunde inte hämta fakturarader" },
+        { error: "Kunde inte hämta fakturarader", details: itemsError.message },
         { status: 500 }
       );
     } // Skapa PDF
