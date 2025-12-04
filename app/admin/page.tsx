@@ -10,17 +10,17 @@ export default function AdminPage() {
   const { currentOrgId } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Header med titel och statistik - EXAKT som Hunddagis */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-8 py-8">
+        <div className="max-w-6xl mx-auto px-8 py-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-[38px] font-bold text-[#2c7a4c] leading-tight tracking-tight">
-                🏥 Administration
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                Administration
               </h1>
-              <p className="mt-2 text-base text-gray-600">
-                Allt du behöver för att hantera DogPlanner
+              <p className="mt-1 text-base text-gray-600">
+                Hantera ekonomi, priser, företagsinformation och användare
               </p>
             </div>
           </div>
@@ -50,15 +50,15 @@ export default function AdminPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Rapporter */}
             <Link href="/admin/rapporter">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] hover:shadow-lg hover:bg-gradient-to-br hover:from-white hover:to-[#f0f7f3] transition-all duration-200 cursor-pointer group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="flex-1 w-full">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-3xl">📊</span>
-                    <h3 className="text-sm font-bold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-2xl">📊</span>
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
                       Rapporter & Statistik
                     </h3>
                   </div>
-                  <p className="text-xs text-gray-600 text-center leading-snug">
+                  <p className="text-xs text-gray-600 text-center">
                     Intäkter, beläggning och bokningsstatistik. Exportera till
                     Excel.
                   </p>
@@ -68,15 +68,15 @@ export default function AdminPage() {
 
             {/* Ekonomi & Fakturor */}
             <Link href="/ekonomi">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] hover:shadow-lg hover:bg-gradient-to-br hover:from-white hover:to-[#f0f7f3] transition-all duration-200 cursor-pointer group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="flex-1 w-full">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-3xl">💰</span>
-                    <h3 className="text-sm font-bold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-2xl">💰</span>
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
                       Ekonomi & Fakturor
                     </h3>
                   </div>
-                  <p className="text-xs text-gray-600 text-center leading-snug">
+                  <p className="text-xs text-gray-600 text-center">
                     Hantera fakturor, betalningar och ekonomirapporter.
                   </p>
                 </div>
@@ -86,15 +86,15 @@ export default function AdminPage() {
             {/* Priser - Hunddagis */}
             <ServiceGuard service="daycare">
               <Link href="/admin/priser/dagis">
-                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] hover:shadow-lg hover:bg-gradient-to-br hover:from-white hover:to-[#f0f7f3] transition-all duration-200 cursor-pointer group">
+                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                   <div className="flex-1 w-full">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <span className="text-3xl">🐕</span>
-                      <h3 className="text-sm font-bold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <span className="text-2xl">🐕</span>
+                      <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
                         Priser - Hunddagis
                       </h3>
                     </div>
-                    <p className="text-xs text-gray-600 text-center leading-snug">
+                    <p className="text-xs text-gray-600 text-center">
                       Ändra priser för dagisabonnemang och enstaka dagar.
                     </p>
                   </div>
@@ -105,15 +105,15 @@ export default function AdminPage() {
             {/* Priser - Hundpensionat */}
             <ServiceGuard service="boarding">
               <Link href="/admin/priser/pensionat">
-                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] hover:shadow-lg hover:bg-gradient-to-br hover:from-white hover:to-[#f0f7f3] transition-all duration-200 cursor-pointer group">
+                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                   <div className="flex-1 w-full">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <span className="text-3xl">🏨</span>
-                      <h3 className="text-sm font-bold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <span className="text-2xl">🏨</span>
+                      <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
                         Priser - Pensionat
                       </h3>
                     </div>
-                    <p className="text-xs text-gray-600 text-center leading-snug">
+                    <p className="text-xs text-gray-600 text-center">
                       Ändra priser för pensionatsbokningar och tilläggstjänster.
                     </p>
                   </div>
@@ -124,15 +124,15 @@ export default function AdminPage() {
             {/* Priser - Hundfrisör */}
             <ServiceGuard service="grooming">
               <Link href="/admin/hundfrisor/priser">
-                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] hover:shadow-lg hover:bg-gradient-to-br hover:from-white hover:to-[#f0f7f3] transition-all duration-200 cursor-pointer group">
+                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                   <div className="flex-1 w-full">
-                    <div className="flex items-center justify-center gap-2 mb-2">
-                      <span className="text-3xl">✂️</span>
-                      <h3 className="text-sm font-bold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <span className="text-2xl">✂️</span>
+                      <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
                         Priser - Frisör
                       </h3>
                     </div>
-                    <p className="text-xs text-gray-600 text-center leading-snug">
+                    <p className="text-xs text-gray-600 text-center">
                       Ändra priser för klippning, bad och pälsvård.
                     </p>
                   </div>
@@ -142,15 +142,15 @@ export default function AdminPage() {
 
             {/* Företagsinformation */}
             <Link href="/foretagsinformation">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] hover:shadow-lg hover:bg-gradient-to-br hover:from-white hover:to-[#f0f7f3] transition-all duration-200 cursor-pointer group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="flex-1 w-full">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-3xl">🏢</span>
-                    <h3 className="text-sm font-bold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-2xl">🏢</span>
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
                       Företagsinformation
                     </h3>
                   </div>
-                  <p className="text-xs text-gray-600 text-center leading-snug">
+                  <p className="text-xs text-gray-600 text-center">
                     Hantera företagsuppgifter, kontaktinfo och adress.
                   </p>
                 </div>
@@ -159,15 +159,15 @@ export default function AdminPage() {
 
             {/* Kunder & Hundägare */}
             <Link href="/owners">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] hover:shadow-lg hover:bg-gradient-to-br hover:from-white hover:to-[#f0f7f3] transition-all duration-200 cursor-pointer group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="flex-1 w-full">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-3xl">👥</span>
-                    <h3 className="text-sm font-bold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-2xl">👥</span>
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
                       Kunder & Hundägare
                     </h3>
                   </div>
-                  <p className="text-xs text-gray-600 text-center leading-snug">
+                  <p className="text-xs text-gray-600 text-center">
                     Hantera kundregister och kontaktuppgifter.
                   </p>
                 </div>
@@ -176,15 +176,15 @@ export default function AdminPage() {
 
             {/* Rum-hantering */}
             <Link href="/admin/rum">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] hover:shadow-lg hover:bg-gradient-to-br hover:from-white hover:to-[#f0f7f3] transition-all duration-200 cursor-pointer group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="flex-1 w-full">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-3xl">🚪</span>
-                    <h3 className="text-sm font-bold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-2xl">🚪</span>
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
                       Rum & Platser
                     </h3>
                   </div>
-                  <p className="text-xs text-gray-600 text-center leading-snug">
+                  <p className="text-xs text-gray-600 text-center">
                     Hantera rum för dagis och pensionat.
                   </p>
                 </div>
@@ -193,15 +193,15 @@ export default function AdminPage() {
 
             {/* Användarhantering */}
             <Link href="/admin/users">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] hover:shadow-lg hover:bg-gradient-to-br hover:from-white hover:to-[#f0f7f3] transition-all duration-200 cursor-pointer group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="flex-1 w-full">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-3xl">🔐</span>
-                    <h3 className="text-sm font-bold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-2xl">🔐</span>
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
                       Användarhantering
                     </h3>
                   </div>
-                  <p className="text-xs text-gray-600 text-center leading-snug">
+                  <p className="text-xs text-gray-600 text-center">
                     Skapa inlogg för kollegor och hantera behörigheter.
                   </p>
                 </div>
@@ -210,15 +210,15 @@ export default function AdminPage() {
 
             {/* Abonnemang DogPlanner */}
             <Link href="/admin/abonnemang">
-              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] hover:shadow-lg hover:bg-gradient-to-br hover:from-white hover:to-[#f0f7f3] transition-all duration-200 cursor-pointer group">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
                 <div className="flex-1 w-full">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-3xl">💳</span>
-                    <h3 className="text-sm font-bold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-2xl">💳</span>
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
                       Ditt Abonnemang
                     </h3>
                   </div>
-                  <p className="text-xs text-gray-600 text-center leading-snug">
+                  <p className="text-xs text-gray-600 text-center">
                     Hantera ditt DogPlanner-abonnemang och betalning.
                   </p>
                 </div>
