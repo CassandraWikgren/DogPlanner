@@ -445,30 +445,28 @@ export default function OwnersPage() {
         </div>
 
         {/* Sök och filter */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Sök på namn, e-post, telefon eller hundnamn..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
-              />
-            </div>
-            <button
-              onClick={() => setShowActiveOnly(!showActiveOnly)}
-              className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 ${
-                showActiveOnly
-                  ? "bg-[#2c7a4c] text-white"
-                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-              }`}
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              {showActiveOnly ? "Endast med hundar" : "Visa alla"}
-            </button>
+        <div className="flex items-center gap-4 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Sök på namn, e-post, telefon eller hundnamn..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white"
+            />
           </div>
+          <button
+            onClick={() => setShowActiveOnly(!showActiveOnly)}
+            className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 ${
+              showActiveOnly
+                ? "bg-[#2c7a4c] text-white"
+                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+            }`}
+          >
+            <Filter className="h-4 w-4 mr-2" />
+            {showActiveOnly ? "Endast med hundar" : "Visa alla"}
+          </button>
         </div>
 
         {/* Error display */}
