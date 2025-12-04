@@ -47,11 +47,12 @@ interface Invoice {
 
 interface InvoiceItem {
   id: string;
-  description: string;
-  qty: number;
-  unit_price: number;
-  amount: number;
+  description: string | null;
+  qty: number | null;
+  unit_price: number | null;
+  amount: number | null;
   booking_id?: string | null;
+  invoice_id?: string;
   booking?: {
     id: string;
     dog_id?: string | null;
