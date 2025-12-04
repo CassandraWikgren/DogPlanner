@@ -188,9 +188,7 @@ export default function DogJournalPage() {
           <div className="flex items-center gap-3">
             <Scissors className="h-8 w-8 text-[#2c7a4c]" />
             <div>
-              <h1 className="text-[32px] font-bold text-[#2c7a4c]">
-                {dog.name}
-              </h1>
+              <h1 className="text-4xl font-bold text-[#2c7a4c]">{dog.name}</h1>
               <p className="text-base text-gray-600">
                 {dog.breed || "Okänd ras"} •{" "}
                 {dog.owner?.full_name || "Ingen ägare"}

@@ -402,7 +402,7 @@ export default function DogProfilePage() {
     );
 
   return (
-    <main className="max-w-6xl mx-auto px-4 py-6" id="profile-content">
+    <main className="max-w-7xl mx-auto px-6 py-6" id="profile-content">
       {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
@@ -418,7 +418,7 @@ export default function DogProfilePage() {
             </div>
           )}
           <div>
-            <h1 className="text-3xl font-bold text-[#2c7a4c]">
+            <h1 className="text-4xl font-bold text-[#2c7a4c]">
               {dog.name ?? "Hund"}
             </h1>
             <p className="text-sm text-gray-600">

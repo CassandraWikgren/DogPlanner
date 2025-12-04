@@ -68,10 +68,10 @@ export default function OwnerPage() {
   if (!owner) return <p className="p-6 text-red-600">Ingen ägare hittades.</p>;
 
   return (
-    <PageContainer maxWidth="5xl">
+    <PageContainer maxWidth="7xl">
       <section className="bg-white p-6 shadow rounded-xl space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-green-700 mb-2">
+          <h1 className="text-4xl font-bold text-[#2c7a4c] mb-2">
             👤 {owner.name}
           </h1>
           <p>Kundnummer: {owner.customernumber}</p>
@@ -80,14 +80,14 @@ export default function OwnerPage() {
 
           <Button
             onClick={() => setEditOpen(true)}
-            className="mt-4 bg-green-700 hover:bg-green-800 text-white"
+            className="mt-4 bg-[#2c7a4c] hover:bg-[#236139] text-white px-6 py-2.5 h-10"
           >
             ✏️ Redigera uppgifter
           </Button>
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold text-green-700 mb-3">
+          <h2 className="text-lg font-semibold text-[#2c7a4c] mb-3">
             🐶 Hundar till denna ägare
           </h2>
           {dogs.length === 0 ? (
