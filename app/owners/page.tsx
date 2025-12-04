@@ -366,7 +366,7 @@ export default function OwnersPage() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-[1600px] mx-auto px-16 sm:px-24 lg:px-32">
+        <div className="max-w-7xl mx-auto px-6">
           <Card>
             <CardContent className="p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
@@ -385,7 +385,7 @@ export default function OwnersPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+              <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
                 Ägare
               </h1>
               <p className="mt-1 text-base text-gray-600">
@@ -426,7 +426,7 @@ export default function OwnersPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={exportToPDF}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
+              className="inline-flex items-center px-6 py-2.5 h-10 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
             >
               <Download className="h-4 w-4 mr-2" />
               PDF-export
@@ -458,7 +458,7 @@ export default function OwnersPage() {
           </div>
           <button
             onClick={() => setShowActiveOnly(!showActiveOnly)}
-            className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 ${
+            className={`inline-flex items-center px-6 py-2.5 h-10 text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 ${
               showActiveOnly
                 ? "bg-[#2c7a4c] text-white"
                 : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
@@ -502,7 +502,7 @@ export default function OwnersPage() {
                 <thead className="bg-[#2c7a4c] text-white">
                   <tr>
                     <th
-                      className="text-left py-3 px-4 text-sm font-semibold cursor-pointer hover:bg-[#236139]"
+                      className="text-left py-2.5 px-4 text-sm font-semibold cursor-pointer hover:bg-[#236139]"
                       onClick={() => handleSort("full_name")}
                     >
                       <div className="flex items-center gap-2">
@@ -515,11 +515,11 @@ export default function OwnersPage() {
                           ))}
                       </div>
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold">
+                    <th className="text-left py-2.5 px-4 text-sm font-semibold">
                       Kontakt
                     </th>
                     <th
-                      className="text-left py-3 px-4 text-sm font-semibold cursor-pointer hover:bg-[#236139]"
+                      className="text-left py-2.5 px-4 text-sm font-semibold cursor-pointer hover:bg-[#236139]"
                       onClick={() => handleSort("dog_count")}
                     >
                       <div className="flex items-center gap-2">
@@ -532,7 +532,7 @@ export default function OwnersPage() {
                           ))}
                       </div>
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold">
+                    <th className="text-left py-2.5 px-4 text-sm font-semibold">
                       Åtgärder
                     </th>
                   </tr>
@@ -830,13 +830,13 @@ export default function OwnersPage() {
                     setEditingOwner(null);
                     resetForm();
                   }}
-                  className="px-4 py-2 h-10 rounded-md border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
+                  className="px-6 py-2.5 h-10 rounded-md border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                 >
                   Avbryt
                 </button>
                 <button
                   onClick={saveOwner}
-                  className="px-4 py-2 h-10 rounded-md bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
+                  className="px-6 py-2.5 h-10 rounded-md bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
                 >
                   {editingOwner ? "Spara ändringar" : "Skapa ägare"}
                 </button>
