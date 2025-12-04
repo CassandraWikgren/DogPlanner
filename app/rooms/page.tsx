@@ -296,7 +296,7 @@ export default function RoomsPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
+              <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
                 <Home className="h-8 w-8" />
                 Hundrum
               </h1>
@@ -314,7 +314,7 @@ export default function RoomsPage() {
               </div>
               <button
                 onClick={() => setShowAddRoom(true)}
-                className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm flex items-center gap-2"
+                className="px-6 py-2.5 h-10 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
                 Lägg till rum
@@ -599,7 +599,7 @@ export default function RoomsPage() {
               </p>
               <button
                 onClick={() => setShowAddRoom(true)}
-                className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
+                className="px-6 py-2.5 h-10 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
               >
                 Skapa första rummet
               </button>
@@ -757,14 +757,14 @@ function RoomModal({
             <div className="flex gap-3 pt-4">
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
+                className="flex-1 px-6 py-2.5 h-10 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
               >
                 {room ? "Uppdatera" : "Skapa"} rum
               </button>
               <button
                 type="button"
                 onClick={onCancel}
-                className="flex-1 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
+                className="flex-1 px-6 py-2.5 h-10 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm"
               >
                 Avbryt
               </button>

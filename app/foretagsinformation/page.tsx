@@ -152,7 +152,7 @@ export default function ForetagsInfoPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="border-b border-gray-200 bg-white shadow-sm">
           <div className="max-w-7xl mx-auto px-6 py-4">
-            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+            <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
               Företagsinformation
             </h1>
             <p className="mt-1 text-base text-gray-600">
@@ -174,7 +174,7 @@ export default function ForetagsInfoPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="border-b border-gray-200 bg-white shadow-sm">
           <div className="max-w-7xl mx-auto px-6 py-4">
-            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+            <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
               Företagsinformation
             </h1>
           </div>
@@ -196,7 +196,7 @@ export default function ForetagsInfoPage() {
       {/* Header - EXAKT som Hunddagis */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+          <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
             Företagsinformation
           </h1>
           <p className="mt-1 text-base text-gray-600">
@@ -314,7 +314,7 @@ export default function ForetagsInfoPage() {
                 <button
                   onClick={saveSettings}
                   disabled={saving}
-                  className="w-full px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm disabled:opacity-50"
+                  className="w-full px-6 py-2.5 h-10 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm disabled:opacity-50"
                 >
                   {saving ? (
                     "Sparar..."

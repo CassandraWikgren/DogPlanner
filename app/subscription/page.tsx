@@ -311,7 +311,7 @@ export default function SubscriptionPage() {
     <main className="min-h-screen bg-gray-50">
       {/* Kompakt header */}
       <div className="bg-white border-b shadow-sm">
-        <div className="max-w-5xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard"
@@ -319,7 +319,7 @@ export default function SubscriptionPage() {
             >
               ← Tillbaka
             </Link>
-            <h1 className="text-2xl font-bold text-[#2C7A4C] leading-tight">
+            <h1 className="text-4xl font-bold text-[#2C7A4C] leading-tight">
               Mitt Abonnemang
             </h1>
           </div>
@@ -327,7 +327,7 @@ export default function SubscriptionPage() {
       </div>
 
       {/* Main content */}
-      <div className="max-w-5xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Messages */}
         {message && (
           <div className="mb-4 rounded-md border border-green-300 bg-green-50 px-4 py-3 text-green-800 text-sm">
@@ -364,7 +364,7 @@ export default function SubscriptionPage() {
                   <button
                     onClick={handleReactivate}
                     disabled={updating}
-                    className="px-5 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-medium transition disabled:opacity-50 text-sm"
+                    className="px-6 py-2.5 h-10 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-medium transition disabled:opacity-50 text-sm"
                   >
                     {updating ? "Aktiverar..." : "Starta abonnemang igen"}
                   </button>

@@ -102,7 +102,7 @@ export default function OrganisationSettingsPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Kompakt header */}
       <div className="bg-white border-b shadow-sm">
-        <div className="max-w-3xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <a
               href="/dashboard"
@@ -110,7 +110,7 @@ export default function OrganisationSettingsPage() {
             >
               ← Tillbaka
             </a>
-            <h1 className="text-2xl font-bold text-[#2C7A4C] leading-tight">
+            <h1 className="text-4xl font-bold text-[#2C7A4C] leading-tight">
               Företagsinställningar
             </h1>
           </div>
@@ -118,7 +118,7 @@ export default function OrganisationSettingsPage() {
       </div>
 
       {/* Main content - narrow form layout */}
-      <div className="max-w-3xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
           {org ? (
             <div className="space-y-6">
@@ -171,7 +171,7 @@ export default function OrganisationSettingsPage() {
                     </div>
                     <button
                       onClick={handleRename}
-                      className="w-full px-4 py-2 bg-[#2C7A4C] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold"
+                      className="w-full px-6 py-2.5 h-10 bg-[#2C7A4C] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold"
                     >
                       Spara ändringar
                     </button>
