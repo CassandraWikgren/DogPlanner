@@ -596,7 +596,7 @@ export default function CustomerRegisterPage() {
                           </Link>{" "}
                           och{" "}
                           <Link
-                            href="/terms"
+                            href="/legal/terms-customer"
                             className="text-[#2c7a4c] underline hover:text-[#245a3e]"
                             target="_blank"
                           >
