@@ -47,7 +47,7 @@ export default function OrganisationSelector({
 
         const { data, error: fetchError } = await supabase
           .from("orgs")
-          .select("id, name, address, phone, email")
+          .select("id, name, address, phone, email, lan, kommun, service_types")
           .eq("is_visible_to_customers", true)
           .contains("service_types", [serviceType])
           .order("name");

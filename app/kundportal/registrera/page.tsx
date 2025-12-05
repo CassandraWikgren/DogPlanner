@@ -263,20 +263,22 @@ export default function CustomerRegisterPage() {
       if (authData.user.email_confirmed_at) {
         // Användaren är redan verifierad (t.ex. i utvecklingsmiljö)
         setSuccess(
-          "🎉 Registrering lyckades! Din e-postadress är verifierad. Du omdirigeras till inloggningen..."
+          "🎉 Registrering lyckades! Din e-postadress är verifierad. Du omdirigeras till att söka hunddagisar..."
         );
         setTimeout(() => {
-          router.push("/kundportal/login?message=registration_complete");
+          router.push("/kundportal/soka-hunddagis");
         }, 3000);
       } else {
         // Användaren behöver verifiera e-post
         setSuccess(
           "✅ Registrering lyckades! \n\n📧 Vi har skickat en verifieringslänk till " +
             ownerData.email +
-            ". \n\nKlicka på länken i e-posten för att aktivera ditt konto. \n\n💡 Glöm inte att kolla skräppost-mappen!"
+            ". \n\nKlicka på länken i e-posten för att aktivera ditt konto. Efter verifiering omdirigeras du till att söka hunddagisar. \n\n💡 Glöm inte att kolla skräppost-mappen!"
         );
         setTimeout(() => {
-          router.push("/kundportal/login?message=check_email");
+          router.push(
+            "/kundportal/login?message=check_email&next=/kundportal/soka-hunddagis"
+          );
         }, 5000);
       }
     } catch (err: any) {
