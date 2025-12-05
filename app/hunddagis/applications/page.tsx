@@ -3,6 +3,7 @@
 // Pattern 3: Applications Management Page
 // Organisations review and approve/reject hunddagis applications
 // ✅ DESIGN STANDARD: max-w-7xl + TABLE LAYOUT + Proper header section
+// ✅ TRANSACTION SAFETY: Uses RPC functions with ACID guarantees
 
 export const dynamic = "force-dynamic";
 
@@ -134,34 +135,17 @@ export default function HunddagisApplicationsPage() {
       setError(null);
       setSuccess(null);
 
-      // 1. Update application status
-      // @ts-ignore - applications table
-      const { error: appError } = await supabase
-        .from("applications")
-        // @ts-ignore
-        .update({
-          status: "approved",
-          responded_at: new Date().toISOString(),
-        })
-        .eq("id", application.id);
+      // Use transactional RPC function for ACID guarantees
+      // @ts-ignore - RPC function exists in DB but not yet in generated types
+      const { data, error: rpcError } = await supabase.rpc(
+        "approve_application",
+        {
+          p_application_id: application.id,
+          p_org_id: currentOrgId!,
+        }
+      );
 
-      if (appError) throw appError;
-
-      // 2. Update owner org_id
-      const { error: ownerError } = await supabase
-        .from("owners")
-        .update({ org_id: currentOrgId! })
-        .eq("id", application.owner_id);
-
-      if (ownerError) throw ownerError;
-
-      // 3. Update dog org_id
-      const { error: dogError } = await supabase
-        .from("dogs")
-        .update({ org_id: currentOrgId! })
-        .eq("id", application.dog_id);
-
-      if (dogError) throw dogError;
+      if (rpcError) throw rpcError;
 
       setSuccess(
         `✅ Ansökan godkänd! ${application.owner.full_name} och ${application.dog.name} är nu kopplade till er organisation.`
@@ -184,18 +168,18 @@ export default function HunddagisApplicationsPage() {
 
       const notes = rejectionNotes[application.id] || "";
 
-      // @ts-ignore - applications table
-      const { error: appError } = await supabase
-        .from("applications")
-        // @ts-ignore
-        .update({
-          status: "rejected",
-          responded_at: new Date().toISOString(),
-          response_notes: notes,
-        })
-        .eq("id", application.id);
+      // Use transactional RPC function
+      // @ts-ignore - RPC function exists in DB but not yet in generated types
+      const { data, error: rpcError } = await supabase.rpc(
+        "reject_application",
+        {
+          p_application_id: application.id,
+          p_org_id: currentOrgId!,
+          p_response_notes: notes,
+        }
+      );
 
-      if (appError) throw appError;
+      if (rpcError) throw rpcError;
 
       setSuccess(`✅ Ansökan avslagen.`);
       setShowRejectForm(null);
