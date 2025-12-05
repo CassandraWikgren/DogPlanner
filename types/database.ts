@@ -505,7 +505,7 @@ export interface Database {
           room_id: string | null;
           start_date: string;
           end_date: string;
-          status: string | null;
+          status: "confirmed" | "completed" | "cancelled" | "no-show" | null;
           total_price: number | null;
           base_price: number | null;
           discount_amount: number | null;
@@ -522,7 +522,7 @@ export interface Database {
           room_id?: string | null;
           start_date: string;
           end_date: string;
-          status?: string | null;
+          status?: "confirmed" | "completed" | "cancelled" | "no-show" | null;
           total_price?: number | null;
           base_price?: number | null;
           discount_amount?: number | null;
@@ -539,7 +539,7 @@ export interface Database {
           room_id?: string | null;
           start_date?: string;
           end_date?: string;
-          status?: string | null;
+          status?: "confirmed" | "completed" | "cancelled" | "no-show" | null;
           total_price?: number | null;
           base_price?: number | null;
           discount_amount?: number | null;
