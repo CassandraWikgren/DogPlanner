@@ -136,7 +136,6 @@ export default function HunddagisApplicationsPage() {
       setSuccess(null);
 
       // Use transactional RPC function for ACID guarantees
-      // @ts-ignore - RPC function exists in DB but not yet in generated types
       const { data, error: rpcError } = await supabase.rpc(
         "approve_application",
         {
@@ -169,7 +168,6 @@ export default function HunddagisApplicationsPage() {
       const notes = rejectionNotes[application.id] || "";
 
       // Use transactional RPC function
-      // @ts-ignore - RPC function exists in DB but not yet in generated types
       const { data, error: rpcError } = await supabase.rpc(
         "reject_application",
         {

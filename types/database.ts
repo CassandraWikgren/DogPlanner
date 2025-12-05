@@ -1400,6 +1400,30 @@ export interface Database {
     };
     Views: { [key: string]: never };
     Functions: {
+      approve_application: {
+        Args: { p_application_id: string; p_org_id: string };
+        Returns: {
+          success: boolean;
+          application_id: string;
+          owner_id: string;
+          dog_id: string;
+          org_id: string;
+          responded_at: string;
+        };
+      };
+      reject_application: {
+        Args: {
+          p_application_id: string;
+          p_org_id: string;
+          p_response_notes: string | null;
+        };
+        Returns: {
+          success: boolean;
+          application_id: string;
+          status: string;
+          responded_at: string;
+        };
+      };
       heal_user_missing_org: {
         Args: { p_user_id: string };
         Returns: {
