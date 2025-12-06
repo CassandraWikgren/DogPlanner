@@ -365,202 +365,200 @@ export default function NewPensionatBooking() {
 
       {/* Main Content */}
       <main className="max-w-3xl mx-auto px-6 py-6">
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-          {/* STEG 1: VÄLJ KUNDTYP (endast om ingen hund är vald) */}
-          {!selectedDog && (
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Steg 1: Välj kundtyp
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Befintlig kund */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Scrolla ner till hundselektion
-                    document
-                      .getElementById("dog-selector")
-                      ?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="p-6 border-2 border-green-300 bg-green-50 rounded-lg hover:border-green-500 hover:bg-green-100 transition-all text-left group"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-green-600 rounded-lg text-white flex-shrink-0">
-                      <User className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-1 text-lg">
-                        Befintlig kund
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        Kunden finns redan i systemet (t.ex. via Hunddagis)
-                      </p>
-                      <p className="text-xs text-green-700 mt-2 font-medium">
-                        → Välj hund från listan nedan
-                      </p>
-                    </div>
-                  </div>
-                </button>
-
-                {/* Ny kund */}
-                <button
-                  type="button"
-                  onClick={() => setShowAssistedRegistration(true)}
-                  className="p-6 border-2 border-green-400 bg-green-100 rounded-lg hover:border-green-600 hover:bg-green-200 transition-all text-left group"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-green-700 rounded-lg text-white flex-shrink-0">
-                      <Plus className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900 mb-1 text-lg">
-                        🆕 Ny kund
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        Assisterad registrering (GDPR-säker) för helt nya kunder
-                      </p>
-                      <p className="text-xs text-green-800 mt-2 font-medium">
-                        → Öppnar registreringsguide
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              </div>
-
-              {/* Hundselektion (befintlig kund) */}
-              <div
-                id="dog-selector"
-                className="mt-6 pt-6 border-t border-gray-200"
+        {/* STEG 1: VÄLJ KUNDTYP (endast om ingen hund är vald) */}
+        {!selectedDog && (
+          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Steg 1: Välj kundtyp
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Befintlig kund */}
+              <button
+                type="button"
+                onClick={() => {
+                  // Scrolla ner till hundselektion
+                  document
+                    .getElementById("dog-selector")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="p-6 border-2 border-green-300 bg-green-50 rounded-lg hover:border-green-500 hover:bg-green-100 transition-all text-left group"
               >
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  Välj hund från befintlig kund:
-                </label>
-
-                {/* Sökruta */}
-                <div className="mb-3">
-                  <input
-                    type="text"
-                    value={dogSearchQuery}
-                    onChange={(e) => setDogSearchQuery(e.target.value)}
-                    placeholder="Sök på hundnamn, ras eller ägare..."
-                    className="w-full border-2 border-gray-300 px-4 py-2 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                  {dogSearchQuery && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Visar {filteredDogs.length} av {dogs.length} hundar
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-green-600 rounded-lg text-white flex-shrink-0">
+                    <User className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900 mb-1 text-lg">
+                      Befintlig kund
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      Kunden finns redan i systemet (t.ex. via Hunddagis)
                     </p>
-                  )}
+                    <p className="text-xs text-green-700 mt-2 font-medium">
+                      → Välj hund från listan nedan
+                    </p>
+                  </div>
                 </div>
+              </button>
 
-                <select
-                  value={selectedDog}
-                  onChange={(e) => setSelectedDog(e.target.value)}
-                  className="w-full border-2 border-gray-300 px-4 py-3 text-base rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              {/* Ny kund */}
+              <button
+                type="button"
+                onClick={() => setShowAssistedRegistration(true)}
+                className="p-6 border-2 border-green-400 bg-green-100 rounded-lg hover:border-green-600 hover:bg-green-200 transition-all text-left group"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-green-700 rounded-lg text-white flex-shrink-0">
+                    <Plus className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900 mb-1 text-lg">
+                      🆕 Ny kund
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      Assisterad registrering (GDPR-säker) för helt nya kunder
+                    </p>
+                    <p className="text-xs text-green-800 mt-2 font-medium">
+                      → Öppnar registreringsguide
+                    </p>
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            {/* Hundselektion (befintlig kund) */}
+            <div
+              id="dog-selector"
+              className="mt-6 pt-6 border-t border-gray-200"
+            >
+              <label className="block text-sm font-semibold text-gray-900 mb-3">
+                Välj hund från befintlig kund:
+              </label>
+
+              {/* Sökruta */}
+              <div className="mb-3">
+                <input
+                  type="text"
+                  value={dogSearchQuery}
+                  onChange={(e) => setDogSearchQuery(e.target.value)}
+                  placeholder="Sök på hundnamn, ras eller ägare..."
+                  className="w-full border-2 border-gray-300 px-4 py-2 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                {dogSearchQuery && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Visar {filteredDogs.length} av {dogs.length} hundar
+                  </p>
+                )}
+              </div>
+
+              <select
+                value={selectedDog}
+                onChange={(e) => setSelectedDog(e.target.value)}
+                className="w-full border-2 border-gray-300 px-4 py-3 text-base rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
+                <option value="">Välj hund...</option>
+                {filteredDogs.map((dog) => (
+                  <option key={dog.id} value={dog.id}>
+                    {dog.name} ({dog.breed || "Okänd ras"}) - Ägare:{" "}
+                    {dog.owners?.full_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {/* VALD HUND & ÄGARE INFO (readonly) */}
+        {selectedDog && selectedDogData && (
+          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg p-6">
+              <div className="flex items-start justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Vald hund & ägare
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setSelectedDog("")}
+                  className="text-sm text-gray-600 hover:text-gray-900 underline"
                 >
-                  <option value="">Välj hund...</option>
-                  {filteredDogs.map((dog) => (
-                    <option key={dog.id} value={dog.id}>
-                      {dog.name} ({dog.breed || "Okänd ras"}) - Ägare:{" "}
-                      {dog.owners?.full_name}
-                    </option>
-                  ))}
-                </select>
+                  Byt hund
+                </button>
               </div>
-            </div>
-          )}
 
-          {/* VALD HUND & ÄGARE INFO (readonly) */}
-          {selectedDog && selectedDogData && (
-            <div className="mb-8">
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    Vald hund & ägare
-                  </h2>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedDog("")}
-                    className="text-sm text-gray-600 hover:text-gray-900 underline"
-                  >
-                    Byt hund
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Hundinfo */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                      <span className="text-2xl">🐕</span> Hunduppgifter
-                    </h3>
-                    <div className="space-y-1 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Hundinfo */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <span className="text-2xl">🐕</span> Hunduppgifter
+                  </h3>
+                  <div className="space-y-1 text-sm">
+                    <p>
+                      <strong>Namn:</strong> {selectedDogData.name}
+                    </p>
+                    <p>
+                      <strong>Ras:</strong>{" "}
+                      {selectedDogData.breed || "Ej angiven"}
+                    </p>
+                    {selectedDogData.heightcm && (
                       <p>
-                        <strong>Namn:</strong> {selectedDogData.name}
+                        <strong>Höjd:</strong> {selectedDogData.heightcm} cm
                       </p>
+                    )}
+                    {selectedDogData.weightkg && (
                       <p>
-                        <strong>Ras:</strong>{" "}
-                        {selectedDogData.breed || "Ej angiven"}
+                        <strong>Vikt:</strong> {selectedDogData.weightkg} kg
                       </p>
-                      {selectedDogData.heightcm && (
-                        <p>
-                          <strong>Höjd:</strong> {selectedDogData.heightcm} cm
-                        </p>
-                      )}
-                      {selectedDogData.weightkg && (
-                        <p>
-                          <strong>Vikt:</strong> {selectedDogData.weightkg} kg
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Ägarinfo */}
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                      <span className="text-2xl">👤</span> Ägaruppgifter
-                    </h3>
-                    <div className="space-y-1 text-sm">
-                      <p>
-                        <strong>Namn:</strong>{" "}
-                        {selectedDogData.owners?.full_name}
-                      </p>
-                      {selectedDogData.owners?.phone && (
-                        <p>
-                          <strong>Telefon:</strong>{" "}
-                          {selectedDogData.owners.phone}
-                        </p>
-                      )}
-                      {selectedDogData.owners?.email && (
-                        <p>
-                          <strong>Email:</strong> {selectedDogData.owners.email}
-                        </p>
-                      )}
-                      {selectedDogData.owners?.address && (
-                        <p>
-                          <strong>Adress:</strong>{" "}
-                          {selectedDogData.owners.address}
-                        </p>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Lägg till hund-knapp */}
-                <div className="mt-6 pt-4 border-t border-green-200">
-                  <button
-                    type="button"
-                    onClick={() => setShowNewDogModal(true)}
-                    className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium rounded-md transition-colors"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Lägg till ytterligare hund till denna ägare
-                  </button>
+                {/* Ägarinfo */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <span className="text-2xl">👤</span> Ägaruppgifter
+                  </h3>
+                  <div className="space-y-1 text-sm">
+                    <p>
+                      <strong>Namn:</strong> {selectedDogData.owners?.full_name}
+                    </p>
+                    {selectedDogData.owners?.phone && (
+                      <p>
+                        <strong>Telefon:</strong> {selectedDogData.owners.phone}
+                      </p>
+                    )}
+                    {selectedDogData.owners?.email && (
+                      <p>
+                        <strong>Email:</strong> {selectedDogData.owners.email}
+                      </p>
+                    )}
+                    {selectedDogData.owners?.address && (
+                      <p>
+                        <strong>Adress:</strong>{" "}
+                        {selectedDogData.owners.address}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* BOKNINGSFORMULÄR (endast när hund är vald) */}
-          {selectedDog && (
+              {/* Lägg till hund-knapp */}
+              <div className="mt-6 pt-4 border-t border-green-200">
+                <button
+                  type="button"
+                  onClick={() => setShowNewDogModal(true)}
+                  className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium rounded-md transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  Lägg till ytterligare hund till denna ägare
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* BOKNINGSFORMULÄR (endast när hund är vald) */}
+        {selectedDog && (
+          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Datum & Tid */}
               <div>
@@ -822,8 +820,8 @@ export default function NewPensionatBooking() {
                 </button>
               </div>
             </form>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* MODALS */}
 
