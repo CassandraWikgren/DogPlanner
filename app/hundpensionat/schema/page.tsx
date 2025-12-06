@@ -6,6 +6,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { ChevronLeft, ChevronRight, Calendar, List } from "lucide-react";
 import Link from "next/link";
 import type { Database } from "@/types/database";
+import { calculateMaxDogsCapacity } from "@/lib/roomCalculator";
 
 type Booking = Database["public"]["Tables"]["bookings"]["Row"] & {
   dogs?:
@@ -67,7 +68,7 @@ export default function PensionatSchemaPage() {
         `
         )
         .eq("org_id", currentOrgId as string)
-        .eq("status", "confirmed") // ✅ Visa ENDAST bekräftade bokningar i schemat
+        .in("status", ["confirmed", "checked_in"]) // ✅ Visa bekräftade OCH incheckade bokningar
         .lte("start_date", endDate.toISOString().split("T")[0])
         .gte("end_date", startDate.toISOString().split("T")[0]);
 
@@ -87,7 +88,43 @@ export default function PensionatSchemaPage() {
     return date;
   });
 
-  // Hjälpfunktion för att kolla om ett rum är bokat ett visst datum
+  // Beräkna max antal hundar enligt Jordbruksverket för ett rum
+  const getMaxDogsForRoom = (room: Room): string => {
+    const capacity = room.capacity_m2 || 0;
+    if (capacity === 0) return "Ej angivet";
+
+    const calc = calculateMaxDogsCapacity(capacity);
+    // Visa olika scenarier: små → stora hundar
+    // Vi visar "X-Y hundar" där X = stora hundar, Y = små hundar
+    const minDogs = calc.max_large_dogs; // Stora hundar behöver mest yta
+    const maxDogs = calc.max_small_dogs; // Små hundar behöver minst yta
+
+    if (minDogs === maxDogs) {
+      return `${minDogs} hundar`;
+    }
+    return `${minDogs}-${maxDogs} hundar`;
+  };
+
+  // Hjälpfunktion för att hämta ALLA bokningar för ett rum och datum (kan vara flera hundar)
+  const getBookingsForRoomAndDate = (roomId: string, date: Date): Booking[] => {
+    const dateStr = date.toISOString().split("T")[0];
+
+    return bookings.filter((booking) => {
+      if (booking.room_id !== roomId) return false;
+
+      const start = new Date(booking.start_date || "");
+      const end = new Date(booking.end_date || "");
+      const current = new Date(dateStr);
+
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+      current.setHours(0, 0, 0, 0);
+
+      return current >= start && current <= end;
+    });
+  };
+
+  // Hjälpfunktion för att kolla om ett rum är bokat ett visst datum (första bokning)
   const getBookingForRoomAndDate = (roomId: string, date: Date) => {
     const dateStr = date.toISOString().split("T")[0];
 
@@ -304,34 +341,44 @@ export default function PensionatSchemaPage() {
                       <div>
                         <div className="font-semibold">{room.name}</div>
                         <div className="text-xs text-gray-500">
-                          Max: {room.max_dogs || 1} hundar
+                          {room.capacity_m2} m² • {getMaxDogsForRoom(room)}
                         </div>
                       </div>
                     </td>
                     {dates.map((date, i) => {
-                      const booking = getBookingForRoomAndDate(room.id, date);
-                      const cellColor = getCellColor(booking, date);
+                      const roomBookings = getBookingsForRoomAndDate(
+                        room.id,
+                        date
+                      );
+                      const firstBooking = roomBookings[0];
+                      const cellColor = getCellColor(firstBooking, date);
 
                       return (
                         <td
                           key={i}
                           className={`px-2 py-2 text-xs border-r border-gray-200 ${cellColor} transition-colors`}
                         >
-                          {booking ? (
-                            <div className="space-y-0.5">
-                              <div className="font-semibold text-gray-900 truncate">
-                                {booking.dogs?.name || "Okänd hund"}
-                              </div>
-                              {booking.dogs?.owners && (
-                                <div className="text-gray-600 truncate">
-                                  {booking.dogs.owners.full_name}
+                          {roomBookings.length > 0 ? (
+                            <div className="space-y-1">
+                              {roomBookings.map((booking, idx) => (
+                                <div
+                                  key={booking.id}
+                                  className={
+                                    idx > 0
+                                      ? "border-t border-gray-300 pt-1"
+                                      : ""
+                                  }
+                                >
+                                  <div className="font-semibold text-gray-900 truncate">
+                                    {booking.dogs?.name || "Okänd hund"}
+                                  </div>
+                                  {booking.dogs?.owners && (
+                                    <div className="text-gray-600 truncate text-[10px]">
+                                      {booking.dogs.owners.full_name}
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                              {booking.dogs?.owners?.phone && (
-                                <div className="text-gray-500 text-[10px]">
-                                  {booking.dogs.owners.phone}
-                                </div>
-                              )}
+                              ))}
                             </div>
                           ) : (
                             <div className="text-center text-gray-400 text-xs">
