@@ -523,123 +523,127 @@ export default function HundpensionatPage() {
           </div>
         </div>
 
-        {/* Sök och filter */}
-        <div className="flex items-center gap-4 mb-4">
-          <select
-            value={selectedMonthId}
-            onChange={(e) => setSelectedMonthId(e.target.value)}
-            className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base bg-white"
-          >
-            <option value="">Alla månader</option>
-            {availableMonths.map((month) => (
-              <option key={month} value={month}>
-                {new Date(month + "-01").toLocaleDateString("sv-SE", {
-                  year: "numeric",
-                  month: "long",
-                })}
-              </option>
-            ))}
-          </select>
+        {/* Sök och filter - VIT BAKGRUND med SKUGGA enligt designstandard */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="flex items-center gap-4 mb-4">
+            <select
+              value={selectedMonthId}
+              onChange={(e) => setSelectedMonthId(e.target.value)}
+              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base bg-white"
+            >
+              <option value="">Alla månader</option>
+              {availableMonths.map((month) => (
+                <option key={month} value={month}>
+                  {new Date(month + "-01").toLocaleDateString("sv-SE", {
+                    year: "numeric",
+                    month: "long",
+                  })}
+                </option>
+              ))}
+            </select>
 
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Sök på hundnamn, ägarnamn, telefon, ras..."
-              className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white"
-            />
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Sök på hundnamn, ägarnamn, telefon, ras..."
+                className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white"
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Snabbfilterknappar */}
-        <div className="flex items-center gap-2 py-3 border-b border-gray-200">
-          <span className="text-sm font-medium text-gray-700 mr-2">
-            Snabbfilter:
-          </span>
-          <button
-            onClick={() => setQuickFilter("all")}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-              quickFilter === "all"
-                ? "bg-[#2c7a4c] text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            Alla
-            <span className="ml-1.5 text-xs opacity-80">{bookings.length}</span>
-          </button>
-          <button
-            onClick={() => setQuickFilter("today")}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-              quickFilter === "today"
-                ? "bg-[#2c7a4c] text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            Idag
-            <span className="ml-1.5 text-xs opacity-80">
-              {
-                bookings.filter((b) => {
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  const start = new Date(b.start_date || "");
-                  const end = new Date(b.end_date || "");
-                  start.setHours(0, 0, 0, 0);
-                  end.setHours(0, 0, 0, 0);
-                  return start <= today && end >= today;
-                }).length
-              }
+          {/* Snabbfilterknappar */}
+          <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+            <span className="text-sm font-medium text-gray-700 mr-2">
+              Snabbfilter:
             </span>
-          </button>
-          <button
-            onClick={() => setQuickFilter("this-week")}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-              quickFilter === "this-week"
-                ? "bg-[#2c7a4c] text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            Denna vecka
-            <span className="ml-1.5 text-xs opacity-80">
-              {
-                bookings.filter((b) => {
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  const weekEnd = new Date(today);
-                  weekEnd.setDate(weekEnd.getDate() + 7);
-                  const start = new Date(b.start_date || "");
-                  start.setHours(0, 0, 0, 0);
-                  return start < weekEnd;
-                }).length
-              }
-            </span>
-          </button>
-          <button
-            onClick={() => setQuickFilter("next-week")}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-              quickFilter === "next-week"
-                ? "bg-[#2c7a4c] text-white shadow-sm"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            Nästa vecka
-            <span className="ml-1.5 text-xs opacity-80">
-              {
-                bookings.filter((b) => {
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  const weekEnd = new Date(today);
-                  weekEnd.setDate(weekEnd.getDate() + 7);
-                  const nextWeekEnd = new Date(today);
-                  nextWeekEnd.setDate(nextWeekEnd.getDate() + 14);
-                  const start = new Date(b.start_date || "");
-                  start.setHours(0, 0, 0, 0);
-                  return start >= weekEnd && start < nextWeekEnd;
-                }).length
-              }
-            </span>
-          </button>
+            <button
+              onClick={() => setQuickFilter("all")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "all"
+                  ? "bg-[#2c7a4c] text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Alla
+              <span className="ml-1.5 text-xs opacity-80">
+                {bookings.length}
+              </span>
+            </button>
+            <button
+              onClick={() => setQuickFilter("today")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "today"
+                  ? "bg-[#2c7a4c] text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Idag
+              <span className="ml-1.5 text-xs opacity-80">
+                {
+                  bookings.filter((b) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const start = new Date(b.start_date || "");
+                    const end = new Date(b.end_date || "");
+                    start.setHours(0, 0, 0, 0);
+                    end.setHours(0, 0, 0, 0);
+                    return start <= today && end >= today;
+                  }).length
+                }
+              </span>
+            </button>
+            <button
+              onClick={() => setQuickFilter("this-week")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "this-week"
+                  ? "bg-[#2c7a4c] text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Denna vecka
+              <span className="ml-1.5 text-xs opacity-80">
+                {
+                  bookings.filter((b) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const weekEnd = new Date(today);
+                    weekEnd.setDate(weekEnd.getDate() + 7);
+                    const start = new Date(b.start_date || "");
+                    start.setHours(0, 0, 0, 0);
+                    return start < weekEnd;
+                  }).length
+                }
+              </span>
+            </button>
+            <button
+              onClick={() => setQuickFilter("next-week")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "next-week"
+                  ? "bg-[#2c7a4c] text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Nästa vecka
+              <span className="ml-1.5 text-xs opacity-80">
+                {
+                  bookings.filter((b) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const weekEnd = new Date(today);
+                    weekEnd.setDate(weekEnd.getDate() + 7);
+                    const nextWeekEnd = new Date(today);
+                    nextWeekEnd.setDate(nextWeekEnd.getDate() + 14);
+                    const start = new Date(b.start_date || "");
+                    start.setHours(0, 0, 0, 0);
+                    return start >= weekEnd && start < nextWeekEnd;
+                  }).length
+                }
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Error display */}
