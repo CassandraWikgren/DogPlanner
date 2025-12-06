@@ -184,7 +184,7 @@ export default function LoginPage() {
                 setError(null);
                 setMessage(null);
               }}
-              className="text-sm text-[#2c7a4c] hover:text-[#236139] hover:underline font-medium"
+              className="text-sm text-gray-600 hover:text-gray-900 hover:underline font-medium"
             >
               Har du glömt ditt lösenord?
             </button>
