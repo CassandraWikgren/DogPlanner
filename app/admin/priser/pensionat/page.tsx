@@ -559,33 +559,33 @@ export default function PensionatPriserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
+      {/* Header - Design Standard */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
         <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            {/* Vänster: Tillbaka-länk */}
-            <Link
-              href="/admin"
-              className="inline-flex items-center text-sm text-gray-600 hover:text-[#2c7a4c] transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1.5" />
-              Tillbaka till Admin
-            </Link>
+          {/* Tillbaka-länk */}
+          <Link
+            href="/admin"
+            className="inline-flex items-center text-sm text-gray-600 hover:text-[#2c7a4c] transition-colors mb-3"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1.5" />
+            Tillbaka till Admin
+          </Link>
 
-            {/* Center: Rubrik */}
+          {/* Rubrik-rad */}
+          <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="text-2xl">🏨</div>
               <div>
                 <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                   Priser - Hundpensionat
                 </h1>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 mt-1">
                   3-lagers prissystem: Grundpriser → Specialdatum → Säsonger
                 </p>
               </div>
             </div>
 
-            {/* Höger: Hjälp-knapp */}
+            {/* Hjälp-knapp */}
             <Button
               variant="outline"
               size="sm"
