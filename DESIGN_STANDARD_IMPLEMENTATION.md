@@ -1,6 +1,6 @@
 # 🎨 DogPlanner Design Standard - Implementation Guide
 
-**Senast uppdaterad:** 4 december 2025  
+**Senast uppdaterad:** 6 december 2025  
 **Status:** ✅ GÄLLER FÖR ALLA SIDOR  
 **Baserat på:** Hunddagis-sidan + Frisörtjänster-sidan
 
@@ -496,6 +496,60 @@ hover:shadow-xl     = Hover-effekt på kort
 - **Table rows:**
   - Alternerande: `index % 2 === 0 ? "bg-white" : "bg-gray-50"`
   - Hover: `hover:bg-gray-100` (BÅDA radtyper)
+
+- **Table action buttons (Åtgärdskolumn):**
+
+Åtgärdsknappar i tabeller ska vara enkla ikonknappar med outline-stil:
+
+```tsx
+{
+  /* Redigera-knapp */
+}
+<button
+  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+  title="Redigera"
+>
+  <Pencil className="h-5 w-5" />
+</button>;
+
+{
+  /* Ta bort-knapp */
+}
+<button
+  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+  title="Ta bort"
+>
+  <Trash2 className="h-5 w-5" />
+</button>;
+```
+
+**Mått för åtgärdsknappar:**
+
+- Padding: `p-2` (8px)
+- Icon-storlek: `h-5 w-5` (20px)
+- Färg: `text-gray-400` (ljusgrå, diskret)
+- Hover: `hover:text-gray-600` (mörkare grå vid hover)
+- Stil: **Ingen bakgrund, ingen border** - endast ikon
+- Inga färgade ikoner (ej grön/röd) - håll det neutralt och cleant
+
+**Åtgärdskolumn i tabell:**
+
+```tsx
+<th className="px-4 py-2.5 text-left text-sm font-semibold text-white">
+  Åtgärder
+</th>
+
+<td className="px-4 py-2.5">
+  <div className="flex items-center gap-1">
+    <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors" title="Redigera">
+      <Pencil className="h-5 w-5" />
+    </button>
+    <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors" title="Ta bort">
+      <Trash2 className="h-5 w-5" />
+    </button>
+  </div>
+</td>
+```
 
 ---
 
