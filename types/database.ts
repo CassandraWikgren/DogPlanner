@@ -1490,6 +1490,14 @@ export interface Database {
 }
 
 // Hjälptyper för Supabase
+export type Tables<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Row"];
+export type Inserts<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Insert"];
+export type Updates<T extends keyof Database["public"]["Tables"]> =
+  Database["public"]["Tables"][T]["Update"];
+
+// Specifika hjälptyper för vanliga tabeller
 export type OrgRow = Database["public"]["Tables"]["orgs"]["Row"];
 export type OrgInsert = Database["public"]["Tables"]["orgs"]["Insert"];
 export type OrgUpdate = Database["public"]["Tables"]["orgs"]["Update"];
