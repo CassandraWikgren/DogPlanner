@@ -285,6 +285,11 @@ export default function NewPensionatBooking() {
       return;
     }
 
+    if (!currentOrgId) {
+      alert("[ERR-3000] Ingen organisation tilldelad. Vänligen logga in igen.");
+      return;
+    }
+
     try {
       setSaving(true);
 
@@ -298,7 +303,7 @@ export default function NewPensionatBooking() {
         total_price: priceCalc.total,
         discount_amount: discountAmount,
         notes: bookingNotes.journalNotes || null,
-        org_id: currentOrgId,
+        org_id: currentOrgId, // Nu är vi säkra på att den inte är null
       };
 
       const { error: bookingError } = await supabase
@@ -716,23 +721,6 @@ export default function NewPensionatBooking() {
                       }
                       rows={2}
                       placeholder="T.ex. egen säng, leksaker, filt, mat..."
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Säng/Rumstilldelning
-                    </label>
-                    <input
-                      type="text"
-                      value={bookingNotes.bedLocation}
-                      onChange={(e) =>
-                        setBookingNotes({
-                          ...bookingNotes,
-                          bedLocation: e.target.value,
-                        })
-                      }
-                      placeholder="T.ex. Rum 3, Säng A, Bur 2..."
                       className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
                   </div>
