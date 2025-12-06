@@ -286,7 +286,7 @@ export default function PriserPage() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-8 py-6">
+      <main className="max-w-6xl mx-auto px-6 py-6">
         {/* Back button */}
         <div className="mb-6">
           <Link
