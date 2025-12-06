@@ -1,7 +1,7 @@
 -- ============================================================================
--- MIGRATION: Add booking status tracking
+-- MIGRATION: Add booking status tracking FOR HUNDPENSIONAT (BOARDING)
 -- Date: 2025-12-05
--- Purpose: Separate active bookings from completed ones
+-- Purpose: Separate active pensionat bookings from completed ones
 -- ============================================================================
 
 -- ============================================================================
@@ -14,21 +14,21 @@ ALTER TABLE bookings
 -- ============================================================================
 -- UPDATE EXISTING BOOKINGS
 -- ============================================================================
--- Mark bookings that already passed as 'completed'
+-- Mark bookings that already passed as 'completed' (using end_date, not checkout_date)
 UPDATE bookings 
   SET status = 'completed' 
-  WHERE checkout_date < NOW() 
-    AND status = 'confirmed';
+  WHERE end_date < NOW() 
+    AND (status = 'confirmed' OR status IS NULL);
 
 -- ============================================================================
 -- AUTO-UPDATE TRIGGER
 -- ============================================================================
--- When checkout_date passes, automatically mark as completed
+-- When end_date passes, automatically mark as completed
 CREATE OR REPLACE FUNCTION update_booking_status_on_checkout()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- If checkout is in the past and status is still confirmed, mark as completed
-  IF NEW.checkout_date <= NOW() AND NEW.status = 'confirmed' THEN
+  -- If end_date is in the past and status is still confirmed, mark as completed
+  IF NEW.end_date <= NOW() AND (NEW.status = 'confirmed' OR NEW.status IS NULL) THEN
     NEW.status := 'completed';
   END IF;
   RETURN NEW;
@@ -51,14 +51,15 @@ CREATE TRIGGER booking_auto_complete_trigger
 /*
 SELECT 
   id,
-  checkout_date,
+  start_date,
+  end_date,
   status,
   CASE 
-    WHEN checkout_date < NOW() THEN 'Should be completed'
+    WHEN end_date < NOW() THEN 'Should be completed'
     ELSE 'Should be confirmed'
   END as expected_status
 FROM bookings
-ORDER BY checkout_date DESC
+ORDER BY end_date DESC
 LIMIT 10;
 */
 
@@ -66,6 +67,7 @@ LIMIT 10;
 -- SUMMARY
 -- ============================================================================
 -- ✅ bookings.status column added (default: 'confirmed')
--- ✅ Existing bookings with past checkout_date marked as 'completed'
--- ✅ Automatic trigger updates status when checkout_date passes
+-- ✅ Existing bookings with past end_date marked as 'completed'
+-- ✅ Automatic trigger updates status when end_date passes
 -- ✅ Supports: 'confirmed', 'completed', 'cancelled', 'no-show'
+-- ✅ FOR HUNDPENSIONAT (BOARDING) ONLY

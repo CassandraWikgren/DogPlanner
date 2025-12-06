@@ -1,5 +1,8 @@
 "use client";
 
+// BookingsView - FOR HUNDPENSIONAT (BOARDING) ONLY
+// Shows active and historical pensionat bookings with status tracking
+
 import React, { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
@@ -10,6 +13,7 @@ import {
   AlertCircle,
   XCircle,
   Loader2,
+  Home,
 } from "lucide-react";
 
 interface Booking {
