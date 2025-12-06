@@ -253,7 +253,7 @@ function LoginPageContent() {
             <Button
               onClick={() => setEmail("test@dogplanner.se")}
               variant="outline"
-              className="w-full border-blue-300 text-blue-700 hover:bg-blue-100 h-9 text-sm"
+              className="w-full border-blue-300 text-blue-900 bg-white hover:bg-blue-50 h-9 text-sm font-medium"
             >
               Fyll i test-epost
             </Button>
