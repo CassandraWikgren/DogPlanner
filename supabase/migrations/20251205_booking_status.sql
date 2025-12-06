@@ -26,8 +26,7 @@ ALTER TABLE bookings
 UPDATE bookings 
   SET status = 'completed' 
   WHERE end_date < NOW() 
-    AND status IN ('confirmed', 'checked_in', 'checked_out')
-    OR (end_date < NOW() AND status IS NULL);
+    AND (status IN ('pending', 'confirmed', 'checked_in', 'checked_out') OR status IS NULL);
 
 -- ============================================================================
 -- AUTO-UPDATE TRIGGER
@@ -37,7 +36,7 @@ CREATE OR REPLACE FUNCTION update_booking_status_on_checkout()
 RETURNS TRIGGER AS $$
 BEGIN
   -- If end_date is in the past and status is still active, mark as completed
-  IF NEW.end_date <= NOW() AND NEW.status IN ('confirmed', 'checked_in', 'checked_out') THEN
+  IF NEW.end_date <= NOW() AND NEW.status IN ('pending', 'confirmed', 'checked_in', 'checked_out') THEN
     NEW.status := 'completed';
   -- Handle NULL status (legacy bookings)
   ELSIF NEW.end_date <= NOW() AND NEW.status IS NULL THEN
@@ -69,7 +68,7 @@ BEGIN
   UPDATE bookings
   SET status = 'completed', updated_at = NOW()
   WHERE end_date < NOW()
-    AND status IN ('confirmed', 'checked_in', 'checked_out');
+    AND status IN ('pending', 'confirmed', 'checked_in', 'checked_out');
   
   GET DIAGNOSTICS v_count = ROW_COUNT;
   
