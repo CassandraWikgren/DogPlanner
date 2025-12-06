@@ -137,7 +137,7 @@ function LoginPageContent() {
               Driver du ett hundföretag?{" "}
               <Link
                 href="/login"
-                className="text-green-600 hover:text-green-700 font-medium underline"
+                className="text-[#2c7a4c] hover:text-[#236139] font-medium underline"
               >
                 Logga in här istället
               </Link>
@@ -171,7 +171,7 @@ function LoginPageContent() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-white"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all bg-white"
                     placeholder="din@epost.se"
                     required
                   />
@@ -186,7 +186,7 @@ function LoginPageContent() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-white"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent transition-all bg-white"
                     placeholder="Ditt lösenord"
                     required
                   />
@@ -204,7 +204,7 @@ function LoginPageContent() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white h-10 text-base font-semibold rounded-lg shadow-sm"
+                  className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white h-10 text-base font-semibold rounded-lg shadow-sm transition-colors"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -222,7 +222,7 @@ function LoginPageContent() {
                 <div className="text-center">
                   <Link
                     href="/kundportal/forgot-password"
-                    className="text-sm text-green-600 hover:text-green-700 hover:underline font-medium"
+                    className="text-sm text-[#2c7a4c] hover:text-[#236139] hover:underline font-medium"
                   >
                     Glömt lösenord?
                   </Link>
@@ -233,7 +233,7 @@ function LoginPageContent() {
                     Har du inget konto än?
                   </p>
                   <Link href="/kundportal/registrera">
-                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-semibold transition-colors shadow-sm">
+                    <Button className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white h-11 rounded-lg font-semibold transition-colors shadow-sm">
                       Skapa konto som hundägare
                     </Button>
                   </Link>
