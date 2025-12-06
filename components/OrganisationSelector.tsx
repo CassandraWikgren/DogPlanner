@@ -49,6 +49,8 @@ export default function OrganisationSelector({
           .from("orgs")
           .select("id, name, address, phone, email, lan, kommun, service_types")
           .eq("is_visible_to_customers", true)
+          .eq("accepting_applications", true) // 🟢 Endast företag som tar emot nya ansökningar
+          .eq("subscription_status", "active") // 🟢 Endast betalande kunder
           .contains("service_types", [serviceType])
           .order("name");
 

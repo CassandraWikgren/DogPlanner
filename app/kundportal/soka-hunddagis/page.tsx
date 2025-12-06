@@ -75,10 +75,12 @@ export default function SokaHunddagisPage() {
         setLoading(true);
         setError(null);
 
-        // Fetch organisations (all for now, until schema is updated)
+        // Fetch organisations - endast betalande företag som tar emot ansökningar
         const { data: orgsData, error: orgsError } = await supabase
           .from("orgs")
-          .select("id, name, address, phone, email, enabled_services");
+          .select("id, name, address, phone, email, enabled_services")
+          .eq("accepting_applications", true) // 🟢 Endast företag som tar emot nya ansökningar
+          .eq("subscription_status", "active"); // 🟢 Endast betalande kunder
 
         if (orgsError) throw orgsError;
 

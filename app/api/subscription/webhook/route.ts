@@ -26,6 +26,9 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
 
+    // ============================================================================
+    // CHECKOUT COMPLETED - Ny prenumeration startad
+    // ============================================================================
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
       const org_id = session.metadata?.org_id;
@@ -83,6 +86,7 @@ export async function POST(req: Request) {
             stripe_subscription_id: stripeSubscriptionId,
             stripe_customer_id: stripeCustomerId,
             subscription_status: "active",
+            accepting_applications: true, // 🟢 Aktivera - visas i kundlistor
           })
           .eq("id", org_id);
 
@@ -101,6 +105,127 @@ export async function POST(req: Request) {
         console.log(
           `✅ Prenumeration aktiverad för org ${org_id} (${plan}, ${billing_period})`
         );
+      }
+    }
+
+    // ============================================================================
+    // PAYMENT SUCCEEDED - Betalning lyckades (återaktivering)
+    // ============================================================================
+    else if (event.type === "invoice.payment_succeeded") {
+      const invoice = event.data.object as Stripe.Invoice;
+      // @ts-ignore - Stripe Invoice includes subscription field
+      const subscriptionId = invoice.subscription as string | undefined;
+
+      if (subscriptionId) {
+        // Hitta org via stripe_subscription_id
+        const { data: org } = await supabase
+          .from("orgs")
+          .select("id, name")
+          .eq("stripe_subscription_id", subscriptionId)
+          .single();
+
+        if (org) {
+          await supabase
+            .from("orgs")
+            .update({
+              subscription_status: "active",
+              accepting_applications: true, // 🟢 Återaktivera - syns i kundlistor igen
+            })
+            .eq("id", org.id);
+
+          console.log(
+            `✅ Betalning lyckades - ${org.name} återaktiverad och synlig för kunder`
+          );
+        }
+      }
+    }
+
+    // ============================================================================
+    // PAYMENT FAILED - Betalning misslyckades
+    // ============================================================================
+    else if (event.type === "invoice.payment_failed") {
+      const invoice = event.data.object as Stripe.Invoice;
+      // @ts-ignore - Stripe Invoice includes subscription field
+      const subscriptionId = invoice.subscription as string | undefined;
+
+      if (subscriptionId) {
+        // Hitta org via stripe_subscription_id
+        const { data: org } = await supabase
+          .from("orgs")
+          .select("id, name")
+          .eq("stripe_subscription_id", subscriptionId)
+          .single();
+
+        if (org) {
+          await supabase
+            .from("orgs")
+            .update({
+              subscription_status: "past_due",
+              accepting_applications: false, // 🔴 Dölj från kundlistor
+            })
+            .eq("id", org.id);
+
+          console.log(
+            `⚠️ Betalning misslyckades - ${org.name} dold från kunder (past_due)`
+          );
+        }
+      }
+    }
+
+    // ============================================================================
+    // SUBSCRIPTION DELETED/CANCELED - Prenumeration avslutad
+    // ============================================================================
+    else if (
+      event.type === "customer.subscription.deleted" ||
+      event.type === "customer.subscription.updated"
+    ) {
+      const subscription = event.data.object as Stripe.Subscription;
+
+      if (
+        subscription.status === "canceled" ||
+        subscription.status === "unpaid"
+      ) {
+        // Hitta org via stripe_subscription_id
+        const { data: org } = await supabase
+          .from("orgs")
+          .select("id, name")
+          .eq("stripe_subscription_id", subscription.id)
+          .single();
+
+        if (org) {
+          await supabase
+            .from("orgs")
+            .update({
+              subscription_status: "canceled",
+              accepting_applications: false, // 🔴 Dölj från kundlistor
+            })
+            .eq("id", org.id);
+
+          console.log(
+            `❌ Prenumeration avslutad - ${org.name} dold från kunder (canceled)`
+          );
+        }
+      } else if (subscription.status === "active") {
+        // Prenumeration återaktiverad (t.ex. efter betalning)
+        const { data: org } = await supabase
+          .from("orgs")
+          .select("id, name")
+          .eq("stripe_subscription_id", subscription.id)
+          .single();
+
+        if (org) {
+          await supabase
+            .from("orgs")
+            .update({
+              subscription_status: "active",
+              accepting_applications: true, // 🟢 Återaktivera
+            })
+            .eq("id", org.id);
+
+          console.log(
+            `✅ Prenumeration återaktiverad - ${org.name} synlig för kunder igen`
+          );
+        }
       }
     }
 
