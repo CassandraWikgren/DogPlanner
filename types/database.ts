@@ -505,7 +505,15 @@ export interface Database {
           room_id: string | null;
           start_date: string;
           end_date: string;
-          status: "confirmed" | "completed" | "cancelled" | "no-show" | null;
+          status:
+            | "pending"
+            | "confirmed"
+            | "checked_in"
+            | "checked_out"
+            | "cancelled"
+            | "completed"
+            | "no-show"
+            | null;
           total_price: number | null;
           base_price: number | null;
           discount_amount: number | null;
@@ -522,7 +530,15 @@ export interface Database {
           room_id?: string | null;
           start_date: string;
           end_date: string;
-          status?: "confirmed" | "completed" | "cancelled" | "no-show" | null;
+          status?:
+            | "pending"
+            | "confirmed"
+            | "checked_in"
+            | "checked_out"
+            | "cancelled"
+            | "completed"
+            | "no-show"
+            | null;
           total_price?: number | null;
           base_price?: number | null;
           discount_amount?: number | null;
@@ -539,7 +555,15 @@ export interface Database {
           room_id?: string | null;
           start_date?: string;
           end_date?: string;
-          status?: "confirmed" | "completed" | "cancelled" | "no-show" | null;
+          status?:
+            | "pending"
+            | "confirmed"
+            | "checked_in"
+            | "checked_out"
+            | "cancelled"
+            | "completed"
+            | "no-show"
+            | null;
           total_price?: number | null;
           base_price?: number | null;
           discount_amount?: number | null;

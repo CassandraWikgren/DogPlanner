@@ -7,9 +7,17 @@
 -- ============================================================================
 -- ADD STATUS COLUMN
 -- ============================================================================
+-- First, drop the old constraint if it exists
+ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_status_check;
+
+-- Add or update status column with new values
 ALTER TABLE bookings 
-  ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'confirmed'
-  CHECK (status IN ('confirmed', 'completed', 'cancelled', 'no-show'));
+  ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'confirmed';
+
+-- Add new constraint with updated values
+ALTER TABLE bookings
+  ADD CONSTRAINT bookings_status_check 
+  CHECK (status IN ('pending', 'confirmed', 'checked_in', 'checked_out', 'cancelled', 'completed', 'no-show'));
 
 -- ============================================================================
 -- UPDATE EXISTING BOOKINGS

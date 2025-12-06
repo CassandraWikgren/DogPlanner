@@ -23,7 +23,15 @@ interface Booking {
   dog_id: string;
   start_date: string;
   end_date: string;
-  status: "confirmed" | "completed" | "cancelled" | "no-show" | null;
+  status:
+    | "pending"
+    | "confirmed"
+    | "checked_in"
+    | "checked_out"
+    | "cancelled"
+    | "completed"
+    | "no-show"
+    | null;
   total_price: number | null;
   owners?: {
     full_name: string;
@@ -106,11 +114,32 @@ export default function BookingsView() {
   const getStatusBadge = (status: string | null) => {
     if (!status) return null;
     switch (status) {
+      case "pending":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+            <Clock className="h-3 w-3 mr-1" />
+            Väntande
+          </span>
+        );
       case "confirmed":
         return (
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
             <Clock className="h-3 w-3 mr-1" />
             Bekräftad
+          </span>
+        );
+      case "checked_in":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+            <Home className="h-3 w-3 mr-1" />
+            Incheckad
+          </span>
+        );
+      case "checked_out":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+            <CheckCircle className="h-3 w-3 mr-1" />
+            Utcheckad
           </span>
         );
       case "completed":
