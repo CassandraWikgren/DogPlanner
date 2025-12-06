@@ -78,7 +78,7 @@ export async function POST(req: Request) {
         }
 
         // Uppdatera org med subscription details
-        await supabase
+        const { error: orgError } = await supabase
           .from("orgs")
           // @ts-ignore - Supabase type issue
           .update({
@@ -92,8 +92,13 @@ export async function POST(req: Request) {
           })
           .eq("id", org_id);
 
+        if (orgError) {
+          console.error(`❌ Failed to update org ${org_id}:`, orgError);
+          throw new Error(`Org update failed: ${orgError.message}`);
+        }
+
         // Uppdatera abonnemanget i Supabase
-        await supabase
+        const { error: subError } = await supabase
           .from("subscriptions")
           // @ts-ignore - Supabase type issue
           .update({
@@ -104,6 +109,14 @@ export async function POST(req: Request) {
             ).toISOString(),
           })
           .eq("org_id", org_id);
+
+        if (subError) {
+          console.error(
+            `❌ Failed to update subscription for org ${org_id}:`,
+            subError
+          );
+          throw new Error(`Subscription update failed: ${subError.message}`);
+        }
 
         console.log(
           `✅ Prenumeration aktiverad för org ${org_id} (${plan}, ${billing_period})`
@@ -128,7 +141,7 @@ export async function POST(req: Request) {
           .single()) as { data: { id: string; name: string | null } | null };
 
         if (org) {
-          await supabase
+          const { error: updateError } = await supabase
             .from("orgs")
             // @ts-ignore - Supabase type issue
             .update({
@@ -136,6 +149,14 @@ export async function POST(req: Request) {
               accepting_applications: true, // 🟢 Återaktivera - syns i kundlistor igen
             })
             .eq("id", org.id);
+
+          if (updateError) {
+            console.error(
+              `❌ Failed to reactivate org ${org.id}:`,
+              updateError
+            );
+            throw new Error(`Org reactivation failed: ${updateError.message}`);
+          }
 
           console.log(
             `✅ Betalning lyckades - ${org.name} återaktiverad och synlig för kunder`
@@ -161,7 +182,7 @@ export async function POST(req: Request) {
           .single()) as { data: { id: string; name: string | null } | null };
 
         if (org) {
-          await supabase
+          const { error: updateError } = await supabase
             .from("orgs")
             // @ts-ignore - Supabase type issue
             .update({
@@ -170,8 +191,16 @@ export async function POST(req: Request) {
             })
             .eq("id", org.id);
 
+          if (updateError) {
+            console.error(
+              `❌ Failed to deactivate org ${org.id}:`,
+              updateError
+            );
+            throw new Error(`Org deactivation failed: ${updateError.message}`);
+          }
+
           console.log(
-            `⚠️ Betalning misslyckades - ${org.name} dold från kunder (past_due)`
+            `⚠️ Betalning misslyckades - ${org.name} dold från kunder`
           );
         }
       }
@@ -198,7 +227,7 @@ export async function POST(req: Request) {
           .single()) as { data: { id: string; name: string | null } | null };
 
         if (org) {
-          await supabase
+          const { error: cancelError } = await supabase
             .from("orgs")
             // @ts-ignore - Supabase type issue
             .update({
@@ -206,6 +235,11 @@ export async function POST(req: Request) {
               accepting_applications: false, // 🔴 Dölj från kundlistor
             })
             .eq("id", org.id);
+
+          if (cancelError) {
+            console.error(`❌ Failed to cancel org ${org.id}:`, cancelError);
+            throw new Error(`Org cancellation failed: ${cancelError.message}`);
+          }
 
           console.log(
             `❌ Prenumeration avslutad - ${org.name} dold från kunder (canceled)`
@@ -220,7 +254,7 @@ export async function POST(req: Request) {
           .single()) as { data: { id: string; name: string | null } | null };
 
         if (org) {
-          await supabase
+          const { error: reactivateError } = await supabase
             .from("orgs")
             // @ts-ignore - Supabase type issue
             .update({
@@ -228,6 +262,16 @@ export async function POST(req: Request) {
               accepting_applications: true, // 🟢 Återaktivera
             })
             .eq("id", org.id);
+
+          if (reactivateError) {
+            console.error(
+              `❌ Failed to reactivate org ${org.id}:`,
+              reactivateError
+            );
+            throw new Error(
+              `Org reactivation failed: ${reactivateError.message}`
+            );
+          }
 
           console.log(
             `✅ Prenumeration återaktiverad - ${org.name} synlig för kunder igen`
