@@ -110,6 +110,18 @@ export default function PensionatPriserPage() {
   const [seasons, setSeasons] = useState<BoardingSeason[]>([]);
   const [extraServices, setExtraServices] = useState<ExtraService[]>([]);
 
+  // Local state for unsaved price edits
+  const [localPrices, setLocalPrices] = useState<{
+    small: { base_price: string; weekend_surcharge: string };
+    medium: { base_price: string; weekend_surcharge: string };
+    large: { base_price: string; weekend_surcharge: string };
+  }>({
+    small: { base_price: "", weekend_surcharge: "" },
+    medium: { base_price: "", weekend_surcharge: "" },
+    large: { base_price: "", weekend_surcharge: "" },
+  });
+  const [hasUnsavedPriceChanges, setHasUnsavedPriceChanges] = useState(false);
+
   // Form state for new entries
   const [newSpecialDate, setNewSpecialDate] = useState({
     date: "",
@@ -169,45 +181,27 @@ export default function PensionatPriserPage() {
 
       if (error) throw error;
 
-      // Ensure all 3 sizes exist
-      const sizes: ("small" | "medium" | "large")[] = [
-        "small",
-        "medium",
-        "large",
-      ];
-      const existingSizes = new Set(data?.map((p) => p.dog_size) || []);
-
-      // Find missing sizes and INSERT them to database (not just local state)
-      const missingSizes = sizes.filter((size) => !existingSizes.has(size));
-
-      if (missingSizes.length > 0) {
-        const newPrices = missingSizes.map((size) => ({
-          org_id: currentOrgId,
-          dog_size: size,
-          base_price: size === "small" ? 400 : size === "medium" ? 450 : 500,
-          weekend_surcharge: 100,
-          is_active: true,
-        }));
-
-        // Insert missing prices to database
-        const { data: insertedData, error: insertError } = await supabase
-          .from("boarding_prices")
-          .insert(newPrices)
-          .select();
-
-        if (insertError) {
-          console.error("Error inserting default prices:", insertError);
-        } else {
-          // Combine existing + newly inserted
-          setBoardingPrices([
-            ...((data || []) as BoardingPrice[]),
-            ...((insertedData || []) as BoardingPrice[]),
-          ]);
-          return;
-        }
-      }
-
       setBoardingPrices((data || []) as BoardingPrice[]);
+
+      // Populate local prices from database (or leave empty if not saved)
+      const newLocalPrices = {
+        small: { base_price: "", weekend_surcharge: "" },
+        medium: { base_price: "", weekend_surcharge: "" },
+        large: { base_price: "", weekend_surcharge: "" },
+      };
+
+      (data || []).forEach((price: any) => {
+        const size = price.dog_size as "small" | "medium" | "large";
+        if (newLocalPrices[size]) {
+          newLocalPrices[size] = {
+            base_price: price.base_price?.toString() || "",
+            weekend_surcharge: price.weekend_surcharge?.toString() || "",
+          };
+        }
+      });
+
+      setLocalPrices(newLocalPrices);
+      setHasUnsavedPriceChanges(false);
     } catch (err: any) {
       console.error("Error loading boarding prices:", err);
       setError("Kunde inte ladda grundpriser");
@@ -269,41 +263,83 @@ export default function PensionatPriserPage() {
   };
 
   // ===========================
-  // GRUNDPRISER - SAVE/UPDATE
+  // GRUNDPRISER - LOCAL UPDATE (not saved until clicking Save)
   // ===========================
 
-  const handleUpdateBasePrice = async (
+  const handleLocalPriceChange = (
     size: "small" | "medium" | "large",
     field: "base_price" | "weekend_surcharge",
-    value: number
+    value: string
   ) => {
+    setLocalPrices((prev) => ({
+      ...prev,
+      [size]: {
+        ...prev[size],
+        [field]: value,
+      },
+    }));
+    setHasUnsavedPriceChanges(true);
+  };
+
+  // Save all base prices to database
+  const handleSaveBasePrices = async () => {
     if (!currentOrgId) return;
 
+    setSaving(true);
+    setError(null);
+
     try {
-      const existingPrice = boardingPrices.find((p) => p.dog_size === size);
+      const sizes: ("small" | "medium" | "large")[] = [
+        "small",
+        "medium",
+        "large",
+      ];
 
-      if (existingPrice) {
-        // Update existing (prices are now always in database)
-        const { error } = await supabase
-          .from("boarding_prices")
-          .update({ [field]: value, updated_at: new Date().toISOString() })
-          .eq("id", existingPrice.id);
+      for (const size of sizes) {
+        const basePrice = parseFloat(localPrices[size].base_price) || 0;
+        const weekendSurcharge =
+          parseFloat(localPrices[size].weekend_surcharge) || 0;
 
-        if (error) throw error;
+        // Skip if both are empty/zero
+        if (basePrice === 0 && weekendSurcharge === 0) continue;
 
-        // Update local state
-        setBoardingPrices((prev) =>
-          prev.map((p) => (p.dog_size === size ? { ...p, [field]: value } : p))
-        );
+        const existingPrice = boardingPrices.find((p) => p.dog_size === size);
+
+        if (existingPrice) {
+          // Update existing
+          const { error } = await supabase
+            .from("boarding_prices")
+            .update({
+              base_price: basePrice,
+              weekend_surcharge: weekendSurcharge,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", existingPrice.id);
+
+          if (error) throw error;
+        } else {
+          // Insert new
+          const { error } = await supabase.from("boarding_prices").insert({
+            org_id: currentOrgId,
+            dog_size: size,
+            base_price: basePrice,
+            weekend_surcharge: weekendSurcharge,
+            is_active: true,
+          });
+
+          if (error) throw error;
+        }
       }
 
-      setSuccess(
-        `✅ ${field === "base_price" ? "Grundpris" : "Helgtillägg"} uppdaterat!`
-      );
-      setTimeout(() => setSuccess(null), 2000);
+      // Reload to get fresh data
+      await loadBoardingPrices();
+      setSuccess("✅ Grundpriser sparade!");
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      console.error("Error updating price:", err);
-      setError("Kunde inte uppdatera pris");
+      console.error("Error saving prices:", err);
+      setError("Kunde inte spara priser: " + err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -717,46 +753,36 @@ export default function PensionatPriserPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {boardingPrices.map((price) => (
+                    {(["small", "medium", "large"] as const).map((size) => (
                       <tr
-                        key={price.dog_size}
+                        key={size}
                         className="hover:bg-gray-50 transition-colors"
                       >
                         <td className="py-2 px-3">
                           <span className="font-medium text-gray-900">
-                            {price.dog_size === "small" && "🐕 Liten"}
-                            {price.dog_size === "medium" && "🐕 Mellan"}
-                            {price.dog_size === "large" && "🐕 Stor"}
+                            {size === "small" && "🐕 Liten"}
+                            {size === "medium" && "🐕 Mellan"}
+                            {size === "large" && "🐕 Stor"}
                           </span>
                         </td>
                         <td className="py-2 px-3 text-gray-600">
-                          {price.dog_size === "small" && "< 35 cm"}
-                          {price.dog_size === "medium" && "35-54 cm"}
-                          {price.dog_size === "large" && "> 54 cm"}
+                          {size === "small" && "< 35 cm"}
+                          {size === "medium" && "35-54 cm"}
+                          {size === "large" && "> 54 cm"}
                         </td>
                         <td className="py-2 px-3">
                           <div className="flex items-center gap-2">
                             <Input
                               type="number"
-                              value={price.base_price}
-                              onChange={(e) => {
-                                const val = parseFloat(e.target.value) || 0;
-                                setBoardingPrices((prev) =>
-                                  prev.map((p) =>
-                                    p.dog_size === price.dog_size
-                                      ? { ...p, base_price: val }
-                                      : p
-                                  )
-                                );
-                              }}
-                              onBlur={(e) => {
-                                const val = parseFloat(e.target.value) || 0;
-                                handleUpdateBasePrice(
-                                  price.dog_size,
+                              placeholder="0"
+                              value={localPrices[size].base_price}
+                              onChange={(e) =>
+                                handleLocalPriceChange(
+                                  size,
                                   "base_price",
-                                  val
-                                );
-                              }}
+                                  e.target.value
+                                )
+                              }
                               className="w-24 h-9 text-sm"
                             />
                             <span className="text-sm text-gray-600">kr</span>
@@ -766,25 +792,15 @@ export default function PensionatPriserPage() {
                           <div className="flex items-center gap-2">
                             <Input
                               type="number"
-                              value={price.weekend_surcharge ?? 0}
-                              onChange={(e) => {
-                                const val = parseFloat(e.target.value) || 0;
-                                setBoardingPrices((prev) =>
-                                  prev.map((p) =>
-                                    p.dog_size === price.dog_size
-                                      ? { ...p, weekend_surcharge: val }
-                                      : p
-                                  )
-                                );
-                              }}
-                              onBlur={(e) => {
-                                const val = parseFloat(e.target.value) || 0;
-                                handleUpdateBasePrice(
-                                  price.dog_size,
+                              placeholder="0"
+                              value={localPrices[size].weekend_surcharge}
+                              onChange={(e) =>
+                                handleLocalPriceChange(
+                                  size,
                                   "weekend_surcharge",
-                                  val
-                                );
-                              }}
+                                  e.target.value
+                                )
+                              }
                               className="w-24 h-9 text-sm"
                             />
                             <span className="text-sm text-gray-600">kr</span>
@@ -794,6 +810,22 @@ export default function PensionatPriserPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Spara-knapp */}
+              <div className="mt-4 flex items-center gap-3">
+                <Button
+                  onClick={handleSaveBasePrices}
+                  disabled={saving || !hasUnsavedPriceChanges}
+                  className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
+                >
+                  {saving ? "Sparar..." : "💾 Spara grundpriser"}
+                </Button>
+                {hasUnsavedPriceChanges && (
+                  <span className="text-sm text-amber-600">
+                    ⚠️ Du har osparade ändringar
+                  </span>
+                )}
               </div>
 
               <div className="mt-5 p-3.5 bg-blue-50/50 rounded-lg border border-blue-100">
