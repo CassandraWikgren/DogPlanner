@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PawPrint, Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
+import { Mail, Lock, AlertCircle, CheckCircle } from "lucide-react";
 
 // Felkoder enligt systemet
 const ERROR_CODES = {
@@ -108,17 +108,13 @@ function LoginPageContent() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="bg-white border-b shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 py-4">
           <Link
             href="/"
             className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
           >
             <span className="text-sm">← Tillbaka till startsidan</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <PawPrint className="h-6 w-6 text-slate-700" />
-            <span className="font-semibold text-gray-900">DogPlanner</span>
-          </div>
         </div>
       </div>
 
