@@ -244,10 +244,34 @@ export default function GDPRPage() {
               </p>
             </section>
 
+            {/* Relaterade dokument */}
+            <section>
+              <h3 className="text-lg font-semibold text-[#333333] mb-3">
+                Relaterade dokument
+              </h3>
+              <p className="text-sm text-gray-700 mb-3">
+                Läs även våra fullständiga villkor:
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a
+                  href="/legal/terms-customer"
+                  className="inline-flex items-center gap-2 text-sm text-[#2c7a4c] hover:underline"
+                >
+                  📄 Användarvillkor för Hundägare
+                </a>
+                <a
+                  href="/legal/cookies"
+                  className="inline-flex items-center gap-2 text-sm text-[#2c7a4c] hover:underline"
+                >
+                  🍪 Cookie-policy
+                </a>
+              </div>
+            </section>
+
             {/* Uppdatering */}
             <section className="border-t border-gray-200 pt-6">
               <p className="text-xs text-gray-500">
-                Denna integritetspolicy uppdaterades senast: December 2025
+                Denna integritetspolicy uppdaterades senast: 6 december 2025
               </p>
             </section>
 
