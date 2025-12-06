@@ -92,7 +92,10 @@ export default function BookingsView() {
 
   // Filtrera bokningar
   const activeBookings = bookings.filter(
-    (b) => b.status === "confirmed" && new Date(b.end_date) > new Date()
+    (b) =>
+      ["pending", "confirmed", "checked_in", "checked_out"].includes(
+        b.status || "confirmed"
+      ) && new Date(b.end_date) > new Date()
   );
 
   const historicalBookings = bookings.filter(

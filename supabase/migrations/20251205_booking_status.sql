@@ -26,7 +26,8 @@ ALTER TABLE bookings
 UPDATE bookings 
   SET status = 'completed' 
   WHERE end_date < NOW() 
-    AND (status = 'confirmed' OR status IS NULL);
+    AND status IN ('confirmed', 'checked_in', 'checked_out')
+    OR (end_date < NOW() AND status IS NULL);
 
 -- ============================================================================
 -- AUTO-UPDATE TRIGGER
@@ -35,8 +36,11 @@ UPDATE bookings
 CREATE OR REPLACE FUNCTION update_booking_status_on_checkout()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- If end_date is in the past and status is still confirmed, mark as completed
-  IF NEW.end_date <= NOW() AND (NEW.status = 'confirmed' OR NEW.status IS NULL) THEN
+  -- If end_date is in the past and status is still active, mark as completed
+  IF NEW.end_date <= NOW() AND NEW.status IN ('confirmed', 'checked_in', 'checked_out') THEN
+    NEW.status := 'completed';
+  -- Handle NULL status (legacy bookings)
+  ELSIF NEW.end_date <= NOW() AND NEW.status IS NULL THEN
     NEW.status := 'completed';
   END IF;
   RETURN NEW;
@@ -51,6 +55,40 @@ CREATE TRIGGER booking_auto_complete_trigger
   BEFORE INSERT OR UPDATE ON bookings
   FOR EACH ROW
   EXECUTE FUNCTION update_booking_status_on_checkout();
+
+-- ============================================================================
+-- PERIODIC COMPLETION FUNCTION
+-- ============================================================================
+-- Function to complete bookings that passed their end_date without being updated
+-- Can be called manually or scheduled via pg_cron
+CREATE OR REPLACE FUNCTION complete_past_bookings()
+RETURNS TABLE(updated_count INTEGER) AS $$
+DECLARE
+  v_count INTEGER;
+BEGIN
+  UPDATE bookings
+  SET status = 'completed', updated_at = NOW()
+  WHERE end_date < NOW()
+    AND status IN ('confirmed', 'checked_in', 'checked_out');
+  
+  GET DIAGNOSTICS v_count = ROW_COUNT;
+  
+  RETURN QUERY SELECT v_count;
+END;
+$$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION complete_past_bookings() IS 
+'Marks all bookings with past end_date as completed. Run periodically (e.g., daily via cron).';
+
+-- ============================================================================
+-- PERFORMANCE INDEX
+-- ============================================================================
+-- Index for faster queries on status + end_date (used in BookingsView and reports)
+CREATE INDEX IF NOT EXISTS idx_bookings_status_end_date 
+  ON bookings(status, end_date);
+
+COMMENT ON INDEX idx_bookings_status_end_date IS 
+'Speeds up queries filtering by status and date range';
 
 -- ============================================================================
 -- VERIFICATION QUERY
