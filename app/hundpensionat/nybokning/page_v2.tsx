@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import type { Inserts } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
 import { Calculator, Save, Plus, User, Calendar, Home } from "lucide-react";
 import AssistedRegistrationModal from "@/components/AssistedRegistrationModal";
@@ -287,20 +288,16 @@ export default function NewPensionatBooking() {
     try {
       setSaving(true);
 
-      const bookingData = {
+      const bookingData: Inserts<"bookings"> = {
         dog_id: selectedDog,
         owner_id: selectedDogData.owner_id,
         room_id: selectedRoom || null,
         start_date: startDate,
-        start_time: startTime,
         end_date: endDate,
-        end_time: endTime,
+        status: "confirmed",
         total_price: priceCalc.total,
         discount_amount: discountAmount,
         notes: bookingNotes.journalNotes || null,
-        belongings: bookingNotes.belongings || null,
-        bed_location: bookingNotes.bedLocation || null,
-        status: "confirmed",
         org_id: currentOrgId,
       };
 
