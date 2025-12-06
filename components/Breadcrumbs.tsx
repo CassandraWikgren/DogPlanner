@@ -44,6 +44,11 @@ export default function Breadcrumbs() {
       { label: "Priser", href: "/admin" },
       { label: "Pensionat" },
     ],
+    "/hundpensionat/priser": [
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Hundpensionat", href: "/hundpensionat" },
+      { label: "Prislista" },
+    ],
     "/admin/hundfrisor/priser": [
       { label: "Dashboard", href: "/dashboard" },
       { label: "Admin", href: "/admin" },
