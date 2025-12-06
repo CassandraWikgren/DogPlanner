@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { calculatePrice } from "@/lib/pricing";
 import { AlertTriangle } from "lucide-react";
+import { useAuth } from "@/app/context/AuthContext";
 
 // Enklare typer för denna komponent
 interface SimpleDog {
@@ -32,6 +33,7 @@ interface SimpleExtraService {
 // Formulär för bokning/incheckning hundpensionat
 export default function BokningsForm() {
   const supabase = createClient();
+  const { currentOrgId } = useAuth();
 
   const [hundar, setHundar] = useState<SimpleDog[]>([]);
   const [rum, setRum] = useState<SimpleRoom[]>([]);
@@ -45,13 +47,39 @@ export default function BokningsForm() {
   const [rabatt, setRabatt] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [orgData, setOrgData] = useState<{
+    id: string;
+    vat_included: boolean;
+    vat_rate: number;
+  } | null>(null);
 
-  // Simulerad org/branch data för nu
-  const org = { id: "default-org-uuid", vat_included: true, vat_rate: 0.25 };
-  const branch = { id: "default-branch-uuid" };
+  // Hämta organisationsdata
+  useEffect(() => {
+    async function fetchOrgData() {
+      if (!currentOrgId) return;
+
+      const { data, error } = await supabase
+        .from("orgs")
+        .select("id, vat_included, vat_rate")
+        .eq("id", currentOrgId)
+        .single();
+
+      if (data) {
+        setOrgData({
+          id: data.id,
+          vat_included: data.vat_included ?? true,
+          vat_rate: data.vat_rate ?? 0.25,
+        });
+      }
+    }
+    fetchOrgData();
+  }, [currentOrgId, supabase]);
 
   // Hämta hundar, rum, tillval vid mount
   useEffect(() => {
+    if (!currentOrgId) return;
+    const orgId = currentOrgId; // Capture for closure
+
     async function fetchData() {
       try {
         // Hämta hundar med ägarinfo
@@ -66,7 +94,7 @@ export default function BokningsForm() {
             owners!dogs_owner_id_fkey(full_name)
           `
           )
-          .eq("org_id", org.id);
+          .eq("org_id", orgId);
 
         if (dogs) {
           setHundar(
@@ -81,7 +109,7 @@ export default function BokningsForm() {
         const { data: rooms } = await supabase
           .from("rooms")
           .select("id, name, capacity_m2")
-          .eq("org_id", org.id);
+          .eq("org_id", orgId);
 
         if (rooms) {
           setRum(rooms);
@@ -91,7 +119,7 @@ export default function BokningsForm() {
         const { data: extras } = await supabase
           .from("extra_services")
           .select("id, label, price, unit")
-          .eq("org_id", org.id)
+          .eq("org_id", orgId)
           .eq("service_type", "boarding")
           .eq("is_active", true);
 
@@ -108,11 +136,12 @@ export default function BokningsForm() {
       }
     }
     fetchData();
-  }, [org, branch, supabase]);
+  }, [currentOrgId, supabase]);
 
   // Prisberäkning
   async function handleCalculatePrice() {
-    if (!selectedHund || !startDate || !endDate || !selectedRum) return;
+    if (!selectedHund || !startDate || !endDate || !selectedRum || !orgData)
+      return;
     setLoading(true);
     try {
       const booking = {
@@ -124,7 +153,7 @@ export default function BokningsForm() {
         supabase: supabase as any,
         dog: selectedHund,
         booking,
-        org,
+        org: orgData,
       });
       setPris(priceResult);
     } catch (err: any) {
@@ -137,14 +166,20 @@ export default function BokningsForm() {
 
   // Spara bokning
   async function handleSubmit() {
-    if (!selectedHund || !startDate || !endDate || !selectedRum) return;
+    if (
+      !selectedHund ||
+      !startDate ||
+      !endDate ||
+      !selectedRum ||
+      !currentOrgId
+    )
+      return;
     setLoading(true);
     try {
       const { error } = await supabase.from("bookings").insert({
         dog_id: selectedHund.id,
         owner_id: selectedHund.owner_id,
-        org_id: org.id,
-        branch_id: branch.id,
+        org_id: currentOrgId,
         room_id: selectedRum.id,
         start_date: startDate,
         end_date: endDate,

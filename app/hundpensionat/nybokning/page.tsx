@@ -177,42 +177,127 @@ export default function NewPensionatBooking() {
   // PRICE CALCULATION
   // ============================================================================
 
-  const calculatePrice = useCallback(() => {
+  const [calculatingPrice, setCalculatingPrice] = useState(false);
+
+  const calculatePrice = useCallback(async () => {
     if (!startDate || !endDate) {
       alert("Vänligen ange start- och slutdatum först.");
       return;
     }
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+    if (!selectedDogData) {
+      alert("Vänligen välj en hund först.");
+      return;
+    }
 
-    const basePrice = diffDays * 500;
-    const extraServicesPrices = selectedExtras.map((extraId) => {
-      const service = extraServices.find((s) => s.id === extraId);
-      return {
-        name: service?.label || "Okänd tjänst",
-        price: service?.price || 0,
-      };
-    });
+    if (!currentOrgId) {
+      alert("Ingen organisation hittades. Vänligen logga in igen.");
+      return;
+    }
 
-    const extraTotal = extraServicesPrices.reduce(
-      (sum, extra) => sum + extra.price,
-      0
-    );
-    const subtotal = basePrice + extraTotal;
-    const total = Math.max(0, subtotal - discountAmount);
+    // Kontrollera om hunden har mankhöjd - viktig för prisberäkning
+    const dogHeight = selectedDogData.heightcm;
+    if (!dogHeight) {
+      // Fallback: Använd ett standardvärde om mankhöjd saknas
+      console.warn(
+        "Hunden saknar mankhöjd - använder standardstorlek (medium)"
+      );
+    }
 
-    setPriceCalc({
-      baseDays: diffDays,
-      basePrice,
-      extraServices: extraServicesPrices,
-      subtotal,
-      discount: discountAmount,
-      total,
-    });
-  }, [startDate, endDate, selectedExtras, extraServices, discountAmount]);
+    setCalculatingPrice(true);
+
+    try {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      // Dynamisk import för att använda den korrekta prisberäkningsmodulen
+      const { calculateBookingPrice } =
+        await import("@/lib/boardingPriceCalculator");
+
+      const priceData = await calculateBookingPrice(
+        start,
+        end,
+        dogHeight || 40, // Fallback till 40cm (medium) om mankhöjd saknas
+        currentOrgId
+      );
+
+      console.log(
+        `✅ Beräknat pris: ${priceData.totalPrice} kr (${priceData.nights} nätter, storlek: ${priceData.dogSize})`
+      );
+
+      // Beräkna tillvalstjänster
+      const extraServicesPrices = selectedExtras.map((extraId) => {
+        const service = extraServices.find((s) => s.id === extraId);
+        return {
+          name: service?.label || "Okänd tjänst",
+          price: service?.price || 0,
+        };
+      });
+
+      const extraTotal = extraServicesPrices.reduce(
+        (sum, extra) => sum + extra.price,
+        0
+      );
+      const subtotal = priceData.totalPrice + extraTotal;
+      const total = Math.max(0, subtotal - discountAmount);
+
+      setPriceCalc({
+        baseDays: priceData.nights,
+        basePrice: priceData.totalPrice,
+        extraServices: extraServicesPrices,
+        subtotal,
+        discount: discountAmount,
+        total,
+      });
+    } catch (error) {
+      console.error("Fel vid prisberäkning:", error);
+
+      // Fallback: Beräkna med enkel formel om boardingPriceCalculator misslyckas
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+      const fallbackBasePrice = diffDays * 500;
+
+      const extraServicesPrices = selectedExtras.map((extraId) => {
+        const service = extraServices.find((s) => s.id === extraId);
+        return {
+          name: service?.label || "Okänd tjänst",
+          price: service?.price || 0,
+        };
+      });
+
+      const extraTotal = extraServicesPrices.reduce(
+        (sum, extra) => sum + extra.price,
+        0
+      );
+      const subtotal = fallbackBasePrice + extraTotal;
+      const total = Math.max(0, subtotal - discountAmount);
+
+      setPriceCalc({
+        baseDays: diffDays,
+        basePrice: fallbackBasePrice,
+        extraServices: extraServicesPrices,
+        subtotal,
+        discount: discountAmount,
+        total,
+      });
+
+      alert(
+        "Kunde inte hämta organisationens priser. Visar uppskattning (500 kr/natt)."
+      );
+    } finally {
+      setCalculatingPrice(false);
+    }
+  }, [
+    startDate,
+    endDate,
+    selectedExtras,
+    extraServices,
+    discountAmount,
+    selectedDogData,
+    currentOrgId,
+  ]);
 
   // ============================================================================
   // CREATE NEW DOG (for existing owner)
@@ -789,11 +874,13 @@ export default function NewPensionatBooking() {
                 <button
                   type="button"
                   onClick={calculatePrice}
-                  disabled={!startDate || !endDate}
+                  disabled={
+                    !startDate || !endDate || !selectedDog || calculatingPrice
+                  }
                   className="inline-flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
                   <Calculator className="h-5 w-5" />
-                  Beräkna pris
+                  {calculatingPrice ? "Beräknar..." : "Beräkna pris"}
                 </button>
                 <button
                   type="submit"
