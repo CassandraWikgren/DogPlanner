@@ -105,7 +105,7 @@ export default function RegisterCompanyPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-[#2c7a4c] rounded-xl mb-4 shadow-lg">
             <span className="text-3xl">🐾</span>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+          <h1 className="text-[32px] font-bold text-gray-900 mb-3">
             Registrera ditt hundföretag
           </h1>
           <p className="text-xl text-gray-600 mb-2">
@@ -686,7 +686,7 @@ export default function RegisterCompanyPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white font-semibold py-4 rounded-lg text-base shadow-lg hover:shadow-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed font-bold"
+                className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white font-bold py-4 rounded-lg text-base shadow-lg hover:shadow-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {submitting
                   ? "Skapar ditt konto…"
