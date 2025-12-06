@@ -322,6 +322,236 @@ button:active {
   height: 1.25rem;
 }
 
+/* ============================================
+   DESIGN STANDARD KLASSER
+   Använd dessa klasser på ALLA sidor för konsekvent design
+   ============================================ */
+
+/* PAGE LAYOUT */
+.page-wrapper {
+  min-height: 100vh;
+  background-color: #f9fafb; /* bg-gray-50 */
+}
+
+.page-header {
+  border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+  background-color: white;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+}
+
+.page-header-content {
+  max-width: 80rem; /* max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem 1.5rem; /* px-6 py-4 */
+}
+
+.page-main {
+  max-width: 80rem; /* max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.5rem; /* px-6 py-6 */
+}
+
+/* PAGE TITLE */
+.page-title {
+  font-size: 2rem; /* text-[32px] */
+  font-weight: 700;
+  color: #2c7a4c;
+  line-height: 1.25; /* leading-tight */
+}
+
+.page-subtitle {
+  margin-top: 0.25rem; /* mt-1 */
+  font-size: 1rem; /* text-base */
+  color: #4b5563; /* text-gray-600 */
+}
+
+/* STATS BOX */
+.stats-box {
+  text-align: center;
+  background-color: white;
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border: 1px solid #e5e7eb; /* border-gray-200 */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+}
+
+.stats-number {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700;
+  color: #2c7a4c;
+}
+
+.stats-label {
+  font-size: 0.75rem; /* text-xs */
+  color: #4b5563; /* text-gray-600 */
+  margin-top: 0.125rem; /* mt-0.5 */
+}
+
+/* BUTTONS */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.625rem 1rem; /* px-4 py-2.5 */
+  border-radius: 0.375rem; /* rounded-md */
+  font-size: 0.9375rem; /* text-[15px] */
+  font-weight: 600;
+  color: white;
+  background-color: #2c7a4c;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #236139;
+}
+
+.btn-primary:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px #2c7a4c;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.625rem 1rem; /* px-4 py-2.5 */
+  border-radius: 0.375rem; /* rounded-md */
+  font-size: 0.9375rem; /* text-[15px] */
+  font-weight: 600;
+  color: #2c7a4c;
+  background-color: white;
+  border: 1px solid #2c7a4c;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #e6f4ea;
+}
+
+.btn-secondary:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px #2c7a4c;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.625rem 1.5rem; /* px-6 py-2.5 */
+  height: 2.5rem; /* h-10 */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+  color: #374151; /* text-gray-700 */
+  background-color: white;
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background-color: #f9fafb; /* bg-gray-50 */
+}
+
+.btn-outline:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px #2c7a4c;
+}
+
+/* TABLE STYLES */
+.table-wrapper {
+  background-color: white;
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.table-header {
+  background-color: #2c7a4c;
+}
+
+.table-header th {
+  padding: 0.625rem 1rem; /* py-2.5 px-4 */
+  text-align: left;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600;
+  color: white;
+}
+
+.table-header th:hover {
+  background-color: #236139;
+}
+
+.table-row-even {
+  background-color: white;
+}
+
+.table-row-odd {
+  background-color: #f9fafb; /* bg-gray-50 */
+}
+
+.table-row-even:hover,
+.table-row-odd:hover {
+  background-color: #f3f4f6; /* bg-gray-100 */
+}
+
+.table-cell {
+  padding: 0.625rem 1rem; /* py-2.5 px-4 */
+  font-size: 0.875rem; /* text-sm */
+  color: #333333;
+}
+
+/* INPUT STYLES */
+.input-field {
+  width: 100%;
+  height: 2.5rem; /* h-10 */
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem;
+  font-size: 1rem; /* text-base */
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  border-radius: 0.375rem;
+  background-color: white;
+}
+
+.input-field:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #2c7a4c;
+  border-color: transparent;
+}
+
+.input-with-icon {
+  padding-left: 2.5rem; /* pl-10 */
+}
+
+/* SELECT STYLES */
+.select-field {
+  height: 2.5rem; /* h-10 */
+  padding-left: 0.75rem; /* px-3 */
+  padding-right: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  background-color: white;
+}
+
+.select-field:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px #2c7a4c;
+}
+
 /* Rubriker */
 h1,
 h2,
