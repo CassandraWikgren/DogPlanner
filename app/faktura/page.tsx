@@ -45,17 +45,6 @@ type Owner = {
   postal_code?: string | null;
 };
 
-type Organization = {
-  id: string;
-  name: string | null;
-  org_number: string | null;
-  email: string | null;
-  phone: string | null;
-  address?: string | null;
-  city?: string | null;
-  postal_code?: string | null;
-};
-
 type Invoice = {
   id: string;
   org_id: string | null;
@@ -74,7 +63,6 @@ type Invoice = {
   created_at?: string;
   updated_at?: string;
   owners?: Owner;
-  organizations?: Organization;
 };
 
 type InvoiceItem = {
@@ -118,9 +106,6 @@ const FakturorPage = () => {
     dueSoon: 0,
   });
   const [online, setOnline] = useState(true);
-  const [activeTab, setActiveTab] = useState<"dagis" | "pensionat" | "frisör">(
-    "dagis"
-  );
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
     const now = new Date();
     return `${now.getFullYear()}-${(now.getMonth() + 1)
@@ -204,18 +189,25 @@ const FakturorPage = () => {
       setLoading(true);
       logDebug("info", "Hämtar fakturor…");
 
-      const { data, error } = await supabase
+      // Filtrera på org_id för att bara hämta fakturor för den inloggade organisationen
+      let query = supabase
         .from("invoices")
         .select(
           `
           id, org_id, owner_id, invoice_date, due_date, total_amount, status,
           billed_name, billed_email, billed_address, billed_city, billed_postal_code,
           invoice_number, notes, created_at, updated_at,
-          owners(id, full_name, customer_number, phone, email, address, city, postal_code),
-          organizations(id, name, org_number, email, phone, address, city, postal_code)
+          owners(id, full_name, customer_number, phone, email, address, city, postal_code)
         `
         )
         .order("invoice_date", { ascending: false });
+
+      // Filtrera på organisation om tillgängligt
+      if (currentOrgId) {
+        query = query.eq("org_id", currentOrgId);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         throw new Error(
@@ -230,9 +222,6 @@ const FakturorPage = () => {
           owners: Array.isArray(invoice.owners)
             ? invoice.owners[0]
             : invoice.owners,
-          organizations: Array.isArray(invoice.organizations)
-            ? invoice.organizations[0]
-            : invoice.organizations,
         })) || [];
       setInvoices(processedData);
       setFiltered(processedData);
@@ -332,11 +321,6 @@ const FakturorPage = () => {
           (inv.owners?.customer_number &&
             inv.owners.customer_number.toString().includes(searchTerm));
 
-        // Sökning i organisationsinformation
-        const orgMatch =
-          inv.organizations?.name?.toLowerCase().includes(searchTerm) ||
-          inv.organizations?.org_number?.includes(searchTerm);
-
         // Sökning i fakturanummer och status
         const invoiceMatch =
           inv.invoice_number?.toLowerCase().includes(searchTerm) ||
@@ -346,7 +330,7 @@ const FakturorPage = () => {
         // Sökning i belopp (konverterat till string)
         const amountMatch = inv.total_amount.toString().includes(searchTerm);
 
-        return customerMatch || orgMatch || invoiceMatch || amountMatch;
+        return customerMatch || invoiceMatch || amountMatch;
       });
     }
 
@@ -506,13 +490,12 @@ const FakturorPage = () => {
       }
 
       // Lägg till fakturarad med beskrivning
-      // @ts-ignore - invoice_items table not in generated types yet
+      // OBS: amount är GENERATED column = qty * unit_price, får inte skrivas till!
       const { error: itemError } = await supabase.from("invoice_items").insert({
         invoice_id: invoice.id,
         description: description.trim(),
         qty: 1,
         unit_price: belopp,
-        total_amount: belopp,
       });
 
       if (itemError) {
@@ -573,10 +556,6 @@ const FakturorPage = () => {
       customer_name: {
         header: "Kund",
         getValue: (inv) => inv.owners?.full_name || inv.billed_name || "",
-      },
-      organization: {
-        header: "Organisation",
-        getValue: (inv) => inv.organizations?.name || "",
       },
       invoice_date: {
         header: "Fakturadatum",
@@ -694,13 +673,6 @@ const FakturorPage = () => {
       if (sortBy === "owners" && a.owners && b.owners) {
         aValue = a.owners.full_name || a.billed_name || "";
         bValue = b.owners.full_name || b.billed_name || "";
-      } else if (
-        sortBy === "organizations" &&
-        a.organizations &&
-        b.organizations
-      ) {
-        aValue = a.organizations.name || "";
-        bValue = b.organizations.name || "";
       }
 
       // Hantera null/undefined värden
@@ -735,7 +707,6 @@ const FakturorPage = () => {
   const availableColumns = [
     { key: "customer_number", label: "Kundnr" },
     { key: "customer_name", label: "Kund" },
-    { key: "organization", label: "Organisation" },
     { key: "invoice_date", label: "Fakturadatum" },
     { key: "due_date", label: "Förfallodatum" },
     { key: "total_amount", label: "Belopp" },
@@ -771,15 +742,13 @@ const FakturorPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+    <div className="page-wrapper">
+      <div className="page-header">
+        <div className="page-header-content">
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-center gap-3">
-                <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-                  Fakturor och underlag
-                </h1>
+                <h1 className="page-title">Fakturor och underlag</h1>
                 <a
                   href="/ekonomi/hjalp"
                   className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:text-[#2c7a4c] hover:bg-gray-100 rounded-md transition-colors"
@@ -789,22 +758,20 @@ const FakturorPage = () => {
                   <span>Hjälp</span>
                 </a>
               </div>
-              <p className="mt-1 text-base text-gray-600">
+              <p className="page-subtitle">
                 Hantera fakturor för hunddagis, pensionat och frisör.
               </p>
             </div>
             <div className="flex gap-3 ml-4">
-              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <div className="text-xs text-gray-600">Fakturor</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
-                  {invoices.length}
-                </div>
+              <div className="stats-box">
+                <p className="stats-label">Fakturor</p>
+                <p className="stats-number">{invoices.length}</p>
               </div>
-              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <div className="text-xs text-gray-600">Totalt</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
+              <div className="stats-box">
+                <p className="stats-label">Totalt</p>
+                <p className="stats-number">
                   {totals.total.toLocaleString()} kr
-                </div>
+                </p>
               </div>
               <span
                 className={`px-3 py-2 rounded-lg text-sm font-semibold ${
@@ -820,7 +787,7 @@ const FakturorPage = () => {
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-6 py-6">
+      <main className="page-main">
         {loading && (
           <div className="flex items-center gap-2 text-gray-600 mb-6 text-sm">
             <Loader2 className="animate-spin" /> Laddar fakturor…
@@ -842,23 +809,20 @@ const FakturorPage = () => {
               );
               toast("CSV-fil exporterad", "success");
             }}
-            className="px-6 py-2.5 h-10 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
+            className="btn-secondary"
           >
             <FileText size={16} />
             Exportera CSV
           </button>
 
-          <button
-            onClick={toggleLock}
-            className="px-6 py-2.5 h-10 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 font-semibold text-sm flex items-center gap-2"
-          >
+          <button onClick={toggleLock} className="btn-secondary">
             {locked ? <Unlock size={16} /> : <Lock size={16} />}
             {locked ? "Avlås månad" : "Lås månad"}
           </button>
           <button
             onClick={() => setCreating(true)}
             disabled={locked}
-            className="px-6 py-2.5 h-10 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <PlusCircle size={16} /> Ny faktura
           </button>
@@ -866,39 +830,33 @@ const FakturorPage = () => {
 
         {/* 💰 Summeringsrutor */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center mb-6">
-          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-            <h2 className="text-gray-600 text-sm font-semibold">💰 Totalt</h2>
-            <p className="text-lg font-bold">
+          <div className="stats-box">
+            <p className="stats-label">💰 Totalt</p>
+            <p className="stats-number">
               {totals.total.toLocaleString("sv-SE")} kr
             </p>
           </div>
-          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-            <h2 className="text-gray-600 text-sm font-semibold">✅ Betalt</h2>
-            <p className="text-lg font-bold text-emerald-700">
+          <div className="stats-box">
+            <p className="stats-label">✅ Betalt</p>
+            <p className="stats-number text-emerald-700">
               {totals.paid.toLocaleString("sv-SE")} kr
             </p>
           </div>
-          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-            <h2 className="text-gray-600 text-sm font-semibold">
-              🕓 Ej betalt
-            </h2>
-            <p className="text-lg font-bold text-blue-600">
+          <div className="stats-box">
+            <p className="stats-label">🕓 Ej betalt</p>
+            <p className="stats-number text-blue-600">
               {totals.unpaid.toLocaleString("sv-SE")} kr
             </p>
           </div>
-          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-            <h2 className="text-gray-600 text-sm font-semibold">
-              ⚠️ Förfallet
-            </h2>
-            <p className="text-lg font-bold text-red-600">
+          <div className="stats-box">
+            <p className="stats-label">⚠️ Förfallet</p>
+            <p className="stats-number text-red-600">
               {totals.overdue.toLocaleString("sv-SE")} kr
             </p>
           </div>
-          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-            <h2 className="text-gray-600 text-sm font-semibold">
-              ⏰ Förfaller snart
-            </h2>
-            <p className="text-lg font-bold text-orange-600">
+          <div className="stats-box">
+            <p className="stats-label">⏰ Förfaller snart</p>
+            <p className="stats-number text-orange-600">
               {totals.dueSoon.toLocaleString("sv-SE")} kr
             </p>
           </div>
@@ -1157,297 +1115,237 @@ const FakturorPage = () => {
           </details>
         </div>
 
-        {/* 🧾 Flikar för olika verksamheter */}
+        {/* 🧾 Fakturatabell */}
         <div className="mt-6">
-          <div className="bg-white border-b border-gray-200 rounded-t-lg">
-            <div className="flex gap-2 p-2">
-              <button
-                onClick={() => setActiveTab("dagis")}
-                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "dagis" ? "bg-[#2c7a4c] text-white" : "text-gray-700 hover:bg-gray-100"}`}
-              >
-                🐾 Hunddagis
-              </button>
-              <button
-                onClick={() => setActiveTab("pensionat")}
-                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "pensionat" ? "bg-[#2c7a4c] text-white" : "text-gray-700 hover:bg-gray-100"}`}
-              >
-                🏕️ Hundpensionat
-              </button>
-              <button
-                onClick={() => setActiveTab("frisör")}
-                className={`px-4 py-2 rounded-md text-sm font-semibold ${activeTab === "frisör" ? "bg-[#2c7a4c] text-white" : "text-gray-700 hover:bg-gray-100"}`}
-              >
-                ✂️ Hundfrisör
-              </button>
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[700px]">
+                <thead className="bg-gray-50 text-left border-b">
+                  <tr>
+                    {isColumnVisible("customer_number") && (
+                      <th
+                        className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort("owners" as keyof Invoice)}
+                      >
+                        <div className="flex items-center gap-1">
+                          Kundnr
+                          {sortBy === "owners" && (
+                            <span className="text-xs">
+                              {sortOrder === "asc" ? "↑" : "↓"}
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {isColumnVisible("customer_name") && (
+                      <th
+                        className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort("owners" as keyof Invoice)}
+                      >
+                        <div className="flex items-center gap-1">
+                          Kund
+                          {sortBy === "owners" && (
+                            <span className="text-xs">
+                              {sortOrder === "asc" ? "↑" : "↓"}
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {isColumnVisible("invoice_date") && (
+                      <th
+                        className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort("invoice_date")}
+                      >
+                        <div className="flex items-center gap-1">
+                          Fakturadatum
+                          {sortBy === "invoice_date" && (
+                            <span className="text-xs">
+                              {sortOrder === "asc" ? "↑" : "↓"}
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {isColumnVisible("due_date") && (
+                      <th
+                        className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort("due_date")}
+                      >
+                        <div className="flex items-center gap-1">
+                          Förfallodatum
+                          {sortBy === "due_date" && (
+                            <span className="text-xs">
+                              {sortOrder === "asc" ? "↑" : "↓"}
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {isColumnVisible("total_amount") && (
+                      <th
+                        className="p-3 text-right cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort("total_amount")}
+                      >
+                        <div className="flex items-center justify-end gap-1">
+                          Totalt
+                          {sortBy === "total_amount" && (
+                            <span className="text-xs">
+                              {sortOrder === "asc" ? "↑" : "↓"}
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {isColumnVisible("status") && (
+                      <th
+                        className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort("status")}
+                      >
+                        <div className="flex items-center gap-1">
+                          Status
+                          {sortBy === "status" && (
+                            <span className="text-xs">
+                              {sortOrder === "asc" ? "↑" : "↓"}
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {isColumnVisible("invoice_number") && (
+                      <th
+                        className="p-3 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort("invoice_number")}
+                      >
+                        <div className="flex items-center gap-1">
+                          Fakturanr
+                          {sortBy === "invoice_number" && (
+                            <span className="text-xs">
+                              {sortOrder === "asc" ? "↑" : "↓"}
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                    )}
+                    {isColumnVisible("actions") && (
+                      <th className="p-3">Åtgärder</th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={visibleColumns.length}
+                        className="text-center text-gray-400 p-6"
+                      >
+                        Inga fakturor hittades.
+                      </td>
+                    </tr>
+                  ) : (
+                    filtered.map((inv) => {
+                      // Färgkodning baserat på förfallodatum och status
+                      const dueDate = new Date(inv.due_date);
+                      const now = new Date();
+                      const daysUntilDue = Math.ceil(
+                        (dueDate.getTime() - now.getTime()) /
+                          (1000 * 60 * 60 * 24)
+                      );
+
+                      let rowColorClass = "";
+                      if (inv.status === "paid") {
+                        rowColorClass = "bg-emerald-50 hover:bg-emerald-100";
+                      } else if (daysUntilDue < 0) {
+                        rowColorClass = "bg-red-50 hover:bg-red-100"; // Förfallen
+                      } else if (daysUntilDue <= 7) {
+                        rowColorClass = "bg-orange-50 hover:bg-orange-100"; // Förfaller snart
+                      } else {
+                        rowColorClass = "hover:bg-gray-50";
+                      }
+
+                      return (
+                        <tr
+                          key={inv.id}
+                          className={`border-b ${rowColorClass}`}
+                        >
+                          {isColumnVisible("customer_number") && (
+                            <td className="p-3 font-mono">
+                              {inv.owners?.customer_number || "-"}
+                            </td>
+                          )}
+                          {isColumnVisible("customer_name") && (
+                            <td className="p-3">
+                              {inv.owners?.full_name || inv.billed_name || "-"}
+                            </td>
+                          )}
+                          {isColumnVisible("invoice_date") && (
+                            <td className="p-3">
+                              {new Date(inv.invoice_date).toLocaleDateString(
+                                "sv-SE"
+                              )}
+                            </td>
+                          )}
+                          {isColumnVisible("due_date") && (
+                            <td className="p-3">
+                              {new Date(inv.due_date).toLocaleDateString(
+                                "sv-SE"
+                              )}
+                            </td>
+                          )}
+                          {isColumnVisible("total_amount") && (
+                            <td className="p-3 text-right">
+                              {inv.total_amount.toLocaleString("sv-SE")} kr
+                            </td>
+                          )}
+                          {isColumnVisible("status") && (
+                            <td className="p-3">
+                              <span
+                                className={`px-2 py-1 rounded text-xs font-medium ${
+                                  inv.status === "draft"
+                                    ? "bg-gray-100 text-gray-600"
+                                    : inv.status === "sent"
+                                      ? "bg-blue-100 text-blue-700"
+                                      : inv.status === "paid"
+                                        ? "bg-emerald-100 text-emerald-700"
+                                        : "bg-red-100 text-red-700"
+                                }`}
+                              >
+                                {inv.status === "draft"
+                                  ? "Utkast"
+                                  : inv.status === "sent"
+                                    ? "Skickad"
+                                    : inv.status === "paid"
+                                      ? "Betald"
+                                      : "Makulerad"}
+                              </span>
+                            </td>
+                          )}
+                          {isColumnVisible("invoice_number") && (
+                            <td className="p-3 font-mono text-xs">
+                              {inv.invoice_number || "-"}
+                            </td>
+                          )}
+                          {isColumnVisible("actions") && (
+                            <td className="p-3">
+                              <a
+                                href={`/api/invoices/${inv.id}/pdf`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 font-semibold text-sm inline-flex items-center gap-1"
+                              >
+                                <FileText size={14} />
+                                PDF
+                              </a>
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-
-          {["dagis", "pensionat", "frisör"].map((typ) => (
-            <div key={typ} className={activeTab === typ ? "block" : "hidden"}>
-              <div className="border rounded-md overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm min-w-[700px]">
-                    <thead className="bg-gray-50 text-left border-b">
-                      <tr>
-                        {isColumnVisible("customer_number") && (
-                          <th
-                            className="p-2 cursor-pointer hover:bg-gray-100 select-none"
-                            onClick={() =>
-                              handleSort("owners" as keyof Invoice)
-                            }
-                          >
-                            <div className="flex items-center gap-1">
-                              Kundnr
-                              {sortBy === "owners" && (
-                                <span className="text-xs">
-                                  {sortOrder === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </div>
-                          </th>
-                        )}
-                        {isColumnVisible("customer_name") && (
-                          <th
-                            className="p-2 cursor-pointer hover:bg-gray-100 select-none"
-                            onClick={() =>
-                              handleSort("owners" as keyof Invoice)
-                            }
-                          >
-                            <div className="flex items-center gap-1">
-                              Kund
-                              {sortBy === "owners" && (
-                                <span className="text-xs">
-                                  {sortOrder === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </div>
-                          </th>
-                        )}
-                        {isColumnVisible("organization") && (
-                          <th
-                            className="p-2 cursor-pointer hover:bg-gray-100 select-none"
-                            onClick={() =>
-                              handleSort("organizations" as keyof Invoice)
-                            }
-                          >
-                            <div className="flex items-center gap-1">
-                              Organisation
-                              {sortBy === "organizations" && (
-                                <span className="text-xs">
-                                  {sortOrder === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </div>
-                          </th>
-                        )}
-                        {isColumnVisible("invoice_date") && (
-                          <th
-                            className="p-2 cursor-pointer hover:bg-gray-100 select-none"
-                            onClick={() => handleSort("invoice_date")}
-                          >
-                            <div className="flex items-center gap-1">
-                              Fakturadatum
-                              {sortBy === "invoice_date" && (
-                                <span className="text-xs">
-                                  {sortOrder === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </div>
-                          </th>
-                        )}
-                        {isColumnVisible("due_date") && (
-                          <th
-                            className="p-2 cursor-pointer hover:bg-gray-100 select-none"
-                            onClick={() => handleSort("due_date")}
-                          >
-                            <div className="flex items-center gap-1">
-                              Förfallodatum
-                              {sortBy === "due_date" && (
-                                <span className="text-xs">
-                                  {sortOrder === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </div>
-                          </th>
-                        )}
-                        {isColumnVisible("total_amount") && (
-                          <th
-                            className="p-2 text-right cursor-pointer hover:bg-gray-100 select-none"
-                            onClick={() => handleSort("total_amount")}
-                          >
-                            <div className="flex items-center justify-end gap-1">
-                              Totalt
-                              {sortBy === "total_amount" && (
-                                <span className="text-xs">
-                                  {sortOrder === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </div>
-                          </th>
-                        )}
-                        {isColumnVisible("status") && (
-                          <th
-                            className="p-2 cursor-pointer hover:bg-gray-100 select-none"
-                            onClick={() => handleSort("status")}
-                          >
-                            <div className="flex items-center gap-1">
-                              Status
-                              {sortBy === "status" && (
-                                <span className="text-xs">
-                                  {sortOrder === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </div>
-                          </th>
-                        )}
-                        {isColumnVisible("invoice_number") && (
-                          <th
-                            className="p-2 cursor-pointer hover:bg-gray-100 select-none"
-                            onClick={() => handleSort("invoice_number")}
-                          >
-                            <div className="flex items-center gap-1">
-                              Fakturanr
-                              {sortBy === "invoice_number" && (
-                                <span className="text-xs">
-                                  {sortOrder === "asc" ? "↑" : "↓"}
-                                </span>
-                              )}
-                            </div>
-                          </th>
-                        )}
-                        {isColumnVisible("actions") && (
-                          <th className="p-2">Åtgärder</th>
-                        )}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtered.filter((inv) =>
-                        inv.organizations?.name?.toLowerCase().includes(typ)
-                      ).length === 0 ? (
-                        <tr>
-                          <td
-                            colSpan={visibleColumns.length}
-                            className="text-center text-gray-400 p-3"
-                          >
-                            Inga fakturor hittades för {typ}.
-                          </td>
-                        </tr>
-                      ) : (
-                        filtered
-                          .filter((inv) =>
-                            inv.organizations?.name?.toLowerCase().includes(typ)
-                          )
-                          .map((inv) => {
-                            // Färgkodning baserat på förfallodatum och status
-                            const dueDate = new Date(inv.due_date);
-                            const now = new Date();
-                            const daysUntilDue = Math.ceil(
-                              (dueDate.getTime() - now.getTime()) /
-                                (1000 * 60 * 60 * 24)
-                            );
-
-                            let rowColorClass = "";
-                            if (inv.status === "paid") {
-                              rowColorClass =
-                                "bg-emerald-50 hover:bg-emerald-100";
-                            } else if (daysUntilDue < 0) {
-                              rowColorClass = "bg-red-50 hover:bg-red-100"; // Förfallen
-                            } else if (daysUntilDue <= 7) {
-                              rowColorClass =
-                                "bg-orange-50 hover:bg-orange-100"; // Förfaller snart
-                            } else {
-                              rowColorClass = "hover:bg-gray-50";
-                            }
-
-                            return (
-                              <tr
-                                key={inv.id}
-                                className={`border-b ${rowColorClass}`}
-                              >
-                                {isColumnVisible("customer_number") && (
-                                  <td className="p-2 font-mono">
-                                    {inv.owners?.customer_number || "-"}
-                                  </td>
-                                )}
-                                {isColumnVisible("customer_name") && (
-                                  <td className="p-2">
-                                    {inv.owners?.full_name || inv.billed_name}
-                                  </td>
-                                )}
-                                {isColumnVisible("organization") && (
-                                  <td className="p-2">
-                                    {inv.organizations?.name || "-"}
-                                  </td>
-                                )}
-                                {isColumnVisible("invoice_date") && (
-                                  <td className="p-2">
-                                    {new Date(
-                                      inv.invoice_date
-                                    ).toLocaleDateString("sv-SE")}
-                                  </td>
-                                )}
-                                {isColumnVisible("due_date") && (
-                                  <td className="p-2">
-                                    {new Date(inv.due_date).toLocaleDateString(
-                                      "sv-SE"
-                                    )}
-                                  </td>
-                                )}
-                                {isColumnVisible("total_amount") && (
-                                  <td className="p-2 text-right">
-                                    {inv.total_amount.toLocaleString("sv-SE")}{" "}
-                                    kr
-                                  </td>
-                                )}
-                                {isColumnVisible("status") && (
-                                  <td className="p-2">
-                                    <span
-                                      className={`px-2 py-1 rounded text-xs font-medium ${
-                                        inv.status === "draft"
-                                          ? "bg-gray-100 text-gray-600"
-                                          : inv.status === "sent"
-                                            ? "bg-blue-100 text-blue-700"
-                                            : inv.status === "paid"
-                                              ? "bg-emerald-100 text-emerald-700"
-                                              : "bg-red-100 text-red-700"
-                                      }`}
-                                    >
-                                      {inv.status === "draft"
-                                        ? "Utkast"
-                                        : inv.status === "sent"
-                                          ? "Skickad"
-                                          : inv.status === "paid"
-                                            ? "Betald"
-                                            : "Makulerad"}
-                                    </span>
-                                  </td>
-                                )}
-                                {isColumnVisible("invoice_number") && (
-                                  <td className="p-2 font-mono text-xs">
-                                    {inv.invoice_number || "-"}
-                                  </td>
-                                )}
-                                {isColumnVisible("actions") && (
-                                  <td className="p-2">
-                                    <button
-                                      onClick={() => exportPDF(inv.id)}
-                                      className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 font-semibold text-sm flex items-center gap-1"
-                                    >
-                                      <FileText size={14} />
-                                      PDF
-                                    </button>
-                                  </td>
-                                )}
-                              </tr>
-                            );
-                          })
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
 
         {/* 🧰 Felsökningspanel */}
