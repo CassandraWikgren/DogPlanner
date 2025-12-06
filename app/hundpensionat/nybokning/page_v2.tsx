@@ -356,598 +356,602 @@ export default function NewPensionatBooking() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-3xl mx-auto px-6 py-4">
-          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-            Ny pensionatsbokning
-          </h1>
-          <p className="mt-1 text-base text-gray-600">
-            Skapa en ny bokning för hundpensionat
-          </p>
-        </div>
-      </div>
-
       {/* Main Content */}
-      <main className="max-w-3xl mx-auto px-6 py-6">
-        {/* STEG 1: VÄLJ KUNDTYP (endast om ingen hund är vald) */}
-        {!selectedDog && (
-          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Steg 1: Välj kundtyp
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Befintlig kund */}
-              <button
-                type="button"
-                onClick={() => {
-                  // Scrolla ner till hundselektion
-                  document
-                    .getElementById("dog-selector")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="p-6 border-2 border-green-300 bg-green-50 rounded-lg hover:border-green-500 hover:bg-green-100 transition-all text-left group"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-green-600 rounded-lg text-white flex-shrink-0">
-                    <User className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 mb-1 text-lg">
-                      Befintlig kund
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      Kunden finns redan i systemet (t.ex. via Hunddagis)
-                    </p>
-                    <p className="text-xs text-green-700 mt-2 font-medium">
-                      → Välj hund från listan nedan
-                    </p>
-                  </div>
-                </div>
-              </button>
-
-              {/* Ny kund */}
-              <button
-                type="button"
-                onClick={() => setShowAssistedRegistration(true)}
-                className="p-6 border-2 border-green-400 bg-green-100 rounded-lg hover:border-green-600 hover:bg-green-200 transition-all text-left group"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-green-700 rounded-lg text-white flex-shrink-0">
-                    <Plus className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 mb-1 text-lg">
-                      🆕 Ny kund
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      Assisterad registrering (GDPR-säker) för helt nya kunder
-                    </p>
-                    <p className="text-xs text-green-800 mt-2 font-medium">
-                      → Öppnar registreringsguide
-                    </p>
-                  </div>
-                </div>
-              </button>
-            </div>
-
-            {/* Hundselektion (befintlig kund) */}
-            <div
-              id="dog-selector"
-              className="mt-6 pt-6 border-t border-gray-200"
-            >
-              <label className="block text-sm font-semibold text-gray-900 mb-3">
-                Välj hund från befintlig kund:
-              </label>
-
-              {/* Sökruta */}
-              <div className="mb-3">
-                <input
-                  type="text"
-                  value={dogSearchQuery}
-                  onChange={(e) => setDogSearchQuery(e.target.value)}
-                  placeholder="Sök på hundnamn, ras eller ägare..."
-                  className="w-full border-2 border-gray-300 px-4 py-2 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-                {dogSearchQuery && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Visar {filteredDogs.length} av {dogs.length} hundar
-                  </p>
-                )}
-              </div>
-
-              <select
-                value={selectedDog}
-                onChange={(e) => setSelectedDog(e.target.value)}
-                className="w-full border-2 border-gray-300 px-4 py-3 text-base rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              >
-                <option value="">Välj hund...</option>
-                {filteredDogs.map((dog) => (
-                  <option key={dog.id} value={dog.id}>
-                    {dog.name} ({dog.breed || "Okänd ras"}) - Ägare:{" "}
-                    {dog.owners?.full_name}
-                  </option>
-                ))}
-              </select>
-            </div>
+      <main className="flex-1 py-8 px-4">
+        <div className="max-w-3xl mx-auto">
+          {/* Header */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Ny pensionatsbokning
+            </h1>
+            <p className="text-gray-600">
+              Skapa en ny bokning för hundpensionat
+            </p>
           </div>
-        )}
-
-        {/* VALD HUND & ÄGARE INFO (readonly) */}
-        {selectedDog && selectedDogData && (
-          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg p-6">
-              <div className="flex items-start justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Vald hund & ägare
-                </h2>
+          {/* STEG 1: VÄLJ KUNDTYP (endast om ingen hund är vald) */}
+          {!selectedDog && (
+            <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Steg 1: Välj kundtyp
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Befintlig kund */}
                 <button
                   type="button"
-                  onClick={() => setSelectedDog("")}
-                  className="text-sm text-gray-600 hover:text-gray-900 underline"
+                  onClick={() => {
+                    // Scrolla ner till hundselektion
+                    document
+                      .getElementById("dog-selector")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="p-6 border-2 border-green-300 bg-green-50 rounded-lg hover:border-green-500 hover:bg-green-100 transition-all text-left group"
                 >
-                  Byt hund
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-green-600 rounded-lg text-white flex-shrink-0">
+                      <User className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 mb-1 text-lg">
+                        Befintlig kund
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        Kunden finns redan i systemet (t.ex. via Hunddagis)
+                      </p>
+                      <p className="text-xs text-green-700 mt-2 font-medium">
+                        → Välj hund från listan nedan
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
+                {/* Ny kund */}
+                <button
+                  type="button"
+                  onClick={() => setShowAssistedRegistration(true)}
+                  className="p-6 border-2 border-green-400 bg-green-100 rounded-lg hover:border-green-600 hover:bg-green-200 transition-all text-left group"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-green-700 rounded-lg text-white flex-shrink-0">
+                      <Plus className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 mb-1 text-lg">
+                        🆕 Ny kund
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        Assisterad registrering (GDPR-säker) för helt nya kunder
+                      </p>
+                      <p className="text-xs text-green-800 mt-2 font-medium">
+                        → Öppnar registreringsguide
+                      </p>
+                    </div>
+                  </div>
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Hundinfo */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <span className="text-2xl">🐕</span> Hunduppgifter
-                  </h3>
-                  <div className="space-y-1 text-sm">
-                    <p>
-                      <strong>Namn:</strong> {selectedDogData.name}
+              {/* Hundselektion (befintlig kund) */}
+              <div
+                id="dog-selector"
+                className="mt-6 pt-6 border-t border-gray-200"
+              >
+                <label className="block text-sm font-semibold text-gray-900 mb-3">
+                  Välj hund från befintlig kund:
+                </label>
+
+                {/* Sökruta */}
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    value={dogSearchQuery}
+                    onChange={(e) => setDogSearchQuery(e.target.value)}
+                    placeholder="Sök på hundnamn, ras eller ägare..."
+                    className="w-full border-2 border-gray-300 px-4 py-2 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                  {dogSearchQuery && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Visar {filteredDogs.length} av {dogs.length} hundar
                     </p>
-                    <p>
-                      <strong>Ras:</strong>{" "}
-                      {selectedDogData.breed || "Ej angiven"}
-                    </p>
-                    {selectedDogData.heightcm && (
-                      <p>
-                        <strong>Höjd:</strong> {selectedDogData.heightcm} cm
-                      </p>
-                    )}
-                    {selectedDogData.weightkg && (
-                      <p>
-                        <strong>Vikt:</strong> {selectedDogData.weightkg} kg
-                      </p>
-                    )}
-                  </div>
+                  )}
                 </div>
 
-                {/* Ägarinfo */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <span className="text-2xl">👤</span> Ägaruppgifter
-                  </h3>
-                  <div className="space-y-1 text-sm">
-                    <p>
-                      <strong>Namn:</strong> {selectedDogData.owners?.full_name}
-                    </p>
-                    {selectedDogData.owners?.phone && (
-                      <p>
-                        <strong>Telefon:</strong> {selectedDogData.owners.phone}
-                      </p>
-                    )}
-                    {selectedDogData.owners?.email && (
-                      <p>
-                        <strong>Email:</strong> {selectedDogData.owners.email}
-                      </p>
-                    )}
-                    {selectedDogData.owners?.address && (
-                      <p>
-                        <strong>Adress:</strong>{" "}
-                        {selectedDogData.owners.address}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Lägg till hund-knapp */}
-              <div className="mt-6 pt-4 border-t border-green-200">
-                <button
-                  type="button"
-                  onClick={() => setShowNewDogModal(true)}
-                  className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium rounded-md transition-colors"
-                >
-                  <Plus className="h-4 w-4" />
-                  Lägg till ytterligare hund till denna ägare
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* BOKNINGSFORMULÄR (endast när hund är vald) */}
-        {selectedDog && (
-          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Datum & Tid */}
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-green-600" />
-                  Steg 2: Datum & Tid
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Startdatum *
-                    </label>
-                    <input
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Starttid
-                    </label>
-                    <input
-                      type="time"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Slutdatum *
-                    </label>
-                    <input
-                      type="date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Sluttid
-                    </label>
-                    <input
-                      type="time"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Rum (frivilligt) */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Home className="h-5 w-5 text-green-600" />
-                  Rum (frivilligt)
-                </h3>
                 <select
-                  value={selectedRoom}
-                  onChange={(e) => setSelectedRoom(e.target.value)}
-                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  value={selectedDog}
+                  onChange={(e) => setSelectedDog(e.target.value)}
+                  className="w-full border-2 border-gray-300 px-4 py-3 text-base rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  <option value="">Välj rum...</option>
-                  {rooms.map((room) => (
-                    <option key={room.id} value={room.id}>
-                      {room.name} ({room.capacity_m2} m²
-                      {room.max_height_cm && `, max ${room.max_height_cm} cm`})
+                  <option value="">Välj hund...</option>
+                  {filteredDogs.map((dog) => (
+                    <option key={dog.id} value={dog.id}>
+                      {dog.name} ({dog.breed || "Okänd ras"}) - Ägare:{" "}
+                      {dog.owners?.full_name}
                     </option>
                   ))}
                 </select>
               </div>
+            </div>
+          )}
 
-              {/* Tilläggstjänster */}
-              {extraServices.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Tilläggstjänster
-                  </h3>
-                  <div className="space-y-2">
-                    {extraServices.map((service) => (
-                      <label
-                        key={service.id}
-                        className="flex items-center gap-3 p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedExtras.includes(service.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedExtras([
-                                ...selectedExtras,
-                                service.id,
-                              ]);
-                            } else {
-                              setSelectedExtras(
-                                selectedExtras.filter((id) => id !== service.id)
-                              );
-                            }
-                          }}
-                          className="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500"
-                        />
-                        <span className="flex-1 text-sm font-medium text-gray-900">
-                          {service.label}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {service.price} kr{" "}
-                          {service.unit && `/ ${service.unit}`}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Rabatt */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Rabatt (kr)
-                </label>
-                <input
-                  type="number"
-                  value={discountAmount}
-                  onChange={(e) =>
-                    setDiscountAmount(Math.max(0, Number(e.target.value)))
-                  }
-                  min="0"
-                  step="50"
-                  className="w-full md:w-64 border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div>
-
-              {/* Anteckningar (FAS 2) */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Steg 3: Anteckningar
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Medtagna tillhörigheter
-                    </label>
-                    <textarea
-                      value={bookingNotes.belongings}
-                      onChange={(e) =>
-                        setBookingNotes({
-                          ...bookingNotes,
-                          belongings: e.target.value,
-                        })
-                      }
-                      rows={2}
-                      placeholder="T.ex. egen säng, leksaker, filt, mat..."
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Journalanteckningar
-                    </label>
-                    <textarea
-                      value={bookingNotes.journalNotes}
-                      onChange={(e) =>
-                        setBookingNotes({
-                          ...bookingNotes,
-                          journalNotes: e.target.value,
-                        })
-                      }
-                      rows={3}
-                      placeholder="Övriga anteckningar för personalen..."
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Prisberäkning */}
-              {priceCalc && (
-                <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Prisberäkning
-                  </h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>
-                        Grundpris ({priceCalc.baseDays} dagar × 500 kr):
-                      </span>
-                      <span className="font-medium">
-                        {priceCalc.basePrice} kr
-                      </span>
-                    </div>
-                    {priceCalc.extraServices.map((extra, idx) => (
-                      <div key={idx} className="flex justify-between">
-                        <span>{extra.name}:</span>
-                        <span className="font-medium">{extra.price} kr</span>
-                      </div>
-                    ))}
-                    <div className="flex justify-between pt-2 border-t border-green-300">
-                      <span>Delsumma:</span>
-                      <span className="font-medium">
-                        {priceCalc.subtotal} kr
-                      </span>
-                    </div>
-                    {priceCalc.discount > 0 && (
-                      <div className="flex justify-between text-red-600">
-                        <span>Rabatt:</span>
-                        <span className="font-medium">
-                          -{priceCalc.discount} kr
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex justify-between pt-2 border-t-2 border-green-400 text-lg font-bold text-green-700">
-                      <span>Totalt:</span>
-                      <span>{priceCalc.total} kr</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Action buttons */}
-              <div className="flex gap-4 pt-6 border-t border-gray-200">
-                <button
-                  type="button"
-                  onClick={calculatePrice}
-                  disabled={!startDate || !endDate}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                >
-                  <Calculator className="h-5 w-5" />
-                  Beräkna pris
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving || !priceCalc}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-green-700 hover:bg-green-800 text-white rounded-md font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-                >
-                  <Save className="h-5 w-5" />
-                  {saving ? "Sparar..." : "Spara bokning"}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {/* MODALS */}
-
-        {/* Assisterad registrering */}
-        {currentOrgId && (
-          <AssistedRegistrationModal
-            isOpen={showAssistedRegistration}
-            onClose={() => setShowAssistedRegistration(false)}
-            onSuccess={async (ownerId: string) => {
-              // 1. Ladda om hundar
-              await loadInitialData();
-
-              // 2. VÄNTA lite så state uppdateras, sedan hitta hundar för denna ägare
-              setTimeout(() => {
-                // Hämta UPPDATERADE dogs från state via callback
-                setDogs((currentDogs) => {
-                  const ownerDogs = currentDogs.filter(
-                    (d) => d.owner_id === ownerId
-                  );
-
-                  // 3. Auto-välj första hunden
-                  if (ownerDogs.length > 0) {
-                    setSelectedDog(ownerDogs[0].id);
-                  }
-
-                  // Returnera samma array (ingen förändring av dogs)
-                  return currentDogs;
-                });
-              }, 300);
-
-              setShowAssistedRegistration(false);
-              alert("✅ Kund registrerad! Fortsätt med bokningen nedan.");
-            }}
-            orgId={currentOrgId}
-          />
-        )}
-
-        {/* Lägg till ny hund (för befintlig ägare) */}
-        {showNewDogModal && selectedDogData && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-md w-full p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Lägg till hund till {selectedDogData.owners?.full_name}
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Hundnamn *
-                  </label>
-                  <input
-                    type="text"
-                    value={newDogData.name}
-                    onChange={(e) =>
-                      setNewDogData({ ...newDogData, name: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
-                    placeholder="T.ex. Bella"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ras
-                  </label>
-                  <input
-                    type="text"
-                    value={newDogData.breed}
-                    onChange={(e) =>
-                      setNewDogData({ ...newDogData, breed: e.target.value })
-                    }
-                    className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
-                    placeholder="T.ex. Beagle"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Höjd (cm)
-                    </label>
-                    <input
-                      type="number"
-                      value={newDogData.heightcm}
-                      onChange={(e) =>
-                        setNewDogData({
-                          ...newDogData,
-                          heightcm: e.target.value,
-                        })
-                      }
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Vikt (kg)
-                    </label>
-                    <input
-                      type="number"
-                      value={newDogData.weightkg}
-                      onChange={(e) =>
-                        setNewDogData({
-                          ...newDogData,
-                          weightkg: e.target.value,
-                        })
-                      }
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-3 pt-4">
+          {/* VALD HUND & ÄGARE INFO (readonly) */}
+          {selectedDog && selectedDogData && (
+            <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-lg p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    Vald hund & ägare
+                  </h2>
                   <button
                     type="button"
-                    onClick={() => {
-                      setShowNewDogModal(false);
-                      setNewDogData({
-                        name: "",
-                        breed: "",
-                        birth_date: "",
-                        heightcm: "",
-                        weightkg: "",
-                      });
-                    }}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                    onClick={() => setSelectedDog("")}
+                    className="text-sm text-gray-600 hover:text-gray-900 underline"
                   >
-                    Avbryt
+                    Byt hund
                   </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Hundinfo */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <span className="text-2xl">🐕</span> Hunduppgifter
+                    </h3>
+                    <div className="space-y-1 text-sm">
+                      <p>
+                        <strong>Namn:</strong> {selectedDogData.name}
+                      </p>
+                      <p>
+                        <strong>Ras:</strong>{" "}
+                        {selectedDogData.breed || "Ej angiven"}
+                      </p>
+                      {selectedDogData.heightcm && (
+                        <p>
+                          <strong>Höjd:</strong> {selectedDogData.heightcm} cm
+                        </p>
+                      )}
+                      {selectedDogData.weightkg && (
+                        <p>
+                          <strong>Vikt:</strong> {selectedDogData.weightkg} kg
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Ägarinfo */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <span className="text-2xl">👤</span> Ägaruppgifter
+                    </h3>
+                    <div className="space-y-1 text-sm">
+                      <p>
+                        <strong>Namn:</strong>{" "}
+                        {selectedDogData.owners?.full_name}
+                      </p>
+                      {selectedDogData.owners?.phone && (
+                        <p>
+                          <strong>Telefon:</strong>{" "}
+                          {selectedDogData.owners.phone}
+                        </p>
+                      )}
+                      {selectedDogData.owners?.email && (
+                        <p>
+                          <strong>Email:</strong> {selectedDogData.owners.email}
+                        </p>
+                      )}
+                      {selectedDogData.owners?.address && (
+                        <p>
+                          <strong>Adress:</strong>{" "}
+                          {selectedDogData.owners.address}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lägg till hund-knapp */}
+                <div className="mt-6 pt-4 border-t border-green-200">
                   <button
                     type="button"
-                    onClick={createNewDog}
-                    disabled={saving || !newDogData.name}
-                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 font-semibold"
+                    onClick={() => setShowNewDogModal(true)}
+                    className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium rounded-md transition-colors"
                   >
-                    {saving ? "Sparar..." : "Skapa hund"}
+                    <Plus className="h-4 w-4" />
+                    Lägg till ytterligare hund till denna ägare
                   </button>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* BOKNINGSFORMULÄR (endast när hund är vald) */}
+          {selectedDog && (
+            <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Datum & Tid */}
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-green-600" />
+                    Steg 2: Datum & Tid
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Startdatum *
+                      </label>
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Starttid
+                      </label>
+                      <input
+                        type="time"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Slutdatum *
+                      </label>
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Sluttid
+                      </label>
+                      <input
+                        type="time"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Rum (frivilligt) */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Home className="h-5 w-5 text-green-600" />
+                    Rum (frivilligt)
+                  </h3>
+                  <select
+                    value={selectedRoom}
+                    onChange={(e) => setSelectedRoom(e.target.value)}
+                    className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  >
+                    <option value="">Välj rum...</option>
+                    {rooms.map((room) => (
+                      <option key={room.id} value={room.id}>
+                        {room.name} ({room.capacity_m2} m²
+                        {room.max_height_cm && `, max ${room.max_height_cm} cm`}
+                        )
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Tilläggstjänster */}
+                {extraServices.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Tilläggstjänster
+                    </h3>
+                    <div className="space-y-2">
+                      {extraServices.map((service) => (
+                        <label
+                          key={service.id}
+                          className="flex items-center gap-3 p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedExtras.includes(service.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedExtras([
+                                  ...selectedExtras,
+                                  service.id,
+                                ]);
+                              } else {
+                                setSelectedExtras(
+                                  selectedExtras.filter(
+                                    (id) => id !== service.id
+                                  )
+                                );
+                              }
+                            }}
+                            className="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500"
+                          />
+                          <span className="flex-1 text-sm font-medium text-gray-900">
+                            {service.label}
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            {service.price} kr{" "}
+                            {service.unit && `/ ${service.unit}`}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Rabatt */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Rabatt (kr)
+                  </label>
+                  <input
+                    type="number"
+                    value={discountAmount}
+                    onChange={(e) =>
+                      setDiscountAmount(Math.max(0, Number(e.target.value)))
+                    }
+                    min="0"
+                    step="50"
+                    className="w-full md:w-64 border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Anteckningar (FAS 2) */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Steg 3: Anteckningar
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Medtagna tillhörigheter
+                      </label>
+                      <textarea
+                        value={bookingNotes.belongings}
+                        onChange={(e) =>
+                          setBookingNotes({
+                            ...bookingNotes,
+                            belongings: e.target.value,
+                          })
+                        }
+                        rows={2}
+                        placeholder="T.ex. egen säng, leksaker, filt, mat..."
+                        className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Journalanteckningar
+                      </label>
+                      <textarea
+                        value={bookingNotes.journalNotes}
+                        onChange={(e) =>
+                          setBookingNotes({
+                            ...bookingNotes,
+                            journalNotes: e.target.value,
+                          })
+                        }
+                        rows={3}
+                        placeholder="Övriga anteckningar för personalen..."
+                        className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Prisberäkning */}
+                {priceCalc && (
+                  <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Prisberäkning
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>
+                          Grundpris ({priceCalc.baseDays} dagar × 500 kr):
+                        </span>
+                        <span className="font-medium">
+                          {priceCalc.basePrice} kr
+                        </span>
+                      </div>
+                      {priceCalc.extraServices.map((extra, idx) => (
+                        <div key={idx} className="flex justify-between">
+                          <span>{extra.name}:</span>
+                          <span className="font-medium">{extra.price} kr</span>
+                        </div>
+                      ))}
+                      <div className="flex justify-between pt-2 border-t border-green-300">
+                        <span>Delsumma:</span>
+                        <span className="font-medium">
+                          {priceCalc.subtotal} kr
+                        </span>
+                      </div>
+                      {priceCalc.discount > 0 && (
+                        <div className="flex justify-between text-red-600">
+                          <span>Rabatt:</span>
+                          <span className="font-medium">
+                            -{priceCalc.discount} kr
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex justify-between pt-2 border-t-2 border-green-400 text-lg font-bold text-green-700">
+                        <span>Totalt:</span>
+                        <span>{priceCalc.total} kr</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action buttons */}
+                <div className="flex gap-4 pt-6 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={calculatePrice}
+                    disabled={!startDate || !endDate}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-md font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <Calculator className="h-5 w-5" />
+                    Beräkna pris
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={saving || !priceCalc}
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-green-700 hover:bg-green-800 text-white rounded-md font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <Save className="h-5 w-5" />
+                    {saving ? "Sparar..." : "Spara bokning"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* MODALS */}
+
+          {/* Assisterad registrering */}
+          {currentOrgId && (
+            <AssistedRegistrationModal
+              isOpen={showAssistedRegistration}
+              onClose={() => setShowAssistedRegistration(false)}
+              onSuccess={async (ownerId: string) => {
+                // 1. Ladda om hundar
+                await loadInitialData();
+
+                // 2. VÄNTA lite så state uppdateras, sedan hitta hundar för denna ägare
+                setTimeout(() => {
+                  // Hämta UPPDATERADE dogs från state via callback
+                  setDogs((currentDogs) => {
+                    const ownerDogs = currentDogs.filter(
+                      (d) => d.owner_id === ownerId
+                    );
+
+                    // 3. Auto-välj första hunden
+                    if (ownerDogs.length > 0) {
+                      setSelectedDog(ownerDogs[0].id);
+                    }
+
+                    // Returnera samma array (ingen förändring av dogs)
+                    return currentDogs;
+                  });
+                }, 300);
+
+                setShowAssistedRegistration(false);
+                alert("✅ Kund registrerad! Fortsätt med bokningen nedan.");
+              }}
+              orgId={currentOrgId}
+            />
+          )}
+
+          {/* Lägg till ny hund (för befintlig ägare) */}
+          {showNewDogModal && selectedDogData && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg max-w-md w-full p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  Lägg till hund till {selectedDogData.owners?.full_name}
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Hundnamn *
+                    </label>
+                    <input
+                      type="text"
+                      value={newDogData.name}
+                      onChange={(e) =>
+                        setNewDogData({ ...newDogData, name: e.target.value })
+                      }
+                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
+                      placeholder="T.ex. Bella"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Ras
+                    </label>
+                    <input
+                      type="text"
+                      value={newDogData.breed}
+                      onChange={(e) =>
+                        setNewDogData({ ...newDogData, breed: e.target.value })
+                      }
+                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
+                      placeholder="T.ex. Beagle"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Höjd (cm)
+                      </label>
+                      <input
+                        type="number"
+                        value={newDogData.heightcm}
+                        onChange={(e) =>
+                          setNewDogData({
+                            ...newDogData,
+                            heightcm: e.target.value,
+                          })
+                        }
+                        className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Vikt (kg)
+                      </label>
+                      <input
+                        type="number"
+                        value={newDogData.weightkg}
+                        onChange={(e) =>
+                          setNewDogData({
+                            ...newDogData,
+                            weightkg: e.target.value,
+                          })
+                        }
+                        className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewDogModal(false);
+                        setNewDogData({
+                          name: "",
+                          breed: "",
+                          birth_date: "",
+                          heightcm: "",
+                          weightkg: "",
+                        });
+                      }}
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                    >
+                      Avbryt
+                    </button>
+                    <button
+                      type="button"
+                      onClick={createNewDog}
+                      disabled={saving || !newDogData.name}
+                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 font-semibold"
+                    >
+                      {saving ? "Sparar..." : "Skapa hund"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

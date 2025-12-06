@@ -410,434 +410,432 @@ export default function HundpensionatPage() {
   }
 
   return (
-    <>
-      {/* Header - enligt DESIGN_STANDARD_IMPLEMENTATION.md */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
-                Hundpensionat
-              </h1>
-              <p className="mt-1 text-base text-gray-600">
-                Professionell pensionathantering med fullständig översikt
-              </p>
-            </div>
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Hundpensionat
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Professionell pensionathantering med fullständig översikt
+          </p>
 
-            {/* Statistik inline höger - Kompakta boxar */}
-            <div className="flex items-center gap-4 ml-8">
-              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <p className="text-2xl font-bold text-[#2c7a4c]">
-                  {liveStats.hundarIdag}
-                </p>
-                <p className="text-xs text-gray-600 mt-0.5">Aktiva idag</p>
-              </div>
-              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <p className="text-2xl font-bold text-blue-600">
-                  {liveStats.incheckIdag}
-                </p>
-                <p className="text-xs text-gray-600 mt-0.5">Ankomster</p>
-              </div>
-              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <p className="text-2xl font-bold text-orange-600">
-                  {liveStats.utcheckIdag}
-                </p>
-                <p className="text-xs text-gray-600 mt-0.5">Avresor</p>
-              </div>
+          {/* Statistik - Kompakta boxar */}
+          <div className="flex items-center gap-4">
+            <div className="text-center bg-gray-50 rounded-lg px-6 py-3 border border-gray-200">
+              <p className="text-2xl font-bold text-green-600">
+                {liveStats.hundarIdag}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Aktiva idag</p>
+            </div>
+            <div className="text-center bg-gray-50 rounded-lg px-6 py-3 border border-gray-200">
+              <p className="text-2xl font-bold text-blue-600">
+                {liveStats.incheckIdag}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Ankomster</p>
+            </div>
+            <div className="text-center bg-gray-50 rounded-lg px-6 py-3 border border-gray-200">
+              <p className="text-2xl font-bold text-orange-600">
+                {liveStats.utcheckIdag}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Avresor</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content - enligt DESIGN_STANDARD_IMPLEMENTATION.md */}
-      <main className="max-w-7xl mx-auto px-6 py-6">
-        {/* Action buttons row */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/hundpensionat/nybokning"
-              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Ny bokning
-            </Link>
-            <Link
-              href="/hundpensionat/ansokningar"
-              className="relative inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-gray-500 hover:bg-gray-600 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-            >
-              <ClipboardList className="h-4 w-4 mr-2" />
-              Ansökningar
-              {liveStats.pendingBookings > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {liveStats.pendingBookings}
-                </span>
-              )}
-            </Link>
-            <button
-              onClick={loadBookings}
-              disabled={isLoading}
-              className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 disabled:opacity-50"
-            >
-              <RefreshCcw
-                className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-              />
-              Ladda om
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/hundpensionat/priser"
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              <DollarSign className="h-4 w-4 mr-1" />
-              Priser
-            </Link>
-            <Link
-              href="/hundpensionat/tillval"
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              <Settings className="h-4 w-4 mr-1" />
-              Tillval
-            </Link>
-            <Link
-              href="/hundpensionat/schema"
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              <Grid3x3 className="h-4 w-4 mr-1" />
-              Schema
-            </Link>
-            <Link
-              href="/hundpensionat/kalender"
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              <Calendar className="h-4 w-4 mr-1" />
-              Kalender
-            </Link>
-            <button
-              onClick={exportToPDF}
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              <Download className="h-4 w-4 mr-1" />
-              PDF
-            </button>
-          </div>
-        </div>
-
-        {/* Sök och filter - VIT BAKGRUND med SKUGGA enligt designstandard */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <select
-              value={selectedMonthId}
-              onChange={(e) => setSelectedMonthId(e.target.value)}
-              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base bg-white"
-            >
-              <option value="">Alla månader</option>
-              {availableMonths.map((month) => (
-                <option key={month} value={month}>
-                  {new Date(month + "-01").toLocaleDateString("sv-SE", {
-                    year: "numeric",
-                    month: "long",
-                  })}
-                </option>
-              ))}
-            </select>
-
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Sök på hundnamn, ägarnamn, telefon, ras..."
-                className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white"
-              />
+      {/* Main Content */}
+      <main className="flex-1 py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Action buttons row */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-3">
+              <Link
+                href="/hundpensionat/nybokning"
+                className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-[#2c7a4c] hover:bg-[#236139] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Ny bokning
+              </Link>
+              <Link
+                href="/hundpensionat/ansokningar"
+                className="relative inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-gray-500 hover:bg-gray-600 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              >
+                <ClipboardList className="h-4 w-4 mr-2" />
+                Ansökningar
+                {liveStats.pendingBookings > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {liveStats.pendingBookings}
+                  </span>
+                )}
+              </Link>
+              <button
+                onClick={loadBookings}
+                disabled={isLoading}
+                className="inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold bg-white text-[#2c7a4c] border border-[#2c7a4c] hover:bg-[#E6F4EA] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2 disabled:opacity-50"
+              >
+                <RefreshCcw
+                  className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+                />
+                Ladda om
+              </button>
             </div>
-          </div>
-
-          {/* Snabbfilterknappar */}
-          <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
-            <span className="text-sm font-medium text-gray-700 mr-2">
-              Snabbfilter:
-            </span>
-            <button
-              onClick={() => setQuickFilter("all")}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                quickFilter === "all"
-                  ? "bg-[#2c7a4c] text-white shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Alla
-              <span className="ml-1.5 text-xs opacity-80">
-                {bookings.length}
-              </span>
-            </button>
-            <button
-              onClick={() => setQuickFilter("today")}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                quickFilter === "today"
-                  ? "bg-[#2c7a4c] text-white shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Idag
-              <span className="ml-1.5 text-xs opacity-80">
-                {
-                  bookings.filter((b) => {
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    const start = new Date(b.start_date || "");
-                    const end = new Date(b.end_date || "");
-                    start.setHours(0, 0, 0, 0);
-                    end.setHours(0, 0, 0, 0);
-                    return start <= today && end >= today;
-                  }).length
-                }
-              </span>
-            </button>
-            <button
-              onClick={() => setQuickFilter("this-week")}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                quickFilter === "this-week"
-                  ? "bg-[#2c7a4c] text-white shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Denna vecka
-              <span className="ml-1.5 text-xs opacity-80">
-                {
-                  bookings.filter((b) => {
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    const weekEnd = new Date(today);
-                    weekEnd.setDate(weekEnd.getDate() + 7);
-                    const start = new Date(b.start_date || "");
-                    start.setHours(0, 0, 0, 0);
-                    return start < weekEnd;
-                  }).length
-                }
-              </span>
-            </button>
-            <button
-              onClick={() => setQuickFilter("next-week")}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                quickFilter === "next-week"
-                  ? "bg-[#2c7a4c] text-white shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Nästa vecka
-              <span className="ml-1.5 text-xs opacity-80">
-                {
-                  bookings.filter((b) => {
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    const weekEnd = new Date(today);
-                    weekEnd.setDate(weekEnd.getDate() + 7);
-                    const nextWeekEnd = new Date(today);
-                    nextWeekEnd.setDate(nextWeekEnd.getDate() + 14);
-                    const start = new Date(b.start_date || "");
-                    start.setHours(0, 0, 0, 0);
-                    return start >= weekEnd && start < nextWeekEnd;
-                  }).length
-                }
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* Error display */}
-        {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg mb-4">
             <div className="flex items-center gap-2">
-              <span className="text-red-600 font-bold">⚠️</span>
-              <span className="font-medium text-sm">{error}</span>
+              <Link
+                href="/hundpensionat/priser"
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                <DollarSign className="h-4 w-4 mr-1" />
+                Priser
+              </Link>
+              <Link
+                href="/hundpensionat/tillval"
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                <Settings className="h-4 w-4 mr-1" />
+                Tillval
+              </Link>
+              <Link
+                href="/hundpensionat/schema"
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                <Grid3x3 className="h-4 w-4 mr-1" />
+                Schema
+              </Link>
+              <Link
+                href="/hundpensionat/kalender"
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                <Calendar className="h-4 w-4 mr-1" />
+                Kalender
+              </Link>
+              <button
+                onClick={exportToPDF}
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                <Download className="h-4 w-4 mr-1" />
+                PDF
+              </button>
             </div>
           </div>
-        )}
 
-        {/* Tabell - Kompakt design */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-[#2c7a4c] text-white">
-                <tr>
-                  <th
-                    onClick={() => handleSort("room")}
-                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
-                  >
-                    <div className="flex items-center gap-1">
-                      Rum {sortKey === "room" && (sortAsc ? "↑" : "↓")}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort("dog")}
-                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
-                  >
-                    <div className="flex items-center gap-1">
-                      Hund {sortKey === "dog" && (sortAsc ? "↑" : "↓")}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort("owner")}
-                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
-                  >
-                    <div className="flex items-center gap-1">
-                      Ägare {sortKey === "owner" && (sortAsc ? "↑" : "↓")}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort("start_date")}
-                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
-                  >
-                    <div className="flex items-center gap-1">
-                      Startdatum{" "}
-                      {sortKey === "start_date" && (sortAsc ? "↑" : "↓")}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort("end_date")}
-                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
-                  >
-                    <div className="flex items-center gap-1">
-                      Slutdatum{" "}
-                      {sortKey === "end_date" && (sortAsc ? "↑" : "↓")}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort("status")}
-                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
-                  >
-                    <div className="flex items-center gap-1">
-                      Status {sortKey === "status" && (sortAsc ? "↑" : "↓")}
-                    </div>
-                  </th>
-                  <th
-                    onClick={() => handleSort("total_price")}
-                    className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
-                  >
-                    <div className="flex items-center gap-1">
-                      Totalpris{" "}
-                      {sortKey === "total_price" && (sortAsc ? "↑" : "↓")}
-                    </div>
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold">
-                    Rabatt
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {isLoading ? (
+          {/* Sök och filter - VIT BAKGRUND med SKUGGA enligt designstandard */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+            <div className="flex items-center gap-4 mb-4">
+              <select
+                value={selectedMonthId}
+                onChange={(e) => setSelectedMonthId(e.target.value)}
+                className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base bg-white"
+              >
+                <option value="">Alla månader</option>
+                {availableMonths.map((month) => (
+                  <option key={month} value={month}>
+                    {new Date(month + "-01").toLocaleDateString("sv-SE", {
+                      year: "numeric",
+                      month: "long",
+                    })}
+                  </option>
+                ))}
+              </select>
+
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Sök på hundnamn, ägarnamn, telefon, ras..."
+                  className="w-full h-10 pl-10 pr-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Snabbfilterknappar */}
+            <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
+              <span className="text-sm font-medium text-gray-700 mr-2">
+                Snabbfilter:
+              </span>
+              <button
+                onClick={() => setQuickFilter("all")}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  quickFilter === "all"
+                    ? "bg-[#2c7a4c] text-white shadow-sm"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Alla
+                <span className="ml-1.5 text-xs opacity-80">
+                  {bookings.length}
+                </span>
+              </button>
+              <button
+                onClick={() => setQuickFilter("today")}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  quickFilter === "today"
+                    ? "bg-[#2c7a4c] text-white shadow-sm"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Idag
+                <span className="ml-1.5 text-xs opacity-80">
+                  {
+                    bookings.filter((b) => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const start = new Date(b.start_date || "");
+                      const end = new Date(b.end_date || "");
+                      start.setHours(0, 0, 0, 0);
+                      end.setHours(0, 0, 0, 0);
+                      return start <= today && end >= today;
+                    }).length
+                  }
+                </span>
+              </button>
+              <button
+                onClick={() => setQuickFilter("this-week")}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  quickFilter === "this-week"
+                    ? "bg-[#2c7a4c] text-white shadow-sm"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Denna vecka
+                <span className="ml-1.5 text-xs opacity-80">
+                  {
+                    bookings.filter((b) => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const weekEnd = new Date(today);
+                      weekEnd.setDate(weekEnd.getDate() + 7);
+                      const start = new Date(b.start_date || "");
+                      start.setHours(0, 0, 0, 0);
+                      return start < weekEnd;
+                    }).length
+                  }
+                </span>
+              </button>
+              <button
+                onClick={() => setQuickFilter("next-week")}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  quickFilter === "next-week"
+                    ? "bg-[#2c7a4c] text-white shadow-sm"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Nästa vecka
+                <span className="ml-1.5 text-xs opacity-80">
+                  {
+                    bookings.filter((b) => {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const weekEnd = new Date(today);
+                      weekEnd.setDate(weekEnd.getDate() + 7);
+                      const nextWeekEnd = new Date(today);
+                      nextWeekEnd.setDate(nextWeekEnd.getDate() + 14);
+                      const start = new Date(b.start_date || "");
+                      start.setHours(0, 0, 0, 0);
+                      return start >= weekEnd && start < nextWeekEnd;
+                    }).length
+                  }
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Error display */}
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-lg mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-red-600 font-bold">⚠️</span>
+                <span className="font-medium text-sm">{error}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Tabell - Kompakt design */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-[#2c7a4c] text-white">
                   <tr>
-                    <td
-                      colSpan={8}
-                      className="px-4 py-8 text-center text-gray-500"
+                    <th
+                      onClick={() => handleSort("room")}
+                      className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
                     >
-                      <div className="flex items-center justify-center gap-2">
-                        <RefreshCcw className="w-4 h-4 animate-spin text-[#2c7a4c]" />
-                        <span className="text-sm">Laddar bokningar...</span>
+                      <div className="flex items-center gap-1">
+                        Rum {sortKey === "room" && (sortAsc ? "↑" : "↓")}
                       </div>
-                    </td>
-                  </tr>
-                ) : sorted.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={8}
-                      className="px-4 py-8 text-center text-gray-500"
+                    </th>
+                    <th
+                      onClick={() => handleSort("dog")}
+                      className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
                     >
-                      <div className="text-center">
-                        <p className="text-sm font-medium mb-1">
-                          {search || selectedMonthId
-                            ? "Inga bokningar matchade din sökning"
-                            : "Kunde inte ladda bokningar"}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {search || selectedMonthId
-                            ? "Prova att ändra dina sökkriterier"
-                            : "Kontrollera din anslutning och försök igen"}
-                        </p>
+                      <div className="flex items-center gap-1">
+                        Hund {sortKey === "dog" && (sortAsc ? "↑" : "↓")}
                       </div>
-                    </td>
-                  </tr>
-                ) : (
-                  sorted.map((booking, index) => (
-                    <tr
-                      key={booking.id}
-                      className={`cursor-pointer transition-colors ${index % 2 === 0 ? "bg-white hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-100"}`}
+                    </th>
+                    <th
+                      onClick={() => handleSort("owner")}
+                      className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
                     >
-                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                        {booking.rooms?.name ?? "—"}
-                      </td>
-                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                        {booking.dogs?.name ?? "—"}
-                      </td>
-                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                        {booking.dogs?.owners?.full_name ?? "—"}
-                      </td>
-                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                        {booking.start_date}
-                      </td>
-                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                        {booking.end_date}
-                      </td>
-                      <td className="px-4 py-2.5 whitespace-nowrap text-sm">
-                        <span
-                          className={`px-2 py-1 inline-flex items-center text-xs font-medium rounded-full ${
-                            booking.status === "confirmed"
-                              ? "bg-emerald-100 text-emerald-700"
-                              : booking.status === "pending"
-                                ? "bg-amber-100 text-amber-700"
-                                : booking.status === "checked_out"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-gray-100 text-gray-700"
-                          }`}
-                        >
-                          {booking.status === "confirmed" && "✓ "}
-                          {booking.status === "pending" && "⏳ "}
-                          {booking.status === "checked_out" && "✓✓ "}
-                          {booking.status || "—"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                        {booking.total_price
-                          ? `${Number(booking.total_price).toLocaleString()} kr`
-                          : "—"}
-                      </td>
-                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
-                        {booking.discount_amount
-                          ? `${Number(booking.discount_amount).toLocaleString()} kr`
-                          : "—"}
+                      <div className="flex items-center gap-1">
+                        Ägare {sortKey === "owner" && (sortAsc ? "↑" : "↓")}
+                      </div>
+                    </th>
+                    <th
+                      onClick={() => handleSort("start_date")}
+                      className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
+                    >
+                      <div className="flex items-center gap-1">
+                        Startdatum{" "}
+                        {sortKey === "start_date" && (sortAsc ? "↑" : "↓")}
+                      </div>
+                    </th>
+                    <th
+                      onClick={() => handleSort("end_date")}
+                      className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
+                    >
+                      <div className="flex items-center gap-1">
+                        Slutdatum{" "}
+                        {sortKey === "end_date" && (sortAsc ? "↑" : "↓")}
+                      </div>
+                    </th>
+                    <th
+                      onClick={() => handleSort("status")}
+                      className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
+                    >
+                      <div className="flex items-center gap-1">
+                        Status {sortKey === "status" && (sortAsc ? "↑" : "↓")}
+                      </div>
+                    </th>
+                    <th
+                      onClick={() => handleSort("total_price")}
+                      className="px-4 py-3 text-left text-sm font-semibold cursor-pointer hover:bg-[#236139] transition-colors"
+                    >
+                      <div className="flex items-center gap-1">
+                        Totalpris{" "}
+                        {sortKey === "total_price" && (sortAsc ? "↑" : "↓")}
+                      </div>
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold">
+                      Rabatt
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {isLoading ? (
+                    <tr>
+                      <td
+                        colSpan={8}
+                        className="px-4 py-8 text-center text-gray-500"
+                      >
+                        <div className="flex items-center justify-center gap-2">
+                          <RefreshCcw className="w-4 h-4 animate-spin text-[#2c7a4c]" />
+                          <span className="text-sm">Laddar bokningar...</span>
+                        </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : sorted.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={8}
+                        className="px-4 py-8 text-center text-gray-500"
+                      >
+                        <div className="text-center">
+                          <p className="text-sm font-medium mb-1">
+                            {search || selectedMonthId
+                              ? "Inga bokningar matchade din sökning"
+                              : "Kunde inte ladda bokningar"}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {search || selectedMonthId
+                              ? "Prova att ändra dina sökkriterier"
+                              : "Kontrollera din anslutning och försök igen"}
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    sorted.map((booking, index) => (
+                      <tr
+                        key={booking.id}
+                        className={`cursor-pointer transition-colors ${index % 2 === 0 ? "bg-white hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-100"}`}
+                      >
+                        <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
+                          {booking.rooms?.name ?? "—"}
+                        </td>
+                        <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
+                          {booking.dogs?.name ?? "—"}
+                        </td>
+                        <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
+                          {booking.dogs?.owners?.full_name ?? "—"}
+                        </td>
+                        <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
+                          {booking.start_date}
+                        </td>
+                        <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
+                          {booking.end_date}
+                        </td>
+                        <td className="px-4 py-2.5 whitespace-nowrap text-sm">
+                          <span
+                            className={`px-2 py-1 inline-flex items-center text-xs font-medium rounded-full ${
+                              booking.status === "confirmed"
+                                ? "bg-emerald-100 text-emerald-700"
+                                : booking.status === "pending"
+                                  ? "bg-amber-100 text-amber-700"
+                                  : booking.status === "checked_out"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : "bg-gray-100 text-gray-700"
+                            }`}
+                          >
+                            {booking.status === "confirmed" && "✓ "}
+                            {booking.status === "pending" && "⏳ "}
+                            {booking.status === "checked_out" && "✓✓ "}
+                            {booking.status || "—"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
+                          {booking.total_price
+                            ? `${Number(booking.total_price).toLocaleString()} kr`
+                            : "—"}
+                        </td>
+                        <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
+                          {booking.discount_amount
+                            ? `${Number(booking.discount_amount).toLocaleString()} kr`
+                            : "—"}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
 
-        {/* Footer info */}
-        {sorted.length > 0 && (
-          <div className="mt-4 text-center text-xs text-gray-500 bg-white rounded-lg p-3 border border-gray-200">
-            <p>
-              Visar{" "}
-              <span className="font-semibold text-gray-700">
-                {sorted.length}
-              </span>{" "}
-              bokningar
-              {bookings.length !== sorted.length && (
-                <span>
-                  {" "}
-                  av totalt{" "}
-                  <span className="font-semibold text-gray-700">
-                    {bookings.length}
+          {/* Footer info */}
+          {sorted.length > 0 && (
+            <div className="mt-4 text-center text-xs text-gray-500 bg-white rounded-lg p-3 border border-gray-200">
+              <p>
+                Visar{" "}
+                <span className="font-semibold text-gray-700">
+                  {sorted.length}
+                </span>{" "}
+                bokningar
+                {bookings.length !== sorted.length && (
+                  <span>
+                    {" "}
+                    av totalt{" "}
+                    <span className="font-semibold text-gray-700">
+                      {bookings.length}
+                    </span>
                   </span>
-                </span>
-              )}
-            </p>
-          </div>
-        )}
+                )}
+              </p>
+            </div>
+          )}
+        </div>
       </main>
-    </>
+    </div>
   );
 }
