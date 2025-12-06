@@ -1,78 +1,92 @@
 # 🔍 Hundpensionat Bokningssystem - Audit Rapport
 
 **Datum:** 6 December 2025  
-**Status:** ⚠️ KRITISKA BUGGAR FUNNA - Kräver åtgärd
+**Status:** ✅ ALLA KRITISKA BUGGAR FIXADE
 
 ---
 
 ## 📋 Sammanfattning
 
-Genomgång av hela hundpensionat-bokningssystemet har slutförts. **FLERA KRITISKA BUGGAR hittades** som påverkar prisberäkning och organisationshantering.
+Genomgång av hela hundpensionat-bokningssystemet har slutförts. **KRITISKA BUGGAR har hittats och FIXATS**.
 
 ### Granskade områden:
 
 1. ✅ Databasschema (`bookings`, `boarding_prices`, `boarding_seasons`, `special_dates`)
 2. ✅ API-endpoints (`/api/bookings/approve`, `/api/bookings/cancel`)
-3. ⚠️ Frontend-sidor (`hundpensionat/`, `nybokning/`, `ansokningar/`) - **BUGGAR FUNNA**
-4. ⚠️ Prisberäkningslogik (`lib/boardingPriceCalculator.ts`) - **ANVÄNDS INTE!**
+3. ✅ Frontend-sidor (`hundpensionat/`, `nybokning/`, `ansokningar/`) - **FIXADE**
+4. ✅ Prisberäkningslogik (`lib/boardingPriceCalculator.ts`) - **NU INTEGRERAD**
 5. ✅ Faktura-triggers (`create_prepayment_invoice`, `create_invoice_on_checkout`)
 
 ---
 
-## 🚨 KRITISKA BUGGAR - MÅSTE FIXAS
+## ✅ FIXADE BUGGAR (6 Dec 2025)
 
-### 1. Hårdkodat pris i nybokning (KRITISK)
+### 1. ~~Hårdkodat pris i nybokning~~ → FIXAD ✅
 
-**Fil:** `app/hundpensionat/nybokning/page.tsx` (rad 188-189)
+**Fil:** `app/hundpensionat/nybokning/page.tsx`
 
-**Problem:**
+**Problem som fanns:**
 
 ```typescript
-const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-const basePrice = diffDays * 500; // ⚠️ HÅRDKODAT 500 kr/natt!
+const basePrice = diffDays * 500; // Hårdkodat 500 kr/natt
 ```
 
-Prisberäkningen använder ett **hårdkodat pris på 500 kr/dag** istället för att hämta från `boarding_prices`-tabellen. Detta innebär:
+**Lösning implementerad:**
 
-- ❌ Ignorer priser som administratör ställt in
-- ❌ Ignorer hundstorlek (small/medium/large)
-- ❌ Ignorer helgtillägg
-- ❌ Ignorer specialdatum
-- ❌ Ignorer säsongsmultiplikatorer
+```typescript
+const { calculateBookingPrice } = await import("@/lib/boardingPriceCalculator");
+const calculatedPrice = await calculateBookingPrice(
+  startDate,
+  endDate,
+  selectedDog.heightcm,
+  currentOrgId
+);
+```
 
-**Lösning:** Integrera `lib/boardingPriceCalculator.ts` eller `lib/pricing.ts`
+Nu beräknas priset dynamiskt med:
+
+- ✅ Priser från `boarding_prices`-tabellen
+- ✅ Hundstorlek (small/medium/large baserat på heightcm)
+- ✅ Helgtillägg (helg_extra_per_night)
+- ✅ Specialdatum (special_dates)
+- ✅ Säsongsmultiplikatorer (boarding_seasons)
+
+**Commit:** `d651347`
 
 ---
 
-### 2. Hårdkodad org_id (KRITISK)
+### 2. ~~Hårdkodad org_id~~ → FIXAD ✅
 
-**Fil:** `app/hundpensionat/bokningsformulär/page.tsx` (rad 50-51)
+**Fil:** `app/hundpensionat/bokningsformulär/page.tsx`
 
-**Problem:**
+**Problem som fanns:**
 
 ```typescript
 const org = { id: "default-org-uuid", vat_included: true, vat_rate: 0.25 };
-const branch = { id: "default-branch-uuid" };
 ```
 
-Detta är en **hårdkodad org_id** som inte finns i databasen. Sidan kommer inte fungera för någon verklig organisation.
+**Lösning implementerad:**
 
-**Lösning:** Använd `useAuth()` hook och `currentOrgId`
+```typescript
+const { currentOrgId } = useAuth();
+// Sedan används currentOrgId i alla databas-queries
+.eq("org_id", orgId) // Där orgId = currentOrgId captured i closure
+```
+
+**Commit:** `d651347`
 
 ---
 
-### 3. Två parallella prisberäkningssystem (FÖRVIRRING)
+### 3. Två parallella prisberäkningssystem (DOKUMENTERAT)
 
-**Problem:** Det finns två olika prisberäkningsfiler:
+**Status:** Dokumenterat vilken som är korrekt
 
-| Fil                              | Användning                  | Kvalitet                 |
-| -------------------------------- | --------------------------- | ------------------------ |
-| `lib/boardingPriceCalculator.ts` | **ANVÄNDS INTE!**           | ✅ Välskriven, typesafe  |
-| `lib/pricing.ts`                 | Används av bokningsformulär | ⚠️ Äldre, annan struktur |
+| Fil                              | Status     | Användning                           |
+| -------------------------------- | ---------- | ------------------------------------ |
+| `lib/boardingPriceCalculator.ts` | ✅ KORREKT | Används nu av nybokning, ansokningar |
+| `lib/pricing.ts`                 | ⚠️ Äldre   | Kan fasas ut i framtiden             |
 
-`boardingPriceCalculator.ts` är väl dokumenterad och korrekt men används aldrig!
-
-**Lösning:** Konsolidera till EN prisberäkningslösning
+**Framtida åtgärd:** Konsolidera till EN prisberäkningslösning (låg prioritet)
 
 ---
 
