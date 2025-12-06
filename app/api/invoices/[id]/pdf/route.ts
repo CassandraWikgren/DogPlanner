@@ -100,7 +100,6 @@ export async function GET(
           address,
           phone,
           email,
-          website,
           bankgiro,
           plusgiro,
           swish_number,
