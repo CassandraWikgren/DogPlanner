@@ -142,7 +142,7 @@ export async function POST(request: Request) {
     const { error: updateError } = await supabase
       .from("bookings")
       .update({
-        status: "cancelled",
+        status: "cancelled" as const,
         cancellation_reason:
           reason || `Avbokad av kund (${calculation.policyApplied})`,
         cancelled_at: new Date().toISOString(),
@@ -186,7 +186,7 @@ export async function POST(request: Request) {
       message: "Bokningen har avbokats",
       booking: {
         id: booking.id,
-        status: "cancelled",
+        status: "cancelled" as const,
         // @ts-ignore
         dogName: booking.dogs?.name,
         startDate: booking.start_date,

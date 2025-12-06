@@ -361,7 +361,7 @@ function BookingPageContent() {
             start_date: checkinDate.toISOString().split("T")[0],
             end_date: checkoutDate.toISOString().split("T")[0],
             service_type: "hundpensionat",
-            status: "pending", // Väntar på godkännande från pensionat
+            status: "pending" as const, // Väntar på godkännande från pensionat
             total_price: priceData.totalPrice,
             discount_amount: 0,
             notes: null,

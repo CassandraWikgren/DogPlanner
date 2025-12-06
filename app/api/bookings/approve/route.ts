@@ -80,9 +80,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Skapa admin client med service role key (bypassa RLS)
-    const { createClient: createServiceClient } = await import(
-      "@supabase/supabase-js"
-    );
+    const { createClient: createServiceClient } =
+      await import("@supabase/supabase-js");
     const supabaseAdmin = createServiceClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -121,7 +120,7 @@ export async function POST(request: NextRequest) {
 
     // Uppdatera bokning till confirmed (triggern skapar faktura automatiskt)
     const updateData: any = {
-      status: "confirmed",
+      status: "confirmed" as const,
       total_price: totalPrice,
       discount_amount: discountAmount,
       updated_at: new Date().toISOString(),

@@ -297,7 +297,7 @@ export default function NewPensionatBooking() {
         notes: bookingNotes.journalNotes || null,
         belongings: bookingNotes.belongings || null,
         bed_location: bookingNotes.bedLocation || null,
-        status: "confirmed",
+        status: "confirmed" as const,
         org_id: currentOrgId,
       };
 

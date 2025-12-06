@@ -194,7 +194,7 @@ export default function NyBokningPage() {
           room_id: null, // Admin tilldelar rum senare
           start_date: checkInDate,
           end_date: checkOutDate,
-          status: "pending",
+          status: "pending" as const,
           total_price: priceCalculation.total_incl_vat,
           discount_amount: 0,
           extra_service_ids: selectedServices.map((s) => s.service_id),
