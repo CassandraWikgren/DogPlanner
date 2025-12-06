@@ -417,7 +417,7 @@ export default function KalenderPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-wrapper">
       {/* Notification Toast */}
       {notification && (
         <div className="fixed top-20 right-4 z-50 animate-slide-in-right">
@@ -433,15 +433,13 @@ export default function KalenderPage() {
         </div>
       )}
 
-      {/* Header med Hunddagis-struktur */}
-      <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      {/* Header */}
+      <div className="page-header">
+        <div className="page-header-content">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-                Pensionatkalender
-              </h1>
-              <p className="mt-1 text-base text-gray-600">
+              <h1 className="page-title">Pensionatkalender</h1>
+              <p className="page-subtitle">
                 Översikt av bokningar och beläggning med färgkoder för
                 in/utcheckning
               </p>
@@ -449,31 +447,38 @@ export default function KalenderPage() {
 
             {/* Stats */}
             <div className="flex items-center gap-4 ml-8">
-              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <p className="text-2xl font-bold text-[#2c7a4c]">
-                  {stats.hundarInne}
-                </p>
-                <p className="text-xs text-gray-600 mt-0.5">Hundar inne</p>
+              <div className="stats-box">
+                <p className="stats-number">{stats.hundarInne}</p>
+                <p className="stats-label">Hundar inne</p>
               </div>
-              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <p className="text-2xl font-bold text-blue-600">
+              <div className="stats-box">
+                <p className="stats-number text-blue-600">
                   {stats.ankomsterIdag}
                 </p>
-                <p className="text-xs text-gray-600 mt-0.5">Ankomster</p>
+                <p className="stats-label">Ankomster</p>
               </div>
-              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <p className="text-2xl font-bold text-orange-600">
+              <div className="stats-box">
+                <p className="stats-number text-orange-600">
                   {stats.avresorIdag}
                 </p>
-                <p className="text-xs text-gray-600 mt-0.5">Avresor</p>
+                <p className="stats-label">Avresor</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <main className="max-w-7xl mx-auto px-6 py-6">
+      {/* Main Content */}
+      <main className="page-main">
+        {/* Primär knapp */}
+        <div className="mb-6">
+          <Link href="/hundpensionat/nybokning" className="btn-primary">
+            <Plus className="h-5 w-5 mr-2" />
+            Ny bokning
+          </Link>
+        </div>
+
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm text-center">
             <p className="text-sm font-semibold text-gray-600 mb-2">
@@ -544,7 +549,7 @@ export default function KalenderPage() {
             <select
               value={roomFilter}
               onChange={(e) => setRoomFilter(e.target.value)}
-              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base bg-white"
+              className="input-field"
             >
               <option value="all">Alla rum</option>
               {rooms.map((room) => (
@@ -584,18 +589,8 @@ export default function KalenderPage() {
             </div>
 
             <div className="flex gap-2 w-full md:w-auto">
-              <Link
-                href="/hundpensionat"
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-semibold text-sm"
-              >
+              <Link href="/hundpensionat" className="btn-secondary">
                 Tillbaka
-              </Link>
-              <Link
-                href="/hundpensionat/nybokning"
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] transition-colors font-semibold text-sm"
-              >
-                <Plus size={16} />
-                <span className="hidden sm:inline">Ny bokning</span>
               </Link>
             </div>
           </div>
@@ -1120,7 +1115,7 @@ export default function KalenderPage() {
                   {/* Snabb-bokning */}
                   <Link
                     href={`/hundpensionat/nybokning?date=${selectedDayData.dateString}`}
-                    className="block w-full text-center bg-[#2c7a4c] hover:bg-[#236139] text-white py-2 px-4 rounded-md text-sm font-semibold transition-colors"
+                    className="btn-primary w-full text-center justify-center"
                   >
                     Boka denna dag
                   </Link>
