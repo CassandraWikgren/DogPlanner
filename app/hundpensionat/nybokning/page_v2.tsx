@@ -353,7 +353,7 @@ export default function NewPensionatBooking() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-3xl mx-auto px-6 py-4">
           <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
             Ny pensionatsbokning
           </h1>
@@ -364,7 +364,7 @@ export default function NewPensionatBooking() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <main className="max-w-3xl mx-auto px-6 py-6">
         <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
           {/* STEG 1: VÄLJ KUNDTYP (endast om ingen hund är vald) */}
           {!selectedDog && (
@@ -824,139 +824,145 @@ export default function NewPensionatBooking() {
             </form>
           )}
         </div>
-      </div>
 
-      {/* MODALS */}
+        {/* MODALS */}
 
-      {/* Assisterad registrering */}
-      {currentOrgId && (
-        <AssistedRegistrationModal
-          isOpen={showAssistedRegistration}
-          onClose={() => setShowAssistedRegistration(false)}
-          onSuccess={async (ownerId: string) => {
-            // 1. Ladda om hundar
-            await loadInitialData();
+        {/* Assisterad registrering */}
+        {currentOrgId && (
+          <AssistedRegistrationModal
+            isOpen={showAssistedRegistration}
+            onClose={() => setShowAssistedRegistration(false)}
+            onSuccess={async (ownerId: string) => {
+              // 1. Ladda om hundar
+              await loadInitialData();
 
-            // 2. VÄNTA lite så state uppdateras, sedan hitta hundar för denna ägare
-            setTimeout(() => {
-              // Hämta UPPDATERADE dogs från state via callback
-              setDogs((currentDogs) => {
-                const ownerDogs = currentDogs.filter(
-                  (d) => d.owner_id === ownerId
-                );
+              // 2. VÄNTA lite så state uppdateras, sedan hitta hundar för denna ägare
+              setTimeout(() => {
+                // Hämta UPPDATERADE dogs från state via callback
+                setDogs((currentDogs) => {
+                  const ownerDogs = currentDogs.filter(
+                    (d) => d.owner_id === ownerId
+                  );
 
-                // 3. Auto-välj första hunden
-                if (ownerDogs.length > 0) {
-                  setSelectedDog(ownerDogs[0].id);
-                }
-
-                // Returnera samma array (ingen förändring av dogs)
-                return currentDogs;
-              });
-            }, 300);
-
-            setShowAssistedRegistration(false);
-            alert("✅ Kund registrerad! Fortsätt med bokningen nedan.");
-          }}
-          orgId={currentOrgId}
-        />
-      )}
-
-      {/* Lägg till ny hund (för befintlig ägare) */}
-      {showNewDogModal && selectedDogData && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Lägg till hund till {selectedDogData.owners?.full_name}
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Hundnamn *
-                </label>
-                <input
-                  type="text"
-                  value={newDogData.name}
-                  onChange={(e) =>
-                    setNewDogData({ ...newDogData, name: e.target.value })
+                  // 3. Auto-välj första hunden
+                  if (ownerDogs.length > 0) {
+                    setSelectedDog(ownerDogs[0].id);
                   }
-                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
-                  placeholder="T.ex. Bella"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ras
-                </label>
-                <input
-                  type="text"
-                  value={newDogData.breed}
-                  onChange={(e) =>
-                    setNewDogData({ ...newDogData, breed: e.target.value })
-                  }
-                  className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
-                  placeholder="T.ex. Beagle"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+
+                  // Returnera samma array (ingen förändring av dogs)
+                  return currentDogs;
+                });
+              }, 300);
+
+              setShowAssistedRegistration(false);
+              alert("✅ Kund registrerad! Fortsätt med bokningen nedan.");
+            }}
+            orgId={currentOrgId}
+          />
+        )}
+
+        {/* Lägg till ny hund (för befintlig ägare) */}
+        {showNewDogModal && selectedDogData && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Lägg till hund till {selectedDogData.owners?.full_name}
+              </h3>
+              <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Höjd (cm)
+                    Hundnamn *
                   </label>
                   <input
-                    type="number"
-                    value={newDogData.heightcm}
+                    type="text"
+                    value={newDogData.name}
                     onChange={(e) =>
-                      setNewDogData({ ...newDogData, heightcm: e.target.value })
+                      setNewDogData({ ...newDogData, name: e.target.value })
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
+                    placeholder="T.ex. Bella"
+                    required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Vikt (kg)
+                    Ras
                   </label>
                   <input
-                    type="number"
-                    value={newDogData.weightkg}
+                    type="text"
+                    value={newDogData.breed}
                     onChange={(e) =>
-                      setNewDogData({ ...newDogData, weightkg: e.target.value })
+                      setNewDogData({ ...newDogData, breed: e.target.value })
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
+                    placeholder="T.ex. Beagle"
                   />
                 </div>
-              </div>
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowNewDogModal(false);
-                    setNewDogData({
-                      name: "",
-                      breed: "",
-                      birth_date: "",
-                      heightcm: "",
-                      weightkg: "",
-                    });
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-                >
-                  Avbryt
-                </button>
-                <button
-                  type="button"
-                  onClick={createNewDog}
-                  disabled={saving || !newDogData.name}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 font-semibold"
-                >
-                  {saving ? "Sparar..." : "Skapa hund"}
-                </button>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Höjd (cm)
+                    </label>
+                    <input
+                      type="number"
+                      value={newDogData.heightcm}
+                      onChange={(e) =>
+                        setNewDogData({
+                          ...newDogData,
+                          heightcm: e.target.value,
+                        })
+                      }
+                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Vikt (kg)
+                    </label>
+                    <input
+                      type="number"
+                      value={newDogData.weightkg}
+                      onChange={(e) =>
+                        setNewDogData({
+                          ...newDogData,
+                          weightkg: e.target.value,
+                        })
+                      }
+                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowNewDogModal(false);
+                      setNewDogData({
+                        name: "",
+                        breed: "",
+                        birth_date: "",
+                        heightcm: "",
+                        weightkg: "",
+                      });
+                    }}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                  >
+                    Avbryt
+                  </button>
+                  <button
+                    type="button"
+                    onClick={createNewDog}
+                    disabled={saving || !newDogData.name}
+                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 font-semibold"
+                  >
+                    {saving ? "Sparar..." : "Skapa hund"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </main>
     </div>
   );
 }
