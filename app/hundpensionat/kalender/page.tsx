@@ -6,6 +6,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
 import type { Database } from "@/types/database";
+import CheckInModal from "@/components/CheckInModal";
 
 // Felkoder enligt systemet
 const ERROR_CODES = {
@@ -82,6 +83,9 @@ export default function KalenderPage() {
     message: string;
     type: "success" | "error";
   } | null>(null);
+
+  // Check-in modal state
+  const [checkInBooking, setCheckInBooking] = useState<Booking | null>(null);
 
   // Kalendermånad navigation
   const [currentMonth, setCurrentMonth] = useState(() => {
@@ -174,9 +178,34 @@ export default function KalenderPage() {
   }
 
   // === CHECK IN/OUT FUNKTIONER ===
+  // Open check-in modal for detailed check-in process
+  function openCheckInModal(booking: Booking) {
+    setCheckInBooking(booking);
+  }
+
+  // Called when check-in is complete from modal
+  function handleCheckInComplete(bookingId: string) {
+    // Update local state
+    setBookings((prev) =>
+      prev.map((b) =>
+        b.id === bookingId ? { ...b, status: "checked_in" as any } : b
+      )
+    );
+
+    setNotification({
+      message: "✅ Incheckning genomförd!",
+      type: "success",
+    });
+    setTimeout(() => setNotification(null), 3000);
+
+    // Reload data to get updated info
+    loadCalendarData();
+  }
+
+  // Legacy quick check-in (kept for backwards compatibility)
   async function handleCheckIn(bookingId: string) {
     try {
-      console.log(`[CheckIn] Checking in booking: ${bookingId}`);
+      console.log(`[CheckIn] Quick checking in booking: ${bookingId}`);
 
       const { error } = await (supabase as any)
         .from("bookings")
@@ -866,10 +895,10 @@ export default function KalenderPage() {
                                   </div>
                                 </div>
                                 <button
-                                  onClick={() => handleCheckIn(booking.id)}
-                                  className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors text-sm font-semibold"
+                                  onClick={() => openCheckInModal(booking)}
+                                  className="px-4 py-2 bg-[#2c7a4c] text-white rounded-md hover:bg-[#245f3d] transition-colors text-sm font-semibold"
                                 >
-                                  Checka in
+                                  📥 Checka in
                                 </button>
                               </div>
                             </div>
@@ -1155,6 +1184,15 @@ export default function KalenderPage() {
           </div>
         </div>
       </main>
+
+      {/* Check-in Modal */}
+      {checkInBooking && (
+        <CheckInModal
+          booking={checkInBooking}
+          onClose={() => setCheckInBooking(null)}
+          onCheckInComplete={handleCheckInComplete}
+        />
+      )}
     </div>
   );
 }
