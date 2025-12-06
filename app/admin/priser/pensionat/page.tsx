@@ -177,10 +177,11 @@ export default function PensionatPriserPage() {
       ];
       const existingSizes = new Set(data?.map((p) => p.dog_size) || []);
 
-      const missingPrices = sizes
-        .filter((size) => !existingSizes.has(size))
-        .map((size) => ({
-          id: `temp-${size}`,
+      // Find missing sizes and INSERT them to database (not just local state)
+      const missingSizes = sizes.filter((size) => !existingSizes.has(size));
+
+      if (missingSizes.length > 0) {
+        const newPrices = missingSizes.map((size) => ({
           org_id: currentOrgId,
           dog_size: size,
           base_price: size === "small" ? 400 : size === "medium" ? 450 : 500,
@@ -188,10 +189,25 @@ export default function PensionatPriserPage() {
           is_active: true,
         }));
 
-      setBoardingPrices([
-        ...((data || []) as BoardingPrice[]),
-        ...(missingPrices as BoardingPrice[]),
-      ]);
+        // Insert missing prices to database
+        const { data: insertedData, error: insertError } = await supabase
+          .from("boarding_prices")
+          .insert(newPrices)
+          .select();
+
+        if (insertError) {
+          console.error("Error inserting default prices:", insertError);
+        } else {
+          // Combine existing + newly inserted
+          setBoardingPrices([
+            ...((data || []) as BoardingPrice[]),
+            ...((insertedData || []) as BoardingPrice[]),
+          ]);
+          return;
+        }
+      }
+
+      setBoardingPrices((data || []) as BoardingPrice[]);
     } catch (err: any) {
       console.error("Error loading boarding prices:", err);
       setError("Kunde inte ladda grundpriser");
@@ -266,43 +282,18 @@ export default function PensionatPriserPage() {
     try {
       const existingPrice = boardingPrices.find((p) => p.dog_size === size);
 
-      if (existingPrice && !existingPrice.id.startsWith("temp-")) {
-        // Update existing
+      if (existingPrice) {
+        // Update existing (prices are now always in database)
         const { error } = await supabase
           .from("boarding_prices")
           .update({ [field]: value, updated_at: new Date().toISOString() })
           .eq("id", existingPrice.id);
 
         if (error) throw error;
-      } else {
-        // Insert new
-        const { data, error } = await supabase
-          .from("boarding_prices")
-          .insert([
-            {
-              org_id: currentOrgId,
-              dog_size: size,
-              base_price:
-                field === "base_price"
-                  ? value
-                  : existingPrice?.base_price || 400,
-              weekend_surcharge:
-                field === "weekend_surcharge"
-                  ? value
-                  : existingPrice?.weekend_surcharge || 100,
-              is_active: true,
-            },
-          ])
-          .select();
 
-        if (error || !data || data.length === 0)
-          throw error || new Error("No data returned");
-
-        // Replace temp with real data
+        // Update local state
         setBoardingPrices((prev) =>
-          prev.map((p) =>
-            p.dog_size === size ? (data[0] as BoardingPrice) : p
-          )
+          prev.map((p) => (p.dog_size === size ? { ...p, [field]: value } : p))
         );
       }
 
