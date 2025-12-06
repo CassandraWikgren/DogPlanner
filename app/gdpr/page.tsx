@@ -189,6 +189,32 @@ export default function GDPRPage() {
               </p>
             </section>
 
+            {/* Delning med tredje part */}
+            <section>
+              <h3 className="text-lg font-semibold text-[#333333] mb-3">
+                Delning av uppgifter med tredje part
+              </h3>
+              <p className="text-sm text-gray-700 mb-3">
+                Vi säljer aldrig dina personuppgifter. Följande
+                tjänsteleverantörer används för att driva systemet:
+              </p>
+              <ul className="list-disc pl-6 text-sm text-gray-700 space-y-2">
+                <li>
+                  <strong>Supabase (databas):</strong> Lagrar data på servrar
+                  inom EU (Frankfurt, Tyskland) med kryptering
+                </li>
+                <li>
+                  <strong>Vercel (webbhotell):</strong> Kör applikationen på
+                  servrar inom EU med säker HTTPS-anslutning
+                </li>
+              </ul>
+              <p className="text-sm text-gray-700 mt-3">
+                Alla underleverantörer har avtal som säkerställer
+                GDPR-efterlevnad och behandlar endast data enligt våra
+                instruktioner.
+              </p>
+            </section>
+
             {/* Cookies */}
             <section>
               <h3 className="text-lg font-semibold text-[#333333] mb-3">
