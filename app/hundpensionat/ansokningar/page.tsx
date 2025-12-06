@@ -489,7 +489,7 @@ export default function PensionatAnsokningarPage() {
     try {
       const { error } = await (supabase as any)
         .from("bookings")
-        .update({ status: "cancelled" })
+        .update({ status: "cancelled" as const })
         .eq("id", bookingId);
 
       if (error) {

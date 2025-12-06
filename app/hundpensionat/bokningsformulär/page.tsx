@@ -151,7 +151,7 @@ export default function BokningsForm() {
         extra_service_ids: selectedTillval,
         total_price: pris?.total_incl_vat || 0,
         discount_amount: rabatt,
-        status: "pending",
+        status: "pending" as const,
       });
       if (error) throw error;
       setError(null); // Rensa tidigare fel

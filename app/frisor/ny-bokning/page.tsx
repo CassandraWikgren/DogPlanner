@@ -460,7 +460,7 @@ export default function NyBokning() {
         service_type: formData.service_type,
         estimated_price: formData.estimated_price,
         notes: formData.notes || null,
-        status: "confirmed",
+        status: "confirmed" as const,
       };
 
       // Add dog_id for existing customers OR external fields for walk-ins

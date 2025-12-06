@@ -180,7 +180,7 @@ export default function KalenderPage() {
 
       const { error } = await (supabase as any)
         .from("bookings")
-        .update({ status: "checked_in" })
+        .update({ status: "checked_in" as const })
         .eq("id", bookingId);
 
       if (error) throw error;
@@ -215,7 +215,7 @@ export default function KalenderPage() {
 
       const { error } = await (supabase as any)
         .from("bookings")
-        .update({ status: "checked_out" })
+        .update({ status: "checked_out" as const })
         .eq("id", bookingId);
 
       if (error) throw error;

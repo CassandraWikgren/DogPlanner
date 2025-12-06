@@ -216,7 +216,7 @@ export default function AktivaGasterPage() {
       const { error } = await (supabase as any)
         .from("bookings")
         .update({
-          status: "checked_in",
+          status: "checked_in" as const,
           checkin_time: currentTime,
         })
         .eq("id", bookingId);
@@ -268,7 +268,7 @@ export default function AktivaGasterPage() {
       const { error: updateError } = await (supabase as any)
         .from("bookings")
         .update({
-          status: "checked_out",
+          status: "checked_out" as const,
           checkout_time: currentTime,
           total_price: finalTotalPrice,
           notes:
