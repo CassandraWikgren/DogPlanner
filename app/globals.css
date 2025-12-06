@@ -298,6 +298,30 @@ button:active {
   transform: scale(0.97);
 }
 
+/* ============================================
+   ÅTGÄRDSKNAPPAR I TABELLER (Icon buttons)
+   Diskreta ikonknappar för redigera/ta bort
+   ============================================ */
+.action-btn {
+  padding: 0.5rem; /* p-2 = 8px */
+  color: #9ca3af; /* text-gray-400 */
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.action-btn:hover {
+  color: #4b5563; /* text-gray-600 */
+  background: transparent;
+}
+
+.action-btn svg {
+  width: 1.25rem; /* h-5 w-5 = 20px */
+  height: 1.25rem;
+}
+
 /* Rubriker */
 h1,
 h2,
