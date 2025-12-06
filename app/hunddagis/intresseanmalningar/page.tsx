@@ -436,418 +436,437 @@ export default function HunddagisIntresseanmalningarPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/hunddagis">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Tillbaka till Hunddagis
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold flex items-center gap-2">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header - Compact & Professional */}
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-3">
                 <Heart className="h-8 w-8 text-red-500" />
                 Intresseanmälningar
               </h1>
-              <p className="text-gray-600">
+              <p className="mt-1 text-base text-gray-600">
                 Hantera ansökningar om hunddagisplats
               </p>
             </div>
-          </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-blue-600">
-              {applications.length}
+            <div className="flex items-center gap-4 ml-8">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {applications.length}
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Ansökningar</p>
+              </div>
             </div>
-            <div className="text-sm text-gray-600">Totalt ansökningar</div>
           </div>
         </div>
       </div>
 
-      {/* Filter */}
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="flex items-center gap-4">
-            <Label htmlFor="status-filter">Filtrera efter status:</Label>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {statusOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Lista och detaljer */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Ansökningslista */}
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Ansökningar</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {applications.length === 0 ? (
-                <div className="text-center py-8">
-                  <UserPlus className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Inga ansökningar ännu</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {applications
-                    .filter(
-                      (app) =>
-                        statusFilter === "all" || app.status === statusFilter
-                    )
-                    .map((application) => (
-                      <div
-                        key={application.id}
-                        className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                          selectedApplication?.id === application.id
-                            ? "border-blue-500 bg-blue-50"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                        onClick={() => setSelectedApplication(application)}
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-semibold">
-                              {application.parent_name}
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                              Hund: {application.dog_name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {new Date(
-                                application.created_at
-                              ).toLocaleDateString("sv-SE")}
-                            </p>
-                          </div>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              statusOptions.find(
-                                (s) => s.value === application.status
-                              )?.color || "bg-gray-100 text-gray-800"
-                            }`}
-                          >
-                            {statusOptions.find(
-                              (s) => s.value === application.status
-                            )?.label || application.status}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+      <main className="max-w-7xl mx-auto px-6 py-6">
+        {/* Back button */}
+        <div className="mb-6">
+          <Link href="/hunddagis">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Tillbaka till Hunddagis
+            </Button>
+          </Link>
         </div>
 
-        {/* Detaljer */}
-        <div>
-          {selectedApplication ? (
+        {/* Filter */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <Label htmlFor="status-filter">Filtrera efter status:</Label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Lista och detaljer */}
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Ansökningslista */}
+          <div>
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Ansökan från {selectedApplication.parent_name}</span>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      getStatusInfo(selectedApplication.status).color
-                    }`}
-                  >
-                    {getStatusInfo(selectedApplication.status).label}
-                  </span>
-                </CardTitle>
+                <CardTitle>Ansökningar</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {/* Dog Information */}
-                  <div>
-                    <h4 className="font-semibold mb-2">🐕 Hundinformation</h4>
-                    <div className="space-y-2 text-sm">
-                      <div>
-                        <strong>Namn:</strong> {selectedApplication.dog_name}
-                      </div>
-                      {selectedApplication.dog_breed && (
-                        <div>
-                          <strong>Ras:</strong> {selectedApplication.dog_breed}
-                        </div>
-                      )}
-                      {selectedApplication.dog_age && (
-                        <div>
-                          <strong>Ålder:</strong> {selectedApplication.dog_age}{" "}
-                          år
-                        </div>
-                      )}
-                      <div>
-                        <strong>Storlek:</strong>{" "}
-                        {selectedApplication.dog_size
-                          ? dogSizes[selectedApplication.dog_size]
-                          : "Ej angivet"}
-                      </div>
-                    </div>
+                {applications.length === 0 ? (
+                  <div className="text-center py-8">
+                    <UserPlus className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">Inga ansökningar ännu</p>
                   </div>
-
-                  {/* Contact Information */}
-                  <div className="border-t pt-4">
-                    <h4 className="font-semibold mb-2">
-                      📞 Kontaktinformation
-                    </h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-gray-500" />
-                        <a
-                          href={`mailto:${selectedApplication.parent_email}`}
-                          className="text-blue-600 hover:underline"
+                ) : (
+                  <div className="space-y-3">
+                    {applications
+                      .filter(
+                        (app) =>
+                          statusFilter === "all" || app.status === statusFilter
+                      )
+                      .map((application) => (
+                        <div
+                          key={application.id}
+                          className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                            selectedApplication?.id === application.id
+                              ? "border-blue-500 bg-blue-50"
+                              : "border-gray-200 hover:border-gray-300"
+                          }`}
+                          onClick={() => setSelectedApplication(application)}
                         >
-                          {selectedApplication.parent_email}
-                        </a>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-gray-500" />
-                        <a
-                          href={`tel:${selectedApplication.parent_phone}`}
-                          className="text-blue-600 hover:underline"
-                        >
-                          {selectedApplication.parent_phone}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Preferences */}
-                  <div className="border-t pt-4">
-                    <h4 className="font-semibold mb-2">📅 Önskemål</h4>
-                    <div className="space-y-2 text-sm">
-                      {selectedApplication.preferred_start_date && (
-                        <div>
-                          <strong>Önskad startdatum:</strong>{" "}
-                          {formatDate(selectedApplication.preferred_start_date)}
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-semibold">
+                                {application.parent_name}
+                              </h3>
+                              <p className="text-sm text-gray-600">
+                                Hund: {application.dog_name}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {new Date(
+                                  application.created_at
+                                ).toLocaleDateString("sv-SE")}
+                              </p>
+                            </div>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                statusOptions.find(
+                                  (s) => s.value === application.status
+                                )?.color || "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {statusOptions.find(
+                                (s) => s.value === application.status
+                              )?.label || application.status}
+                            </span>
+                          </div>
                         </div>
-                      )}
-                      <div>
-                        <strong>Önskade dagar:</strong>{" "}
-                        {formatDays(selectedApplication.preferred_days)}
-                      </div>
-                      <div>
-                        <strong>Tidigare dagiserfarenhet:</strong>{" "}
-                        {selectedApplication.previous_daycare_experience
-                          ? "Ja"
-                          : "Nej"}
-                      </div>
-                    </div>
+                      ))}
                   </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
 
-                  {/* Special Needs */}
-                  {selectedApplication.special_needs && (
-                    <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-2">⚠️ Särskilda behov</h4>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                        {selectedApplication.special_needs}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Notes */}
-                  <div className="border-t pt-4">
-                    <h4 className="font-semibold mb-2">📝 Anteckningar</h4>
-                    <Textarea
-                      placeholder="Lägg till anteckningar..."
-                      value={selectedApplication.notes || ""}
-                      onChange={(e) =>
-                        setSelectedApplication((prev) =>
-                          prev ? { ...prev, notes: e.target.value } : null
-                        )
-                      }
-                      className="min-h-[100px]"
-                    />
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        updateApplicationStatus(
-                          selectedApplication.id,
-                          selectedApplication.status,
-                          selectedApplication.notes
-                        )
-                      }
-                      disabled={saving}
-                      className="mt-2"
+          {/* Detaljer */}
+          <div>
+            {selectedApplication ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Ansökan från {selectedApplication.parent_name}</span>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        getStatusInfo(selectedApplication.status).color
+                      }`}
                     >
-                      {saving ? (
-                        <>
-                          <Clock className="h-4 w-4 mr-2 animate-spin" />
-                          Sparar...
-                        </>
-                      ) : (
-                        "Spara anteckningar"
-                      )}
-                    </Button>
-                  </div>
+                      {getStatusInfo(selectedApplication.status).label}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Dog Information */}
+                    <div>
+                      <h4 className="font-semibold mb-2">🐕 Hundinformation</h4>
+                      <div className="space-y-2 text-sm">
+                        <div>
+                          <strong>Namn:</strong> {selectedApplication.dog_name}
+                        </div>
+                        {selectedApplication.dog_breed && (
+                          <div>
+                            <strong>Ras:</strong>{" "}
+                            {selectedApplication.dog_breed}
+                          </div>
+                        )}
+                        {selectedApplication.dog_age && (
+                          <div>
+                            <strong>Ålder:</strong>{" "}
+                            {selectedApplication.dog_age} år
+                          </div>
+                        )}
+                        <div>
+                          <strong>Storlek:</strong>{" "}
+                          {selectedApplication.dog_size
+                            ? dogSizes[selectedApplication.dog_size]
+                            : "Ej angivet"}
+                        </div>
+                      </div>
+                    </div>
 
-                  {/* Status Actions */}
-                  <div className="border-t pt-4">
-                    <h4 className="font-semibold mb-2">🔄 Ändra status</h4>
-                    <div className="space-y-2">
-                      <Select
-                        value={selectedApplication.status}
-                        onValueChange={(newStatus) =>
+                    {/* Contact Information */}
+                    <div className="border-t pt-4">
+                      <h4 className="font-semibold mb-2">
+                        📞 Kontaktinformation
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-gray-500" />
+                          <a
+                            href={`mailto:${selectedApplication.parent_email}`}
+                            className="text-blue-600 hover:underline"
+                          >
+                            {selectedApplication.parent_email}
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-gray-500" />
+                          <a
+                            href={`tel:${selectedApplication.parent_phone}`}
+                            className="text-blue-600 hover:underline"
+                          >
+                            {selectedApplication.parent_phone}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Preferences */}
+                    <div className="border-t pt-4">
+                      <h4 className="font-semibold mb-2">📅 Önskemål</h4>
+                      <div className="space-y-2 text-sm">
+                        {selectedApplication.preferred_start_date && (
+                          <div>
+                            <strong>Önskad startdatum:</strong>{" "}
+                            {formatDate(
+                              selectedApplication.preferred_start_date
+                            )}
+                          </div>
+                        )}
+                        <div>
+                          <strong>Önskade dagar:</strong>{" "}
+                          {formatDays(selectedApplication.preferred_days)}
+                        </div>
+                        <div>
+                          <strong>Tidigare dagiserfarenhet:</strong>{" "}
+                          {selectedApplication.previous_daycare_experience
+                            ? "Ja"
+                            : "Nej"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Special Needs */}
+                    {selectedApplication.special_needs && (
+                      <div className="border-t pt-4">
+                        <h4 className="font-semibold mb-2">
+                          ⚠️ Särskilda behov
+                        </h4>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                          {selectedApplication.special_needs}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Notes */}
+                    <div className="border-t pt-4">
+                      <h4 className="font-semibold mb-2">📝 Anteckningar</h4>
+                      <Textarea
+                        placeholder="Lägg till anteckningar..."
+                        value={selectedApplication.notes || ""}
+                        onChange={(e) =>
+                          setSelectedApplication((prev) =>
+                            prev ? { ...prev, notes: e.target.value } : null
+                          )
+                        }
+                        className="min-h-[100px]"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={() =>
                           updateApplicationStatus(
                             selectedApplication.id,
-                            newStatus,
+                            selectedApplication.status,
                             selectedApplication.notes
                           )
                         }
+                        disabled={saving}
+                        className="mt-2"
                       >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {statusOptions.slice(1).map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Transfer to Hunddagis */}
-                  {selectedApplication.status === "accepted" && (
-                    <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-2">
-                        🎯 Överföring till Hunddagis
-                      </h4>
-
-                      {/* Visa varning om hunden redan är överförd */}
-                      {selectedApplication.notes?.includes(
-                        "ÖVERFÖRD TILL HUNDDAGIS"
-                      ) ? (
-                        <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                          <p className="text-sm text-green-800">
-                            ✅ Denna hund har redan överförts till hunddagis.
-                          </p>
-                        </div>
-                      ) : (
-                        <>
-                          {/* Kontrollera obligatoriska fält */}
-                          {!selectedApplication.dog_name ||
-                          !selectedApplication.parent_name ||
-                          !selectedApplication.parent_email ? (
-                            <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                              <p className="text-sm text-yellow-800">
-                                ⚠️ Obligatoriska fält saknas. Kontrollera att
-                                namn, e-post och hundens namn är ifyllda.
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                              <p className="text-sm text-blue-800 mb-2">
-                                <strong>Detta kommer att skapa:</strong>
-                              </p>
-                              <ul className="text-sm text-blue-700 space-y-1">
-                                <li>
-                                  • Ägare: {selectedApplication.parent_name}
-                                </li>
-                                <li>
-                                  • Hund: {selectedApplication.dog_name}{" "}
-                                  {selectedApplication.dog_breed
-                                    ? `(${selectedApplication.dog_breed})`
-                                    : ""}
-                                </li>
-                                {selectedApplication.subscription_type && (
-                                  <li>
-                                    • Abonnemang:{" "}
-                                    {selectedApplication.subscription_type}
-                                  </li>
-                                )}
-                                {selectedApplication.preferred_start_date && (
-                                  <li>
-                                    • Startdatum:{" "}
-                                    {new Date(
-                                      selectedApplication.preferred_start_date
-                                    ).toLocaleDateString("sv-SE")}
-                                  </li>
-                                )}
-                              </ul>
-                            </div>
-                          )}
-                        </>
-                      )}
-
-                      <Button
-                        onClick={() => transferToHunddagis(selectedApplication)}
-                        disabled={
-                          transferring ||
-                          selectedApplication.notes?.includes(
-                            "ÖVERFÖRD TILL HUNDDAGIS"
-                          ) ||
-                          !selectedApplication.dog_name ||
-                          !selectedApplication.parent_name ||
-                          !selectedApplication.parent_email
-                        }
-                        className="w-full"
-                        variant="default"
-                      >
-                        {transferring ? (
+                        {saving ? (
                           <>
                             <Clock className="h-4 w-4 mr-2 animate-spin" />
-                            Överför...
-                          </>
-                        ) : selectedApplication.notes?.includes(
-                            "ÖVERFÖRD TILL HUNDDAGIS"
-                          ) ? (
-                          <>
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Redan överförd
+                            Sparar...
                           </>
                         ) : (
-                          <>
-                            <ArrowRight className="h-4 w-4 mr-2" />
-                            Överför till Hunddagis
-                          </>
+                          "Spara anteckningar"
                         )}
                       </Button>
-                      <p className="text-xs text-gray-500 mt-2">
-                        Skapar automatiskt ägare och hund i systemet
-                      </p>
                     </div>
-                  )}
 
-                  {/* Timestamps */}
-                  <div className="border-t pt-4 text-xs text-gray-500 space-y-1">
-                    <div>
-                      <strong>Ansökan mottagen:</strong>{" "}
-                      {formatDate(selectedApplication.created_at)}
+                    {/* Status Actions */}
+                    <div className="border-t pt-4">
+                      <h4 className="font-semibold mb-2">🔄 Ändra status</h4>
+                      <div className="space-y-2">
+                        <Select
+                          value={selectedApplication.status}
+                          onValueChange={(newStatus) =>
+                            updateApplicationStatus(
+                              selectedApplication.id,
+                              newStatus,
+                              selectedApplication.notes
+                            )
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {statusOptions.slice(1).map((option) => (
+                              <SelectItem
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
-                    <div>
-                      <strong>Senast uppdaterad:</strong>{" "}
-                      {formatDate(selectedApplication.updated_at)}
+
+                    {/* Transfer to Hunddagis */}
+                    {selectedApplication.status === "accepted" && (
+                      <div className="border-t pt-4">
+                        <h4 className="font-semibold mb-2">
+                          🎯 Överföring till Hunddagis
+                        </h4>
+
+                        {/* Visa varning om hunden redan är överförd */}
+                        {selectedApplication.notes?.includes(
+                          "ÖVERFÖRD TILL HUNDDAGIS"
+                        ) ? (
+                          <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <p className="text-sm text-green-800">
+                              ✅ Denna hund har redan överförts till hunddagis.
+                            </p>
+                          </div>
+                        ) : (
+                          <>
+                            {/* Kontrollera obligatoriska fält */}
+                            {!selectedApplication.dog_name ||
+                            !selectedApplication.parent_name ||
+                            !selectedApplication.parent_email ? (
+                              <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <p className="text-sm text-yellow-800">
+                                  ⚠️ Obligatoriska fält saknas. Kontrollera att
+                                  namn, e-post och hundens namn är ifyllda.
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                <p className="text-sm text-blue-800 mb-2">
+                                  <strong>Detta kommer att skapa:</strong>
+                                </p>
+                                <ul className="text-sm text-blue-700 space-y-1">
+                                  <li>
+                                    • Ägare: {selectedApplication.parent_name}
+                                  </li>
+                                  <li>
+                                    • Hund: {selectedApplication.dog_name}{" "}
+                                    {selectedApplication.dog_breed
+                                      ? `(${selectedApplication.dog_breed})`
+                                      : ""}
+                                  </li>
+                                  {selectedApplication.subscription_type && (
+                                    <li>
+                                      • Abonnemang:{" "}
+                                      {selectedApplication.subscription_type}
+                                    </li>
+                                  )}
+                                  {selectedApplication.preferred_start_date && (
+                                    <li>
+                                      • Startdatum:{" "}
+                                      {new Date(
+                                        selectedApplication.preferred_start_date
+                                      ).toLocaleDateString("sv-SE")}
+                                    </li>
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+                          </>
+                        )}
+
+                        <Button
+                          onClick={() =>
+                            transferToHunddagis(selectedApplication)
+                          }
+                          disabled={
+                            transferring ||
+                            selectedApplication.notes?.includes(
+                              "ÖVERFÖRD TILL HUNDDAGIS"
+                            ) ||
+                            !selectedApplication.dog_name ||
+                            !selectedApplication.parent_name ||
+                            !selectedApplication.parent_email
+                          }
+                          className="w-full"
+                          variant="default"
+                        >
+                          {transferring ? (
+                            <>
+                              <Clock className="h-4 w-4 mr-2 animate-spin" />
+                              Överför...
+                            </>
+                          ) : selectedApplication.notes?.includes(
+                              "ÖVERFÖRD TILL HUNDDAGIS"
+                            ) ? (
+                            <>
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Redan överförd
+                            </>
+                          ) : (
+                            <>
+                              <ArrowRight className="h-4 w-4 mr-2" />
+                              Överför till Hunddagis
+                            </>
+                          )}
+                        </Button>
+                        <p className="text-xs text-gray-500 mt-2">
+                          Skapar automatiskt ägare och hund i systemet
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Timestamps */}
+                    <div className="border-t pt-4 text-xs text-gray-500 space-y-1">
+                      <div>
+                        <strong>Ansökan mottagen:</strong>{" "}
+                        {formatDate(selectedApplication.created_at)}
+                      </div>
+                      <div>
+                        <strong>Senast uppdaterad:</strong>{" "}
+                        {formatDate(selectedApplication.updated_at)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardContent className="text-center py-12">
-                <Eye className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">
-                  Välj en ansökan för att se detaljer
-                </p>
-              </CardContent>
-            </Card>
-          )}
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Eye className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600">
+                    Välj en ansökan för att se detaljer
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

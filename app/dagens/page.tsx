@@ -2,9 +2,9 @@ export default function DagensPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Kompakt header */}
-      <div className="bg-white border-b shadow-sm">
+      <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold text-[#2C7A4C] leading-tight">
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
             Dagens schema
           </h1>
         </div>

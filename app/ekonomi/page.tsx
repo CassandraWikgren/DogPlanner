@@ -460,7 +460,7 @@ export default function FakturaPage() {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-3">
-                <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
+                <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                   Ekonomi & Fakturor
                 </h1>
                 <Link

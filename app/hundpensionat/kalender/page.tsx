@@ -435,35 +435,37 @@ export default function KalenderPage() {
 
       {/* Header med Hunddagis-struktur */}
       <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-8 py-6">
-          <div className="flex justify-between items-start">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
-                📅 Pensionatkalender
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                Pensionatkalender
               </h1>
               <p className="mt-1 text-base text-gray-600">
                 Översikt av bokningar och beläggning med färgkoder för
                 in/utcheckning
               </p>
             </div>
-            <div className="flex gap-3 ml-4">
-              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <div className="text-xs text-gray-600">Hundar inne</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
+
+            {/* Stats */}
+            <div className="flex items-center gap-4 ml-8">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
                   {stats.hundarInne}
-                </div>
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Hundar inne</p>
               </div>
-              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <div className="text-xs text-gray-600">Ankomster</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-blue-600">
                   {stats.ankomsterIdag}
-                </div>
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Ankomster</p>
               </div>
-              <div className="bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <div className="text-xs text-gray-600">Avresor</div>
-                <div className="text-xl font-bold text-[#2c7a4c]">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-orange-600">
                   {stats.avresorIdag}
-                </div>
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Avresor</p>
               </div>
             </div>
           </div>
@@ -471,31 +473,31 @@ export default function KalenderPage() {
       </div>
 
       {/* Stats Cards */}
-      <main className="max-w-6xl mx-auto px-8 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+      <main className="max-w-7xl mx-auto px-6 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm text-center">
-            <p className="text-sm font-semibold text-gray-600 mb-1">
+            <p className="text-sm font-semibold text-gray-600 mb-2">
               Totala bokningar
             </p>
-            <p className="text-2xl font-bold text-[#2c7a4c]">
+            <p className="text-3xl font-bold text-[#2c7a4c]">
               {stats.totalaBokningar}
             </p>
           </div>
 
           <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm text-center">
-            <p className="text-sm font-semibold text-gray-600 mb-1">
+            <p className="text-sm font-semibold text-gray-600 mb-2">
               Aktiva rum
             </p>
-            <p className="text-2xl font-bold text-[#2c7a4c]">
+            <p className="text-3xl font-bold text-[#2c7a4c]">
               {stats.aktuellaRum}
             </p>
           </div>
 
           <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm text-center">
-            <p className="text-sm font-semibold text-gray-600 mb-1">
+            <p className="text-sm font-semibold text-gray-600 mb-2">
               Ø Beläggning
             </p>
-            <p className="text-2xl font-bold text-[#2c7a4c]">
+            <p className="text-3xl font-bold text-[#2c7a4c]">
               {stats.genomsnittBelaggning}%
             </p>
           </div>
@@ -503,56 +505,54 @@ export default function KalenderPage() {
 
         {/* Kontroller */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-200">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-              {/* View Mode Selector */}
-              <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
-                <button
-                  onClick={() => setViewMode("month")}
-                  className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
-                    viewMode === "month"
-                      ? "bg-[#2c7a4c] text-white"
-                      : "text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  Månad
-                </button>
-                <button
-                  onClick={() => setViewMode("week")}
-                  className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
-                    viewMode === "week"
-                      ? "bg-[#2c7a4c] text-white"
-                      : "text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  Vecka
-                </button>
-                <button
-                  onClick={() => setViewMode("day")}
-                  className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
-                    viewMode === "day"
-                      ? "bg-[#2c7a4c] text-white"
-                      : "text-gray-600 hover:bg-gray-200"
-                  }`}
-                >
-                  Dag
-                </button>
-              </div>
-
-              {/* Room Filter */}
-              <select
-                value={roomFilter}
-                onChange={(e) => setRoomFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-sm"
+          <div className="flex flex-wrap gap-4 items-center justify-between">
+            {/* View Mode Selector */}
+            <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
+              <button
+                onClick={() => setViewMode("month")}
+                className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
+                  viewMode === "month"
+                    ? "bg-[#2c7a4c] text-white"
+                    : "text-gray-600 hover:bg-gray-200"
+                }`}
               >
-                <option value="all">Alla rum</option>
-                {rooms.map((room) => (
-                  <option key={room.id} value={room.id}>
-                    {room.name}
-                  </option>
-                ))}
-              </select>
+                Månad
+              </button>
+              <button
+                onClick={() => setViewMode("week")}
+                className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
+                  viewMode === "week"
+                    ? "bg-[#2c7a4c] text-white"
+                    : "text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                Vecka
+              </button>
+              <button
+                onClick={() => setViewMode("day")}
+                className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
+                  viewMode === "day"
+                    ? "bg-[#2c7a4c] text-white"
+                    : "text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                Dag
+              </button>
             </div>
+
+            {/* Room Filter */}
+            <select
+              value={roomFilter}
+              onChange={(e) => setRoomFilter(e.target.value)}
+              className="h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent text-base bg-white"
+            >
+              <option value="all">Alla rum</option>
+              {rooms.map((room) => (
+                <option key={room.id} value={room.id}>
+                  {room.name}
+                </option>
+              ))}
+            </select>
 
             {/* Pristillägg-legend */}
             <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600">

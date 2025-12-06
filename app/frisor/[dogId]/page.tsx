@@ -178,7 +178,7 @@ export default function DogJournalPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header - INGEN HERO enligt Design System V2 */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <Link href="/frisor">
             <button className="mb-3 flex items-center gap-2 text-gray-600 hover:text-[#2c7a4c] transition text-sm">
               <ArrowLeft className="h-4 w-4" />
@@ -188,7 +188,9 @@ export default function DogJournalPage() {
           <div className="flex items-center gap-3">
             <Scissors className="h-8 w-8 text-[#2c7a4c]" />
             <div>
-              <h1 className="text-4xl font-bold text-[#2c7a4c]">{dog.name}</h1>
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                {dog.name}
+              </h1>
               <p className="text-base text-gray-600">
                 {dog.breed || "Okänd ras"} •{" "}
                 {dog.owner?.full_name || "Ingen ägare"}

@@ -352,44 +352,49 @@ export default function AktivaGasterPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-6xl mx-auto px-8 py-6">
-          <Link
-            href="/hundpensionat"
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Tillbaka till pensionat
-          </Link>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+      <div className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                 Aktiva gäster
               </h1>
-              <p className="mt-2 text-gray-600">
+              <p className="mt-1 text-base text-gray-600">
                 Incheckning och utcheckning av hundar
               </p>
             </div>
-            <div className="flex items-center space-x-4 bg-blue-50 px-6 py-4 rounded-lg">
-              <div className="text-center">
-                <p className="text-3xl font-bold text-blue-600">
+            <div className="flex items-center gap-4 ml-8">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
                   {guests.length}
                 </p>
-                <p className="text-sm text-gray-600">Aktiva</p>
+                <p className="text-xs text-gray-600 mt-0.5">Aktiva</p>
               </div>
-              <div className="text-center">
-                <p className="text-3xl font-bold text-green-600">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
                   {confirmedBookings.length}
                 </p>
-                <p className="text-sm text-gray-600">Väntar incheckning</p>
+                <p className="text-xs text-gray-600 mt-0.5">
+                  Väntar incheckning
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <main className="max-w-6xl mx-auto px-8 py-6 space-y-8">
+      <main className="max-w-6xl mx-auto px-6 py-6">
+        {/* Back button */}
+        <div className="mb-6">
+          <Link
+            href="/hundpensionat"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Tillbaka till pensionat
+          </Link>
+        </div>
+
         {/* Väntar på incheckning */}
         {confirmedBookings.length > 0 && (
           <div>

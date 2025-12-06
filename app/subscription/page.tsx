@@ -319,7 +319,7 @@ export default function SubscriptionPage() {
             >
               ← Tillbaka
             </Link>
-            <h1 className="text-4xl font-bold text-[#2C7A4C] leading-tight">
+            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
               Mitt Abonnemang
             </h1>
           </div>

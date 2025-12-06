@@ -187,7 +187,7 @@ export default function TjansterPage() {
             Tillbaka till Admin
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-[#2c7a4c] flex items-center gap-3">
+            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-3">
               <Settings className="h-8 w-8" />
               Tjänsteinställningar
             </h1>

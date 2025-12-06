@@ -226,7 +226,9 @@ export default function AdminPriserPage() {
               <ArrowLeft className="h-6 w-6" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">💰 Priser</h1>
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+                💰 Priser
+              </h1>
               <p className="text-gray-600 mt-1">
                 Hantera prislista för alla tjänster
               </p>

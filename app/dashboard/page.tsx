@@ -62,7 +62,7 @@ export default function Dashboard() {
       {/* Kompakt header - INGEN HERO */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
             Dashboard
           </h1>
           <p className="text-base text-gray-600 mt-1">

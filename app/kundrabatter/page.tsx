@@ -250,26 +250,29 @@ export default function CustomerDiscountsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Kompakt header */}
-      <div className="bg-white border-b shadow-sm">
+      <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-[#2C7A4C] leading-tight">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                 Kundrabatter
               </h1>
+              <p className="mt-1 text-base text-gray-600">
+                Hantera rabatter för dina kunder
+              </p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
-                <div className="text-xs text-gray-500">Aktiva rabatter</div>
-                <div className="text-2xl font-bold text-[#2C7A4C]">
+            <div className="flex items-center gap-4 ml-8">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
                   {discounts.filter((d) => isDiscountValid(d)).length}
-                </div>
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Aktiva rabatter</p>
               </div>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2">
-                <div className="text-xs text-gray-500">Totalt</div>
-                <div className="text-2xl font-bold text-gray-900">
+              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+                <p className="text-2xl font-bold text-gray-900">
                   {discounts.length}
-                </div>
+                </p>
+                <p className="text-xs text-gray-600 mt-0.5">Totalt</p>
               </div>
             </div>
           </div>

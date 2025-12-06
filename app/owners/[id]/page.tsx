@@ -71,7 +71,7 @@ export default function OwnerPage() {
     <PageContainer maxWidth="7xl">
       <section className="bg-white p-6 shadow rounded-xl space-y-8">
         <div>
-          <h1 className="text-4xl font-bold text-[#2c7a4c] mb-2">
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight mb-2">
             👤 {owner.name}
           </h1>
           <p>Kundnummer: {owner.customernumber}</p>

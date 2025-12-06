@@ -219,7 +219,7 @@ export default function UsersPage() {
             <div className="flex items-center gap-3">
               <div className="text-4xl">🔐</div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                   Användarhantering
                 </h1>
                 <p className="text-gray-600 mt-1">

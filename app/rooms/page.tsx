@@ -296,7 +296,7 @@ export default function RoomsPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                 Rum & Platser
               </h1>
               <p className="mt-1 text-base text-gray-600">

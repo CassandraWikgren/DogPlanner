@@ -114,8 +114,8 @@ export default function MinaPriserPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <a
@@ -126,7 +126,7 @@ export default function MinaPriserPage() {
               </a>
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight mb-2">
+          <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight mb-2">
             Mina priser
           </h1>
           <p className="text-gray-600">

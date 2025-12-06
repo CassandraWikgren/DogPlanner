@@ -418,7 +418,7 @@ export default function DogProfilePage() {
             </div>
           )}
           <div>
-            <h1 className="text-4xl font-bold text-[#2c7a4c]">
+            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
               {dog.name ?? "Hund"}
             </h1>
             <p className="text-sm text-gray-600">

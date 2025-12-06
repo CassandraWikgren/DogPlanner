@@ -279,10 +279,10 @@ export default function FrisorDashboard() {
     <div className="min-h-screen bg-gray-50">
       {/* Header - INGEN HERO enligt Design System V2 */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-[#2c7a4c] flex items-center gap-3">
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] flex items-center gap-3">
                 <Scissors className="h-8 w-8" />
                 Frisör
               </h1>

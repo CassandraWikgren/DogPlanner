@@ -777,7 +777,7 @@ const FakturorPage = () => {
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-center gap-3">
-                <h1 className="text-4xl font-bold text-[#2c7a4c] leading-tight">
+                <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
                   Fakturor och underlag
                 </h1>
                 <a

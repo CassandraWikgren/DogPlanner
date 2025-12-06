@@ -131,7 +131,7 @@ export default function StaffAdminPage() {
   return (
     <PageContainer maxWidth="5xl">
       <div className="mb-6 flex items-center justify-between gap-3">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#2c7a4c]">
+        <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
           👥 Personal (admin)
         </h1>
         <Link

@@ -40,7 +40,7 @@ export default function HundpensionatPage({
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
-        <h1 className="text-4xl font-semibold text-[#2c7a4c]">
+        <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
           🐕 Hundpensionat
         </h1>
 
