@@ -192,11 +192,10 @@ export default function CustomerRegisterPage() {
         ownerData_insert
       );
 
-      const { data: newOwner, error: ownerError } = await supabase
+      // Insert owner - use the auth user id directly, don't need to select back
+      const { error: ownerError } = await supabase
         .from("owners")
-        .insert(ownerData_insert)
-        .select()
-        .single();
+        .insert(ownerData_insert);
 
       if (ownerError) {
         console.error("[ERR-1001] Ägarfel:", ownerError);
@@ -206,6 +205,9 @@ export default function CustomerRegisterPage() {
           `${ERROR_CODES.DATABASE} Kunde inte skapa ägarprofil: ${ownerError.message}`
         );
       }
+
+      // Use the auth user id as the owner id (we set id = authData.user.id in insert)
+      const newOwner = { id: authData.user.id };
 
       // 2. Skapa hunden kopplad till ägaren (dogs.owner_id → owners.id)
       const dogData_insert: any = {
@@ -244,11 +246,10 @@ export default function CustomerRegisterPage() {
       if (personality.length > 0)
         dogData_insert.personality_traits = personality;
 
-      const { data: newDog, error: dogError } = await supabase
+      // Insert dog - don't need to select back since we're not using the returned data
+      const { error: dogError } = await supabase
         .from("dogs")
-        .insert(dogData_insert)
-        .select()
-        .single();
+        .insert(dogData_insert);
 
       if (dogError) {
         console.error("[ERR-1002] Hundfel:", dogError);
@@ -257,7 +258,7 @@ export default function CustomerRegisterPage() {
         );
       }
 
-      console.log("[DEBUG] Hund skapad:", newDog);
+      console.log("[DEBUG] Hund skapad för ägare:", newOwner.id);
 
       // Skicka bekräftelsemeddelande
       if (authData.user.email_confirmed_at) {
