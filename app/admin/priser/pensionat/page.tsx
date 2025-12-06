@@ -986,7 +986,7 @@ export default function PensionatPriserPage() {
                   <div className="flex items-end">
                     <Button
                       onClick={handleAddSpecialDate}
-                      className="w-full bg-[#2c7a4c] hover:bg-[#236139]"
+                      className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Lägg till
@@ -1154,7 +1154,7 @@ export default function PensionatPriserPage() {
                   <div className="flex items-end">
                     <Button
                       onClick={handleAddSeason}
-                      className="w-full bg-[#2c7a4c] hover:bg-[#236139]"
+                      className="w-full bg-[#2c7a4c] hover:bg-[#236139] text-white"
                     >
                       <Plus className="w-4 h-4 mr-2" />
                       Lägg till
@@ -1275,7 +1275,7 @@ export default function PensionatPriserPage() {
                 </div>
                 <Button
                   onClick={handleAddService}
-                  className="mt-4 bg-[#2c7a4c] hover:bg-[#236139]"
+                  className="mt-4 bg-[#2c7a4c] hover:bg-[#236139] text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Lägg till tjänst
@@ -1557,7 +1557,7 @@ export default function PensionatPriserPage() {
               <div className="flex justify-end pt-4 border-t">
                 <Button
                   onClick={() => setShowHelpModal(false)}
-                  className="bg-[#2c7a4c] hover:bg-[#236139]"
+                  className="bg-[#2c7a4c] hover:bg-[#236139] text-white"
                 >
                   Stäng och börja sätt priser
                 </Button>

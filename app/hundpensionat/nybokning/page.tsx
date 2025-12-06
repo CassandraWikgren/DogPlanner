@@ -720,23 +720,7 @@ export default function NewPensionatBooking() {
                       className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Säng/Rumstilldelning
-                    </label>
-                    <input
-                      type="text"
-                      value={bookingNotes.bedLocation}
-                      onChange={(e) =>
-                        setBookingNotes({
-                          ...bookingNotes,
-                          bedLocation: e.target.value,
-                        })
-                      }
-                      placeholder="T.ex. Rum 3, Säng A, Bur 2..."
-                      className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Journalanteckningar

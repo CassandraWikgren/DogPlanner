@@ -679,12 +679,21 @@ td.px-4.py-3 {
 }
 
 /* === KNAPPAR - Design Standard === */
-/* Primär knapp (grön) */
-.bg-\[\\#2c7a4c\] {
+/* Primär knapp (grön) - ALLTID vit text */
+.bg-\[#2c7a4c\],
+button.bg-\[#2c7a4c\],
+a.bg-\[#2c7a4c\] {
   background-color: #2c7a4c !important;
+  color: #ffffff !important;
 }
 
-.hover\:bg-\[\\#236139\]:hover {
+.bg-\[#2c7a4c\] *,
+button.bg-\[#2c7a4c\] *,
+a.bg-\[#2c7a4c\] * {
+  color: #ffffff !important;
+}
+
+.hover\:bg-\[#236139\]:hover {
   background-color: #236139 !important;
 }
 
