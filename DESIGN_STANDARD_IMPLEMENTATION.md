@@ -4,6 +4,8 @@
 **Status:** ✅ GÄLLER FÖR ALLA SIDOR  
 **Baserat på:** Hunddagis-sidan + Frisörtjänster-sidan
 
+Allt detta är med i Globals som följer denna struktur över alla sidor som standard.
+
 ---
 
 ## 📋 Innehållsförteckning
