@@ -596,11 +596,18 @@ export default function FakturaPage() {
                       <FileText className="h-5 w-5 text-[#2c7a4c]" />
                       Faktura #{invoice.invoice_number}
                     </CardTitle>
-                    <p className="text-gray-900 font-medium text-sm">
-                      {invoice.owner?.full_name || "Ingen kund angiven"}
-                      {invoice.owner?.customer_number &&
-                        ` (Kund #${invoice.owner.customer_number})`}
-                    </p>
+                    {invoice.owner?.full_name ? (
+                      <p className="text-gray-900 font-medium text-sm">
+                        {invoice.owner.full_name}
+                        {invoice.owner.customer_number &&
+                          ` (Kund #${invoice.owner.customer_number})`}
+                      </p>
+                    ) : (
+                      <p className="text-amber-600 font-medium text-sm flex items-center gap-1">
+                        <AlertCircle className="h-4 w-4" />
+                        Ingen kund angiven - tilldela kund för att kunna skicka
+                      </p>
+                    )}
                     {/* Visa hundar från invoice_items */}
                     {invoice.invoice_items &&
                       invoice.invoice_items.some(

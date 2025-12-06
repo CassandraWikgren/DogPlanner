@@ -98,6 +98,10 @@ const FakturorPage = () => {
   const [locked, setLocked] = useState(false);
   const [creating, setCreating] = useState(false);
   const [debugLogs, setDebugLogs] = useState<any[]>([]);
+  const [owners, setOwners] = useState<Owner[]>([]); // Lista av kunder för dropdown
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>(""); // Vald kund
+  const [newInvoiceDescription, setNewInvoiceDescription] = useState("");
+  const [newInvoiceAmount, setNewInvoiceAmount] = useState("");
   const [totals, setTotals] = useState({
     total: 0,
     paid: 0,
@@ -126,6 +130,10 @@ const FakturorPage = () => {
     // Öppna "Ny faktura"-modal om ?new=true finns i URL
     const params = new URLSearchParams(window.location.search);
     if (params.get("new") === "true") {
+      loadOwners(); // Ladda kunder för dropdown
+      setSelectedOwnerId(""); // Nollställ vald kund
+      setNewInvoiceDescription(""); // Nollställ beskrivning
+      setNewInvoiceAmount(""); // Nollställ belopp
       setCreating(true);
       // Ta bort parametern från URL utan att ladda om sidan
       window.history.replaceState({}, "", "/faktura");
@@ -263,7 +271,29 @@ const FakturorPage = () => {
     }
   }
 
-  // 💰 Beräkna totalsummor
+  // � Hämta kunder för dropdown i ny faktura-modal
+  async function loadOwners() {
+    try {
+      if (!currentOrgId) return;
+
+      const { data, error } = await supabase
+        .from("owners")
+        .select("id, full_name, customer_number, phone, email")
+        .eq("org_id", currentOrgId)
+        .order("full_name", { ascending: true });
+
+      if (error) {
+        throw new Error(`Kunde inte hämta kunder: ${error.message}`);
+      }
+
+      setOwners(data || []);
+      logDebug("success", `Kunder laddade: ${data?.length || 0} st`);
+    } catch (err: any) {
+      logDebug("error", "Fel vid hämtning av kunder", err);
+    }
+  }
+
+  // �💰 Beräkna totalsummor
   function calcTotals(data: Invoice[]) {
     const total = data.reduce((sum, inv) => sum + (inv.total_amount || 0), 0);
     const paid = data
@@ -820,7 +850,13 @@ const FakturorPage = () => {
             {locked ? "Avlås månad" : "Lås månad"}
           </button>
           <button
-            onClick={() => setCreating(true)}
+            onClick={() => {
+              loadOwners(); // Ladda kunder för dropdown
+              setSelectedOwnerId(""); // Nollställ vald kund
+              setNewInvoiceDescription(""); // Nollställ beskrivning
+              setNewInvoiceAmount(""); // Nollställ belopp
+              setCreating(true);
+            }}
             disabled={locked}
             className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -1387,26 +1423,63 @@ const FakturorPage = () => {
               </div>
               <div className="p-6 space-y-4">
                 <p className="text-sm text-gray-500">
-                  Ange kund-ID, belopp och beskrivning för den nya fakturan.
+                  Välj kund, ange belopp och beskrivning för den nya fakturan.
                 </p>
-                <input
-                  type="text"
-                  placeholder="Kund-ID"
-                  id="ownerId"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
-                />
-                <input
-                  type="text"
-                  placeholder="Beskrivning (t.ex. 'Hunddagis November 2025')"
-                  id="description"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
-                />
-                <input
-                  type="number"
-                  placeholder="Belopp (SEK)"
-                  id="amount"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
-                />
+
+                {/* Kunddropdown */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Kund <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={selectedOwnerId}
+                    onChange={(e) => setSelectedOwnerId(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
+                  >
+                    <option value="">-- Välj kund --</option>
+                    {owners.map((owner) => (
+                      <option key={owner.id} value={owner.id}>
+                        {owner.full_name || "Okänt namn"}
+                        {owner.customer_number &&
+                          ` (Kund #${owner.customer_number})`}
+                      </option>
+                    ))}
+                  </select>
+                  {owners.length === 0 && (
+                    <p className="text-xs text-amber-600 mt-1">
+                      ⚠️ Inga kunder hittades. Lägg till kunder först under
+                      Kunder-sidan.
+                    </p>
+                  )}
+                </div>
+
+                {/* Beskrivning */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Beskrivning <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="t.ex. 'Hunddagis December 2025'"
+                    value={newInvoiceDescription}
+                    onChange={(e) => setNewInvoiceDescription(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
+                  />
+                </div>
+
+                {/* Belopp */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Belopp (SEK) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={newInvoiceAmount}
+                    onChange={(e) => setNewInvoiceAmount(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] text-sm"
+                  />
+                </div>
               </div>
               <div className="p-6 border-t border-gray-200 flex justify-end gap-2">
                 <button
@@ -1417,22 +1490,33 @@ const FakturorPage = () => {
                 </button>
                 <button
                   onClick={async () => {
-                    const ownerId = (
-                      document.getElementById("ownerId") as HTMLInputElement
-                    ).value;
-                    const description = (
-                      document.getElementById("description") as HTMLInputElement
-                    ).value;
-                    const belopp = parseFloat(
-                      (document.getElementById("amount") as HTMLInputElement)
-                        .value
+                    if (!selectedOwnerId) {
+                      toast("Du måste välja en kund", "error");
+                      return;
+                    }
+                    const belopp = parseFloat(newInvoiceAmount);
+                    if (isNaN(belopp) || belopp <= 0) {
+                      toast("Ange ett giltigt belopp större än 0", "error");
+                      return;
+                    }
+                    if (!newInvoiceDescription.trim()) {
+                      toast("Beskrivning måste anges", "error");
+                      return;
+                    }
+                    await createInvoice(
+                      selectedOwnerId,
+                      belopp,
+                      newInvoiceDescription
                     );
-                    await createInvoice(ownerId, belopp, description);
-                    // Modal stängs efter skapande
                   }}
-                  className="px-6 py-2.5 h-10 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm"
+                  disabled={
+                    !selectedOwnerId ||
+                    !newInvoiceAmount ||
+                    !newInvoiceDescription.trim()
+                  }
+                  className="px-6 py-2.5 h-10 bg-[#2c7a4c] text-white rounded-md hover:bg-[#236139] font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Skapa
+                  Skapa faktura
                 </button>
               </div>
             </div>
