@@ -561,7 +561,7 @@ export default function PensionatPriserPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-8 py-6">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Vänster: Tillbaka-länk */}
             <Link
@@ -573,7 +573,7 @@ export default function PensionatPriserPage() {
             </Link>
 
             {/* Center: Rubrik */}
-            <div className="flex items-center gap-3 absolute left-1/2 transform -translate-x-1/2">
+            <div className="flex items-center gap-3">
               <div className="text-2xl">🏨</div>
               <div>
                 <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
@@ -601,7 +601,7 @@ export default function PensionatPriserPage() {
 
       {/* Tabs - Clean och tydlig */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-8">
+        <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-1">
             <button
               onClick={() => setActiveTab("grundpriser")}
@@ -628,7 +628,7 @@ export default function PensionatPriserPage() {
                 className={`ml-1.5 px-1.5 py-0.5 text-xs rounded ${
                   activeTab === "specialdatum"
                     ? "bg-white/20 text-white"
-                    : "bg-gray-100 text-gray-700"
+                    : "bg-gray-100 text-gray-600"
                 }`}
               >
                 {specialDates.length}
@@ -648,7 +648,7 @@ export default function PensionatPriserPage() {
                 className={`ml-1.5 px-1.5 py-0.5 text-xs rounded ${
                   activeTab === "säsonger"
                     ? "bg-white/20 text-white"
-                    : "bg-gray-100 text-gray-700"
+                    : "bg-gray-100 text-gray-600"
                 }`}
               >
                 {seasons.length}
@@ -668,7 +668,7 @@ export default function PensionatPriserPage() {
                 className={`ml-1.5 px-1.5 py-0.5 text-xs rounded ${
                   activeTab === "tillval"
                     ? "bg-white/20 text-white"
-                    : "bg-gray-100 text-gray-700"
+                    : "bg-gray-100 text-gray-600"
                 }`}
               >
                 {extraServices.length}
@@ -679,7 +679,7 @@ export default function PensionatPriserPage() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-8 py-6">
+      <main className="max-w-7xl mx-auto px-6 py-6">
         {/* Messages - Kompakta */}
         {success && (
           <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-2.5 flex items-center gap-2">
