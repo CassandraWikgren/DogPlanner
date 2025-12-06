@@ -276,49 +276,44 @@ export default function FrisorDashboard() {
   const dogsList = Object.values(groupedJournals);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header - INGEN HERO enligt Design System V2 */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+    <div className="page-wrapper">
+      {/* Header - följer design standard */}
+      <div className="page-header">
+        <div className="page-header-content">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] flex items-center gap-3">
+              <h1 className="page-title flex items-center gap-3">
                 <Scissors className="h-8 w-8" />
                 Frisör
               </h1>
-              <p className="text-base text-gray-600 mt-1">
-                Dagens bokningar & klippjournal
-              </p>
+              <p className="page-subtitle">Dagens bokningar & klippjournal</p>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/frisor/kalender">
-                <button className="h-10 px-4 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center gap-2 font-semibold text-[15px] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2">
-                  <Calendar className="h-5 w-5" />
-                  <span className="hidden sm:inline">Kalender</span>
-                </button>
+              <Link href="/frisor/kalender" className="btn-primary">
+                <Calendar className="h-5 w-5" />
+                <span className="hidden sm:inline">Kalender</span>
               </Link>
               <button
                 onClick={loadData}
-                className="h-10 w-10 bg-[#4b5563] hover:bg-[#374151] text-white rounded-md transition flex items-center justify-center shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:ring-offset-2"
+                className="btn-secondary"
                 title="Uppdatera"
               >
                 <RefreshCcw className="h-5 w-5" />
               </button>
-              <Link href="/admin/hundfrisor/priser">
-                <button
-                  className="h-10 w-10 bg-[#4b5563] hover:bg-[#374151] text-white rounded-md transition flex items-center justify-center shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:ring-offset-2"
-                  title="Inställningar"
-                >
-                  <Settings2 className="h-5 w-5" />
-                </button>
+              <Link
+                href="/admin/hundfrisor/priser"
+                className="btn-secondary"
+                title="Inställningar"
+              >
+                <Settings2 className="h-5 w-5" />
               </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Huvudinnehåll - kompaktare layout */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      {/* Huvudinnehåll */}
+      <main className="page-main">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Vänster kolumn: Dagens bokningar */}
           <div className="lg:col-span-1">
@@ -328,13 +323,12 @@ export default function FrisorDashboard() {
                   <Calendar className="h-5 w-5" />
                   Mina bokningar idag
                 </h2>
-                <Link href="/frisor/ny-bokning">
-                  <button
-                    className="h-9 w-9 bg-[#2c7a4c] hover:bg-[#236139] text-white rounded-md transition flex items-center justify-center shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
-                    title="Ny bokning"
-                  >
-                    <Plus className="h-5 w-5" />
-                  </button>
+                <Link
+                  href="/frisor/ny-bokning"
+                  className="btn-primary h-9 w-9 p-0 flex items-center justify-center"
+                  title="Ny bokning"
+                >
+                  <Plus className="h-5 w-5" />
                 </Link>
               </div>
 
@@ -488,7 +482,7 @@ export default function FrisorDashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

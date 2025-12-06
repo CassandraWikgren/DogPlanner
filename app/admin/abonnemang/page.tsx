@@ -478,10 +478,10 @@ export default function AdminAbonnemangPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Kompakt header enligt DESIGN_SYSTEM_V2 */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="page-wrapper">
+      {/* Kompakt header enligt design standard */}
+      <div className="page-header">
+        <div className="page-header-content">
           <Link
             href="/admin"
             className="inline-flex items-center text-[#2c7a4c] hover:text-[#236139] mb-4"
@@ -489,17 +489,15 @@ export default function AdminAbonnemangPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Tillbaka till Admin
           </Link>
-          <h1 className="text-[32px] font-bold text-[#2c7a4c]">
-            Mitt Abonnemang
-          </h1>
-          <p className="text-base text-gray-600 mt-1">
+          <h1 className="page-title">Mitt Abonnemang</h1>
+          <p className="page-subtitle">
             Hantera din prenumeration och aktiverade tjänster
           </p>
         </div>
       </div>
 
       {/* Innehåll */}
-      <main className="max-w-6xl mx-auto px-8 py-8">
+      <main className="page-main">
         {/* Success/Error meddelanden */}
         {success && (
           <Card className="mb-6 border-green-200 bg-green-50">

@@ -331,35 +331,29 @@ export default function RapporterPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="border-b border-gray-200 bg-white shadow-sm">
-          <div className="max-w-6xl mx-auto px-8 py-6">
-            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-              Rapporter
-            </h1>
-            <p className="mt-1 text-base text-gray-600">
-              Laddar rapportdata...
-            </p>
+      <div className="page-wrapper">
+        <div className="page-header">
+          <div className="page-header-content">
+            <h1 className="page-title">Rapporter</h1>
+            <p className="page-subtitle">Laddar rapportdata...</p>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto px-8 py-12 text-center">
+        <main className="page-main text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c7a4c] mx-auto"></div>
-        </div>
+        </main>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="border-b border-gray-200 bg-white shadow-sm">
-          <div className="max-w-6xl mx-auto px-8 py-6">
-            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-              Rapporter
-            </h1>
+      <div className="page-wrapper">
+        <div className="page-header">
+          <div className="page-header-content">
+            <h1 className="page-title">Rapporter</h1>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto px-8 py-12">
+        <main className="page-main">
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
             <div className="text-5xl mb-4">📊</div>
             <p className="text-yellow-800 font-medium text-lg mb-2">
@@ -376,12 +370,12 @@ export default function RapporterPage() {
             </p>
             <button
               onClick={() => (window.location.href = "/dashboard")}
-              className="px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors font-medium"
+              className="btn-primary"
             >
               Gå till Dashboard
             </button>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
@@ -422,24 +416,19 @@ export default function RapporterPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header - EXAKT som Hunddagis */}
-      <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+    <div className="page-wrapper">
+      {/* Header - följer design standard */}
+      <div className="page-header">
+        <div className="page-header-content">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-                Rapporter
-              </h1>
-              <p className="mt-1 text-base text-gray-600">
+              <h1 className="page-title">Rapporter</h1>
+              <p className="page-subtitle">
                 Ekonomi, beläggning och statistik för {dateRange.start} -{" "}
                 {dateRange.end}
               </p>
             </div>
-            <button
-              onClick={handleExport}
-              className="flex items-center gap-2 px-4 py-2 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#236139] transition-colors"
-            >
+            <button onClick={handleExport} className="btn-primary">
               <Download className="w-4 h-4" />
               Exportera till Excel
             </button>
@@ -447,8 +436,8 @@ export default function RapporterPage() {
         </div>
       </div>
 
-      {/* Main Content - EXAKT som Hunddagis */}
-      <main className="max-w-6xl mx-auto px-8 py-6">
+      {/* Main Content */}
+      <main className="page-main">
         {/* Datumfilter */}
         <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm mb-6">
           <div className="flex items-center gap-2 mb-4">
@@ -466,7 +455,7 @@ export default function RapporterPage() {
                 onChange={(e) =>
                   setDateRange({ ...dateRange, start: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                className="input-field"
               />
             </div>
             <div>
@@ -479,7 +468,7 @@ export default function RapporterPage() {
                 onChange={(e) =>
                   setDateRange({ ...dateRange, end: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                className="input-field"
               />
             </div>
           </div>

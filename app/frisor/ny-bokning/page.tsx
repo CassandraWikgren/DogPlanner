@@ -550,23 +550,19 @@ export default function NyBokning() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header - INGEN HERO enligt Design System V2 */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-5xl mx-auto px-6 py-6">
-          <Link href="/frisor">
-            <Button variant="outline" size="sm" className="mb-3">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Tillbaka till frisör
-            </Button>
+    <div className="page-wrapper">
+      {/* Header - följer design standard */}
+      <div className="page-header">
+        <div className="page-header-content max-w-5xl">
+          <Link href="/frisor" className="btn-secondary mb-3 inline-flex">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Tillbaka till frisör
           </Link>
           <div className="flex items-center gap-3">
             <Scissors className="h-8 w-8 text-[#2c7a4c]" />
             <div>
-              <h1 className="text-[32px] font-bold text-[#2c7a4c]">
-                Ny Frisörbokning
-              </h1>
-              <p className="text-base text-gray-600 mt-1">
+              <h1 className="page-title">Ny Frisörbokning</h1>
+              <p className="page-subtitle">
                 Skapa en ny frisörtid för en av dina hundar
               </p>
             </div>
@@ -574,8 +570,8 @@ export default function NyBokning() {
         </div>
       </div>
 
-      {/* Main Content - kompaktare */}
-      <div className="max-w-5xl mx-auto px-6 py-6">
+      {/* Main Content */}
+      <main className="page-main max-w-5xl">
         {/* Error Display */}
         {error && (
           <Card className="mb-4 border-red-200 bg-red-50">
@@ -1352,7 +1348,7 @@ export default function NyBokning() {
             </div>
           )}
         </form>
-      </div>
+      </main>
     </div>
   );
 }

@@ -264,90 +264,90 @@ const FakturorPage = () => {
   }
 
   return (
-    <>
-      {/* ⬆️ Övre sektion: laddar-status och total summa */}
-      <div className="p-6">
-        {loading ? (
-          <div className="flex items-center gap-2 text-gray-600">
-            <Loader2 className="animate-spin" /> Laddar fakturor…
-          </div>
-        ) : (
-          <p className="text-sm text-gray-500">
-            {invoices.length} fakturor laddade. Totalt{" "}
-            {totals.total.toLocaleString()} kr.
-          </p>
-        )}
-      </div>
-
-      {/* 📄 Huvudinnehåll */}
-      <div className="p-6 space-y-4">
-        {/* Sidhuvud med titel och knappar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-          <div>
-            <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-              💸 DogPlanner – Fakturor och underlag
-            </h1>
-            <p className="text-gray-600">
-              Hantera fakturor för hunddagis, pensionat och frisör.
+    <div className="page-wrapper">
+      {/* Header */}
+      <div className="page-header">
+        <div className="page-header-content">
+          {loading ? (
+            <div className="flex items-center gap-2 text-gray-600">
+              <Loader2 className="animate-spin" /> Laddar fakturor…
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500 mb-2">
+              {invoices.length} fakturor laddade. Totalt{" "}
+              {totals.total.toLocaleString()} kr.
             </p>
-          </div>
-          <div className="flex items-center gap-2 mt-3 sm:mt-0">
-            <span
-              className={`px-3 py-1 rounded-full text-sm ${
-                online
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-red-100 text-red-600"
-              }`}
-            >
-              {online ? "🟢 Online med Supabase" : "🔴 Ej uppkopplad"}
-            </span>
-            <Button
-              variant="outline"
-              onClick={toggleLock}
-              className="flex items-center gap-1"
-            >
-              {locked ? <Unlock size={16} /> : <Lock size={16} />}
-              {locked ? "Avlås månad" : "Lås månad"}
-            </Button>
-            <Button
-              onClick={() => setCreating(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1"
-              disabled={locked}
-            >
-              <PlusCircle size={16} /> Ny faktura
-            </Button>
+          )}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+            <div>
+              <h1 className="page-title">
+                💸 DogPlanner – Fakturor och underlag
+              </h1>
+              <p className="page-subtitle">
+                Hantera fakturor för hunddagis, pensionat och frisör.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 mt-3 sm:mt-0">
+              <span
+                className={`px-3 py-1 rounded-full text-sm ${
+                  online
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "bg-red-100 text-red-600"
+                }`}
+              >
+                {online ? "🟢 Online med Supabase" : "🔴 Ej uppkopplad"}
+              </span>
+              <Button
+                variant="outline"
+                onClick={toggleLock}
+                className="flex items-center gap-1"
+              >
+                {locked ? <Unlock size={16} /> : <Lock size={16} />}
+                {locked ? "Avlås månad" : "Lås månad"}
+              </Button>
+              <Button
+                onClick={() => setCreating(true)}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1"
+                disabled={locked}
+              >
+                <PlusCircle size={16} /> Ny faktura
+              </Button>
+            </div>
           </div>
         </div>
+      </div>
 
+      {/* Main Content */}
+      <main className="page-main">
         {/* 💰 Summeringsrutor */}
-        <div className="grid sm:grid-cols-3 gap-4 text-center mt-4">
-          <div className="bg-gray-50 p-3 rounded-md shadow">
-            <h2 className="text-gray-500 text-sm">💰 Totalt</h2>
-            <p className="text-lg font-semibold">
+        <div className="grid sm:grid-cols-3 gap-4 text-center mb-6">
+          <div className="stats-box">
+            <p className="stats-label">💰 Totalt</p>
+            <p className="stats-number">
               {totals.total.toLocaleString("sv-SE")} kr
             </p>
           </div>
-          <div className="bg-gray-50 p-3 rounded-md shadow">
-            <h2 className="text-gray-500 text-sm">✅ Betalt</h2>
-            <p className="text-lg font-semibold text-emerald-700">
+          <div className="stats-box">
+            <p className="stats-label">✅ Betalt</p>
+            <p className="stats-number text-emerald-700">
               {totals.paid.toLocaleString("sv-SE")} kr
             </p>
           </div>
-          <div className="bg-gray-50 p-3 rounded-md shadow">
-            <h2 className="text-gray-500 text-sm">🕓 Ej betalt</h2>
-            <p className="text-lg font-semibold text-red-600">
+          <div className="stats-box">
+            <p className="stats-label">🕓 Ej betalt</p>
+            <p className="stats-number text-red-600">
               {totals.unpaid.toLocaleString("sv-SE")} kr
             </p>
           </div>
         </div>
 
         {/* 🔍 Sökfält */}
-        <div className="flex items-center gap-2 mt-6">
+        <div className="flex items-center gap-2 mb-6">
           <Input
             placeholder="Sök kund eller faktura..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-sm"
+            className="input-field max-w-sm"
           />
           {search && (
             <Button variant="outline" onClick={() => setSearch("")}>
@@ -591,8 +591,8 @@ const FakturorPage = () => {
             </DialogContent>
           </Dialog>
         )}
-      </div>
-    </>
+      </main>
+    </div>
   );
 };
 
