@@ -603,32 +603,29 @@ export default function OwnersPage() {
                         </div>
                       </td>
                       <td className="py-2.5 px-4">
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                        <div className="flex items-center gap-1">
+                          <button
                             onClick={() => startEditing(owner)}
-                            className="bg-[#2c7a4c] hover:bg-[#236139] text-white focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
+                            className="action-btn"
+                            title="Redigera"
                           >
-                            <Edit className="h-4 w-4" />
-                          </Button>
+                            <Edit className="h-5 w-5" />
+                          </button>
                           <Link href={`/owners/${owner.id}`}>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="bg-[#2c7a4c] hover:bg-[#236139] text-white focus:outline-none focus:ring-2 focus:ring-[#2c7a4c] focus:ring-offset-2"
+                            <button
+                              className="action-btn"
+                              title="Visa detaljer"
                             >
-                              <FileText className="h-4 w-4" />
-                            </Button>
+                              <FileText className="h-5 w-5" />
+                            </button>
                           </Link>
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                          <button
                             onClick={() => deleteOwner(owner)}
-                            className="bg-red-600 hover:bg-red-700 text-white focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2"
+                            className="action-btn"
+                            title="Ta bort"
                           >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                            <Trash2 className="h-5 w-5" />
+                          </button>
                         </div>
                       </td>
                     </tr>

@@ -889,14 +889,13 @@ export default function PensionatPriserPage() {
                               +{sd.price_surcharge} kr
                             </td>
                             <td className="py-3 px-4 text-right">
-                              <Button
-                                variant="ghost"
-                                size="sm"
+                              <button
                                 onClick={() => handleDeleteSpecialDate(sd.id)}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                className="action-btn"
+                                title="Ta bort"
                               >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+                                <Trash2 className="w-5 h-5" />
+                              </button>
                             </td>
                           </tr>
                         ))}
@@ -1056,14 +1055,13 @@ export default function PensionatPriserPage() {
                             </td>
                             <td className="py-3 px-4">{season.priority}</td>
                             <td className="py-3 px-4 text-right">
-                              <Button
-                                variant="ghost"
-                                size="sm"
+                              <button
                                 onClick={() => handleDeleteSeason(season.id)}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                className="action-btn"
+                                title="Ta bort"
                               >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+                                <Trash2 className="w-5 h-5" />
+                              </button>
                             </td>
                           </tr>
                         ))}
@@ -1193,14 +1191,13 @@ export default function PensionatPriserPage() {
                           <h4 className="font-semibold text-gray-900">
                             {service.label}
                           </h4>
-                          <Button
-                            variant="ghost"
-                            size="sm"
+                          <button
                             onClick={() => handleDeleteService(service.id)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 -mt-2 -mr-2"
+                            className="action-btn -mt-2 -mr-2"
+                            title="Ta bort"
                           >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                            <Trash2 className="w-5 h-5" />
+                          </button>
                         </div>
                         <div className="text-lg font-bold text-green-700">
                           {service.price} kr

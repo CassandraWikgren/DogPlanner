@@ -430,9 +430,10 @@ export default function RoomsPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => setEditingRoom(room)}
-                        className="px-3 py-1.5 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm"
+                        className="action-btn"
+                        title="Redigera"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-5 w-5" />
                       </button>
                     </div>
                   </div>

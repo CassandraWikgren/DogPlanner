@@ -526,14 +526,14 @@ export default function MinaHundarPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(dog)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="action-btn"
                         title="Redigera"
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDelete(dog.id, dog.name)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="action-btn"
                         title="Ta bort"
                       >
                         <Trash2 className="w-5 h-5" />

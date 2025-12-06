@@ -511,25 +511,24 @@ export default function AdminRumPage() {
                           </p>
                         )}
                       </div>
-                      <div className="flex gap-2 ml-4">
-                        <Button
+                      <div className="flex gap-1 ml-4">
+                        <button
                           onClick={() => {
                             setEditingId(room.id);
                             setEditForm(room);
                           }}
-                          variant="outline"
-                          size="sm"
+                          className="action-btn"
+                          title="Redigera"
                         >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
+                          <Edit className="h-5 w-5" />
+                        </button>
+                        <button
                           onClick={() => deleteRoom(room.id)}
-                          variant="outline"
-                          size="sm"
-                          className="text-red-600 hover:bg-red-50"
+                          className="action-btn"
+                          title="Ta bort"
                         >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          <Trash2 className="h-5 w-5" />
+                        </button>
                       </div>
                     </div>
                   )}

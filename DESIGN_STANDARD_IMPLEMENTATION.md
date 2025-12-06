@@ -4,7 +4,35 @@
 **Status:** ✅ GÄLLER FÖR ALLA SIDOR  
 **Baserat på:** Hunddagis-sidan + Frisörtjänster-sidan
 
-Allt detta är med i Globals som följer denna struktur över alla sidor som standard.
+## ⚠️ VIKTIGT: Använd CSS-klasser från globals.css
+
+**ALLA sidor ska använda de fördefinierade klasserna från `app/globals.css`.**
+
+### Tillgängliga klasser:
+
+| Kategori      | Klass                  | Användning                                     |
+| ------------- | ---------------------- | ---------------------------------------------- |
+| **Layout**    | `.page-wrapper`        | Yttersta wrapper (min-h-screen bg-gray-50)     |
+|               | `.page-header`         | Header-sektion (border-b, bg-white, shadow-sm) |
+|               | `.page-header-content` | Header inre container (max-w-7xl, px-6, py-4)  |
+|               | `.page-main`           | Main content (max-w-7xl, px-6, py-6)           |
+| **Typografi** | `.page-title`          | H1 rubrik (32px, bold, #2c7a4c)                |
+|               | `.page-subtitle`       | Beskrivning under rubrik (text-base, gray-600) |
+| **Stats**     | `.stats-box`           | Statistik-box container                        |
+|               | `.stats-number`        | Siffra i stats (text-2xl, bold, grön)          |
+|               | `.stats-label`         | Label i stats (text-xs, gray-600)              |
+| **Knappar**   | `.btn-primary`         | Primär knapp (grön bakgrund, vit text)         |
+|               | `.btn-secondary`       | Sekundär knapp (vit bakgrund, grön border)     |
+|               | `.btn-outline`         | Outline-knapp (grå border)                     |
+|               | `.action-btn`          | Åtgärdsknappar i tabeller (diskreta ikoner)    |
+| **Tabeller**  | `.table-wrapper`       | Tabell-container (rounded, shadow, border)     |
+|               | `.table-header`        | Thead (bg-[#2c7a4c])                           |
+|               | `.table-row-even`      | Jämna rader (bg-white)                         |
+|               | `.table-row-odd`       | Udda rader (bg-gray-50)                        |
+|               | `.table-cell`          | Td (py-2.5, px-4, text-sm)                     |
+| **Formulär**  | `.input-field`         | Input-fält (h-10, rounded, border)             |
+|               | `.input-with-icon`     | Input med ikon (extra padding-left)            |
+|               | `.select-field`        | Select dropdown                                |
 
 ---
 

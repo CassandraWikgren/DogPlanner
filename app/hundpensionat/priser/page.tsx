@@ -389,15 +389,17 @@ export default function PriserPage() {
                         <div className="flex gap-1">
                           <button
                             onClick={() => setEditingPrice(price)}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                            className="action-btn"
+                            title="Redigera"
                           >
-                            <Edit2 size={14} />
+                            <Edit2 size={20} />
                           </button>
                           <button
                             onClick={() => deletePrice(price.id)}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                            className="action-btn"
+                            title="Ta bort"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={20} />
                           </button>
                         </div>
                       </div>
@@ -559,15 +561,17 @@ export default function PriserPage() {
                         <div className="flex gap-1">
                           <button
                             onClick={() => setEditingSeason(season)}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md"
+                            className="action-btn"
+                            title="Redigera"
                           >
-                            <Edit2 size={14} />
+                            <Edit2 size={20} />
                           </button>
                           <button
                             onClick={() => deleteSeason(season.id)}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md"
+                            className="action-btn"
+                            title="Ta bort"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={20} />
                           </button>
                         </div>
                       </div>
