@@ -632,74 +632,34 @@ export default function PensionatPriserPage() {
           <div className="flex gap-1">
             <button
               onClick={() => setActiveTab("grundpriser")}
-              className={`px-4 py-2.5 text-sm font-medium transition-all ${
-                activeTab === "grundpriser"
-                  ? "text-white bg-[#2c7a4c] rounded-t"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
+              className={`tab-button ${activeTab === "grundpriser" ? "active" : ""}`}
             >
-              <Dog className="w-4 h-4 inline mr-1.5" />
+              <Dog className="w-4 h-4 mr-1.5" />
               Grundpriser
             </button>
             <button
               onClick={() => setActiveTab("specialdatum")}
-              className={`px-4 py-2.5 text-sm font-medium transition-all ${
-                activeTab === "specialdatum"
-                  ? "text-white bg-[#2c7a4c] rounded-t"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
+              className={`tab-button ${activeTab === "specialdatum" ? "active" : ""}`}
             >
-              <Calendar className="w-4 h-4 inline mr-1.5" />
+              <Calendar className="w-4 h-4 mr-1.5" />
               Specialdatum
-              <span
-                className={`ml-1.5 px-1.5 py-0.5 text-xs rounded ${
-                  activeTab === "specialdatum"
-                    ? "bg-white/20 text-white"
-                    : "bg-gray-100 text-gray-600"
-                }`}
-              >
-                {specialDates.length}
-              </span>
+              <span className="tab-badge">{specialDates.length}</span>
             </button>
             <button
               onClick={() => setActiveTab("säsonger")}
-              className={`px-4 py-2.5 text-sm font-medium transition-all ${
-                activeTab === "säsonger"
-                  ? "text-white bg-[#2c7a4c] rounded-t"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
+              className={`tab-button ${activeTab === "säsonger" ? "active" : ""}`}
             >
-              <TrendingUp className="w-4 h-4 inline mr-1.5" />
+              <TrendingUp className="w-4 h-4 mr-1.5" />
               Säsonger
-              <span
-                className={`ml-1.5 px-1.5 py-0.5 text-xs rounded ${
-                  activeTab === "säsonger"
-                    ? "bg-white/20 text-white"
-                    : "bg-gray-100 text-gray-600"
-                }`}
-              >
-                {seasons.length}
-              </span>
+              <span className="tab-badge">{seasons.length}</span>
             </button>
             <button
               onClick={() => setActiveTab("tillval")}
-              className={`px-4 py-2.5 text-sm font-medium transition-all ${
-                activeTab === "tillval"
-                  ? "text-white bg-[#2c7a4c] rounded-t"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
+              className={`tab-button ${activeTab === "tillval" ? "active" : ""}`}
             >
-              <Sparkles className="w-4 h-4 inline mr-1.5" />
+              <Sparkles className="w-4 h-4 mr-1.5" />
               Tillval
-              <span
-                className={`ml-1.5 px-1.5 py-0.5 text-xs rounded ${
-                  activeTab === "tillval"
-                    ? "bg-white/20 text-white"
-                    : "bg-gray-100 text-gray-600"
-                }`}
-              >
-                {extraServices.length}
-              </span>
+              <span className="tab-badge">{extraServices.length}</span>
             </button>
           </div>
         </div>
