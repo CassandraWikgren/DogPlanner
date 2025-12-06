@@ -1,80 +1,41 @@
 -- =====================================================
--- FIX: RLS Policy för boarding_prices INSERT
+-- FIX: RLS Policy för boarding_prices 
 -- Datum: 2025-12-06
 -- Problem: "new row violates row-level security policy"
+-- 
+-- Denna policy borde redan finnas från 20251203_COMPLETE_RLS_FIX.sql
+-- men den har kanske inte körts i produktion.
 -- =====================================================
 
--- Kolla nuvarande policies
-SELECT policyname, cmd, permissive, roles, qual, with_check
+-- 1. Kolla först vilka policies som finns
+SELECT 'Nuvarande policies på boarding_prices:' as info;
+SELECT policyname, cmd, permissive
 FROM pg_policies 
 WHERE tablename = 'boarding_prices';
 
--- =====================================================
--- SKAPA INSERT POLICY
--- =====================================================
+-- 2. Återskapa policyn (ofarligt att köra igen)
+DROP POLICY IF EXISTS "boarding_prices_org_all" ON public.boarding_prices;
 
--- Ta bort eventuell existerande insert policy
-DROP POLICY IF EXISTS "Users can insert boarding_prices for their org" ON boarding_prices;
-DROP POLICY IF EXISTS "boarding_prices_insert" ON boarding_prices;
-DROP POLICY IF EXISTS "insert_boarding_prices_in_org" ON boarding_prices;
-
--- Skapa ny INSERT policy
-CREATE POLICY "Users can insert boarding_prices for their org"
-ON boarding_prices
-FOR INSERT
-TO authenticated
-WITH CHECK (
-  org_id IN (
-    SELECT org_id FROM profiles WHERE id = auth.uid()
+CREATE POLICY "boarding_prices_org_all" 
+  ON public.boarding_prices
+  FOR ALL 
+  TO authenticated
+  USING (
+    org_id IN (
+      SELECT org_id FROM profiles WHERE id = auth.uid()
+    )
   )
-);
+  WITH CHECK (
+    org_id IN (
+      SELECT org_id FROM profiles WHERE id = auth.uid()
+    )
+  );
 
--- =====================================================
--- VERIFIERA UPDATE POLICY OCKSÅ
--- =====================================================
-
-DROP POLICY IF EXISTS "Users can update boarding_prices for their org" ON boarding_prices;
-
-CREATE POLICY "Users can update boarding_prices for their org"
-ON boarding_prices
-FOR UPDATE
-TO authenticated
-USING (
-  org_id IN (
-    SELECT org_id FROM profiles WHERE id = auth.uid()
-  )
-)
-WITH CHECK (
-  org_id IN (
-    SELECT org_id FROM profiles WHERE id = auth.uid()
-  )
-);
-
--- =====================================================
--- VERIFIERA SELECT POLICY
--- =====================================================
-
-DROP POLICY IF EXISTS "Users can view boarding_prices for their org" ON boarding_prices;
-
-CREATE POLICY "Users can view boarding_prices for their org"
-ON boarding_prices
-FOR SELECT
-TO authenticated
-USING (
-  org_id IN (
-    SELECT org_id FROM profiles WHERE id = auth.uid()
-  )
-);
-
--- =====================================================
--- SE TILL ATT RLS ÄR AKTIVERAT
--- =====================================================
-
+-- 3. Se till att RLS är aktiverat
 ALTER TABLE boarding_prices ENABLE ROW LEVEL SECURITY;
 
--- =====================================================
--- VERIFIERING
--- =====================================================
-
-SELECT 'boarding_prices policies:' as info;
-SELECT policyname, cmd FROM pg_policies WHERE tablename = 'boarding_prices';
+-- 4. Verifiera
+SELECT 'Efter fix - policies på boarding_prices:' as info;
+SELECT policyname, cmd, permissive
+FROM pg_policies 
+WHERE tablename = 'boarding_prices';
