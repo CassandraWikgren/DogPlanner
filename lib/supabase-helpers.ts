@@ -62,7 +62,7 @@ export async function fetchBookingsWithRelations(
   supabase: SupabaseClient<Database>,
   orgId: string,
   options?: {
-    status?: string[];
+    status?: Array<Database["public"]["Tables"]["bookings"]["Row"]["status"]>;
     startDate?: string;
     endDate?: string;
   }
