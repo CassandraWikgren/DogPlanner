@@ -234,10 +234,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // 🐕 Kolla om användaren är en hundägare (finns i owners-tabellen)
+  // 🐕 Kolla om användaren är en hundägare/kund (finns i owners MEN INTE som personal)
+  // En "ren kund" är någon som:
+  // 1. Finns i owners-tabellen
+  // 2. INTE har en profil med org_id (dvs inte är personal/admin)
   async function checkIfCustomer(userId: string) {
     try {
       const supabase = createClient();
+
+      // Kolla först om användaren har en profil med org_id (= personal)
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("org_id")
+        .eq("id", userId)
+        .maybeSingle();
+
+      // Om användaren har org_id i profiles = de är personal, INTE kund
+      if (profileData?.org_id) {
+        console.log("AuthContext: 👔 User is staff (has org_id in profiles)");
+        setIsCustomer(false);
+        return;
+      }
 
       // Kolla om användaren finns i owners-tabellen (pensionatkunder)
       const { data: ownerData, error } = await supabase
@@ -248,7 +265,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (ownerData && !error) {
         console.log(
-          "AuthContext: 🐕 User is a customer (found in owners table)"
+          "AuthContext: 🐕 User is a customer (found in owners, no org_id in profiles)"
         );
         setIsCustomer(true);
       } else {
