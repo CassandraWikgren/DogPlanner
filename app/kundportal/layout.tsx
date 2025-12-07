@@ -248,7 +248,7 @@ export default function KundportalLayout({
             <p>© {new Date().getFullYear()} DogPlanner</p>
             <div className="flex gap-4">
               <Link
-                href="/kundportal/gdpr"
+                href="/legal/privacy-policy-customer"
                 className="hover:text-[#2c7a4c] transition"
               >
                 Integritetspolicy

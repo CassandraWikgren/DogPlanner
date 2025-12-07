@@ -172,7 +172,10 @@ export default function CustomerPortalPage() {
             <Link href="/kundportal/support" className="hover:text-gray-300">
               Support
             </Link>
-            <Link href="/kundportal/integritet" className="hover:text-gray-300">
+            <Link
+              href="/legal/privacy-policy-customer"
+              className="hover:text-gray-300"
+            >
               Integritetspolicy
             </Link>
             <Link href="/kundportal/villkor" className="hover:text-gray-300">
