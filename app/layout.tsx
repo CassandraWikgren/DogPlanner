@@ -7,19 +7,27 @@ import { NotificationProvider } from "@/app/context/NotificationContext";
 import Navbar from "@/components/Navbar";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { usePathname } from "next/navigation";
 import Script from "next/script";
 
 /**
  * Wrapper som visar Navbar och Breadcrumbs endast när användaren är inloggad.
+ * Kundportalen har sin egen layout och visar INTE personal-navbar.
  */
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const pathname = usePathname();
+
+  // Kundportalen har egen layout - visa INTE personal-navbar där
+  const isKundportal = pathname?.startsWith("/kundportal");
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f9fafb] text-gray-900">
-      {user && <Navbar />}
-      {user && <Breadcrumbs />}
-      <main className={`flex-1 ${user ? "pt-20" : ""}`}>{children}</main>
+      {user && !isKundportal && <Navbar />}
+      {user && !isKundportal && <Breadcrumbs />}
+      <main className={`flex-1 ${user && !isKundportal ? "pt-20" : ""}`}>
+        {children}
+      </main>
     </div>
   );
 }

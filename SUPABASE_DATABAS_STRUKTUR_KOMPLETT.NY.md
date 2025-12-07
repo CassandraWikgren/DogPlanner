@@ -2156,6 +2156,57 @@ $$ LANGUAGE plpgsql;
 
 Detta system får **ALDRIG** ändras utan djup förståelse!
 
+### **KUNDPORTAL-VERIFIERING (7 December 2025)**
+
+```sql
+-- Verifiera kundkonto vid login (bypasser RLS)
+CREATE OR REPLACE FUNCTION verify_customer_account(p_user_id UUID)
+RETURNS TABLE (
+  owner_id UUID,
+  full_name TEXT,
+  email TEXT,
+  customer_number TEXT,
+  org_id UUID
+)
+LANGUAGE plpgsql
+SECURITY DEFINER  -- Körs med skaparens rättigheter (bypasser RLS)
+SET search_path = public
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    o.id as owner_id,
+    o.full_name,
+    o.email,
+    o.customer_number,
+    o.org_id
+  FROM owners o
+  WHERE o.id = p_user_id;
+END;
+$$;
+```
+
+**Användning i kundportal-login:**
+
+```typescript
+// Efter lyckad auth.signInWithPassword()
+const { data: ownerData, error: ownerError } = await supabase
+  .rpc("verify_customer_account", { p_user_id: data.user.id })
+  .maybeSingle();
+
+// Om ingen owner → inte en kundregistrerad användare
+if (!ownerData) {
+  await supabase.auth.signOut();
+  throw new Error("Inget kundkonto hittades");
+}
+```
+
+**Varför SECURITY DEFINER?**
+
+- RLS på `owners` tillåter bara `id = auth.uid()` efter inloggning
+- Vid login-verifiering är `auth.uid()` ännu inte satt korrekt
+- Denna funktion bypasser RLS tillfälligt för att verifiera kontot
+
 ### **FAKTURERING**
 
 ```sql
@@ -2932,13 +2983,21 @@ AND (enddate IS NULL OR enddate >= 2025-11-01)
 ### **Verifierat i produktion ✅:**
 
 - 38+ triggers aktiva
-- 55+ functions deployed
+- 56+ functions deployed (inkl verify_customer_account)
 - Alla fakturafunktioner verified (generate_invoice_number, create_prepayment_invoice, create_invoice_on_checkout)
 - RLS policies aktiva på 67+ tabeller
 - Multi-tenancy fungerar 100%
 - Edge Function generate_invoices fixad (0 kr bug löst 2025-12-01)
-- Journal retention cron job aktiverad (2025-12-03) 🆕
-- Analytics views deployade och RLS-säkra (2025-12-03) 🆕
+- Journal retention cron job aktiverad (2025-12-03)
+- Analytics views deployade och RLS-säkra (2025-12-03)
+- Kundportal-login med verify_customer_account RPC (2025-12-07) 🆕
+
+### **🆕 Förbättringar 7 December 2025:**
+
+1. **Kundportal layout** - Egen layout för /kundportal med kundanpassad header (ingen "Personal"-navbar)
+2. **verify_customer_account()** - SECURITY DEFINER RPC för kundlogin-verifiering (bypasser RLS)
+3. **Design-standard** - Alla kundportal-sidor följer nu samma design-standard (bg-gray-50, max-w-5xl, border-b headers)
+4. **Dashboard förbättrad** - Statistik, snabbknappar, hundlista och bokningslista i ren design
 
 ### **🆕 Förbättringar 3 December 2025:**
 
@@ -2955,17 +3014,18 @@ AND (enddate IS NULL OR enddate >= 2025-11-01)
    - `verify_database_integrity()` - Kontrollerar kritiska fält och säkerhet
    - `get_table_counts()` - Räknar rader per tabell
 
-### **Migration-fil:**
+### **Migration-filer:**
 
 ```bash
 # Kör i Supabase SQL Editor:
 supabase/migrations/20251203_forbattringar_spårbarhet_och_optimering.sql
+supabase/migrations/20251207_customer_login_rpc.sql  # 🆕 verify_customer_account
 ```
 
 ---
 
-**Dokumentation uppdaterad:** 3 December 2025  
-**Schema version:** 20251203 (Förbättringar: Spårbarhet + Analytics + GDPR Retention)  
+**Dokumentation uppdaterad:** 7 December 2025  
+**Schema version:** 20251207 (Kundportal-login + verify_customer_account RPC)  
 **Verifierad mot:** Live Supabase-databas  
 **Next.js version:** 15.5.7 (säkerhetspatch CVE-2025-55182 applicerad)
 

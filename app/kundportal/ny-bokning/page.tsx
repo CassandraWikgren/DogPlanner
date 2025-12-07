@@ -222,25 +222,23 @@ export default function NyBokningPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div
-        className="relative bg-cover bg-center pt-20 pb-28"
-        style={{
-          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url('/Hero.jpeg')`,
-        }}
-      >
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
-            📅 Ny bokning
-          </h1>
-          <p className="text-xl text-white/90">
-            Boka pensionatvistelse för din hund
-          </p>
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Ny bokning</h1>
+              <p className="text-gray-500 mt-1">
+                Boka pensionatvistelse för din hund
+              </p>
+            </div>
+            <Calendar className="h-10 w-10 text-[#2c7a4c]" />
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-16">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
           <div className="mb-6 bg-red-50 border border-red-300 rounded-lg p-4">
             <p className="text-red-800">{error}</p>

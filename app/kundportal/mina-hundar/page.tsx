@@ -224,25 +224,36 @@ export default function MinaHundarPage() {
         </div>
       )}
 
-      {/* Hero Section */}
-      <div
-        className="relative bg-cover bg-center pt-20 pb-28"
-        style={{
-          backgroundImage: `linear-gradient(rgba(44, 122, 76, 0.88), rgba(44, 122, 76, 0.88)), url('/Hero.jpeg')`,
-        }}
-      >
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
-            🐕 Mina hundar
-          </h1>
-          <p className="text-xl text-white/90">
-            Hantera och uppdatera dina hundprofiler
-          </p>
+      {/* Header enligt designstandard */}
+      <header className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
+                <Dog className="h-8 w-8" />
+                Mina hundar
+              </h1>
+              <p className="text-base text-gray-600 mt-1">
+                Hantera och uppdatera dina hundprofiler
+              </p>
+            </div>
+
+            {/* Stats */}
+            <div className="flex gap-4">
+              <div className="bg-[#E6F4EA] rounded-lg px-4 py-3 text-center">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {dogs.length}
+                </p>
+                <p className="text-xs text-gray-600">Registrerade hundar</p>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-16">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+        {/* Error message */}
         {error && (
           <div className="mb-6 bg-red-50 border border-red-300 rounded-lg p-4">
             <p className="text-red-800">{error}</p>
@@ -251,16 +262,10 @@ export default function MinaHundarPage() {
 
         {/* Add New Button */}
         {!isAddingNew && !editingDog && (
-          <div className="mb-6 flex justify-between items-center">
-            <Link
-              href="/kundportal/dashboard"
-              className="text-[#2c7a4c] hover:underline"
-            >
-              ← Tillbaka till portal
-            </Link>
+          <div className="mb-6 flex justify-end">
             <button
               onClick={handleAddNew}
-              className="flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium"
+              className="flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium shadow-sm"
             >
               <Plus className="w-5 h-5" />
               Lägg till hund
@@ -545,7 +550,7 @@ export default function MinaHundarPage() {
             )}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

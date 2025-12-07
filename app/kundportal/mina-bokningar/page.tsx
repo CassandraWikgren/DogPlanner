@@ -282,77 +282,100 @@ export default function MinaBokningarPage() {
 
   const filteredBookings = getFilteredBookings();
 
+  // Räkna statistik
+  const upcomingCount = bookings.filter(
+    (b) =>
+      b.status !== "cancelled" &&
+      b.start_date >= new Date().toISOString().split("T")[0]
+  ).length;
+
+  const activeCount = bookings.filter((b) => b.status === "checked_in").length;
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <Link
-            href="/kundportal/dashboard"
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Tillbaka till översikt
-          </Link>
+      {/* Header enligt designstandard */}
+      <header className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
+                <Calendar className="h-8 w-8" />
+                Mina bokningar
+              </h1>
+              <p className="text-base text-gray-600 mt-1">
+                Se och hantera dina pensionatsbokningar
+              </p>
+            </div>
 
-          <h1 className="text-3xl font-bold text-gray-900">Mina bokningar</h1>
-          <p className="mt-2 text-gray-600">
-            Se alla dina bokningar och fakturor
-          </p>
-        </div>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-4">
-            {[
-              {
-                key: "upcoming",
-                label: "Kommande",
-                count: bookings.filter(
-                  (b) =>
-                    b.status !== "cancelled" &&
-                    b.start_date >= new Date().toISOString().split("T")[0]
-                ).length,
-              },
-              {
-                key: "past",
-                label: "Tidigare",
-                count: bookings.filter(
-                  (b) =>
-                    (b.status === "checked_out" ||
-                      b.end_date < new Date().toISOString().split("T")[0]) &&
-                    b.status !== "cancelled"
-                ).length,
-              },
-              {
-                key: "cancelled",
-                label: "Avbokade",
-                count: bookings.filter((b) => b.status === "cancelled").length,
-              },
-              { key: "all", label: "Alla", count: bookings.length },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setFilter(tab.key as any)}
-                className={`px-4 py-3 border-b-2 font-medium text-sm transition-colors ${
-                  filter === tab.key
-                    ? "border-blue-600 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                {tab.label} ({tab.count})
-              </button>
-            ))}
+            {/* Stats */}
+            <div className="flex gap-4">
+              <div className="bg-[#E6F4EA] rounded-lg px-4 py-3 text-center">
+                <p className="text-2xl font-bold text-[#2c7a4c]">
+                  {upcomingCount}
+                </p>
+                <p className="text-xs text-gray-600">Kommande</p>
+              </div>
+              {activeCount > 0 && (
+                <div className="bg-blue-50 rounded-lg px-4 py-3 text-center">
+                  <p className="text-2xl font-bold text-blue-600">
+                    {activeCount}
+                  </p>
+                  <p className="text-xs text-gray-600">Aktiva</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Bookings List */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content */}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+        {/* Filter Tabs */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {[
+            {
+              key: "upcoming",
+              label: "Kommande",
+              count: bookings.filter(
+                (b) =>
+                  b.status !== "cancelled" &&
+                  b.start_date >= new Date().toISOString().split("T")[0]
+              ).length,
+            },
+            {
+              key: "past",
+              label: "Tidigare",
+              count: bookings.filter(
+                (b) =>
+                  (b.status === "checked_out" ||
+                    b.end_date < new Date().toISOString().split("T")[0]) &&
+                  b.status !== "cancelled"
+              ).length,
+            },
+            {
+              key: "cancelled",
+              label: "Avbokade",
+              count: bookings.filter((b) => b.status === "cancelled").length,
+            },
+            { key: "all", label: "Alla", count: bookings.length },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setFilter(tab.key as any)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                filter === tab.key
+                  ? "bg-[#2c7a4c] text-white shadow-sm"
+                  : "bg-white text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200"
+              }`}
+            >
+              {tab.label} ({tab.count})
+            </button>
+          ))}
+        </div>
+
+        {/* Bookings List */}
         {filteredBookings.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
             <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               Inga bokningar att visa
@@ -365,13 +388,13 @@ export default function MinaBokningarPage() {
             </p>
             <Link
               href="/kundportal/ny-bokning"
-              className="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+              className="inline-block bg-[#2c7a4c] text-white px-6 py-3 rounded-lg hover:bg-[#235d3a] font-medium"
             >
               Skapa ny bokning
             </Link>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {filteredBookings.map((booking) => (
               <div
                 key={booking.id}
@@ -519,7 +542,7 @@ export default function MinaBokningarPage() {
             ))}
           </div>
         )}
-      </div>
+      </main>
 
       {/* Cancellation Modal */}
       {showCancelModal && selectedBooking && cancellationCalc && (
