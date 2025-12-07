@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (u && session?.access_token) {
           // 🔍 KUNDCHECK FÖRST: Kolla om användaren är en hundägare
           // Kör detta FÖRST innan vi sätter org_id
-          await checkIfCustomer(u.id);
+          const isCustomerResult = await checkIfCustomer(u.id);
 
           // Endast för PERSONAL (inte kunder): Sätt org_id och kör onboarding
           const metaOrg = (u as any)?.user_metadata?.org_id as
@@ -102,7 +102,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             | undefined;
           const hasBusinessRole = metaOrg || (u as any)?.app_metadata?.role;
 
-          if (hasBusinessRole && !isCustomer) {
+          // ⚠️ VIKTIGT: Använd isCustomerResult direkt, INTE isCustomer state (stale closure!)
+          if (hasBusinessRole && !isCustomerResult) {
             // ✅ AWAIT så currentOrgId sätts FÖRE komponenterna renderas
             try {
               await safeAutoOnboarding(session.access_token);
