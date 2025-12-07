@@ -95,34 +95,37 @@ BEGIN
   END IF;
 END $$;
 
--- 3. Unik constraint på dogs per ägare+namn (förhindrar dubbla hundar)
--- OBS: Samma hund kan inte registreras två gånger hos samma ägare
+-- 3. Unik constraint på dogs per ägare+namn+org (förhindrar dubbla hundar inom samma org)
+-- OBS: Samma hund kan registreras hos OLIKA organisationer (hunddagis + pensionat)
+-- Men samma ägare kan INTE ha två hundar med samma namn hos SAMMA organisation
 DO $$ 
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_indexes WHERE indexname = 'dogs_owner_name_unique'
+    SELECT 1 FROM pg_indexes WHERE indexname = 'dogs_owner_name_org_unique'
   ) THEN
-    CREATE UNIQUE INDEX dogs_owner_name_unique 
-    ON dogs (owner_id, lower(name));
-    RAISE NOTICE '✅ Created: dogs_owner_name_unique';
+    CREATE UNIQUE INDEX dogs_owner_name_org_unique 
+    ON dogs (owner_id, lower(name), org_id)
+    WHERE org_id IS NOT NULL;
+    RAISE NOTICE '✅ Created: dogs_owner_name_org_unique';
   ELSE
-    RAISE NOTICE '⏭️ Skipped: dogs_owner_name_unique already exists';
+    RAISE NOTICE '⏭️ Skipped: dogs_owner_name_org_unique already exists';
   END IF;
 END $$;
 
--- 4. Unik constraint på interest_applications per email+org
--- OBS: Samma person kan inte skicka in flera ansökningar till samma org
+-- 4. Unik constraint på interest_applications per email+org+hund
+-- OBS: Samma person kan ansöka till FLERA organisationer
+-- Men kan INTE skicka dubbla ansökningar för SAMMA hund till SAMMA org
 DO $$ 
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_indexes WHERE indexname = 'applications_email_org_unique'
+    SELECT 1 FROM pg_indexes WHERE indexname = 'applications_email_dog_org_unique'
   ) THEN
-    CREATE UNIQUE INDEX applications_email_org_unique 
-    ON interest_applications (lower(email), org_id)
+    CREATE UNIQUE INDEX applications_email_dog_org_unique 
+    ON interest_applications (lower(parent_email), org_id, lower(COALESCE(dog_name, '')))
     WHERE status NOT IN ('rejected', 'cancelled');
-    RAISE NOTICE '✅ Created: applications_email_org_unique';
+    RAISE NOTICE '✅ Created: applications_email_dog_org_unique';
   ELSE
-    RAISE NOTICE '⏭️ Skipped: applications_email_org_unique already exists';
+    RAISE NOTICE '⏭️ Skipped: applications_email_dog_org_unique already exists';
   END IF;
 END $$;
 
