@@ -274,7 +274,7 @@ export default function CustomerDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <PawPrint className="h-12 w-12 text-[#2c7a4c] mx-auto mb-4 animate-spin" />
           <p className="text-gray-600">Laddar dina uppgifter...</p>
@@ -285,7 +285,7 @@ export default function CustomerDashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="max-w-md">
           <CardContent className="pt-6">
             <div className="text-center">
@@ -303,36 +303,48 @@ export default function CustomerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <PawPrint className="h-8 w-8 text-[#2c7a4c] mr-3" />
-              <h1 className="text-xl font-bold text-gray-800">
-                Min Kundportal
-              </h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header enligt designstandard */}
+      <header className="border-b border-gray-200 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <PawPrint className="h-8 w-8 text-[#2c7a4c]" />
+              <div>
+                <h1 className="text-2xl font-bold text-[#2c7a4c]">
+                  Min Kundportal
+                </h1>
+                <p className="text-sm text-gray-600">
+                  Välkommen, {currentOwner?.full_name || "Kund"}!
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Välkommen, {currentOwner?.full_name || "Kund"}!
-              </span>
-              <Button variant="ghost" size="sm">
-                <Settings className="h-4 w-4" />
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-gray-600 hover:text-gray-900"
+              >
+                <Settings className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4" />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="border-gray-300 text-gray-700 hover:bg-gray-100"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logga ut
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Navigation Tabs */}
-        <nav className="flex space-x-8 mb-8">
+      <main className="max-w-7xl mx-auto px-6 py-6">
+        {/* Navigation Tabs - enligt designstandard */}
+        <nav className="flex gap-2 mb-6">
           {[
             { key: "overview", label: "Översikt", icon: FileText },
             { key: "dogs", label: "Mina hundar", icon: PawPrint },
@@ -342,13 +354,13 @@ export default function CustomerDashboard() {
             <button
               key={key}
               onClick={() => setActiveTab(key as any)}
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeTab === key
-                  ? "bg-[#2c7a4c] text-white"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  ? "bg-[#2c7a4c] text-white shadow-sm"
+                  : "bg-white text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200"
               }`}
             >
-              <Icon className="h-4 w-4 mr-2" />
+              <Icon className="h-4 w-4" />
               {label}
             </button>
           ))}
@@ -357,58 +369,63 @@ export default function CustomerDashboard() {
         {/* Content based on active tab */}
         {activeTab === "overview" && (
           <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Snabbåtkomst</CardTitle>
+            {/* Quick Actions - enligt designstandard */}
+            <Card className="border border-gray-200 shadow-sm">
+              <CardHeader className="border-b border-gray-100 bg-gray-50">
+                <CardTitle className="text-lg font-semibold text-gray-900">
+                  Snabbåtkomst
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Link href="/kundportal/ny-bokning">
-                    <Button className="w-full h-20 bg-[#2c7a4c] hover:bg-[#236139] text-white flex flex-col">
-                      <Plus className="h-6 w-6 mb-2" />
-                      Ny bokning
+                    <Button className="w-full h-24 bg-[#2c7a4c] hover:bg-[#236139] text-white flex flex-col items-center justify-center gap-2 rounded-lg shadow-sm">
+                      <Plus className="h-6 w-6" />
+                      <span className="font-medium">Ny bokning</span>
                     </Button>
                   </Link>
 
                   <Link href="/kundportal/mina-hundar">
                     <Button
                       variant="outline"
-                      className="w-full h-20 flex flex-col"
+                      className="w-full h-24 flex flex-col items-center justify-center gap-2 border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white rounded-lg"
                     >
-                      <PawPrint className="h-6 w-6 mb-2" />
-                      Hantera hundar
+                      <PawPrint className="h-6 w-6" />
+                      <span className="font-medium">Hantera hundar</span>
                     </Button>
                   </Link>
 
                   <Button
                     variant="outline"
-                    className="w-full h-20 flex flex-col"
+                    className="w-full h-24 flex flex-col items-center justify-center gap-2 border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white rounded-lg"
                     onClick={() => setActiveTab("profile")}
                   >
-                    <Edit className="h-6 w-6 mb-2" />
-                    Uppdatera profil
+                    <Edit className="h-6 w-6" />
+                    <span className="font-medium">Uppdatera profil</span>
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Recent Bookings Summary */}
+            {/* Recent Bookings Summary - enligt designstandard */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
+              <Card className="border border-gray-200 shadow-sm">
+                <CardHeader className="border-b border-gray-100 bg-gray-50">
                   <div className="flex justify-between items-center">
-                    <CardTitle>Senaste bokningar</CardTitle>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      Senaste bokningar
+                    </CardTitle>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
                       onClick={() => setActiveTab("bookings")}
+                      className="border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white"
                     >
                       Visa alla →
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <div className="space-y-3">
                     {bookings.slice(0, 3).map((booking) => (
                       <div
@@ -452,18 +469,24 @@ export default function CustomerDashboard() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
+              <Card className="border border-gray-200 shadow-sm">
+                <CardHeader className="border-b border-gray-100 bg-gray-50">
                   <div className="flex justify-between items-center">
-                    <CardTitle>Mina hundar</CardTitle>
+                    <CardTitle className="text-lg font-semibold text-gray-900">
+                      Mina hundar
+                    </CardTitle>
                     <Link href="/kundportal/mina-hundar">
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white"
+                      >
                         Visa alla →
                       </Button>
                     </Link>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <div className="space-y-3">
                     {dogs.slice(0, 3).map((dog) => (
                       <div
@@ -793,7 +816,7 @@ export default function CustomerDashboard() {
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
