@@ -316,13 +316,15 @@ export interface Database {
       dogs: {
         Row: {
           id: string;
-          org_id: string;
+          org_id: string | null; // NULLABLE för pensionatkunder (Pattern 3)
           owner_id: string;
           room_id: string | null;
           name: string;
           breed: string | null;
           birth: string | null;
           heightcm: number | null;
+          weight_kg: number | null;
+          gender: string | null; // 'hane' | 'tik'
           subscription: string | null;
           days: string | null;
           startdate: string | null;
@@ -343,16 +345,34 @@ export interface Database {
           medications: string | null;
           special_needs: string | null;
           behavior_notes: string | null;
+          medical_notes: string | null;
+          // Insurance
+          insurance_company: string | null;
+          insurance_number: string | null;
+          // Behavior checkboxes
+          destroys_things: boolean | null;
+          is_house_trained: boolean | null;
+          is_escape_artist: boolean | null;
+          can_be_with_other_dogs: boolean | null;
+          can_share_room: boolean | null;
+          // Food info
+          food_type: string | null; // 'own' | 'pensionat'
+          food_brand: string | null;
+          food_amount: string | null;
+          food_times: string | null;
+          food_info: string | null;
         };
         Insert: {
           id?: string;
-          org_id: string;
+          org_id?: string | null; // Optional for pensionatkunder
           owner_id: string;
           room_id?: string | null;
           name: string;
           breed?: string | null;
           birth?: string | null;
           heightcm?: number | null;
+          weight_kg?: number | null;
+          gender?: string | null;
           subscription?: string | null;
           days?: string | null;
           startdate?: string | null;
@@ -372,16 +392,31 @@ export interface Database {
           medications?: string | null;
           special_needs?: string | null;
           behavior_notes?: string | null;
+          medical_notes?: string | null;
+          insurance_company?: string | null;
+          insurance_number?: string | null;
+          destroys_things?: boolean | null;
+          is_house_trained?: boolean | null;
+          is_escape_artist?: boolean | null;
+          can_be_with_other_dogs?: boolean | null;
+          can_share_room?: boolean | null;
+          food_type?: string | null;
+          food_brand?: string | null;
+          food_amount?: string | null;
+          food_times?: string | null;
+          food_info?: string | null;
         };
         Update: {
           id?: string;
-          org_id?: string;
+          org_id?: string | null;
           owner_id?: string;
           room_id?: string | null;
           name?: string;
           breed?: string | null;
           birth?: string | null;
           heightcm?: number | null;
+          weight_kg?: number | null;
+          gender?: string | null;
           subscription?: string | null;
           days?: string | null;
           startdate?: string | null;
@@ -401,6 +436,19 @@ export interface Database {
           medications?: string | null;
           special_needs?: string | null;
           behavior_notes?: string | null;
+          medical_notes?: string | null;
+          insurance_company?: string | null;
+          insurance_number?: string | null;
+          destroys_things?: boolean | null;
+          is_house_trained?: boolean | null;
+          is_escape_artist?: boolean | null;
+          can_be_with_other_dogs?: boolean | null;
+          can_share_room?: boolean | null;
+          food_type?: string | null;
+          food_brand?: string | null;
+          food_amount?: string | null;
+          food_times?: string | null;
+          food_info?: string | null;
         };
         Relationships: [
           {
@@ -422,28 +470,31 @@ export interface Database {
           id: string;
           dog_id: string;
           text: string | null;
+          content: string;
+          entry_type: string | null; // 'note' | 'checkin' | 'checkout' | 'health'
           created_at: string | null;
           org_id: string | null;
           user_id: string | null;
-          content: string;
         };
         Insert: {
           id?: string;
           dog_id: string;
           text?: string | null;
+          content?: string;
+          entry_type?: string | null;
           created_at?: string | null;
           org_id?: string | null;
           user_id?: string | null;
-          content?: string;
         };
         Update: {
           id?: string;
           dog_id?: string;
           text?: string | null;
+          content?: string;
+          entry_type?: string | null;
           created_at?: string | null;
           org_id?: string | null;
           user_id?: string | null;
-          content?: string;
         };
         Relationships: [
           {

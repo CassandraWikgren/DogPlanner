@@ -849,6 +849,12 @@ CREATE TABLE dogs (
 | `notes`                  | TEXT      | Allmänna anteckningar         | -                                            |
 | `created_at`             | TIMESTAMP | Skapad                        | Auto                                         |
 | `last_updated`           | TIMESTAMP | Senast uppdaterad             | Auto via trigger                             |
+| `can_share_room`         | BOOLEAN   | Kan dela rum på pensionat     | Default: false (pensionat-specifikt)         |
+| `food_type`              | TEXT      | Fodertyp                      | 'own' eller 'pensionat'                      |
+| `food_brand`             | TEXT      | Fodermärke                    | "Royal Canin", "Orijen"                      |
+| `food_amount`            | TEXT      | Mängd per mål                 | "2 dl", "150g"                               |
+| `food_times`             | TEXT      | Antal mål per dag             | "2 ggr/dag", "morgon och kväll"              |
+| `weight_kg`              | NUMERIC   | Vikt i kg                     | 25.5                                         |
 
 **⚠️ KRITISKT: heightcm (mankhöjd)**
 

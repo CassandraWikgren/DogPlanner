@@ -26,7 +26,7 @@ export async function fetchDogsWithRelations(
       checked_in, checkin_date, checkout_date, notes, created_at, updated_at,
       owners(id, full_name, phone, email, customer_number, contact_person_2, contact_phone_2),
       rooms(id, name, capacity_m2, room_type),
-      dog_journal(id, text, journal_type, created_at),
+      dog_journal(id, text, content, entry_type, created_at),
       extra_service_performed(
         id, quantity, performed_at, notes,
         extra_service_id,
