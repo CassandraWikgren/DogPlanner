@@ -1,10 +1,10 @@
 # 🗄️ Supabase Databasstruktur - DogPlanner (KOMPLETT)
 
-**Uppdaterad:** 7 December 2025 (senast: Customer read policies för pensionatspriser, Min profil read-only namn)  
+**Uppdaterad:** 7 December 2025 (senast: Förtydligad kund/personal-separation med olika e-postadresser)  
 **Version:** Next.js 15.5.7 + React 19.2.0 + Supabase (@supabase/ssr 0.8.0)  
 **Schema verifierat:** ✅ Alla funktioner och triggers verifierade i produktion  
 **RLS Status:** 🔒 Aktiverat på alla kritiska tabeller - Multi-tenant säkert  
-**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, **Duplicate prevention**, Race condition fixes, **Customer public read policies**
+**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, **Duplicate prevention**, Race condition fixes, **Customer public read policies**, **Robust checkIfCustomer() med boolean return**
 
 ---
 
@@ -101,23 +101,38 @@ Kundportalen (`/kundportal/*`) är helt separat från personalvyn och har egen l
 
 ### 🛡️ KUND/PERSONAL-SEPARATION (7 December 2025)
 
-Systemet skiljer automatiskt på kunder och personal via `isCustomer`-flaggan i AuthContext:
+Systemet skiljer automatiskt på kunder och personal via `isCustomer`-flaggan i AuthContext.
+
+#### ⚠️ VIKTIGT: Olika e-postadresser krävs
+
+En person kan vara **BÅDE** personal OCH kund, men måste använda **OLIKA e-postadresser**:
+
+| Roll         | Tabell     | E-post          | Inloggning          | Exempel                  |
+| ------------ | ---------- | --------------- | ------------------- | ------------------------ |
+| **Personal** | `profiles` | Företags-e-post | `/login`            | anna@hunddagis.se        |
+| **Kund**     | `owners`   | Privat e-post   | `/kundportal/login` | anna.andersson@gmail.com |
+
+**Scenario: Anna jobbar på hunddagis OCH vill boka pensionat för sin privata hund**
+
+1. **Som personal** (anna@hunddagis.se):
+   - UUID: `abc-123` i auth.users
+   - `profiles.id = abc-123` med `org_id = <dagis-org>`
+   - Loggar in på `/login` → Ser personalvyn
+
+2. **Som kund** (anna.andersson@gmail.com):
+   - UUID: `xyz-789` i auth.users (ANNAT UUID!)
+   - `owners.id = xyz-789` med `org_id = NULL`
+   - Loggar in på `/kundportal/login` → Ser kundportalen
+
+**Två olika Supabase Auth-konton** = Helt separerade identiteter.
+
+#### checkIfCustomer() - Logik (uppdaterad 7 Dec 2025)
 
 ```typescript
-// AuthContext - checkIfCustomer()
-// 1. Kolla om användaren har profiles.org_id (= personal)
-const { data: profileData } = await supabase
-  .from("profiles")
-  .select("org_id")
-  .eq("id", userId)
-  .maybeSingle();
+// AuthContext - checkIfCustomer(): Promise<boolean>
+// VIKTIGT: Returnerar boolean och kollar owners FÖRST!
 
-if (profileData?.org_id) {
-  setIsCustomer(false); // 👔 Personal med org_id
-  return;
-}
-
-// 2. Kolla om användaren finns i owners (= kund)
+// 1. Kolla om användaren finns i owners (= kund)
 const { data: ownerData } = await supabase
   .from("owners")
   .select("id")
@@ -125,8 +140,24 @@ const { data: ownerData } = await supabase
   .maybeSingle();
 
 if (ownerData) {
-  setIsCustomer(true); // 🐕 Kund utan org_id
+  setIsCustomer(true);
+  setCurrentOrgId(null); // Kunder har INTE org_id
+  return true; // ← KUND
 }
+
+// 2. Kolla om användaren har profiles.org_id (= personal)
+const { data: profileData } = await supabase
+  .from("profiles")
+  .select("org_id")
+  .eq("id", userId)
+  .maybeSingle();
+
+if (profileData?.org_id) {
+  setIsCustomer(false);
+  return false; // ← PERSONAL
+}
+
+return false; // Varken kund eller personal
 ```
 
 **Resultat:**
@@ -467,14 +498,16 @@ Supabase sköter autentiseringen automatiskt. Denna tabell finns i `auth` schema
 
 ### **Två typer av användare i DogPlanner**
 
-| Typ                    | Tabell     | auth.users koppling           | Inloggning          |
-| ---------------------- | ---------- | ----------------------------- | ------------------- |
-| **Företagsanvändare**  | `profiles` | `profiles.id = auth.users.id` | `/login`            |
-| **Kunder (hundägare)** | `owners`   | `owners.id = auth.users.id`   | `/kundportal/login` |
+| Typ                    | Tabell     | auth.users koppling           | Inloggning          | E-post typ      |
+| ---------------------- | ---------- | ----------------------------- | ------------------- | --------------- |
+| **Företagsanvändare**  | `profiles` | `profiles.id = auth.users.id` | `/login`            | Företags-e-post |
+| **Kunder (hundägare)** | `owners`   | `owners.id = auth.users.id`   | `/kundportal/login` | Privat e-post   |
 
 **⚠️ VIKTIGT:** `profiles` och `owners` är SEPARATA tabeller!
 
-- En person kan vara BÅDE företagsanvändare OCH kund (med olika e-postadresser)
+- En person kan vara BÅDE företagsanvändare OCH kund - **men måste använda OLIKA e-postadresser**
+- Företagsmail för personal (t.ex. `anna@hunddagis.se`)
+- Privatmail för kundkonto (t.ex. `anna.andersson@gmail.com`)
 - `profiles.role` = 'admin' eller 'staff' (EJ 'owner'!)
 - Kunder finns ALDRIG i `profiles`, de finns i `owners`
 
