@@ -81,6 +81,7 @@ export default function KundportalLayout({
     { href: "/kundportal/dashboard", label: "Min portal", icon: Home },
     { href: "/kundportal/mina-hundar", label: "Mina hundar", icon: PawPrint },
     { href: "/kundportal/mina-bokningar", label: "Bokningar", icon: Calendar },
+    { href: "/kundportal/min-profil", label: "Min profil", icon: User },
   ];
 
   // För publika sidor (login, registrera), visa bara children utan header
