@@ -185,9 +185,9 @@ export default function HundpensionatPage() {
           *,
           dogs (
             *,
-            owners (*),
-            rooms (*)
-          )
+            owners (*)
+          ),
+          rooms (*)
         `
         )
         .eq("org_id", effectiveOrgId)
