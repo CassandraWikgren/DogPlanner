@@ -9,15 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  PawPrint,
-  Calendar,
-  Plus,
-  Phone,
-  Mail,
-  XCircle,
-  ChevronRight,
-} from "lucide-react";
+import { PawPrint, Calendar, Plus, Phone, Mail, XCircle } from "lucide-react";
 
 interface Owner {
   id: string;
@@ -148,6 +140,16 @@ export default function CustomerDashboard() {
     return <Badge className={`${config.color} border`}>{config.text}</Badge>;
   };
 
+  // Hjälpfunktion för att formatera namn med stor bokstav
+  const formatName = (name: string | undefined | null): string => {
+    if (!name) return "";
+    // Hantera fall där namnet kan vara "testkund3" eller "Mia Nilsson"
+    return name
+      .split(" ")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ");
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("sv-SE", {
       day: "numeric",
@@ -198,7 +200,9 @@ export default function CustomerDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
-                Hej, {currentOwner?.full_name?.split(" ")[0] || "där"}! 👋
+                Hej,{" "}
+                {formatName(currentOwner?.full_name?.split(" ")[0]) || "där"}!
+                👋
               </h1>
               {currentOwner?.customer_number && (
                 <p className="text-sm text-gray-400 mt-1 font-medium">
@@ -211,23 +215,51 @@ export default function CustomerDashboard() {
       </header>
 
       <main className="max-w-2xl mx-auto px-6 py-8 space-y-8">
-        {/* CTA - Boka pensionatvistelse */}
-        <Link href="/kundportal/ny-bokning" className="block group">
-          <div className="bg-gradient-to-r from-[#2c7a4c] to-[#3d9960] text-white rounded-2xl p-6 flex items-center justify-between shadow-sm hover:shadow-md transition-all duration-200">
-            <div className="flex items-center gap-5">
-              <div className="bg-white/15 rounded-xl p-3.5">
-                <Plus className="h-6 w-6" strokeWidth={2.5} />
-              </div>
-              <div>
-                <p className="font-semibold text-lg">Boka pensionatvistelse</p>
-                <p className="text-white/70 text-sm mt-0.5">
-                  Välj datum och hund
-                </p>
-              </div>
+        {/* Snabbnavigation - diskret och enhetlig */}
+        <div className="grid grid-cols-4 gap-3">
+          <Link
+            href="/kundportal/mina-hundar"
+            className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all text-center group"
+          >
+            <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+              <PawPrint className="h-5 w-5 text-emerald-600" />
             </div>
-            <ChevronRight className="h-5 w-5 text-white/50 group-hover:translate-x-1 transition-transform" />
-          </div>
-        </Link>
+            <span className="text-xs font-medium text-gray-600">
+              Mina hundar
+            </span>
+          </Link>
+          <Link
+            href="/kundportal/mina-bokningar"
+            className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all text-center group"
+          >
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+              <Calendar className="h-5 w-5 text-blue-600" />
+            </div>
+            <span className="text-xs font-medium text-gray-600">Bokningar</span>
+          </Link>
+          <Link
+            href="/kundportal/ny-bokning"
+            className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all text-center group"
+          >
+            <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center group-hover:bg-gray-100 transition-colors">
+              <Plus className="h-5 w-5 text-gray-600" />
+            </div>
+            <span className="text-xs font-medium text-gray-600">
+              Ny bokning
+            </span>
+          </Link>
+          <Link
+            href="/kundportal/min-profil"
+            className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all text-center group"
+          >
+            <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+              <Mail className="h-5 w-5 text-purple-600" />
+            </div>
+            <span className="text-xs font-medium text-gray-600">
+              Min profil
+            </span>
+          </Link>
+        </div>
 
         {/* Mina hundar */}
         <section>

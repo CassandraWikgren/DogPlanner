@@ -76,13 +76,19 @@ export default function KundportalLayout({
     router.push("/kundportal/login");
   };
 
-  // Navigation items för kunder
+  // Navigation items för kunder - bara visa på mobil (i hamburgermenyn)
   const navItems = [
     { href: "/kundportal/dashboard", label: "Min portal", icon: Home },
     { href: "/kundportal/mina-hundar", label: "Mina hundar", icon: PawPrint },
     { href: "/kundportal/mina-bokningar", label: "Bokningar", icon: Calendar },
     { href: "/kundportal/min-profil", label: "Min profil", icon: User },
   ];
+
+  // Hjälpfunktion för att formatera namn med stor bokstav
+  const formatName = (name: string | undefined | null): string => {
+    if (!name) return "";
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  };
 
   // För publika sidor (login, registrera), visa bara children utan header
   if (isPublicPage) {
@@ -125,26 +131,9 @@ export default function KundportalLayout({
               />
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Desktop: Tom navigation (länkarna finns i dashboarden istället) */}
             <nav className="hidden md:flex items-center gap-1">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive
-                        ? "bg-white/20 text-white"
-                        : "text-white/80 hover:text-white hover:bg-white/10"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                  </Link>
-                );
-              })}
+              {/* Navigation borttagen från header - finns i dashboard quick links */}
             </nav>
 
             {/* User Menu - Desktop */}
@@ -158,13 +147,10 @@ export default function KundportalLayout({
               <div className="flex items-center gap-3">
                 <div className="text-right text-sm">
                   <p className="font-medium">
-                    {owner?.full_name || user.email?.split("@")[0]}
+                    {formatName(owner?.full_name) ||
+                      formatName(user.email?.split("@")[0])}
                   </p>
-                  <p className="text-white/70 text-xs">
-                    {owner?.customer_number
-                      ? `Kund #${owner.customer_number}`
-                      : "Hundägare"}
-                  </p>
+                  <p className="text-white/70 text-xs">Hundägare</p>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -216,13 +202,10 @@ export default function KundportalLayout({
                 <div className="flex items-center justify-between px-4 py-2">
                   <div className="text-sm">
                     <p className="font-medium">
-                      {owner?.full_name || user.email?.split("@")[0]}
+                      {formatName(owner?.full_name) ||
+                        formatName(user.email?.split("@")[0])}
                     </p>
-                    <p className="text-white/70 text-xs">
-                      {owner?.customer_number
-                        ? `Kund #${owner.customer_number}`
-                        : "Hundägare"}
-                    </p>
+                    <p className="text-white/70 text-xs">Hundägare</p>
                   </div>
                   <button
                     onClick={handleLogout}
