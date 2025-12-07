@@ -91,17 +91,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         setUser(u);
 
-        // ✅ SNABB FALLBACK: Sätt org_id direkt från user_metadata
-        // Detta gör att sidor kan börja ladda data omedelbart
-        const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
-        if (metaOrg) {
-          setCurrentOrgId(metaOrg);
-          console.log("AuthContext: Quick org_id set from metadata:", metaOrg);
-        }
-
         if (u && session?.access_token) {
-          // Endast kör API-anrop för business users (med org_id eller role)
-          // Kundportal-användare och offentliga besökare behöver inte onboarding/subscription
+          // 🔍 KUNDCHECK FÖRST: Kolla om användaren är en hundägare
+          // Kör detta FÖRST innan vi sätter org_id
+          await checkIfCustomer(u.id);
+
+          // Endast för PERSONAL (inte kunder): Sätt org_id och kör onboarding
+          const metaOrg = (u as any)?.user_metadata?.org_id as
+            | string
+            | undefined;
           const hasBusinessRole = metaOrg || (u as any)?.app_metadata?.role;
 
           if (hasBusinessRole) {
@@ -119,13 +117,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 console.error("Background subscription check failed:", err)
               );
             }, 100); // 100ms delay för att släppa igenom initial render
-          } else {
-            // Kundportal-användare: Läs profil i bakgrunden med delay
-            setTimeout(() => {
-              refreshProfile(u.id).catch((err) =>
-                console.error("Profile refresh failed:", err)
-              );
-            }, 100);
           }
         } else {
           setProfile(null);
@@ -207,21 +198,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log("AuthContext: Session loaded, user:", u?.id || "none");
       setUser(u);
 
-      // ✅ KRITISK FIX: Sätt org_id DIREKT från metadata innan profile-uppslag
-      const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
-      if (metaOrg) {
-        setCurrentOrgId(metaOrg);
-        console.log("AuthContext: Quick org_id set in init:", metaOrg);
-      }
-
       setLoading(false); // ⬆️ Sätt loading=false tidigt så sidor kan börja rendera
 
       if (u && session?.access_token) {
-        // 🔍 KUNDCHECK: Kolla om användaren är en hundägare (finns i owners-tabellen)
-        checkIfCustomer(u.id);
+        // 🔍 KUNDCHECK FÖRST: Kolla om användaren är en hundägare
+        // VIKTIGT: await här så vi vet om de är kund INNAN vi sätter org_id
+        await checkIfCustomer(u.id);
 
-        // Kör dessa i bakgrunden utan att blockera rendering
-        // Men hoppa över för publika användare (om de inte har org_id i metadata)
+        // ✅ EFTER kundcheck: Sätt org_id endast för PERSONAL (inte kunder)
+        // Kunder ska INTE ha currentOrgId satt (de har org_id = NULL i owners)
+        const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
+
+        // Kör refreshProfile endast om användaren inte är kund
+        // (checkIfCustomer har redan satt isCustomer och rensat org_id för kunder)
         if (metaOrg || (u as any)?.app_metadata?.role) {
           safeAutoOnboarding(session.access_token)
             .then(() => refreshProfile(u.id))
@@ -234,43 +223,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // 🐕 Kolla om användaren är en hundägare/kund (finns i owners MEN INTE som personal)
-  // En "ren kund" är någon som:
-  // 1. Finns i owners-tabellen
-  // 2. INTE har en profil med org_id (dvs inte är personal/admin)
+  // 🐕 Kolla om användaren är en hundägare/kund (finns i owners)
+  // LOGIK (uppdaterad 7 dec 2025):
+  // 1. Om användaren finns i owners-tabellen → DE ÄR KUND
+  // 2. Profiles-tabellen ignoreras för kunder (kan finnas "skräp-profiler")
+  // 3. Personal finns INTE i owners-tabellen
   async function checkIfCustomer(userId: string) {
     try {
       const supabase = createClient();
 
-      // Kolla först om användaren har en profil med org_id (= personal)
+      // STEG 1: Kolla om användaren finns i owners-tabellen
+      // Om ja → de är ALLTID kund, oavsett profiles
+      const { data: ownerData, error: ownerError } = await supabase
+        .from("owners")
+        .select("id")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (ownerData && !ownerError) {
+        console.log(
+          "AuthContext: � User is a CUSTOMER (found in owners table)"
+        );
+        setIsCustomer(true);
+
+        // VIKTIG: Rensa org_id för kunder så de inte får tillgång till personalvyer
+        // Kunder har org_id = NULL, de ska inte ha currentOrgId satt
+        setCurrentOrgId(null);
+        setProfile(null);
+        setRole(null);
+        return;
+      }
+
+      // STEG 2: Om inte i owners → kolla profiles för personal
       const { data: profileData } = await supabase
         .from("profiles")
         .select("org_id")
         .eq("id", userId)
         .maybeSingle();
 
-      // Om användaren har org_id i profiles = de är personal, INTE kund
       if (profileData?.org_id) {
-        console.log("AuthContext: 👔 User is staff (has org_id in profiles)");
+        console.log(
+          "AuthContext: � User is STAFF (has org_id in profiles, not in owners)"
+        );
         setIsCustomer(false);
         return;
       }
 
-      // Kolla om användaren finns i owners-tabellen (pensionatkunder)
-      const { data: ownerData, error } = await supabase
-        .from("owners")
-        .select("id")
-        .eq("id", userId)
-        .maybeSingle();
-
-      if (ownerData && !error) {
-        console.log(
-          "AuthContext: 🐕 User is a customer (found in owners, no org_id in profiles)"
-        );
-        setIsCustomer(true);
-      } else {
-        setIsCustomer(false);
-      }
+      // Varken kund eller personal
+      console.log("AuthContext: ❓ User is neither customer nor staff");
+      setIsCustomer(false);
     } catch (error) {
       console.error("Error checking customer status:", error);
       setIsCustomer(false);
