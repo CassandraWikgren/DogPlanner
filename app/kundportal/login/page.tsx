@@ -65,6 +65,10 @@ function LoginPageContent() {
       );
 
       if (authError) {
+        console.error("[AUTH ERROR] Full error object:", authError);
+        console.error("[AUTH ERROR] Message:", authError.message);
+        console.error("[AUTH ERROR] Status:", authError.status);
+
         let errorMessage = authError.message;
         if (authError.message.includes("Email not confirmed")) {
           errorMessage =
@@ -72,6 +76,12 @@ function LoginPageContent() {
         } else if (authError.message.includes("Invalid login credentials")) {
           errorMessage =
             "Fel e-postadress eller lösenord. Kontrollera dina uppgifter och försök igen.";
+        } else if (
+          authError.message.includes("Database error") ||
+          authError.status === 500
+        ) {
+          errorMessage =
+            "Ett serverfel uppstod. Vänligen försök igen om en stund.";
         }
         throw new Error(`${ERROR_CODES.AUTH} ${errorMessage}`);
       }
