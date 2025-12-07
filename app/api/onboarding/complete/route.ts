@@ -32,6 +32,67 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Ogiltigt orgName." }, { status: 400 });
     }
 
+    // 🔒 RACE CONDITION CHECK: Kolla om användaren redan har en org
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("org_id")
+      .eq("id", userId)
+      .single();
+
+    if (existingProfile?.org_id) {
+      console.log(
+        "✅ Användare redan kopplad till org:",
+        existingProfile.org_id
+      );
+      return NextResponse.json({
+        ok: true,
+        msg: "Användaren har redan en organisation.",
+        org_id: existingProfile.org_id,
+      });
+    }
+
+    // 🔒 DUPLICATE CHECK: Kolla om org med samma email redan finns
+    const userEmail = userData.user.email || "";
+    let existingOrg = null;
+
+    if (userEmail) {
+      const { data } = await supabase
+        .from("orgs")
+        .select("id")
+        .eq("email", userEmail)
+        .maybeSingle();
+      existingOrg = data;
+    }
+
+    if (existingOrg) {
+      console.log(
+        "🔄 Org finns redan för email, kopplar till befintlig:",
+        existingOrg.id
+      );
+
+      // Koppla användaren till befintlig org
+      const patch: Record<string, any> = {
+        org_id: existingOrg.id,
+        role: "admin",
+      };
+      if (fullName && typeof fullName === "string") patch.full_name = fullName;
+
+      const { error: profErr } = await supabase
+        .from("profiles")
+        .update(patch)
+        .eq("id", userId);
+
+      if (profErr) {
+        return NextResponse.json({ error: profErr.message }, { status: 400 });
+      }
+
+      return NextResponse.json({
+        ok: true,
+        msg: "Kopplad till befintlig organisation.",
+        org_id: existingOrg.id,
+      });
+    }
+
     // 3) Skapa organisation
     const { data: org, error: orgErr } = await supabase
       .from("orgs")

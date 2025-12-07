@@ -155,21 +155,52 @@ export default function InterestApplicationModal({
 
     try {
       const supabase = createClient();
-      // 1. Skapa ägare
-      const { data: ownerData, error: ownerError } = await supabase
-        .from("owners")
-        .insert({
-          org_id: currentOrgId,
-          full_name: parentName,
-          email: parentEmail,
-          phone: parentPhone,
-          city: application.owner_city || null,
-          address: application.owner_address || null,
-        })
-        .select()
+
+      // 🔒 RACE CONDITION CHECK: Verifiera att ansökan inte redan är godkänd
+      const { data: currentApp } = await supabase
+        .from("interest_applications")
+        .select("status")
+        .eq("id", application.id)
         .single();
 
-      if (ownerError) throw ownerError;
+      if (currentApp?.status === "accepted") {
+        setError("Denna ansökan är redan godkänd!");
+        setSaving(false);
+        return;
+      }
+
+      // 🔒 DUPLICATE CHECK: Kolla om ägare med samma email redan finns i denna org
+      const { data: existingOwner } = await supabase
+        .from("owners")
+        .select("id, full_name")
+        .eq("org_id", currentOrgId)
+        .eq("email", parentEmail)
+        .maybeSingle();
+
+      let ownerId: string;
+
+      if (existingOwner) {
+        // Använd befintlig ägare istället för att skapa ny
+        console.log("🔄 Ägare finns redan:", existingOwner.full_name);
+        ownerId = existingOwner.id;
+      } else {
+        // 1. Skapa ägare
+        const { data: ownerData, error: ownerError } = await supabase
+          .from("owners")
+          .insert({
+            org_id: currentOrgId,
+            full_name: parentName,
+            email: parentEmail,
+            phone: parentPhone,
+            city: application.owner_city || null,
+            address: application.owner_address || null,
+          })
+          .select()
+          .single();
+
+        if (ownerError) throw ownerError;
+        ownerId = ownerData.id;
+      }
 
       // 2. Beräkna waitlist baserat på preferred_start_date
       const today = new Date();
@@ -187,7 +218,7 @@ export default function InterestApplicationModal({
       // 3. Skapa hund
       const { error: dogError } = await supabase.from("dogs").insert({
         org_id: currentOrgId,
-        owner_id: ownerData.id,
+        owner_id: ownerId,
         name: dogName,
         breed: dogBreed || null,
         birth: dogBirth || application.dog_birth || null, // ✅ Använd uppdaterat födelsedatum
