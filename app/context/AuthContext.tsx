@@ -96,16 +96,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Kör detta FÖRST innan vi sätter org_id
           const isCustomerResult = await checkIfCustomer(u.id);
 
-          // Endast för PERSONAL (inte kunder): Sätt org_id och kör onboarding
-          const metaOrg = (u as any)?.user_metadata?.org_id as
-            | string
-            | undefined;
-          const hasBusinessRole = metaOrg || (u as any)?.app_metadata?.role;
-
           // ⚠️ VIKTIGT: Använd isCustomerResult direkt, INTE isCustomer state (stale closure!)
-          if (hasBusinessRole && !isCustomerResult) {
+          // Om INTE kund → kör refreshProfile för personal
+          if (!isCustomerResult) {
             // ✅ AWAIT så currentOrgId sätts FÖRE komponenterna renderas
             try {
+              console.log(
+                "🔄 onAuthStateChange: Running refreshProfile for staff..."
+              );
               await safeAutoOnboarding(session.access_token);
               await refreshProfile(u.id);
               await refreshSubscription(session.access_token);
@@ -215,14 +213,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return; // Avbryt här - kunder behöver inte onboarding/subscription
         }
 
-        // Endast för PERSONAL: Kör onboarding och refreshProfile
-        const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
-        if (metaOrg || (u as any)?.app_metadata?.role) {
-          // ✅ AWAIT refreshProfile så currentOrgId sätts FÖRE loading=false
-          await safeAutoOnboarding(session.access_token);
-          await refreshProfile(u.id);
-          await refreshSubscription(session.access_token);
-        }
+        // Endast för PERSONAL (icke-kunder): Kör onboarding och refreshProfile
+        // ⚠️ ALLTID KÖR refreshProfile - oavsett user_metadata
+        // Äldre användare kan sakna user_metadata.org_id
+        console.log("🔄 AuthContext: User is staff, running refreshProfile...");
+        await safeAutoOnboarding(session.access_token);
+        await refreshProfile(u.id);
+        await refreshSubscription(session.access_token);
 
         setLoading(false); // ✅ Sätt loading=false EFTER allt är klart
       } else {
