@@ -98,14 +98,16 @@ export default function MinaBokningarPage() {
       setError(null);
 
       // Hitta owner_id för inloggad användare
+      // owners.id = auth.users.id vid kundportal-registrering
       const { data: ownerData, error: ownerError } = await supabase
         .from("owners")
         .select("id")
-        .eq("user_id", user.id)
-        .single();
+        .eq("id", user.id)
+        .maybeSingle();
 
-      if (ownerError || !ownerData) {
-        setError("Kunde inte hitta din kundprofil");
+      // Om ingen owner hittades, visa tom-state istället för fel
+      if (!ownerData) {
+        setBookings([]);
         setLoading(false);
         return;
       }
@@ -295,29 +297,29 @@ export default function MinaBokningarPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header enligt designstandard */}
       <header className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
-                <Calendar className="h-8 w-8" />
+              <h1 className="text-2xl font-bold text-gray-900 leading-tight flex items-center gap-2">
+                <Calendar className="h-6 w-6 text-[#2c7a4c]" />
                 Mina bokningar
               </h1>
-              <p className="text-base text-gray-600 mt-1">
+              <p className="text-sm text-gray-500 mt-1">
                 Se och hantera dina pensionatsbokningar
               </p>
             </div>
 
             {/* Stats */}
-            <div className="flex gap-4">
-              <div className="bg-[#E6F4EA] rounded-lg px-4 py-3 text-center">
-                <p className="text-2xl font-bold text-[#2c7a4c]">
+            <div className="flex gap-3">
+              <div className="bg-[#E6F4EA] rounded-lg px-3 py-2 text-center">
+                <p className="text-xl font-bold text-[#2c7a4c]">
                   {upcomingCount}
                 </p>
                 <p className="text-xs text-gray-600">Kommande</p>
               </div>
               {activeCount > 0 && (
-                <div className="bg-blue-50 rounded-lg px-4 py-3 text-center">
-                  <p className="text-2xl font-bold text-blue-600">
+                <div className="bg-blue-50 rounded-lg px-3 py-2 text-center">
+                  <p className="text-xl font-bold text-blue-600">
                     {activeCount}
                   </p>
                   <p className="text-xs text-gray-600">Aktiva</p>
@@ -329,9 +331,9 @@ export default function MinaBokningarPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-5">
         {/* Filter Tabs */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-5">
           {[
             {
               key: "upcoming",
@@ -362,7 +364,7 @@ export default function MinaBokningarPage() {
             <button
               key={tab.key}
               onClick={() => setFilter(tab.key as any)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 filter === tab.key
                   ? "bg-[#2c7a4c] text-white shadow-sm"
                   : "bg-white text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200"
@@ -375,12 +377,12 @@ export default function MinaBokningarPage() {
 
         {/* Bookings List */}
         {filteredBookings.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-10 text-center">
+            <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <h3 className="text-base font-medium text-gray-900 mb-1">
               Inga bokningar att visa
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-sm text-gray-500 mb-5">
               {filter === "upcoming" && "Du har inga kommande bokningar"}
               {filter === "past" && "Du har inga tidigare bokningar"}
               {filter === "cancelled" && "Du har inga avbokade bokningar"}
@@ -388,7 +390,7 @@ export default function MinaBokningarPage() {
             </p>
             <Link
               href="/kundportal/ny-bokning"
-              className="inline-block bg-[#2c7a4c] text-white px-6 py-3 rounded-lg hover:bg-[#235d3a] font-medium"
+              className="inline-block bg-[#2c7a4c] text-white px-5 py-2.5 rounded-lg hover:bg-[#235d3a] text-sm font-medium"
             >
               Skapa ny bokning
             </Link>

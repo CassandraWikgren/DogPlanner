@@ -227,22 +227,22 @@ export default function MinaHundarPage() {
 
       {/* Header enligt designstandard */}
       <header className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight flex items-center gap-2">
-                <Dog className="h-8 w-8" />
+              <h1 className="text-2xl font-bold text-gray-900 leading-tight flex items-center gap-2">
+                <Dog className="h-6 w-6 text-[#2c7a4c]" />
                 Mina hundar
               </h1>
-              <p className="text-base text-gray-600 mt-1">
+              <p className="text-sm text-gray-500 mt-1">
                 Hantera och uppdatera dina hundprofiler
               </p>
             </div>
 
             {/* Stats */}
-            <div className="flex gap-4">
-              <div className="bg-[#E6F4EA] rounded-lg px-4 py-3 text-center">
-                <p className="text-2xl font-bold text-[#2c7a4c]">
+            <div className="flex gap-3">
+              <div className="bg-[#E6F4EA] rounded-lg px-3 py-2 text-center">
+                <p className="text-xl font-bold text-[#2c7a4c]">
                   {dogs.length}
                 </p>
                 <p className="text-xs text-gray-600">Registrerade hundar</p>
@@ -253,22 +253,22 @@ export default function MinaHundarPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-5">
         {/* Error message */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-300 rounded-lg p-4">
-            <p className="text-red-800">{error}</p>
+          <div className="mb-5 bg-red-50 border border-red-300 rounded-lg p-3">
+            <p className="text-red-800 text-sm">{error}</p>
           </div>
         )}
 
         {/* Add New Button */}
         {!isAddingNew && !editingDog && (
-          <div className="mb-6 flex justify-end">
+          <div className="mb-5 flex justify-end">
             <button
               onClick={handleAddNew}
-              className="flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium shadow-sm"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors text-sm font-medium shadow-sm"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4" />
               Lägg till hund
             </button>
           </div>
@@ -276,23 +276,23 @@ export default function MinaHundarPage() {
 
         {/* Add/Edit Form */}
         {(isAddingNew || editingDog) && (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-5 mb-5">
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-xl font-bold text-gray-800">
                 {isAddingNew ? "Lägg till ny hund" : "Redigera hundprofil"}
               </h2>
               <button
                 onClick={handleCancel}
-                className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Namn */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Namn <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -301,7 +301,7 @@ export default function MinaHundarPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   placeholder="T.ex. Bella"
                   required
                 />
@@ -309,7 +309,7 @@ export default function MinaHundarPage() {
 
               {/* Ras */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Ras
                 </label>
                 <select
@@ -317,7 +317,7 @@ export default function MinaHundarPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, breed: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white"
                 >
                   <option value="">Välj ras...</option>
                   {DOG_BREEDS.map((breed) => (
@@ -330,7 +330,7 @@ export default function MinaHundarPage() {
 
               {/* Födelsedatum */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Födelsedatum
                 </label>
                 <input
@@ -339,13 +339,13 @@ export default function MinaHundarPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, birth: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                 />
               </div>
 
               {/* Mankhöjd */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Mankhöjd (cm) <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -359,12 +359,12 @@ export default function MinaHundarPage() {
                         : null,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   placeholder="T.ex. 45"
                   required
                 />
                 {formData.heightcm && (
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     Storlek: {getSizeCategory(formData.heightcm)}
                   </p>
                 )}
@@ -372,7 +372,7 @@ export default function MinaHundarPage() {
 
               {/* Vaccination DHP */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Vaccination DHP (datum)
                 </label>
                 <input
@@ -381,13 +381,13 @@ export default function MinaHundarPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, vaccdhp: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                 />
               </div>
 
               {/* Vaccination PI */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Vaccination PI (datum)
                 </label>
                 <input
@@ -396,13 +396,13 @@ export default function MinaHundarPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, vaccpi: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                 />
               </div>
 
               {/* Foto URL (placeholder) */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Foto URL
                 </label>
                 <input
@@ -411,17 +411,17 @@ export default function MinaHundarPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, photo_url: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   placeholder="https://..."
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   (Bilduppladdning kommer snart)
                 </p>
               </div>
 
               {/* Anteckningar */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Anteckningar (mat, allergier, beteende)
                 </label>
                 <textarea
@@ -429,26 +429,26 @@ export default function MinaHundarPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                  rows={3}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                   placeholder="Skriv om matpreferenser, allergier, beteende, mediciner etc."
                 />
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 mt-6">
+            <div className="flex gap-3 mt-5">
               <button
                 onClick={handleSave}
                 disabled={!formData.name || !formData.heightcm}
-                className="flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Save className="w-5 h-5" />
+                <Save className="w-4 h-4" />
                 Spara
               </button>
               <button
                 onClick={handleCancel}
-                className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium"
+                className="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium"
               >
                 Avbryt
               </button>
@@ -458,19 +458,19 @@ export default function MinaHundarPage() {
 
         {/* Dogs List */}
         {!isAddingNew && !editingDog && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {dogs.length === 0 ? (
-              <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center">
-                <Dog className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-10 text-center">
+                <Dog className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <h3 className="text-base font-semibold text-gray-800 mb-1">
                   Inga hundar ännu
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-sm text-gray-500 mb-5">
                   Lägg till din första hund för att kunna göra bokningar
                 </p>
                 <button
                   onClick={handleAddNew}
-                  className="px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium"
+                  className="px-5 py-2.5 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors text-sm font-medium"
                 >
                   Lägg till hund
                 </button>
