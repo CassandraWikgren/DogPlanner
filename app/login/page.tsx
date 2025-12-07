@@ -43,7 +43,32 @@ export default function LoginPage() {
       if (error) throw error;
 
       if (data?.user) {
-        // Omdirigera till dashboard efter lyckad inloggning
+        // 🛡️ VERIFIERA att användaren är personal (finns i profiles med org_id)
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("id, org_id, role")
+          .eq("id", data.user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.error("Profile check error:", profileError);
+          await supabase.auth.signOut();
+          setError("Ett fel uppstod vid verifiering av konto.");
+          return;
+        }
+
+        if (!profileData || !profileData.org_id) {
+          // Användaren finns inte i profiles - troligen en kund
+          console.log("🛡️ Användare är inte personal, loggar ut...");
+          await supabase.auth.signOut();
+          setError(
+            "Inget företagskonto hittades för denna e-postadress. " +
+              "Om du är hundägare, använd kundportalen istället."
+          );
+          return;
+        }
+
+        // ✅ Användaren är personal - omdirigera till dashboard
         router.push("/dashboard");
       } else {
         setError("Inloggningen misslyckades. Kontrollera dina uppgifter.");
