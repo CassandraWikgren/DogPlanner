@@ -756,46 +756,61 @@ const { data: owner } = await supabase
 CREATE TABLE dogs (
     id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     org_id                  UUID REFERENCES orgs(id) ON DELETE CASCADE,  -- ⚠️ NULLABLE för pensionat!
-    owner_id                UUID REFERENCES owners(id) ON DELETE CASCADE NOT NULL,
+    owner_id                UUID REFERENCES owners(id) ON DELETE CASCADE,
+    user_id                 UUID,  -- Legacy, använd owner_id
     name                    TEXT NOT NULL,
     breed                   TEXT,
     birth                   DATE,
-    birth_date              DATE,
+    birth_date              DATE,  -- Alias för birth
     gender                  TEXT,
     heightcm                INTEGER,
+    weight_kg               NUMERIC,
     subscription            TEXT,
     startdate               DATE,
     enddate                 DATE,
     days                    TEXT,
     room_id                 UUID REFERENCES rooms(id) ON DELETE SET NULL,
+    roomid                  UUID,  -- Legacy alias för room_id
     vaccdhp                 TEXT,
     vaccpi                  TEXT,
     insurance_company       TEXT,
     insurance_number        TEXT,
     photo_url               TEXT,
     checked_in              BOOLEAN DEFAULT false,
+    checkin_date            DATE,
+    checkout_date           DATE,
     waitlist                BOOLEAN DEFAULT false,
     is_active               BOOLEAN DEFAULT true,
     is_deleted              BOOLEAN DEFAULT false,
     deleted_at              TIMESTAMP WITH TIME ZONE,
     deleted_reason          TEXT,
+    registered_at           TIMESTAMP WITH TIME ZONE,
     is_castrated            BOOLEAN DEFAULT false,
     is_sterilized           BOOLEAN DEFAULT false,
     is_escape_artist        BOOLEAN DEFAULT false,
     destroys_things         BOOLEAN DEFAULT false,
     is_house_trained        BOOLEAN DEFAULT true,
     can_be_with_other_dogs  BOOLEAN DEFAULT true,
+    can_share_room          BOOLEAN DEFAULT false,
     in_heat                 BOOLEAN DEFAULT false,
     heat_start_date         DATE,
     allergies               TEXT,
     medications             TEXT,
     food_info               TEXT,
+    food_type               TEXT,  -- 'own' eller 'pensionat'
+    food_brand              TEXT,
+    food_amount             TEXT,
+    food_times              TEXT,
     behavior_notes          TEXT,
     medical_notes           TEXT,
     special_needs           TEXT,
     personality_traits      TEXT[],
+    addons                  JSONB,
+    owner                   JSONB,  -- Legacy - använd owner_id
     events                  JSONB,
     notes                   TEXT,
+    note                    TEXT,  -- Legacy alias för notes
+    price                   NUMERIC,
     created_at              TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     last_updated            TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -953,14 +968,16 @@ const { data: dogs } = await supabase
 
 **Append-only** journal för varje hund. Alla anteckningar sparas i 2 år (rensas automatiskt via GDPR-process).
 
-**⚠️ UPPDATERAD 3 Dec 2025:** Redundant kolumn `text` borttagen - använd ENDAST `content`!
+**⚠️ UPPDATERAD 7 Dec 2025:** Kolumn `entry_type` tillagd för kategorisering av journalposter!
 
 ```sql
 CREATE TABLE dog_journal (
     id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     dog_id            UUID REFERENCES dogs(id) ON DELETE CASCADE NOT NULL,
-    org_id            UUID REFERENCES orgs(id) ON DELETE CASCADE NOT NULL,
-    content           TEXT NOT NULL,  -- 👈 ANVÄND DENNA (text-kolumnen är borttagen!)
+    org_id            UUID REFERENCES orgs(id) ON DELETE CASCADE,  -- NULL OK för pensionatkunder
+    content           TEXT NOT NULL,  -- Journaltexten
+    text              TEXT,           -- Legacy-kolumn (använd content istället)
+    entry_type        TEXT,           -- 'note', 'checkin', 'checkout', 'health', etc.
     user_id           UUID REFERENCES profiles(id) ON DELETE SET NULL,
     created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -968,14 +985,18 @@ CREATE TABLE dog_journal (
 
 **Kolumner:**
 
-| Kolumn       | Typ       | Beskrivning             | Viktigt                     |
-| ------------ | --------- | ----------------------- | --------------------------- |
-| `id`         | UUID      | PRIMARY KEY             |                             |
-| `dog_id`     | UUID      | Vilken hund             | **REQUIRED**                |
-| `org_id`     | UUID      | Organisation            | **REQUIRED**                |
-| `content`    | TEXT      | Journaltext             | **REQUIRED, använd denna!** |
-| `user_id`    | UUID      | Vem skrev               | FK till profiles.id         |
-| `created_at` | TIMESTAMP | När anteckningen skrevs | Auto                        |
+| Kolumn       | Typ       | Beskrivning             | Viktigt                                 |
+| ------------ | --------- | ----------------------- | --------------------------------------- |
+| `id`         | UUID      | PRIMARY KEY             |                                         |
+| `dog_id`     | UUID      | Vilken hund             | **REQUIRED**                            |
+| `org_id`     | UUID      | Organisation            | NULL för pensionatkunder                |
+| `content`    | TEXT      | Journaltext             | **REQUIRED**                            |
+| `text`       | TEXT      | Legacy-kolumn           | Använd `content` istället               |
+| `entry_type` | TEXT      | Typ av post             | 'note', 'checkin', 'checkout', 'health' |
+| `user_id`    | UUID      | Vem skrev               | FK till profiles.id                     |
+| `created_at` | TIMESTAMP | När anteckningen skrevs | Auto                                    |
+
+**⚠️ Trigger:** `trg_create_journal_on_new_dog` skapar automatisk journalpost vid ny hund!
 
 **⚠️ GDPR-Compliance:**
 
