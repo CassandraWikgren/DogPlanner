@@ -4,28 +4,39 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { Calendar, Dog, Plus, ArrowRight, ArrowLeft } from "lucide-react";
+import {
+  Calendar,
+  Dog,
+  Plus,
+  ArrowRight,
+  ArrowLeft,
+  Building2,
+} from "lucide-react";
 import { calculatePrice, SelectedExtraService } from "@/lib/pricing";
 import type { Database } from "@/types/database";
 
 type DogProfile = Database["public"]["Tables"]["dogs"]["Row"];
 type ExtraService = Database["public"]["Tables"]["extra_services"]["Row"];
+type Org = Database["public"]["Tables"]["orgs"]["Row"];
 
 export default function NyBokningPage() {
   const supabase = createClient();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
-  // Step management
+  // Step management (1: pensionat, 2: hund, 3: datum & tillval, 4: bekräfta)
   const [step, setStep] = useState(1);
 
   // Data
+  const [pensionat, setPensionat] = useState<Org[]>([]);
   const [dogs, setDogs] = useState<DogProfile[]>([]);
   const [extraServices, setExtraServices] = useState<ExtraService[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingServices, setLoadingServices] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Booking form
+  const [selectedPensionatId, setSelectedPensionatId] = useState<string>("");
   const [selectedDogId, setSelectedDogId] = useState<string>("");
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
@@ -47,17 +58,29 @@ export default function NyBokningPage() {
     }
 
     if (user) {
-      loadData();
+      loadInitialData();
     }
   }, [user, authLoading, router]);
 
-  async function loadData() {
+  // Ladda pensionat och hundar vid start
+  async function loadInitialData() {
     setLoading(true);
     setError(null);
 
     try {
       const ownerId = user?.id;
-      const orgId = user?.user_metadata?.org_id || user?.id;
+
+      // Ladda alla pensionat (organisationer som erbjuder boarding)
+      const { data: pensionatData, error: pensionatError } = await (
+        supabase as any
+      )
+        .from("orgs")
+        .select("id, name, address, phone, email")
+        .contains("enabled_services", ["boarding"])
+        .order("name");
+
+      if (pensionatError)
+        throw new Error(`Pensionat: ${pensionatError.message}`);
 
       // Ladda hundar
       const { data: dogsData, error: dogsError } = await (supabase as any)
@@ -68,7 +91,22 @@ export default function NyBokningPage() {
 
       if (dogsError) throw new Error(`Hundar: ${dogsError.message}`);
 
-      // Ladda tillvalstjänster
+      setPensionat(pensionatData || []);
+      setDogs(dogsData || []);
+    } catch (err: any) {
+      console.error("[Ny bokning] Fel vid laddning:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Ladda tillvalstjänster när pensionat väljs
+  async function loadServicesForPensionat(orgId: string) {
+    setLoadingServices(true);
+    setError(null);
+
+    try {
       const { data: servicesData, error: servicesError } = await (
         supabase as any
       )
@@ -80,18 +118,18 @@ export default function NyBokningPage() {
 
       if (servicesError) throw new Error(`Tjänster: ${servicesError.message}`);
 
-      setDogs(dogsData || []);
       setExtraServices(servicesData || []);
     } catch (err: any) {
-      console.error("[Ny bokning] Fel vid laddning:", err);
+      console.error("[Ny bokning] Fel vid laddning av tjänster:", err);
       setError(err.message);
     } finally {
-      setLoading(false);
+      setLoadingServices(false);
     }
   }
 
   async function calculateBookingPrice() {
-    if (!selectedDogId || !checkInDate || !checkOutDate) return;
+    if (!selectedDogId || !checkInDate || !checkOutDate || !selectedPensionatId)
+      return;
 
     setCalculatingPrice(true);
 
@@ -99,13 +137,11 @@ export default function NyBokningPage() {
       const selectedDog = dogs.find((d) => d.id === selectedDogId);
       if (!selectedDog) throw new Error("Hund inte hittad");
 
-      const orgId = user?.user_metadata?.org_id || user?.id;
-
-      // Hämta org-info
+      // Hämta org-info från valt pensionat
       const { data: orgData, error: orgError } = await (supabase as any)
         .from("orgs")
         .select("id, vat_included, vat_rate")
-        .eq("id", orgId)
+        .eq("id", selectedPensionatId)
         .single();
 
       if (orgError) throw orgError;
@@ -136,10 +172,23 @@ export default function NyBokningPage() {
   }
 
   useEffect(() => {
-    if (step === 3 && selectedDogId && checkInDate && checkOutDate) {
+    if (
+      step === 4 &&
+      selectedDogId &&
+      checkInDate &&
+      checkOutDate &&
+      selectedPensionatId
+    ) {
       calculateBookingPrice();
     }
-  }, [step, selectedDogId, checkInDate, checkOutDate, selectedServices]);
+  }, [
+    step,
+    selectedDogId,
+    checkInDate,
+    checkOutDate,
+    selectedServices,
+    selectedPensionatId,
+  ]);
 
   function handleServiceToggle(serviceId: string) {
     const isSelected = selectedServices.some((s) => s.service_id === serviceId);
@@ -177,18 +226,17 @@ export default function NyBokningPage() {
 
   async function handleSubmitBooking() {
     try {
-      const orgId = user?.user_metadata?.org_id || user?.id;
       const selectedDog = dogs.find((d) => d.id === selectedDogId);
 
-      if (!selectedDog || !priceCalculation) {
+      if (!selectedDog || !priceCalculation || !selectedPensionatId) {
         throw new Error("Saknar information");
       }
 
-      // Skapa bokning
+      // Skapa bokning - använd valt pensionatets org_id
       const { data: bookingData, error: bookingError } = await (supabase as any)
         .from("bookings")
         .insert({
-          org_id: orgId,
+          org_id: selectedPensionatId,
           dog_id: selectedDogId,
           owner_id: selectedDog.owner_id,
           room_id: null, // Admin tilldelar rum senare
@@ -204,7 +252,12 @@ export default function NyBokningPage() {
 
       if (bookingError) throw bookingError;
 
-      alert("✅ Bokning skickad! Väntar på godkännande från pensionatet.");
+      const selectedPensionatName =
+        pensionat.find((p) => p.id === selectedPensionatId)?.name ||
+        "pensionatet";
+      alert(
+        `✅ Bokning skickad till ${selectedPensionatName}! Väntar på godkännande.`
+      );
       router.push("/kundportal/dashboard");
     } catch (err: any) {
       console.error("[Bokning] Fel vid skapande:", err);
@@ -249,9 +302,10 @@ export default function NyBokningPage() {
         <div className="mb-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             {[
-              { num: 1, label: "Välj hund" },
-              { num: 2, label: "Datum & tillval" },
-              { num: 3, label: "Bekräfta" },
+              { num: 1, label: "Välj pensionat" },
+              { num: 2, label: "Välj hund" },
+              { num: 3, label: "Datum & tillval" },
+              { num: 4, label: "Bekräfta" },
             ].map((s, idx) => (
               <div key={s.num} className="flex items-center flex-1">
                 <div
@@ -264,13 +318,13 @@ export default function NyBokningPage() {
                   {s.num}
                 </div>
                 <span
-                  className={`ml-3 font-medium ${
+                  className={`ml-3 font-medium hidden sm:block ${
                     step >= s.num ? "text-[#2c7a4c]" : "text-gray-500"
                   }`}
                 >
                   {s.label}
                 </span>
-                {idx < 2 && (
+                {idx < 3 && (
                   <div
                     className={`flex-1 h-1 mx-4 ${
                       step > s.num ? "bg-[#2c7a4c]" : "bg-gray-300"
@@ -282,12 +336,74 @@ export default function NyBokningPage() {
           </div>
         </div>
 
-        {/* Step 1: Välj hund */}
+        {/* Step 1: Välj pensionat */}
         {step === 1 && (
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              Välj pensionat
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Välj vilket hundpensionat du vill boka hos
+            </p>
+
+            {pensionat.length === 0 ? (
+              <div className="text-center py-8">
+                <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600">
+                  Inga pensionat tillgängliga just nu
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {pensionat.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => {
+                      setSelectedPensionatId(p.id);
+                      loadServicesForPensionat(p.id);
+                      setStep(2);
+                    }}
+                    className={`w-full p-4 border-2 rounded-lg text-left hover:shadow-lg transition-all ${
+                      selectedPensionatId === p.id
+                        ? "border-[#2c7a4c] bg-green-50"
+                        : "border-gray-300 bg-white"
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-[#2c7a4c] rounded-full flex items-center justify-center">
+                        <Building2 className="w-8 h-8 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-800">
+                          {p.name}
+                        </h3>
+                        {p.address && (
+                          <p className="text-sm text-gray-600">{p.address}</p>
+                        )}
+                        {p.phone && (
+                          <p className="text-sm text-gray-500">{p.phone}</p>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Step 2: Välj hund */}
+        {step === 2 && (
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               Välj hund för bokningen
             </h2>
+            <p className="text-gray-600 mb-6">
+              Bokar hos:{" "}
+              <span className="font-semibold">
+                {pensionat.find((p) => p.id === selectedPensionatId)?.name}
+              </span>
+            </p>
 
             {dogs.length === 0 ? (
               <div className="text-center py-8">
@@ -309,7 +425,7 @@ export default function NyBokningPage() {
                     key={dog.id}
                     onClick={() => {
                       setSelectedDogId(dog.id);
-                      setStep(2);
+                      setStep(3);
                     }}
                     className={`w-full p-4 border-2 rounded-lg text-left hover:shadow-lg transition-all ${
                       selectedDogId === dog.id
@@ -347,11 +463,22 @@ export default function NyBokningPage() {
                 ))}
               </div>
             )}
+
+            {/* Tillbaka-knapp */}
+            <div className="mt-6">
+              <button
+                onClick={() => setStep(1)}
+                className="flex items-center gap-2 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                Tillbaka
+              </button>
+            </div>
           </div>
         )}
 
-        {/* Step 2: Datum & Tillval */}
-        {step === 2 && (
+        {/* Step 3: Datum & Tillval */}
+        {step === 3 && (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">
@@ -465,14 +592,14 @@ export default function NyBokningPage() {
             {/* Navigation */}
             <div className="flex justify-between">
               <button
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 className="flex items-center gap-2 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium"
               >
                 <ArrowLeft className="w-5 h-5" />
                 Tillbaka
               </button>
               <button
-                onClick={() => setStep(3)}
+                onClick={() => setStep(4)}
                 disabled={!checkInDate || !checkOutDate}
                 className="flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -483,8 +610,8 @@ export default function NyBokningPage() {
           </div>
         )}
 
-        {/* Step 3: Bekräfta */}
-        {step === 3 && (
+        {/* Step 4: Bekräfta */}
+        {step === 4 && (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">
@@ -493,6 +620,13 @@ export default function NyBokningPage() {
 
               {/* Sammanfattning */}
               <div className="space-y-4 mb-6">
+                <div>
+                  <h3 className="font-semibold text-gray-700">Pensionat</h3>
+                  <p className="text-gray-600">
+                    {pensionat.find((p) => p.id === selectedPensionatId)?.name}
+                  </p>
+                </div>
+
                 <div>
                   <h3 className="font-semibold text-gray-700">Hund</h3>
                   <p className="text-gray-600">
@@ -568,7 +702,7 @@ export default function NyBokningPage() {
             {/* Navigation */}
             <div className="flex justify-between">
               <button
-                onClick={() => setStep(2)}
+                onClick={() => setStep(3)}
                 className="flex items-center gap-2 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors font-medium"
               >
                 <ArrowLeft className="w-5 h-5" />
