@@ -21,12 +21,17 @@ interface EnabledServicesReturn {
  * @returns Object med flags för varje tjänst + array med alla tjänster
  */
 export function useEnabledServices(): EnabledServicesReturn {
-  const { currentOrgId } = useAuth();
+  const { currentOrgId, loading: authLoading } = useAuth();
 
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadServices = async () => {
+    // Wait for auth to finish loading before deciding
+    if (authLoading) {
+      return; // Keep loading=true until auth is ready
+    }
+
     if (!currentOrgId) {
       setServices([]);
       setLoading(false);
@@ -34,6 +39,7 @@ export function useEnabledServices(): EnabledServicesReturn {
     }
 
     try {
+      setLoading(true);
       const supabase = createClient();
       const { data, error } = await supabase
         .from("orgs")
@@ -65,7 +71,7 @@ export function useEnabledServices(): EnabledServicesReturn {
 
   useEffect(() => {
     loadServices();
-  }, [currentOrgId]);
+  }, [currentOrgId, authLoading]);
 
   return {
     services,
