@@ -34,12 +34,12 @@ function LoginPageContent() {
 
     if (urlMessage === "check_email") {
       setMessage(
-        "📧 Kontrollera din e-post och klicka på verifieringslänken för att aktivera ditt konto."
+        "Kontrollera din e-post och klicka på verifieringslänken för att aktivera ditt konto."
       );
     } else if (urlMessage === "registration_complete") {
-      setMessage("🎉 Registrering klar! Du kan nu logga in.");
+      setMessage("Registrering klar! Du kan nu logga in.");
     } else if (verified === "true") {
-      setMessage("✅ E-posten är verifierad! Du kan nu logga in.");
+      setMessage("E-posten är verifierad! Du kan nu logga in.");
     }
   }, [searchParams]);
 
@@ -72,7 +72,7 @@ function LoginPageContent() {
         let errorMessage = authError.message;
         if (authError.message.includes("Email not confirmed")) {
           errorMessage =
-            "📧 Du måste verifiera din e-postadress först. Kontrollera din e-post och klicka på verifieringslänken.";
+            "Du måste verifiera din e-postadress först. Kontrollera din e-post och klicka på verifieringslänken.";
         } else if (authError.message.includes("Invalid login credentials")) {
           errorMessage =
             "Fel e-postadress eller lösenord. Kontrollera dina uppgifter och försök igen.";

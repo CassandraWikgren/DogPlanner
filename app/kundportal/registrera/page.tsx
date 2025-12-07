@@ -360,7 +360,7 @@ export default function CustomerRegisterPage() {
       if (authData.user.email_confirmed_at) {
         // Användaren är redan verifierad (t.ex. i utvecklingsmiljö)
         setSuccess(
-          `🎉 Registrering lyckades! ${dogCountText} har registrerats. Du omdirigeras till att ${redirectMessage}...`
+          `Registrering lyckades! ${dogCountText} har registrerats. Du omdirigeras till att ${redirectMessage}...`
         );
         setTimeout(() => {
           router.push(redirectUrl);
@@ -368,7 +368,7 @@ export default function CustomerRegisterPage() {
       } else {
         // Användaren behöver verifiera e-post
         setSuccess(
-          `✅ Registrering lyckades! ${dogCountText} har registrerats.\n\n📧 Vi har skickat en verifieringslänk till ${ownerData.email}.\n\nKlicka på länken i e-posten för att aktivera ditt konto. Efter verifiering omdirigeras du till att ${redirectMessage}.\n\n💡 Glöm inte att kolla skräppost-mappen!`
+          `Registrering lyckades! ${dogCountText} har registrerats.\n\nVi har skickat en verifieringslänk till ${ownerData.email}.\n\nKlicka på länken i e-posten för att aktivera ditt konto. Efter verifiering omdirigeras du till att ${redirectMessage}.\n\nGlöm inte att kolla skräppost-mappen!`
         );
         setTimeout(() => {
           router.push(
@@ -486,7 +486,7 @@ export default function CustomerRegisterPage() {
                   </div>
 
                   <p className="text-xs text-gray-400 text-center mt-6">
-                    💡 Hunddagis kräver intresseanmälan till specifikt dagis.
+                    Hunddagis kräver intresseanmälan till specifikt dagis.
                     Hundpensionat kan bokas direkt efter registrering.
                   </p>
                 </CardContent>
@@ -509,7 +509,11 @@ export default function CustomerRegisterPage() {
                                 : "bg-gray-200 text-gray-500"
                           }`}
                         >
-                          {currentStep > step ? "✓" : step}
+                          {currentStep > step ? (
+                            <CheckCircle className="h-5 w-5" />
+                          ) : (
+                            step
+                          )}
                         </div>
                         <span
                           className={`mt-2 text-xs font-medium transition-colors ${

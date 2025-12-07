@@ -310,7 +310,7 @@ export default function NyBokningPage() {
       setShowSuccessModal(true);
     } catch (err: any) {
       console.error("[Bokning] Fel vid skapande:", err);
-      alert(`❌ Kunde inte skapa bokning: ${err.message}`);
+      alert(`Kunde inte skapa bokning: ${err.message}`);
     }
   }
 

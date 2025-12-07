@@ -176,7 +176,7 @@ export default function SokaHunddagisPage() {
       }
 
       setSuccess(
-        `✅ Ansökan skickad till ${orgName || "hunddagis"}! Du kan se din ansökan i din instrumentpanel.`
+        `Ansökan skickad till ${orgName || "hunddagis"}! Du kan se din ansökan i din instrumentpanel.`
       );
 
       setTimeout(() => {

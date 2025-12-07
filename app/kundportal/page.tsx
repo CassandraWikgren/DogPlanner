@@ -54,7 +54,7 @@ export default function CustomerPortalPage() {
       <section className="py-20 px-4">
         <div className="container mx-auto text-center">
           <h2 className="text-4xl font-bold text-gray-800 mb-6">
-            Välkommen till vår hundpensionat-portal! 🐕
+            Välkommen till vår hundpensionat-portal
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Hantera din hunds pensionatsbokning enkelt och smidigt. Registrera

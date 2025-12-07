@@ -200,9 +200,8 @@ export default function CustomerDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
-                Hej,{" "}
-                {formatName(currentOwner?.full_name?.split(" ")[0]) || "där"}!
-                👋
+                Välkommen,{" "}
+                {formatName(currentOwner?.full_name?.split(" ")[0]) || ""}
               </h1>
               {currentOwner?.customer_number && (
                 <p className="text-sm text-gray-400 mt-1 font-medium">

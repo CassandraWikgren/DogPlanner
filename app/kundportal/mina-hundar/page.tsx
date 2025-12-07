@@ -778,23 +778,21 @@ export default function MinaHundarPage() {
                           {dog.name}
                         </h3>
                         <div className="text-sm text-gray-600 space-y-0.5">
-                          {dog.breed && <p>🐾 {dog.breed}</p>}
+                          {dog.breed && <p>{dog.breed}</p>}
                           {(dog as any).gender && (
                             <p>
-                              {(dog as any).gender === "tik"
-                                ? "♀️ Tik"
-                                : "♂️ Hane"}
+                              {(dog as any).gender === "tik" ? "Tik" : "Hane"}
                             </p>
                           )}
                           {dog.heightcm && (
                             <p>
-                              📏 {dog.heightcm} cm (
-                              {getSizeCategory(dog.heightcm)})
+                              {dog.heightcm} cm ({getSizeCategory(dog.heightcm)}
+                              )
                             </p>
                           )}
-                          {dog.birth && <p>🎂 Född: {dog.birth}</p>}
+                          {dog.birth && <p>Född: {dog.birth}</p>}
                           {(dog as any).insurance_company && (
-                            <p>🛡️ {(dog as any).insurance_company}</p>
+                            <p>{(dog as any).insurance_company}</p>
                           )}
                         </div>
                       </div>
