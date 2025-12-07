@@ -12,7 +12,9 @@ import {
   Backpack,
   FileText,
   AlertTriangle,
+  Printer,
 } from "lucide-react";
+import DogRoomCard from "./DogRoomCard";
 import type { Database } from "@/types/database";
 
 type Booking = Database["public"]["Tables"]["bookings"]["Row"] & {
@@ -51,6 +53,7 @@ export default function CheckInModal({
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showRoomCard, setShowRoomCard] = useState(false);
   const [activeTab, setActiveTab] = useState<
     "info" | "health" | "belongings" | "journal"
   >("info");
@@ -622,6 +625,13 @@ export default function CheckInModal({
           <div className="flex-1" />
           <div className="flex items-center gap-3">
             <button
+              onClick={() => setShowRoomCard(true)}
+              className="btn-secondary px-4 py-2 flex items-center gap-2"
+              title="Skriv ut rumskort (A4)"
+            >
+              <Printer className="w-4 h-4" /> Rumskort
+            </button>
+            <button
               onClick={onClose}
               disabled={saving}
               className="btn-secondary px-4 py-2"
@@ -646,6 +656,14 @@ export default function CheckInModal({
           </div>
         </div>
       </div>
+
+      {/* Dog Room Card Modal */}
+      {showRoomCard && (
+        <DogRoomCard
+          booking={booking as any}
+          onClose={() => setShowRoomCard(false)}
+        />
+      )}
     </div>
   );
 }

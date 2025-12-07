@@ -17,6 +17,7 @@ import {
   Settings,
   ClipboardList,
   Grid3x3,
+  Printer,
 } from "lucide-react";
 import type { Database } from "@/types/database";
 
@@ -512,6 +513,13 @@ export default function HundpensionatPage() {
             >
               <Calendar className="h-4 w-4 mr-1" />
               Kalender
+            </Link>
+            <Link
+              href="/hundpensionat/rumskort"
+              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <Printer className="h-4 w-4 mr-1" />
+              Rumskort
             </Link>
             <button
               onClick={exportToPDF}
