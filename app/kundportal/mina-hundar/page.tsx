@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Dog, Plus, Edit, Trash2, X, Save, Upload } from "lucide-react";
 import type { Database } from "@/types/database";
+import { DOG_BREEDS } from "@/lib/dogBreeds";
 
 type DogProfile = Database["public"]["Tables"]["dogs"]["Row"];
 
@@ -282,9 +283,9 @@ export default function MinaHundarPage() {
               </h2>
               <button
                 onClick={handleCancel}
-                className="text-gray-500 hover:text-gray-700"
+                className="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -311,15 +312,20 @@ export default function MinaHundarPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Ras
                 </label>
-                <input
-                  type="text"
+                <select
                   value={formData.breed}
                   onChange={(e) =>
                     setFormData({ ...formData, breed: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
-                  placeholder="T.ex. Golden Retriever"
-                />
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent bg-white"
+                >
+                  <option value="">Välj ras...</option>
+                  {DOG_BREEDS.map((breed) => (
+                    <option key={breed} value={breed}>
+                      {breed}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Födelsedatum */}
