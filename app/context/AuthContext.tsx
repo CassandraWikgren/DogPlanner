@@ -25,6 +25,7 @@ type AuthCtx = {
   role: string | null;
   loading: boolean;
   subscription: SubscriptionState | null;
+  isCustomer: boolean; // true om användaren är en hundägare (finns i owners, inte i profiles)
   signOut: () => Promise<void>;
   ensureOrg: () => Promise<void>;
 };
@@ -36,6 +37,7 @@ export const AuthContext = createContext<AuthCtx>({
   role: null,
   loading: true,
   subscription: null,
+  isCustomer: false,
   signOut: async () => {},
   ensureOrg: async () => {},
 });
@@ -46,6 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isCustomer, setIsCustomer] = useState(false);
   const [subscription, setSubscription] = useState<SubscriptionState | null>(
     null
   );
@@ -129,6 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setCurrentOrgId(null);
           setRole(null);
           setSubscription(null);
+          setIsCustomer(false);
         }
       }
     );
@@ -213,6 +217,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false); // ⬆️ Sätt loading=false tidigt så sidor kan börja rendera
 
       if (u && session?.access_token) {
+        // 🔍 KUNDCHECK: Kolla om användaren är en hundägare (finns i owners-tabellen)
+        checkIfCustomer(u.id);
+
         // Kör dessa i bakgrunden utan att blockera rendering
         // Men hoppa över för publika användare (om de inte har org_id i metadata)
         if (metaOrg || (u as any)?.app_metadata?.role) {
@@ -224,6 +231,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error("AuthContext: Unexpected error in init:", error);
       setLoading(false);
+    }
+  }
+
+  // 🐕 Kolla om användaren är en hundägare (finns i owners-tabellen)
+  async function checkIfCustomer(userId: string) {
+    try {
+      const supabase = createClient();
+
+      // Kolla om användaren finns i owners-tabellen (pensionatkunder)
+      const { data: ownerData, error } = await supabase
+        .from("owners")
+        .select("id")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (ownerData && !error) {
+        console.log(
+          "AuthContext: 🐕 User is a customer (found in owners table)"
+        );
+        setIsCustomer(true);
+      } else {
+        setIsCustomer(false);
+      }
+    } catch (error) {
+      console.error("Error checking customer status:", error);
+      setIsCustomer(false);
     }
   }
 
@@ -403,6 +436,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setCurrentOrgId(null);
     setRole(null);
     setSubscription(null);
+    setIsCustomer(false);
 
     console.log("✅ Utloggning klar, redirectar till startsidan...");
 
@@ -438,6 +472,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         role,
         loading,
         subscription,
+        isCustomer,
         signOut,
         ensureOrg,
       }}

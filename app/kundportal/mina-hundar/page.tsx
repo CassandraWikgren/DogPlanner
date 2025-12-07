@@ -804,14 +804,14 @@ export default function MinaHundarPage() {
                     <div className="flex gap-2 flex-shrink-0">
                       <button
                         onClick={() => handleEdit(dog)}
-                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                        className="action-btn"
                         title="Redigera"
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDelete(dog.id, dog.name)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                        className="action-btn hover:text-red-600"
                         title="Ta bort"
                       >
                         <Trash2 className="w-5 h-5" />

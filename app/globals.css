@@ -276,8 +276,9 @@ a:hover {
   color: var(--color-accent);
 }
 
-/* Knappar */
-button {
+/* Knappar - ENDAST för primära submit/action knappar med .btn-primary klass */
+/* Ta bort global button styling för att låta Tailwind-klasser fungera */
+button.btn-primary {
   background-color: var(--color-primary);
   color: white;
   border: none;
@@ -290,11 +291,11 @@ button {
     transform 0.1s ease;
 }
 
-button:hover {
+button.btn-primary:hover {
   background-color: var(--color-accent);
 }
 
-button:active {
+button.btn-primary:active {
   transform: scale(0.97);
 }
 

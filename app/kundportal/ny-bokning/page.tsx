@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,8 @@ import {
   ArrowRight,
   ArrowLeft,
   Building2,
+  Search,
+  MapPin,
 } from "lucide-react";
 import { calculatePrice, SelectedExtraService } from "@/lib/pricing";
 import type { Database } from "@/types/database";
@@ -50,6 +52,48 @@ export default function NyBokningPage() {
   // Price calculation
   const [priceCalculation, setPriceCalculation] = useState<any>(null);
   const [calculatingPrice, setCalculatingPrice] = useState(false);
+
+  // Sökfilter för pensionat
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCity, setSelectedCity] = useState<string>("");
+
+  // Extrahera unika städer från adresser
+  const cities = useMemo(() => {
+    const citySet = new Set<string>();
+    pensionat.forEach((p) => {
+      if (p.address) {
+        // Försök extrahera stad från adress (format: "Gatuadress, Postnr Stad")
+        const parts = p.address.split(",");
+        if (parts.length >= 2) {
+          // Ta sista delen efter postnummer
+          const lastPart = parts[parts.length - 1].trim();
+          // Ta bort postnummer (5 siffror med mellanslag)
+          const city = lastPart.replace(/^\d{3}\s?\d{2}\s*/, "").trim();
+          if (city) citySet.add(city);
+        }
+      }
+    });
+    return Array.from(citySet).sort();
+  }, [pensionat]);
+
+  // Filtrerade pensionat
+  const filteredPensionat = useMemo(() => {
+    return pensionat.filter((p) => {
+      // Sökfilter
+      const matchesSearch =
+        !searchQuery ||
+        p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.address?.toLowerCase().includes(searchQuery.toLowerCase());
+
+      // Stadsfilter
+      const matchesCity =
+        !selectedCity ||
+        (p.address &&
+          p.address.toLowerCase().includes(selectedCity.toLowerCase()));
+
+      return matchesSearch && matchesCity;
+    });
+  }, [pensionat, searchQuery, selectedCity]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -346,6 +390,40 @@ export default function NyBokningPage() {
               Välj vilket hundpensionat du vill boka hos
             </p>
 
+            {/* Sök- och filter */}
+            <div className="mb-6 flex flex-col sm:flex-row gap-4">
+              {/* Sökfält */}
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Sök pensionat..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                />
+              </div>
+
+              {/* Stadsfilter */}
+              {cities.length > 0 && (
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <select
+                    value={selectedCity}
+                    onChange={(e) => setSelectedCity(e.target.value)}
+                    className="pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent appearance-none bg-white min-w-[200px]"
+                  >
+                    <option value="">Alla orter</option>
+                    {cities.map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
             {pensionat.length === 0 ? (
               <div className="text-center py-8">
                 <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -353,9 +431,30 @@ export default function NyBokningPage() {
                   Inga pensionat tillgängliga just nu
                 </p>
               </div>
+            ) : filteredPensionat.length === 0 ? (
+              <div className="text-center py-8">
+                <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600">
+                  Inga pensionat matchar din sökning
+                </p>
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedCity("");
+                  }}
+                  className="mt-4 text-[#2c7a4c] hover:underline"
+                >
+                  Rensa filter
+                </button>
+              </div>
             ) : (
               <div className="space-y-4">
-                {pensionat.map((p) => (
+                {/* Visa antal träffar */}
+                <p className="text-sm text-gray-500 mb-2">
+                  Visar {filteredPensionat.length} av {pensionat.length}{" "}
+                  pensionat
+                </p>
+                {filteredPensionat.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => {
@@ -378,7 +477,10 @@ export default function NyBokningPage() {
                           {p.name}
                         </h3>
                         {p.address && (
-                          <p className="text-sm text-gray-600">{p.address}</p>
+                          <p className="text-sm text-gray-600 flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {p.address}
+                          </p>
                         )}
                         {p.phone && (
                           <p className="text-sm text-gray-500">{p.phone}</p>
