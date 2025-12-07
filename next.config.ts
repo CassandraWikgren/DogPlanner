@@ -99,7 +99,7 @@ export default withSentryConfig(nextConfig, {
   widenClientFileUpload: false, // ⚡ Ändrat till false för snabbare builds
 
   // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-  tunnelRoute: "/monitoring",
+  // tunnelRoute: "/monitoring", // Disabled - causes 403 on Vercel
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
