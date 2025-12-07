@@ -4,7 +4,7 @@
 **Version:** Next.js 15.5.7 + React 19.2.0 + Supabase (@supabase/ssr 0.8.0)  
 **Schema verifierat:** ✅ Alla funktioner och triggers verifierade i produktion  
 **RLS Status:** 🔒 Aktiverat på alla kritiska tabeller - Multi-tenant säkert  
-**Förbättringar:** ✅ Pattern 3 arkitektur, Dualt kundnummer-system, Kundportal-login (2025-12-07)
+**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal (profil, hundar, bokning), Dualt kundnummer-system (2025-12-07)
 
 ---
 
@@ -19,6 +19,7 @@
 - **Pattern 3 arkitektur:** Globala kunder för pensionat, per-org kunder för dagis (se nedan) ✅
 - **Dualt kundnummer:** 101+ per-org (dagis), 10001+ global (pensionat) ✅
 - **Kundportal:** owners.id = auth.users.id vid kundregistrering ✅
+- **⚠️ dogs.org_id:** Utelämna helt vid insert för pensionatkunder (skicka INTE user.id som org_id!) ✅
 
 ---
 
@@ -50,6 +51,110 @@ DogPlanner använder **Pattern 3** - en hybrid multi-tenant modell inspirerad av
 3. Personal godkänner ansökan
 4. `owners.org_id` och `dogs.org_id` sätts till organisationen
 5. Får per-org kundnummer (101, 102, ... inom den organisationen)
+
+---
+
+## 🆕 KUNDPORTAL - KOMPLETT IMPLEMENTERING (7 December 2025)
+
+### Översikt
+
+Kundportalen (`/kundportal/*`) är helt separat från personalvyn och har egen layout utan "Personal"-navbar.
+
+| Sida               | URL                          | Beskrivning                             |
+| ------------------ | ---------------------------- | --------------------------------------- |
+| **Dashboard**      | `/kundportal/dashboard`      | Statistik, hundar, kommande bokningar   |
+| **Min profil**     | `/kundportal/min-profil`     | Kontaktinfo, kontaktperson 2, samtycken |
+| **Mina hundar**    | `/kundportal/mina-hundar`    | CRUD hundar med alla fält               |
+| **Mina bokningar** | `/kundportal/mina-bokningar` | Lista på alla bokningar                 |
+| **Ny bokning**     | `/kundportal/ny-bokning`     | 4-stegs bokningsflöde                   |
+| **Login**          | `/kundportal/login`          | Kundinloggning                          |
+| **Registrera**     | `/kundportal/registrera`     | Kundregistrering (pensionat/dagis)      |
+
+### Mina hundar - Fält
+
+Komplett hundprofil med alla fält:
+
+```typescript
+interface DogFormData {
+  name: string; // Obligatoriskt
+  breed: string; // Dropdown med 438 raser
+  birth: string; // Födelsedatum
+  heightcm: number | null; // Mankhöjd (cm) - kritiskt för prissättning!
+  gender: string; // 'hane' | 'tik'
+  vaccdhp: string; // DHP-vaccination datum
+  vaccpi: string; // Pi-vaccination datum
+  insurance_company: string; // Försäkringsbolag
+  insurance_number: string; // Försäkringsnummer
+  is_castrated: boolean; // Kastrerad
+  destroys_things: boolean; // Förstör saker
+  is_house_trained: boolean; // Rumsren (default: true)
+  is_escape_artist: boolean; // Rymningsbenägen
+  can_be_with_other_dogs: boolean; // Kan vara med andra hundar (default: true)
+  allergies: string; // Allergier
+  medications: string; // Mediciner
+  food_info: string; // Foder/mat
+  behavior_notes: string; // Beteendeanteckningar
+  medical_notes: string; // Övriga anteckningar
+  notes: string; // Allmänna noteringar
+  photo_url: string; // Bild-URL (Supabase Storage)
+}
+```
+
+### Bilduppladdning
+
+API-route: `/api/upload-dog-photo`
+
+```typescript
+// POST request med FormData
+const formData = new FormData();
+formData.append("file", file);
+formData.append("dogId", dogId || "new");
+
+const response = await fetch("/api/upload-dog-photo", {
+  method: "POST",
+  body: formData,
+});
+
+// Response: { url: "https://...supabase.co/storage/v1/object/public/dog-photos/..." }
+```
+
+**Supabase Storage bucket:** `dog-photos` (måste skapas manuellt i Supabase Console)
+
+### Ny bokning - 4 steg
+
+| Steg | Beskrivning                                                                              |
+| ---- | ---------------------------------------------------------------------------------------- |
+| 1    | **Välj pensionat** - Lista på alla orgs med `enabled_services` som innehåller "boarding" |
+| 2    | **Välj hund** - Kundens registrerade hundar                                              |
+| 3    | **Datum & tillval** - In/utcheckning + tillvalstjänster från valt pensionat              |
+| 4    | **Bekräfta** - Sammanfattning + prisberäkning                                            |
+
+**Viktigt:** Tillvalstjänster hämtas från **valt pensionat**, inte kundens org_id:
+
+```typescript
+// Hämta pensionat (steg 1)
+const { data: pensionat } = await supabase
+  .from("orgs")
+  .select("id, name, address, phone, email")
+  .contains("enabled_services", ["boarding"])
+  .order("name");
+
+// Hämta tillvalstjänster från valt pensionat (steg 3)
+const { data: services } = await supabase
+  .from("extra_services")
+  .select("*")
+  .eq("org_id", selectedPensionatId)  // 👈 Pensionatets org_id!
+  .in("service_type", ["boarding", "both"])
+  .order("label");
+
+// Skapa bokning med rätt org_id
+await supabase.from("bookings").insert({
+  org_id: selectedPensionatId,  // 👈 Pensionatets org_id, inte kundens!
+  dog_id: selectedDogId,
+  owner_id: user.id,
+  ...
+});
+```
 
 ---
 
@@ -2998,6 +3103,41 @@ AND (enddate IS NULL OR enddate >= 2025-11-01)
 2. **verify_customer_account()** - SECURITY DEFINER RPC för kundlogin-verifiering (bypasser RLS)
 3. **Design-standard** - Alla kundportal-sidor följer nu samma design-standard (bg-gray-50, max-w-5xl, border-b headers)
 4. **Dashboard förbättrad** - Statistik, snabbknappar, hundlista och bokningslista i ren design
+5. **Min profil** - Ny sida `/kundportal/min-profil` för kundprofilhantering (kontaktinfo, kontaktperson 2, samtycken)
+6. **Mina hundar** - Komplett hundprofil med alla fält:
+   - Bilduppladdning (Supabase Storage: `dog-photos` bucket)
+   - Kön (hane/tik)
+   - Försäkringsinfo (bolag + nummer)
+   - 5 beteende-checkboxar (kastrerad, förstör saker, rumsren, rymningsbenägen, kan vara med andra hundar)
+   - Allergier, mediciner, foder, beteendeanteckningar, övriga anteckningar
+7. **Ny bokning (4 steg)** - Förbättrat bokningsflöde:
+   - Steg 1: Välj pensionat (lista på alla orgs med `enabled_services` som innehåller "boarding")
+   - Steg 2: Välj hund
+   - Steg 3: Datum & tillvalstjänster (hämtas från valt pensionat)
+   - Steg 4: Bekräfta (prisberäkning med pensionatets prislista)
+8. **Pattern 3 fix** - `dogs.org_id` utelämnas vid insert för pensionatkunder (NULL i databas)
+
+### **⚠️ VIKTIGT: Spara hundar i kundportalen**
+
+För pensionatkunder (Pattern 3) gäller:
+
+```typescript
+// ✅ RÄTT - Inkludera INTE org_id om det är NULL
+const insertData: any = { owner_id: user?.id, ...dogData };
+if (user?.user_metadata?.org_id) {
+  insertData.org_id = user.user_metadata.org_id;
+}
+// org_id utelämnas helt = NULL i databasen (korrekt för pensionatkunder)
+
+const { error } = await supabase.from("dogs").insert(insertData);
+```
+
+```typescript
+// ❌ FEL - Skickar user.id som org_id (foreign key constraint fail!)
+const org_id = user?.user_metadata?.org_id || user?.id; // ❌ user.id är inte en org!
+await supabase.from("dogs").insert({ org_id, owner_id: user.id, ...dogData });
+// Error: Key is not present in table "orgs"
+```
 
 ### **🆕 Förbättringar 3 December 2025:**
 
