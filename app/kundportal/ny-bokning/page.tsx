@@ -53,6 +53,11 @@ export default function NyBokningPage() {
   const [priceCalculation, setPriceCalculation] = useState<any>(null);
   const [calculatingPrice, setCalculatingPrice] = useState(false);
 
+  // Villkor och bekräftelse
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successPensionatName, setSuccessPensionatName] = useState("");
+
   // Sökfilter för pensionat
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState<string>("");
@@ -299,10 +304,10 @@ export default function NyBokningPage() {
       const selectedPensionatName =
         pensionat.find((p) => p.id === selectedPensionatId)?.name ||
         "pensionatet";
-      alert(
-        `✅ Bokning skickad till ${selectedPensionatName}! Väntar på godkännande.`
-      );
-      router.push("/kundportal/dashboard");
+
+      // Visa framgångsmodal istället för alert
+      setSuccessPensionatName(selectedPensionatName);
+      setShowSuccessModal(true);
     } catch (err: any) {
       console.error("[Bokning] Fel vid skapande:", err);
       alert(`❌ Kunde inte skapa bokning: ${err.message}`);
@@ -825,6 +830,24 @@ export default function NyBokningPage() {
               ) : (
                 <p className="text-red-600">Kunde inte beräkna pris</p>
               )}
+
+              {/* Villkorsgodkännande */}
+              <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    className="mt-1 h-5 w-5 rounded border-gray-300 text-[#2c7a4c] focus:ring-[#2c7a4c]"
+                  />
+                  <span className="text-sm text-gray-700">
+                    Jag har tagit del av pensionatets regler och villkor, och
+                    godkänner dessa. Jag förstår att detta är en
+                    bokningsförfrågan och att pensionatet återkommer med
+                    bekräftelse och slutgiltigt pris.
+                  </span>
+                </label>
+              </div>
             </div>
 
             {/* Navigation */}
@@ -838,16 +861,76 @@ export default function NyBokningPage() {
               </button>
               <button
                 onClick={handleSubmitBooking}
-                disabled={!priceCalculation}
+                disabled={!priceCalculation || !acceptedTerms}
                 className="flex items-center gap-2 px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Skicka bokning
+                Skicka bokningsförfrågan
                 <ArrowRight className="w-5 h-5" />
               </button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Framgångsmodal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8">
+            <div className="text-center">
+              {/* Grön checkikon */}
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <svg
+                  className="w-8 h-8 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                Tack för din bokningsförfrågan!
+              </h2>
+
+              <p className="text-gray-600 mb-4">
+                Din förfrågan har skickats till{" "}
+                <strong>{successPensionatName}</strong>.
+              </p>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
+                <p className="text-sm text-blue-800">
+                  <strong>Vad händer nu?</strong>
+                </p>
+                <ul className="text-sm text-blue-700 mt-2 space-y-1">
+                  <li>• Pensionatet granskar din förfrågan</li>
+                  <li>• Du får en bekräftelse med slutgiltigt pris</li>
+                  <li>• Vid frågor - kontakta pensionatet direkt</li>
+                </ul>
+              </div>
+
+              <button
+                onClick={() => router.push("/kundportal/mina-bokningar")}
+                className="w-full px-6 py-3 bg-[#2c7a4c] text-white rounded-lg hover:bg-[#235d3a] transition-colors font-medium"
+              >
+                Se mina bokningar
+              </button>
+
+              <button
+                onClick={() => router.push("/kundportal/dashboard")}
+                className="w-full mt-3 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+              >
+                Till startsidan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
