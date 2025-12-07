@@ -220,6 +220,7 @@ export default function CustomerRegisterPage() {
           data: {
             full_name: `${ownerData.firstName} ${ownerData.lastName}`.trim(),
             phone: ownerData.phone,
+            user_type: "customer", // 🆕 VIKTIGT: Förhindrar att handle_new_user() skapar profil!
           },
         },
       });
