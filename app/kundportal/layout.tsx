@@ -118,13 +118,11 @@ export default function KundportalLayout({
               <Image
                 src="/logo.png"
                 alt="DogPlanner"
-                width={40}
+                width={120}
                 height={40}
-                className="rounded"
+                className="h-10 w-auto object-contain"
+                priority
               />
-              <span className="font-semibold text-lg hidden sm:inline">
-                Kundportal
-              </span>
             </Link>
 
             {/* Desktop Navigation */}
