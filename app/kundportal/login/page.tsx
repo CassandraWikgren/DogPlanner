@@ -80,18 +80,28 @@ function LoginPageContent() {
         throw new Error(`${ERROR_CODES.AUTH} Inloggning misslyckades`);
       }
 
-      // Kontrollera att användaren är en ägare (inte admin/staff)
+      // Kontrollera att användaren är en registrerad ägare (inte admin/staff)
+      // Använd auth.uid (data.user.id) för att matcha RLS-policyn owners_select_self_and_org
       const { data: ownerData, error: ownerError } = await supabase
         .from("owners")
         .select("id, full_name, email")
-        .eq("email", email)
+        .eq("id", data.user.id)
         .maybeSingle();
 
-      if (ownerError || !ownerData) {
-        // Logga ut användaren om de inte är en registrerad ägare
+      if (ownerError) {
+        console.error("[ERR-1001] Database error checking owner:", ownerError);
+        // Logga ut användaren vid databasfel
         await supabase.auth.signOut();
         throw new Error(
-          `${ERROR_CODES.AUTH} Inget kundkonto hittades för denna e-postadress`
+          `${ERROR_CODES.DATABASE} Kunde inte verifiera kundkonto: ${ownerError.message}`
+        );
+      }
+
+      if (!ownerData) {
+        // Användaren finns i auth men inte i owners - kanske admin/staff
+        await supabase.auth.signOut();
+        throw new Error(
+          `${ERROR_CODES.AUTH} Inget kundkonto hittades för denna e-postadress. Om du driver ett hundföretag, använd företagsinloggningen istället.`
         );
       }
 
