@@ -102,21 +102,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             | undefined;
           const hasBusinessRole = metaOrg || (u as any)?.app_metadata?.role;
 
-          if (hasBusinessRole) {
-            // Kör queries i bakgrunden UTAN att blockera rendering
-            // Använd setTimeout för att släppa igenom första render
-            setTimeout(() => {
-              // Försök auto-onboarding i bakgrunden
-              safeAutoOnboarding(session.access_token)
-                .then(() => refreshProfile(u.id))
-                .catch((err) =>
-                  console.error("Background onboarding failed:", err)
-                );
-
-              refreshSubscription(session.access_token).catch((err) =>
-                console.error("Background subscription check failed:", err)
+          if (hasBusinessRole && !isCustomer) {
+            // ✅ AWAIT så currentOrgId sätts FÖRE komponenterna renderas
+            try {
+              await safeAutoOnboarding(session.access_token);
+              await refreshProfile(u.id);
+              await refreshSubscription(session.access_token);
+              console.log(
+                "✅ onAuthStateChange: All async operations complete"
               );
-            }, 100); // 100ms delay för att släppa igenom initial render
+            } catch (err) {
+              console.error(
+                "onAuthStateChange: Error in async operations:",
+                err
+              );
+            }
           }
         } else {
           setProfile(null);
