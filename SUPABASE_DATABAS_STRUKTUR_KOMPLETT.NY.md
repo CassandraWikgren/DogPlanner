@@ -1,10 +1,10 @@
 # 🗄️ Supabase Databasstruktur - DogPlanner (KOMPLETT)
 
-**Uppdaterad:** 7 December 2025 (senast: isCustomer-logik, kund/personal-separation, sök/ort-filter)  
+**Uppdaterad:** 7 December 2025 (senast: Duplicate prevention constraints, race condition fixes)  
 **Version:** Next.js 15.5.7 + React 19.2.0 + Supabase (@supabase/ssr 0.8.0)  
 **Schema verifierat:** ✅ Alla funktioner och triggers verifierade i produktion  
 **RLS Status:** 🔒 Aktiverat på alla kritiska tabeller - Multi-tenant säkert  
-**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, Dualt kundnummer-system
+**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, **Duplicate prevention**, Race condition fixes
 
 ---
 
@@ -20,6 +20,44 @@
 - **Dualt kundnummer:** 101+ per-org (dagis), 10001+ global (pensionat) ✅
 - **Kundportal:** owners.id = auth.users.id vid kundregistrering ✅
 - **⚠️ dogs.org_id:** Utelämna helt vid insert för pensionatkunder (skicka INTE user.id som org_id!) ✅
+- **🔒 Unika index:** Förhindrar dubbletter på owners, orgs, dogs, applications ✅
+
+---
+
+## 🔒 DUPLICATE PREVENTION CONSTRAINTS (7 December 2025)
+
+### Aktiva unika index
+
+Dessa constraints förhindrar dubbletter och race conditions:
+
+| Index                               | Tabell                | Kolumner                                       | Skyddar mot                                      |
+| ----------------------------------- | --------------------- | ---------------------------------------------- | ------------------------------------------------ |
+| `owners_email_org_unique`           | owners                | `lower(email), org_id`                         | Dubbla kunder med samma email inom en org        |
+| `orgs_email_unique`                 | orgs                  | `lower(email)`                                 | Dubbla organisationer med samma email            |
+| `dogs_owner_name_org_unique`        | dogs                  | `owner_id, lower(name), org_id`                | Dubbla hundar med samma namn inom en org         |
+| `applications_email_dog_org_unique` | interest_applications | `lower(parent_email), org_id, lower(dog_name)` | Dubbla ansökningar för samma hund till samma org |
+
+### Vad som tillåts
+
+- ✅ Samma kund kan ha konto hos **flera** organisationer
+- ✅ Samma hund kan registreras hos **olika** organisationer (hunddagis + pensionat)
+- ✅ Samma person kan ansöka till **flera** organisationer
+
+### Vad som blockeras
+
+- ❌ Dubbla ägare med samma email inom **EN** org
+- ❌ Dubbla hundar med samma namn hos samma ägare inom **EN** org
+- ❌ Dubbla ansökningar för samma hund till **samma** org
+
+### SQL för att verifiera
+
+```sql
+SELECT indexname, tablename
+FROM pg_indexes
+WHERE indexname LIKE '%_unique'
+  AND schemaname = 'public'
+ORDER BY tablename;
+```
 
 ---
 
