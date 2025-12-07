@@ -203,14 +203,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (u && session?.access_token) {
         // 🔍 KUNDCHECK FÖRST: Kolla om användaren är en hundägare
         // VIKTIGT: await här så vi vet om de är kund INNAN vi sätter org_id
-        await checkIfCustomer(u.id);
+        const customerCheckResult = await checkIfCustomer(u.id);
 
-        // ✅ EFTER kundcheck: Sätt org_id endast för PERSONAL (inte kunder)
+        // ✅ HOPPA ÖVER refreshProfile för kunder
         // Kunder ska INTE ha currentOrgId satt (de har org_id = NULL i owners)
-        const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
+        if (customerCheckResult) {
+          console.log("AuthContext: User is customer, skipping refreshProfile");
+          return; // Avbryt här - kunder behöver inte onboarding/subscription
+        }
 
-        // Kör refreshProfile endast om användaren inte är kund
-        // (checkIfCustomer har redan satt isCustomer och rensat org_id för kunder)
+        // Endast för PERSONAL: Kör onboarding och refreshProfile
+        const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
         if (metaOrg || (u as any)?.app_metadata?.role) {
           safeAutoOnboarding(session.access_token)
             .then(() => refreshProfile(u.id))
@@ -228,7 +231,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 1. Om användaren finns i owners-tabellen → DE ÄR KUND
   // 2. Profiles-tabellen ignoreras för kunder (kan finnas "skräp-profiler")
   // 3. Personal finns INTE i owners-tabellen
-  async function checkIfCustomer(userId: string) {
+  // RETURNERAR: true om kund, false annars
+  async function checkIfCustomer(userId: string): Promise<boolean> {
     try {
       const supabase = createClient();
 
@@ -251,7 +255,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setCurrentOrgId(null);
         setProfile(null);
         setRole(null);
-        return;
+        return true; // <- KUND
       }
 
       // STEG 2: Om inte i owners → kolla profiles för personal
@@ -266,15 +270,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           "AuthContext: � User is STAFF (has org_id in profiles, not in owners)"
         );
         setIsCustomer(false);
-        return;
+        return false; // <- PERSONAL
       }
 
       // Varken kund eller personal
       console.log("AuthContext: ❓ User is neither customer nor staff");
       setIsCustomer(false);
+      return false;
     } catch (error) {
       console.error("Error checking customer status:", error);
       setIsCustomer(false);
+      return false;
     }
   }
 
