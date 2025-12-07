@@ -198,7 +198,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log("AuthContext: Session loaded, user:", u?.id || "none");
       setUser(u);
 
-      setLoading(false); // ⬆️ Sätt loading=false tidigt så sidor kan börja rendera
+      // ⚠️ VIKTIGT: Sätt INTE loading=false här förrän vi vet om användaren är kund/personal
+      // Detta förhindrar race condition där dashboard renderas innan currentOrgId satts
 
       if (u && session?.access_token) {
         // 🔍 KUNDCHECK FÖRST: Kolla om användaren är en hundägare
@@ -209,16 +210,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Kunder ska INTE ha currentOrgId satt (de har org_id = NULL i owners)
         if (customerCheckResult) {
           console.log("AuthContext: User is customer, skipping refreshProfile");
+          setLoading(false); // ✅ Sätt loading=false EFTER kundcheck
           return; // Avbryt här - kunder behöver inte onboarding/subscription
         }
 
         // Endast för PERSONAL: Kör onboarding och refreshProfile
         const metaOrg = (u as any)?.user_metadata?.org_id as string | undefined;
         if (metaOrg || (u as any)?.app_metadata?.role) {
-          safeAutoOnboarding(session.access_token)
-            .then(() => refreshProfile(u.id))
-            .then(() => refreshSubscription(session.access_token));
+          // ✅ AWAIT refreshProfile så currentOrgId sätts FÖRE loading=false
+          await safeAutoOnboarding(session.access_token);
+          await refreshProfile(u.id);
+          await refreshSubscription(session.access_token);
         }
+
+        setLoading(false); // ✅ Sätt loading=false EFTER allt är klart
+      } else {
+        // Ingen session - sätt loading=false direkt
+        setLoading(false);
       }
     } catch (error) {
       console.error("AuthContext: Unexpected error in init:", error);
@@ -234,6 +242,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // RETURNERAR: true om kund, false annars
   async function checkIfCustomer(userId: string): Promise<boolean> {
     try {
+      console.log("🔍 checkIfCustomer: Checking user:", userId);
       const supabase = createClient();
 
       // STEG 1: Kolla om användaren finns i owners-tabellen
@@ -244,9 +253,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq("id", userId)
         .maybeSingle();
 
+      console.log("🔍 checkIfCustomer: owners query result:", {
+        ownerData,
+        ownerError,
+      });
+
       if (ownerData && !ownerError) {
         console.log(
-          "AuthContext: � User is a CUSTOMER (found in owners table)"
+          "AuthContext: 🐕 User is a CUSTOMER (found in owners table)"
         );
         setIsCustomer(true);
 
@@ -259,15 +273,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // STEG 2: Om inte i owners → kolla profiles för personal
-      const { data: profileData } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("org_id")
         .eq("id", userId)
         .maybeSingle();
 
+      console.log("🔍 checkIfCustomer: profiles query result:", {
+        profileData,
+        profileError,
+      });
+
       if (profileData?.org_id) {
         console.log(
-          "AuthContext: � User is STAFF (has org_id in profiles, not in owners)"
+          "AuthContext: 👔 User is STAFF (has org_id in profiles, not in owners)"
         );
         setIsCustomer(false);
         return false; // <- PERSONAL
@@ -286,6 +305,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function refreshProfile(userId: string) {
     try {
+      console.log("🔄 refreshProfile: Starting for user:", userId);
       // Skapa supabase client
       const supabase = createClient();
 
@@ -295,6 +315,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .select("id, org_id, role, full_name, email, phone")
         .eq("id", userId)
         .single();
+
+      console.log("🔄 refreshProfile: Query result:", { profileData, error });
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -328,8 +350,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           phone: profileData.phone || undefined,
         };
 
+        console.log("🔄 refreshProfile: Setting profile:", merged);
         setProfile(merged);
         setCurrentOrgId(merged.org_id);
+        console.log("✅ refreshProfile: currentOrgId set to:", merged.org_id);
         setRole(merged.role);
       } else {
         console.error(
