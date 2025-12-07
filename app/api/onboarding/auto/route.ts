@@ -61,6 +61,50 @@ export async function POST(req: Request) {
 
     console.log("🆕 Ingen profil/org hittades, skapar ny...");
 
+    // 🔒 RACE CONDITION PREVENTION: Kolla om det redan finns en org skapad för denna användare
+    // Detta förhindrar dubbletter när både trigger OCH API körs samtidigt
+    const { data: existingOrg } = await supabase
+      .from("orgs")
+      .select("id")
+      .eq("email", user.email)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existingOrg) {
+      console.log(
+        "🔄 Org finns redan, kopplar profil till befintlig org:",
+        existingOrg.id
+      );
+
+      // Koppla profilen till befintlig org istället för att skapa ny
+      const { error: updateErr } = await supabase.from("profiles").upsert(
+        {
+          id: userId,
+          org_id: existingOrg.id,
+          role: "admin",
+          email: user.email,
+          full_name: user.user_metadata?.full_name || null,
+          phone: user.user_metadata?.phone || null,
+        },
+        { onConflict: "id" }
+      );
+
+      if (updateErr) {
+        console.error(
+          "❌ Kunde inte koppla profil till befintlig org:",
+          updateErr
+        );
+        return NextResponse.json({ error: updateErr.message }, { status: 400 });
+      }
+
+      return NextResponse.json({
+        ok: true,
+        msg: "Profil kopplad till befintlig organisation (duplicate prevention).",
+        org_id: existingOrg.id,
+      });
+    }
+
     // Läs in data som skickades vid signUp (finns i user.user_metadata)
     const fullName = user.user_metadata?.full_name || null;
     const phone = user.user_metadata?.phone || null;
