@@ -49,6 +49,10 @@ interface Booking {
     name: string;
     breed: string | null;
   };
+  orgs: {
+    id: string;
+    name: string | null;
+  } | null;
 }
 
 export default function CustomerDashboard() {
@@ -67,7 +71,10 @@ export default function CustomerDashboard() {
   const fetchCustomerData = async () => {
     try {
       const supabase = createClient();
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
 
       if (authError || !user || !user.email) {
         router.push("/kundportal/login");
@@ -76,7 +83,9 @@ export default function CustomerDashboard() {
 
       const { data: ownerData, error: ownerError } = await supabase
         .from("owners")
-        .select("id, full_name, phone, email, address, customer_number, created_at")
+        .select(
+          "id, full_name, phone, email, address, customer_number, created_at"
+        )
         .eq("email", user.email)
         .single();
 
@@ -97,7 +106,9 @@ export default function CustomerDashboard() {
         const dogIds = dogsData.map((dog) => dog.id);
         const { data: bookingsData } = await supabase
           .from("bookings")
-          .select("id, start_date, end_date, status, total_price, dogs!inner (id, name, breed)")
+          .select(
+            "id, start_date, end_date, status, total_price, dogs!inner (id, name, breed), orgs (id, name)"
+          )
           .in("dog_id", dogIds)
           .order("start_date", { ascending: false });
 
@@ -114,18 +125,36 @@ export default function CustomerDashboard() {
 
   const getStatusBadge = (status: string | null) => {
     const configs: Record<string, { color: string; text: string }> = {
-      pending: { color: "bg-yellow-100 text-yellow-800 border-yellow-200", text: "Väntande" },
-      confirmed: { color: "bg-green-100 text-green-800 border-green-200", text: "Bekräftad" },
-      checked_in: { color: "bg-blue-100 text-blue-800 border-blue-200", text: "Incheckad" },
-      checked_out: { color: "bg-gray-100 text-gray-800 border-gray-200", text: "Utcheckad" },
-      cancelled: { color: "bg-red-100 text-red-800 border-red-200", text: "Avbokad" },
+      pending: {
+        color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+        text: "Väntande",
+      },
+      confirmed: {
+        color: "bg-green-100 text-green-800 border-green-200",
+        text: "Bekräftad",
+      },
+      checked_in: {
+        color: "bg-blue-100 text-blue-800 border-blue-200",
+        text: "Incheckad",
+      },
+      checked_out: {
+        color: "bg-gray-100 text-gray-800 border-gray-200",
+        text: "Utcheckad",
+      },
+      cancelled: {
+        color: "bg-red-100 text-red-800 border-red-200",
+        text: "Avbokad",
+      },
     };
     const config = configs[status || "pending"] || configs.pending;
     return <Badge className={`${config.color} border`}>{config.text}</Badge>;
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("sv-SE", { day: "numeric", month: "short" });
+    return new Date(dateString).toLocaleDateString("sv-SE", {
+      day: "numeric",
+      month: "short",
+    });
   };
 
   if (loading) {
@@ -147,7 +176,7 @@ export default function CustomerDashboard() {
             <XCircle className="h-10 w-10 text-red-500 mx-auto mb-3" />
             <h2 className="text-lg font-semibold mb-2">Ett fel uppstod</h2>
             <p className="text-gray-500 text-sm mb-4">{error}</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="text-[#2c7a4c] font-medium text-sm hover:underline"
             >
@@ -159,7 +188,9 @@ export default function CustomerDashboard() {
     );
   }
 
-  const activeBookings = bookings.filter(b => b.status !== "cancelled" && b.status !== "checked_out");
+  const activeBookings = bookings.filter(
+    (b) => b.status !== "cancelled" && b.status !== "checked_out"
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -170,13 +201,13 @@ export default function CustomerDashboard() {
             Hej, {currentOwner?.full_name?.split(" ")[0] || "där"}! 👋
           </h1>
           <p className="text-gray-500 mt-1">
-            {currentOwner?.customer_number && `Kundnummer #${currentOwner.customer_number}`}
+            {currentOwner?.customer_number &&
+              `Kundnummer #${currentOwner.customer_number}`}
           </p>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-        
         {/* Snabbåtgärd - Ny bokning (ENDAST en CTA) */}
         <Link href="/kundportal/ny-bokning" className="block">
           <div className="bg-[#2c7a4c] text-white rounded-xl p-5 flex items-center justify-between hover:bg-[#236139] transition-colors">
@@ -197,17 +228,23 @@ export default function CustomerDashboard() {
         <section>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold text-gray-900">Mina hundar</h2>
-            <Link href="/kundportal/mina-hundar" className="text-sm text-[#2c7a4c] font-medium hover:underline">
+            <Link
+              href="/kundportal/mina-hundar"
+              className="text-sm text-[#2c7a4c] font-medium hover:underline"
+            >
               {dogs.length > 0 ? "Hantera" : "Lägg till"}
             </Link>
           </div>
-          
+
           {dogs.length === 0 ? (
             <Card className="border-dashed border-2 border-gray-200 bg-gray-50">
               <CardContent className="py-8 text-center">
                 <PawPrint className="h-10 w-10 text-gray-300 mx-auto mb-3" />
                 <p className="text-gray-500 mb-1">Inga hundar registrerade</p>
-                <Link href="/kundportal/mina-hundar" className="text-sm text-[#2c7a4c] font-medium hover:underline">
+                <Link
+                  href="/kundportal/mina-hundar"
+                  className="text-sm text-[#2c7a4c] font-medium hover:underline"
+                >
                   Lägg till din första hund →
                 </Link>
               </CardContent>
@@ -222,9 +259,12 @@ export default function CustomerDashboard() {
                         <PawPrint className="h-6 w-6 text-[#2c7a4c]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-900">{dog.name}</p>
+                        <p className="font-semibold text-gray-900">
+                          {dog.name}
+                        </p>
                         <p className="text-sm text-gray-500 truncate">
-                          {dog.breed || "Blandras"} {dog.heightcm ? `• ${dog.heightcm} cm` : ""}
+                          {dog.breed || "Blandras"}{" "}
+                          {dog.heightcm ? `• ${dog.heightcm} cm` : ""}
                         </p>
                       </div>
                     </div>
@@ -238,14 +278,19 @@ export default function CustomerDashboard() {
         {/* Kommande bokningar */}
         <section>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold text-gray-900">Kommande bokningar</h2>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Kommande bokningar
+            </h2>
             {bookings.length > 0 && (
-              <Link href="/kundportal/mina-bokningar" className="text-sm text-[#2c7a4c] font-medium hover:underline">
+              <Link
+                href="/kundportal/mina-bokningar"
+                className="text-sm text-[#2c7a4c] font-medium hover:underline"
+              >
                 Visa alla
               </Link>
             )}
           </div>
-          
+
           {activeBookings.length === 0 ? (
             <Card className="border-dashed border-2 border-gray-200 bg-gray-50">
               <CardContent className="py-8 text-center">
@@ -264,9 +309,17 @@ export default function CustomerDashboard() {
                           <Calendar className="h-6 w-6 text-blue-600" />
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">{booking.dogs?.name}</p>
+                          <p className="font-semibold text-gray-900">
+                            {booking.dogs?.name}
+                          </p>
+                          {booking.orgs?.name && (
+                            <p className="text-sm text-green-700 font-medium">
+                              {booking.orgs.name}
+                            </p>
+                          )}
                           <p className="text-sm text-gray-500">
-                            {formatDate(booking.start_date)} – {formatDate(booking.end_date)}
+                            {formatDate(booking.start_date)} –{" "}
+                            {formatDate(booking.end_date)}
                           </p>
                         </div>
                       </div>
@@ -281,34 +334,44 @@ export default function CustomerDashboard() {
 
         {/* Kontaktuppgifter */}
         <section>
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Mina uppgifter</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">
+            Mina uppgifter
+          </h2>
           <Card className="border border-gray-200">
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                <span className="text-gray-700">{currentOwner?.email || "Ej angett"}</span>
+                <span className="text-gray-700">
+                  {currentOwner?.email || "Ej angett"}
+                </span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Phone className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                <span className="text-gray-700">{currentOwner?.phone || "Ej angett"}</span>
+                <span className="text-gray-700">
+                  {currentOwner?.phone || "Ej angett"}
+                </span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                <span className="text-gray-700">{currentOwner?.address || "Ej angett"}</span>
+                <span className="text-gray-700">
+                  {currentOwner?.address || "Ej angett"}
+                </span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
                 <span className="text-gray-700">
-                  Medlem sedan {currentOwner?.created_at 
-                    ? new Date(currentOwner.created_at).toLocaleDateString("sv-SE", { year: "numeric", month: "long" })
-                    : "okänt"
-                  }
+                  Medlem sedan{" "}
+                  {currentOwner?.created_at
+                    ? new Date(currentOwner.created_at).toLocaleDateString(
+                        "sv-SE",
+                        { year: "numeric", month: "long" }
+                      )
+                    : "okänt"}
                 </span>
               </div>
             </CardContent>
           </Card>
         </section>
-
       </main>
     </div>
   );

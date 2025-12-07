@@ -45,6 +45,12 @@ interface Booking {
     name: string;
     breed: string | null;
   } | null;
+  orgs: {
+    id: string;
+    name: string | null;
+    address: string | null;
+    phone: string | null;
+  } | null;
   prepayment_invoice?: {
     id: string;
     amount: number;
@@ -129,6 +135,12 @@ export default function MinaBokningarPage() {
             id,
             name,
             breed
+          ),
+          orgs (
+            id,
+            name,
+            address,
+            phone
           )
         `
         )
@@ -420,6 +432,23 @@ export default function MinaBokningarPage() {
                     </div>
                     {getStatusBadge(booking.status)}
                   </div>
+
+                  {/* Pensionat info */}
+                  {booking.orgs && (
+                    <div className="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="w-4 h-4 text-green-600" />
+                        <span className="font-medium text-green-800">
+                          {booking.orgs.name}
+                        </span>
+                      </div>
+                      {booking.orgs.address && (
+                        <p className="text-sm text-green-700 mt-1 ml-6">
+                          {booking.orgs.address}
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   {/* Dates */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
