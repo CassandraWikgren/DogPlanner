@@ -187,9 +187,9 @@ export default function MinaHundarPage() {
 
   async function handleSave() {
     try {
-      // För pensionatkunder (Pattern 3) är org_id NULL - det är korrekt!
-      // Hundar kopplas till ägaren via owner_id, inte via org_id
-      const orgId = user?.user_metadata?.org_id || null;
+      // 🛡️ VIKTIGT: Kundportal-hundar ska ALDRIG ha org_id!
+      // org_id sätts ENDAST när pensionatet godkänner en bokning
+      // Detta förhindrar att kundhundar dyker upp på hunddagis-listan
       const dogData = {
         name: formData.name,
         breed: formData.breed,
@@ -214,12 +214,10 @@ export default function MinaHundarPage() {
         photo_url: formData.photo_url || null,
       };
       if (isAddingNew) {
-        // Bygg insert-objekt - inkludera org_id ENDAST om det finns
+        // 🛡️ ENDAST owner_id sätts - org_id är ALLTID null för kundportal-hundar
+        // org_id sätts senare av pensionatet när bokning godkänns
         const insertData: any = { owner_id: user?.id, ...dogData };
-        if (orgId) {
-          insertData.org_id = orgId;
-        }
-        // org_id utelämnas helt för pensionatkunder (NULL i databasen)
+        // org_id utelämnas helt - hundar i kundportalen har INGEN org_id
 
         const { error: insertError } = await (supabase as any)
           .from("dogs")
