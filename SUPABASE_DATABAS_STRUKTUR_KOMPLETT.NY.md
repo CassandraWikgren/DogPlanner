@@ -1,10 +1,10 @@
 # 🗄️ Supabase Databasstruktur - DogPlanner (KOMPLETT)
 
-**Uppdaterad:** 7 December 2025 (senast: Duplicate prevention constraints, race condition fixes)  
+**Uppdaterad:** 7 December 2025 (senast: Customer read policies för pensionatspriser, Min profil read-only namn)  
 **Version:** Next.js 15.5.7 + React 19.2.0 + Supabase (@supabase/ssr 0.8.0)  
 **Schema verifierat:** ✅ Alla funktioner och triggers verifierade i produktion  
 **RLS Status:** 🔒 Aktiverat på alla kritiska tabeller - Multi-tenant säkert  
-**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, **Duplicate prevention**, Race condition fixes
+**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, **Duplicate prevention**, Race condition fixes, **Customer public read policies**
 
 ---
 
@@ -21,6 +21,7 @@
 - **Kundportal:** owners.id = auth.users.id vid kundregistrering ✅
 - **⚠️ dogs.org_id:** Utelämna helt vid insert för pensionatkunder (skicka INTE user.id som org_id!) ✅
 - **🔒 Unika index:** Förhindrar dubbletter på owners, orgs, dogs, applications ✅
+- **🆕 Public read policies:** Kunder kan läsa priser via `_public_read` policies (7 Dec 2025) ✅
 
 ---
 
@@ -148,15 +149,31 @@ const insertData = { owner_id: user.id, ...dogData };
 
 **org_id sätts endast** när pensionatet godkänner en bokning (valfritt).
 
-| Sida               | URL                          | Beskrivning                              |
-| ------------------ | ---------------------------- | ---------------------------------------- |
-| **Dashboard**      | `/kundportal/dashboard`      | Statistik, hundar, kommande bokningar    |
-| **Min profil**     | `/kundportal/min-profil`     | Kontaktinfo, kontaktperson 2, samtycken  |
-| **Mina hundar**    | `/kundportal/mina-hundar`    | CRUD hundar med alla fält                |
-| **Mina bokningar** | `/kundportal/mina-bokningar` | Lista på alla bokningar                  |
-| **Ny bokning**     | `/kundportal/ny-bokning`     | 4-stegs bokningsflöde med sök/ort-filter |
-| **Login**          | `/kundportal/login`          | Kundinloggning                           |
-| **Registrera**     | `/kundportal/registrera`     | Kundregistrering (pensionat/dagis)       |
+| Sida               | URL                          | Beskrivning                                        |
+| ------------------ | ---------------------------- | -------------------------------------------------- |
+| **Dashboard**      | `/kundportal/dashboard`      | Statistik, hundar, kommande bokningar              |
+| **Min profil**     | `/kundportal/min-profil`     | Kontaktinfo, kontaktperson 2, samtycken (se nedan) |
+| **Mina hundar**    | `/kundportal/mina-hundar`    | CRUD hundar med alla fält                          |
+| **Mina bokningar** | `/kundportal/mina-bokningar` | Lista på alla bokningar                            |
+| **Ny bokning**     | `/kundportal/ny-bokning`     | 4-stegs bokningsflöde med sök/ort-filter           |
+| **Login**          | `/kundportal/login`          | Kundinloggning                                     |
+| **Registrera**     | `/kundportal/registrera`     | Kundregistrering (pensionat/dagis)                 |
+
+### 🔒 Min profil - Redigerbara fält (7 December 2025)
+
+**Kunder kan INTE ändra sitt namn** för att förhindra missbruk. Namnändringar måste ske via pensionatet.
+
+| Fält              | Redigerbar | Anledning                                   |
+| ----------------- | ---------- | ------------------------------------------- |
+| **Namn**          | ❌ Nej     | Kontakta pensionatet för namnändring        |
+| **E-post**        | ❌ Nej     | Kopplad till Supabase Auth                  |
+| **Personnummer**  | ❌ Nej     | Känslig uppgift, kan ej ändras av kund      |
+| **Telefon**       | ✅ Ja      | Kan uppdateras                              |
+| **Adress**        | ✅ Ja      | Kan uppdateras                              |
+| **Postnummer**    | ✅ Ja      | Kan uppdateras                              |
+| **Ort**           | ✅ Ja      | Kan uppdateras                              |
+| **Kontaktperson** | ✅ Ja      | Extra kontaktperson (nödsituation)          |
+| **Samtycken**     | ✅ Ja      | Marknadsföring, foto (GDPR kvarstår alltid) |
 
 ### Mina hundar - Fält
 
@@ -2583,6 +2600,59 @@ RETURNS UUID AS $$
   SELECT org_id FROM profiles WHERE id = auth.uid()
 $$ LANGUAGE sql SECURITY DEFINER;
 ```
+
+---
+
+## 🆕 CUSTOMER PUBLIC READ POLICIES (7 December 2025)
+
+### Problem som löstes
+
+Kunder (utan `org_id` i profiles) fick 406-fel vid prisberäkning eftersom RLS blockerade läsning av `boarding_prices`, `boarding_seasons`, `special_dates` och `extra_services`.
+
+### Lösning
+
+Lagt till `_public_read` policies som tillåter alla autentiserade användare att **LÄSA** (endast SELECT) aktiva priser/tjänster:
+
+| Tabell             | Policy                         | Villkor          | Tillåter                   |
+| ------------------ | ------------------------------ | ---------------- | -------------------------- |
+| `boarding_prices`  | `boarding_prices_public_read`  | `is_active=true` | Läs grundpriser            |
+| `boarding_seasons` | `boarding_seasons_public_read` | `is_active=true` | Läs säsongstillägg         |
+| `special_dates`    | `special_dates_public_read`    | (alla)           | Läs helgdagar/specialdatum |
+| `extra_services`   | `extra_services_public_read`   | `is_active=true` | Läs tillvalstjänster       |
+
+### Hur det fungerar
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      PENSIONATSPRISER RLS                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  KUND (testkund3)                 PERSONAL (Bella Hunddagis)    │
+│  ─────────────────                ───────────────────────────   │
+│  profiles.org_id = NULL           profiles.org_id = 'bella-id'  │
+│                                                                  │
+│  ✅ LÄS alla aktiva priser        ✅ LÄS sin orgs priser        │
+│     via _public_read policy          via _org_all policy        │
+│                                                                  │
+│  ❌ KAN INTE redigera             ✅ REDIGERA sin orgs priser   │
+│                                      via _org_all policy        │
+│                                                                  │
+│  Prisberäkning filtrerar på:      Admin-sidor filtrerar på:     │
+│  .eq("org_id", valtPensionat)     .eq("org_id", profile.org_id) │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Säkerhet
+
+- ✅ Kunder kan bara **LÄSA** - aldrig INSERT/UPDATE/DELETE
+- ✅ Inaktiva priser (`is_active=false`) är dolda för kunder
+- ✅ Applikationskoden filtrerar alltid på `org_id` vid hämtning
+- ✅ Personal kan fortfarande bara redigera **sin egen** organisations priser
+
+### Migration
+
+Se: `supabase/migrations/20251207_allow_customer_read_prices.sql`
 
 ---
 

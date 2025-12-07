@@ -53,7 +53,22 @@ type InvoiceResult = {
 // ==========================
 
 export async function POST(req: Request) {
-  try {    const supabase = await createClient();
+  try {
+    const supabase = await createClient();
+
+    // 🔒 SÄKERHETSKONTROLL: Verifiera autentisering
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      console.error("[ERR-1000] Unauthorized PDF request");
+      return NextResponse.json(
+        { error: "Du måste vara inloggad för att ladda ner fakturor." },
+        { status: 401 }
+      );
+    }
 
     const { invoiceId } = await req.json();
     if (!invoiceId) {
@@ -63,6 +78,13 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    // 🔒 SÄKERHETSKONTROLL: Hämta användarens org_id
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("org_id")
+      .eq("id", user.id)
+      .single();
 
     // ==========================
     // Hämta faktura med relationer
@@ -108,6 +130,17 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { error: "Kunde inte hämta faktura." },
         { status: 500 }
+      );
+    }
+
+    // 🔒 SÄKERHETSKONTROLL: Verifiera att fakturan tillhör användarens organisation
+    if (profile?.org_id && invoice.org_id !== profile.org_id) {
+      console.error(
+        `[ERR-1003] Unauthorized: User org ${profile.org_id} tried to access invoice from org ${invoice.org_id}`
+      );
+      return NextResponse.json(
+        { error: "Du har inte behörighet att visa denna faktura." },
+        { status: 403 }
       );
     }
 

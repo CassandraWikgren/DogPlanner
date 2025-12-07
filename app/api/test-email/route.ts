@@ -1,6 +1,8 @@
 /**
  * 📧 Test Email API Route
  * Används för att testa email-funktionaliteten
+ *
+ * ⚠️ SÄKERHET: Inaktiverad i produktion för att förhindra spam-missbruk
  */
 
 // Tvinga dynamisk hantering så Next inte försöker för-rendera under build
@@ -16,6 +18,12 @@ import {
 } from "@/lib/emailSender";
 
 export async function POST(request: NextRequest) {
+  // 🔒 SÄKERHETSKONTROLL: Inaktivera i produktion
+  if (process.env.VERCEL && process.env.NODE_ENV === "production") {
+    console.log("[SECURITY] Test email endpoint blocked in production");
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   try {
     const body = await request.json();
     const { type, email, ownerName, dogName, startDate, orgId, reason } = body;

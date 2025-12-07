@@ -115,7 +115,48 @@ Frågor? Kontakta oss på support@dogplanner.se
 
 export async function POST(request: Request) {
   try {
+    // 🔒 SÄKERHETSKONTROLL: Verifiera autentisering (endast staff kan skicka consent-emails)
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      console.error("[ERR-6000] Unauthorized consent email request");
+      return NextResponse.json(
+        { error: "Du måste vara inloggad för att skicka samtyckes-email." },
+        { status: 401 }
+      );
+    }
+
+    // Verifiera att användaren är staff (har org_id i profiles)
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("org_id")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.org_id) {
+      console.error("[ERR-6001] Non-staff user tried to send consent email");
+      return NextResponse.json(
+        { error: "Endast personal kan skicka samtyckes-email." },
+        { status: 403 }
+      );
+    }
+
     const { ownerId, email, name, orgId } = await request.json();
+
+    // Verifiera att orgId matchar användarens organisation
+    if (orgId !== profile.org_id) {
+      console.error(
+        `[ERR-6002] User org ${profile.org_id} tried to send email for org ${orgId}`
+      );
+      return NextResponse.json(
+        { error: "Du kan bara skicka email för din egen organisation." },
+        { status: 403 }
+      );
+    }
 
     console.log("🔍 Email send request received:", {
       ownerId,
