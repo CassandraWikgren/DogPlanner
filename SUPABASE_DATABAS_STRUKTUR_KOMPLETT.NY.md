@@ -1,10 +1,10 @@
 # 🗄️ Supabase Databasstruktur - DogPlanner (KOMPLETT)
 
-**Uppdaterad:** 7 December 2025  
+**Uppdaterad:** 7 December 2025 (senast: isCustomer-logik, kund/personal-separation, sök/ort-filter)  
 **Version:** Next.js 15.5.7 + React 19.2.0 + Supabase (@supabase/ssr 0.8.0)  
 **Schema verifierat:** ✅ Alla funktioner och triggers verifierade i produktion  
 **RLS Status:** 🔒 Aktiverat på alla kritiska tabeller - Multi-tenant säkert  
-**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal (profil, hundar, bokning), Dualt kundnummer-system (2025-12-07)
+**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, Dualt kundnummer-system
 
 ---
 
@@ -60,15 +60,65 @@ DogPlanner använder **Pattern 3** - en hybrid multi-tenant modell inspirerad av
 
 Kundportalen (`/kundportal/*`) är helt separat från personalvyn och har egen layout utan "Personal"-navbar.
 
-| Sida               | URL                          | Beskrivning                             |
-| ------------------ | ---------------------------- | --------------------------------------- |
-| **Dashboard**      | `/kundportal/dashboard`      | Statistik, hundar, kommande bokningar   |
-| **Min profil**     | `/kundportal/min-profil`     | Kontaktinfo, kontaktperson 2, samtycken |
-| **Mina hundar**    | `/kundportal/mina-hundar`    | CRUD hundar med alla fält               |
-| **Mina bokningar** | `/kundportal/mina-bokningar` | Lista på alla bokningar                 |
-| **Ny bokning**     | `/kundportal/ny-bokning`     | 4-stegs bokningsflöde                   |
-| **Login**          | `/kundportal/login`          | Kundinloggning                          |
-| **Registrera**     | `/kundportal/registrera`     | Kundregistrering (pensionat/dagis)      |
+### 🛡️ KUND/PERSONAL-SEPARATION (7 December 2025)
+
+Systemet skiljer automatiskt på kunder och personal via `isCustomer`-flaggan i AuthContext:
+
+```typescript
+// AuthContext - checkIfCustomer()
+// 1. Kolla om användaren har profiles.org_id (= personal)
+const { data: profileData } = await supabase
+  .from("profiles")
+  .select("org_id")
+  .eq("id", userId)
+  .maybeSingle();
+
+if (profileData?.org_id) {
+  setIsCustomer(false); // 👔 Personal med org_id
+  return;
+}
+
+// 2. Kolla om användaren finns i owners (= kund)
+const { data: ownerData } = await supabase
+  .from("owners")
+  .select("id")
+  .eq("id", userId)
+  .maybeSingle();
+
+if (ownerData) {
+  setIsCustomer(true); // 🐕 Kund utan org_id
+}
+```
+
+**Resultat:**
+
+- `isCustomer = true` → Kan bara nå `/kundportal/*`, redirectas från personalsidor
+- `isCustomer = false` → Kan nå alla personalsidor (dashboard, hunddagis, etc.)
+
+### 🚫 KRITISKT: Hundar i kundportalen
+
+Hundar skapade av kunder i kundportalen ska **ALDRIG** ha `org_id`:
+
+```typescript
+// ❌ FEL - Detta gör att hunden dyker upp på hunddagis-listan
+const insertData = { owner_id: user.id, org_id: someOrgId, ...dogData };
+
+// ✅ RÄTT - org_id utelämnas helt
+const insertData = { owner_id: user.id, ...dogData };
+// → dogs.org_id blir NULL → hunden syns ENDAST för kunden
+```
+
+**org_id sätts endast** när pensionatet godkänner en bokning (valfritt).
+
+| Sida               | URL                          | Beskrivning                              |
+| ------------------ | ---------------------------- | ---------------------------------------- |
+| **Dashboard**      | `/kundportal/dashboard`      | Statistik, hundar, kommande bokningar    |
+| **Min profil**     | `/kundportal/min-profil`     | Kontaktinfo, kontaktperson 2, samtycken  |
+| **Mina hundar**    | `/kundportal/mina-hundar`    | CRUD hundar med alla fält                |
+| **Mina bokningar** | `/kundportal/mina-bokningar` | Lista på alla bokningar                  |
+| **Ny bokning**     | `/kundportal/ny-bokning`     | 4-stegs bokningsflöde med sök/ort-filter |
+| **Login**          | `/kundportal/login`          | Kundinloggning                           |
+| **Registrera**     | `/kundportal/registrera`     | Kundregistrering (pensionat/dagis)       |
 
 ### Mina hundar - Fält
 
