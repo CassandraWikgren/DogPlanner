@@ -7,8 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   PawPrint,
@@ -18,10 +17,8 @@ import {
   Mail,
   MapPin,
   Clock,
-  CheckCircle,
   XCircle,
-  AlertCircle,
-  Settings,
+  ChevronRight,
 } from "lucide-react";
 
 interface Owner {
@@ -117,26 +114,26 @@ export default function CustomerDashboard() {
 
   const getStatusBadge = (status: string | null) => {
     const configs: Record<string, { color: string; text: string }> = {
-      pending: { color: "bg-yellow-100 text-yellow-800", text: "Väntande" },
-      confirmed: { color: "bg-green-100 text-green-800", text: "Bekräftad" },
-      checked_in: { color: "bg-blue-100 text-blue-800", text: "Incheckad" },
-      checked_out: { color: "bg-gray-100 text-gray-800", text: "Utcheckad" },
-      cancelled: { color: "bg-red-100 text-red-800", text: "Avbokad" },
+      pending: { color: "bg-yellow-100 text-yellow-800 border-yellow-200", text: "Väntande" },
+      confirmed: { color: "bg-green-100 text-green-800 border-green-200", text: "Bekräftad" },
+      checked_in: { color: "bg-blue-100 text-blue-800 border-blue-200", text: "Incheckad" },
+      checked_out: { color: "bg-gray-100 text-gray-800 border-gray-200", text: "Utcheckad" },
+      cancelled: { color: "bg-red-100 text-red-800 border-red-200", text: "Avbokad" },
     };
     const config = configs[status || "pending"] || configs.pending;
-    return <Badge className={config.color}>{config.text}</Badge>;
+    return <Badge className={`${config.color} border`}>{config.text}</Badge>;
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("sv-SE", { year: "numeric", month: "short", day: "numeric" });
+    return new Date(dateString).toLocaleDateString("sv-SE", { day: "numeric", month: "short" });
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <PawPrint className="h-12 w-12 text-[#2c7a4c] mx-auto mb-4 animate-spin" />
-          <p className="text-gray-600">Laddar...</p>
+          <div className="h-8 w-8 border-2 border-[#2c7a4c] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-gray-500 text-sm">Laddar...</p>
         </div>
       </div>
     );
@@ -144,204 +141,174 @@ export default function CustomerDashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="max-w-sm w-full">
           <CardContent className="pt-6 text-center">
-            <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold mb-2">Ett fel uppstod</h2>
-            <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()}>Försök igen</Button>
+            <XCircle className="h-10 w-10 text-red-500 mx-auto mb-3" />
+            <h2 className="text-lg font-semibold mb-2">Ett fel uppstod</h2>
+            <p className="text-gray-500 text-sm mb-4">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="text-[#2c7a4c] font-medium text-sm hover:underline"
+            >
+              Försök igen
+            </button>
           </CardContent>
         </Card>
       </div>
     );
   }
 
+  const activeBookings = bookings.filter(b => b.status !== "cancelled" && b.status !== "checked_out");
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-                Välkommen, {currentOwner?.full_name || "Kund"}!
-              </h1>
-              <p className="text-base text-gray-600 mt-1">
-                {currentOwner?.customer_number ? `Kundnummer: #${currentOwner.customer_number}` : "Din portal för hundar och bokningar"}
-              </p>
-            </div>
-            <div className="flex gap-4">
-              <div className="bg-[#E6F4EA] rounded-lg px-4 py-3 text-center">
-                <p className="text-2xl font-bold text-[#2c7a4c]">{dogs.length}</p>
-                <p className="text-xs text-gray-600">Hundar</p>
-              </div>
-              <div className="bg-blue-50 rounded-lg px-4 py-3 text-center">
-                <p className="text-2xl font-bold text-blue-600">{bookings.filter(b => b.status !== "cancelled").length}</p>
-                <p className="text-xs text-gray-600">Bokningar</p>
-              </div>
-            </div>
-          </div>
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-3xl mx-auto px-4 py-6">
+          <h1 className="text-2xl font-bold text-gray-900">
+            Hej, {currentOwner?.full_name?.split(" ")[0] || "där"}! 👋
+          </h1>
+          <p className="text-gray-500 mt-1">
+            {currentOwner?.customer_number && `Kundnummer #${currentOwner.customer_number}`}
+          </p>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Link href="/kundportal/ny-bokning">
-            <Button className="w-full h-20 bg-[#2c7a4c] hover:bg-[#236139] text-white flex items-center justify-center gap-3 rounded-lg shadow-sm">
-              <Plus className="h-6 w-6" />
-              <span className="font-medium text-lg">Ny bokning</span>
-            </Button>
-          </Link>
-          <Link href="/kundportal/mina-hundar">
-            <Button variant="outline" className="w-full h-20 flex items-center justify-center gap-3 border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white rounded-lg">
-              <PawPrint className="h-6 w-6" />
-              <span className="font-medium text-lg">Mina hundar</span>
-            </Button>
-          </Link>
-          <Link href="/kundportal/mina-bokningar">
-            <Button variant="outline" className="w-full h-20 flex items-center justify-center gap-3 border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white rounded-lg">
-              <Calendar className="h-6 w-6" />
-              <span className="font-medium text-lg">Bokningar</span>
-            </Button>
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="border border-gray-200 shadow-sm">
-            <CardHeader className="border-b border-gray-100 bg-gray-50">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <PawPrint className="h-5 w-5 text-[#2c7a4c]" />
-                  Mina hundar
-                </CardTitle>
-                <Link href="/kundportal/mina-hundar">
-                  <Button variant="outline" size="sm" className="border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white">
-                    Visa alla →
-                  </Button>
-                </Link>
+      <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+        
+        {/* Snabbåtgärd - Ny bokning (ENDAST en CTA) */}
+        <Link href="/kundportal/ny-bokning" className="block">
+          <div className="bg-[#2c7a4c] text-white rounded-xl p-5 flex items-center justify-between hover:bg-[#236139] transition-colors">
+            <div className="flex items-center gap-4">
+              <div className="bg-white/20 rounded-full p-3">
+                <Plus className="h-6 w-6" />
               </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              {dogs.length === 0 ? (
-                <div className="text-center py-8">
-                  <PawPrint className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500 mb-4">Inga hundar registrerade</p>
-                  <Link href="/kundportal/mina-hundar">
-                    <Button variant="outline" size="sm" className="border-[#2c7a4c] text-[#2c7a4c]">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Lägg till hund
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {dogs.map((dog) => (
-                    <div key={dog.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-[#E6F4EA] rounded-full flex items-center justify-center">
-                          <PawPrint className="h-5 w-5 text-[#2c7a4c]" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{dog.name}</p>
-                          <p className="text-sm text-gray-600">{dog.breed || "Ingen ras"} • {dog.heightcm ? `${dog.heightcm} cm` : "?"}</p>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className="text-xs">
-                        {!dog.heightcm ? "?" : dog.heightcm <= 34 ? "Liten" : dog.heightcm <= 49 ? "Mellan" : "Stor"}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="border border-gray-200 shadow-sm">
-            <CardHeader className="border-b border-gray-100 bg-gray-50">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-[#2c7a4c]" />
-                  Senaste bokningar
-                </CardTitle>
-                <Link href="/kundportal/mina-bokningar">
-                  <Button variant="outline" size="sm" className="border-[#2c7a4c] text-[#2c7a4c] hover:bg-[#2c7a4c] hover:text-white">
-                    Visa alla →
-                  </Button>
-                </Link>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              {bookings.length === 0 ? (
-                <div className="text-center py-8">
-                  <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500 mb-4">Inga bokningar</p>
-                  <Link href="/kundportal/ny-bokning">
-                    <Button variant="outline" size="sm" className="border-[#2c7a4c] text-[#2c7a4c]">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Skapa bokning
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {bookings.slice(0, 5).map((booking) => (
-                    <div key={booking.id} className="p-3 bg-gray-50 rounded-lg">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="font-medium text-gray-900">{booking.dogs?.name}</p>
-                          <p className="text-sm text-gray-600">{formatDate(booking.start_date)} → {formatDate(booking.end_date)}</p>
-                        </div>
-                        {getStatusBadge(booking.status)}
-                      </div>
-                      {booking.total_price && <p className="text-sm font-semibold text-[#2c7a4c]">{booking.total_price} kr</p>}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card className="border border-gray-200 shadow-sm mt-6">
-          <CardHeader className="border-b border-gray-100 bg-gray-50">
-            <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <Settings className="h-5 w-5 text-[#2c7a4c]" />
-              Min profil
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <Mail className="h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{currentOwner?.email || "Ej angett"}</p>
-                  <p className="text-xs text-gray-500">E-post</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <Phone className="h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{currentOwner?.phone || "Ej angett"}</p>
-                  <p className="text-xs text-gray-500">Telefon</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <MapPin className="h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{currentOwner?.address || "Ej angett"}</p>
-                  <p className="text-xs text-gray-500">Adress</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <Clock className="h-5 w-5 text-gray-400" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{currentOwner?.created_at ? formatDate(currentOwner.created_at) : "Okänt"}</p>
-                  <p className="text-xs text-gray-500">Medlem sedan</p>
-                </div>
+              <div>
+                <p className="font-semibold text-lg">Boka pensionatvistelse</p>
+                <p className="text-white/80 text-sm">Välj datum och hund</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+            <ChevronRight className="h-5 w-5 text-white/60" />
+          </div>
+        </Link>
+
+        {/* Mina hundar */}
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-gray-900">Mina hundar</h2>
+            <Link href="/kundportal/mina-hundar" className="text-sm text-[#2c7a4c] font-medium hover:underline">
+              {dogs.length > 0 ? "Hantera" : "Lägg till"}
+            </Link>
+          </div>
+          
+          {dogs.length === 0 ? (
+            <Card className="border-dashed border-2 border-gray-200 bg-gray-50">
+              <CardContent className="py-8 text-center">
+                <PawPrint className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500 mb-1">Inga hundar registrerade</p>
+                <Link href="/kundportal/mina-hundar" className="text-sm text-[#2c7a4c] font-medium hover:underline">
+                  Lägg till din första hund →
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {dogs.map((dog) => (
+                <Card key={dog.id} className="border border-gray-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-[#E6F4EA] rounded-full flex items-center justify-center flex-shrink-0">
+                        <PawPrint className="h-6 w-6 text-[#2c7a4c]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-900">{dog.name}</p>
+                        <p className="text-sm text-gray-500 truncate">
+                          {dog.breed || "Blandras"} {dog.heightcm ? `• ${dog.heightcm} cm` : ""}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Kommande bokningar */}
+        <section>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-gray-900">Kommande bokningar</h2>
+            {bookings.length > 0 && (
+              <Link href="/kundportal/mina-bokningar" className="text-sm text-[#2c7a4c] font-medium hover:underline">
+                Visa alla
+              </Link>
+            )}
+          </div>
+          
+          {activeBookings.length === 0 ? (
+            <Card className="border-dashed border-2 border-gray-200 bg-gray-50">
+              <CardContent className="py-8 text-center">
+                <Calendar className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500">Inga kommande bokningar</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {activeBookings.slice(0, 3).map((booking) => (
+                <Card key={booking.id} className="border border-gray-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Calendar className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{booking.dogs?.name}</p>
+                          <p className="text-sm text-gray-500">
+                            {formatDate(booking.start_date)} – {formatDate(booking.end_date)}
+                          </p>
+                        </div>
+                      </div>
+                      {getStatusBadge(booking.status)}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Kontaktuppgifter */}
+        <section>
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">Mina uppgifter</h2>
+          <Card className="border border-gray-200">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-3 text-sm">
+                <Mail className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <span className="text-gray-700">{currentOwner?.email || "Ej angett"}</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <Phone className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <span className="text-gray-700">{currentOwner?.phone || "Ej angett"}</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <span className="text-gray-700">{currentOwner?.address || "Ej angett"}</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <span className="text-gray-700">
+                  Medlem sedan {currentOwner?.created_at 
+                    ? new Date(currentOwner.created_at).toLocaleDateString("sv-SE", { year: "numeric", month: "long" })
+                    : "okänt"
+                  }
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
       </main>
     </div>
   );
