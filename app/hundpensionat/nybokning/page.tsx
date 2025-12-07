@@ -369,14 +369,20 @@ export default function NewPensionatBooking() {
     try {
       setSaving(true);
 
+      // Kombinera datum + tid för checkin/checkout timestamps
+      const checkinTimestamp =
+        startDate && startTime ? `${startDate}T${startTime}:00` : null;
+      const checkoutTimestamp =
+        endDate && endTime ? `${endDate}T${endTime}:00` : null;
+
       const bookingData = {
         dog_id: selectedDog,
         owner_id: selectedDogData.owner_id,
         room_id: selectedRoom || null,
         start_date: startDate,
-        checkin_time: startTime,
+        checkin_time: checkinTimestamp,
         end_date: endDate,
-        checkout_time: endTime,
+        checkout_time: checkoutTimestamp,
         total_price: priceCalc.total,
         discount_amount: discountAmount,
         notes: bookingNotes.journalNotes || null,
