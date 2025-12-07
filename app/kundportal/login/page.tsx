@@ -81,15 +81,40 @@ function LoginPageContent() {
       }
 
       // Kontrollera att användaren är en registrerad ägare (inte admin/staff)
-      // Använd auth.uid (data.user.id) för att matcha RLS-policyn owners_select_self_and_org
+      // Använd RPC-funktion verify_customer_account som bypasser RLS
+      // Detta garanterar att vi alltid kan verifiera kundkontot
       const { data: ownerData, error: ownerError } = await supabase
-        .from("owners")
-        .select("id, full_name, email")
-        .eq("id", data.user.id)
+        .rpc("verify_customer_account", { p_user_id: data.user.id })
         .maybeSingle();
 
       if (ownerError) {
         console.error("[ERR-1001] Database error checking owner:", ownerError);
+
+        // Om RPC-funktionen inte finns, fallback till direkt query
+        // Detta ger bakåtkompatibilitet under deployment
+        if (
+          ownerError.message.includes("function") ||
+          ownerError.code === "42883"
+        ) {
+          console.warn("RPC function not found, falling back to direct query");
+          const { data: fallbackOwner, error: fallbackError } = await supabase
+            .from("owners")
+            .select("id, full_name, email")
+            .eq("id", data.user.id)
+            .maybeSingle();
+
+          if (fallbackError || !fallbackOwner) {
+            await supabase.auth.signOut();
+            throw new Error(
+              `${ERROR_CODES.AUTH} Inget kundkonto hittades för denna e-postadress`
+            );
+          }
+
+          // Fallback lyckades - fortsätt till dashboard
+          router.push("/kundportal/dashboard");
+          return;
+        }
+
         // Logga ut användaren vid databasfel
         await supabase.auth.signOut();
         throw new Error(

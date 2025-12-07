@@ -1462,6 +1462,16 @@ export interface Database {
           error?: string;
         };
       };
+      verify_customer_account: {
+        Args: { p_user_id: string };
+        Returns: {
+          owner_id: string;
+          full_name: string | null;
+          email: string | null;
+          customer_number: string | null;
+          org_id: string | null;
+        } | null;
+      };
       register_subscription_start: {
         Args: { p_org_id: string; p_plan: string };
         Returns: { success: boolean; message: string };
