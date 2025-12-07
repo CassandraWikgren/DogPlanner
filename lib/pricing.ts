@@ -126,7 +126,9 @@ export async function calculatePrice({
   else if (h <= 65) sizeMultiplier = 1.4;
   else sizeMultiplier = 1.6;
 
-  const basePrice = boardingPrice.base_price * sizeMultiplier;
+  // Hantera null-värden för att undvika NaN
+  const basePriceRaw = boardingPrice.base_price ?? 0;
+  const basePrice = basePriceRaw * sizeMultiplier;
   breakdown.push({
     label: `Grundpris (${sizeMultiplier}x)`,
     amount: basePrice,
@@ -176,12 +178,15 @@ export async function calculatePrice({
     if (match?.type === "high") highSeasonCount++;
   }
 
-  const weekendFee =
-    basePrice * (boardingPrice.weekend_multiplier - 1) * weekendCount;
-  const holidayFee =
-    basePrice * (boardingPrice.holiday_multiplier - 1) * holidayCount;
+  // Hantera null-multipliers
+  const weekendMultiplier = boardingPrice.weekend_multiplier ?? 1;
+  const holidayMultiplier = boardingPrice.holiday_multiplier ?? 1;
+  const highSeasonMultiplier = boardingPrice.high_season_multiplier ?? 1;
+
+  const weekendFee = basePrice * (weekendMultiplier - 1) * weekendCount;
+  const holidayFee = basePrice * (holidayMultiplier - 1) * holidayCount;
   const highSeasonFee =
-    basePrice * (boardingPrice.high_season_multiplier - 1) * highSeasonCount;
+    basePrice * (highSeasonMultiplier - 1) * highSeasonCount;
 
   if (weekendFee)
     breakdown.push({
@@ -265,14 +270,15 @@ export async function calculatePrice({
     total -= amount;
   });
 
-  // 6️⃣ Moms
+  // 6️⃣ Moms - hantera null-värden
   const vatRate = org.vat_rate ?? 25;
-  const vatAmount = org.vat_included
+  const vatIncluded = org.vat_included ?? true;
+  const vatAmount = vatIncluded
     ? (total * vatRate) / (100 + vatRate)
     : (total * vatRate) / 100;
 
-  const totalExclVat = org.vat_included ? total - vatAmount : total;
-  const totalInclVat = org.vat_included ? total : total + vatAmount;
+  const totalExclVat = vatIncluded ? total - vatAmount : total;
+  const totalInclVat = vatIncluded ? total : total + vatAmount;
 
   breakdown.push({ label: `Moms (${vatRate}%)`, amount: vatAmount });
 

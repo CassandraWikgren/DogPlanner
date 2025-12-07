@@ -810,6 +810,16 @@ export default function NyBokningPage() {
                         {priceCalculation.total_incl_vat.toFixed(2)} kr
                       </span>
                     </div>
+                    {/* Disclaimer om preliminärt pris */}
+                    <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <p className="text-sm text-amber-800">
+                        <strong>Observera:</strong> Detta är ett beräknat pris
+                        baserat på nuvarande prislista. Det slutgiltiga priset
+                        kan komma att justeras. Hundpensionatet skickar en
+                        bekräftelse med det fastställda priset innan bokningen
+                        godkänns.
+                      </p>
+                    </div>
                   </div>
                 </div>
               ) : (
