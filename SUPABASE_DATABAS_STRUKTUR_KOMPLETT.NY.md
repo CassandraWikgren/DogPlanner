@@ -1,24 +1,55 @@
 # 🗄️ Supabase Databasstruktur - DogPlanner (KOMPLETT)
 
-**Uppdaterad:** 3 December 2025  
+**Uppdaterad:** 7 December 2025  
 **Version:** Next.js 15.5.7 + React 19.2.0 + Supabase (@supabase/ssr 0.8.0)  
 **Schema verifierat:** ✅ Alla funktioner och triggers verifierade i produktion  
 **RLS Status:** 🔒 Aktiverat på alla kritiska tabeller - Multi-tenant säkert  
-**Förbättringar:** ✅ Spårbarhet, Analytics, GDPR-compliant 2-års retention (2025-12-03)
+**Förbättringar:** ✅ Pattern 3 arkitektur, Dualt kundnummer-system, Kundportal-login (2025-12-07)
 
 ---
 
 ## 📌 Kritiska punkter som ALDRIG får missas
 
 - **Autentisering:** Supabase Auth (INTE Firebase) med `@supabase/ssr`
-- **Multi-tenancy:** ALLA tabeller har `org_id` för dataisolering mellan företag
+- **Multi-tenancy:** De flesta tabeller har `org_id` - **MEN** `owners` och `dogs` kan ha `org_id = NULL` (se Pattern 3 nedan)
 - **RLS (Row Level Security):** Aktiverat på ALLA tabeller - användare ser ENDAST sin orgs data
 - **Primary Keys:** ALLA tabeller använder UUID (INTE integer)
 - **Automatik:** Triggers hanterar kundnummer, fakturasummor, org-tilldelning AUTOMATISKT
 - **Verifierad produktion:** Alla triggers och functions körda och verifierade i live-databas ✅
-- **Spårbarhet:** Intresseanmälningar har created_dog_id/created_owner_id för konverteringsanalys ✅
-- **GDPR-compliant:** Automatisk 2-års journal retention via cron (körs månadsvis) ✅
-- **Analytics:** 5 views för beläggning, intäkter, populära raser, konverteringsgrad ✅
+- **Pattern 3 arkitektur:** Globala kunder för pensionat, per-org kunder för dagis (se nedan) ✅
+- **Dualt kundnummer:** 101+ per-org (dagis), 10001+ global (pensionat) ✅
+- **Kundportal:** owners.id = auth.users.id vid kundregistrering ✅
+
+---
+
+## 🆕 PATTERN 3 ARKITEKTUR (7 December 2025)
+
+### Översikt
+
+DogPlanner använder **Pattern 3** - en hybrid multi-tenant modell inspirerad av Airbnb/Booking.com:
+
+| Kundtyp           | org_id       | Kundnummer      | Registrering                       |
+| ----------------- | ------------ | --------------- | ---------------------------------- |
+| **Pensionatkund** | `NULL`       | 10001+ (global) | Kundportal, väljer "Pensionat"     |
+| **Dagiskund**     | Organisation | 101+ (per-org)  | Skapas av personal vid godkännande |
+
+### Hur det fungerar
+
+**Pensionatkunder (globala):**
+
+1. Registrerar sig via `/kundportal/registrera` (väljer "Pensionat")
+2. `owners.org_id = NULL`, `dogs.org_id = NULL`
+3. Får globalt kundnummer (10001, 10002, ...)
+4. Kan boka hos VILKEN ORGANISATION SOM HELST
+5. Loggar in via `/kundportal/login`
+
+**Dagiskunder (per-org):**
+
+1. Skickar intresseanmälan via `/kundportal/registrera` (väljer "Hunddagis")
+2. Omdirigeras till att söka dagis
+3. Personal godkänner ansökan
+4. `owners.org_id` och `dogs.org_id` sätts till organisationen
+5. Får per-org kundnummer (101, 102, ... inom den organisationen)
 
 ---
 
@@ -224,6 +255,54 @@ Supabase sköter autentiseringen automatiskt. Denna tabell finns i `auth` schema
 - Password reset
 - Email-verifiering
 
+### **Två typer av användare i DogPlanner**
+
+| Typ                    | Tabell     | auth.users koppling           | Inloggning          |
+| ---------------------- | ---------- | ----------------------------- | ------------------- |
+| **Företagsanvändare**  | `profiles` | `profiles.id = auth.users.id` | `/login`            |
+| **Kunder (hundägare)** | `owners`   | `owners.id = auth.users.id`   | `/kundportal/login` |
+
+**⚠️ VIKTIGT:** `profiles` och `owners` är SEPARATA tabeller!
+
+- En person kan vara BÅDE företagsanvändare OCH kund (med olika e-postadresser)
+- `profiles.role` = 'admin' eller 'staff' (EJ 'owner'!)
+- Kunder finns ALDRIG i `profiles`, de finns i `owners`
+
+### **Kundportal-login (7 Dec 2025)**
+
+Kundinloggningen på `/kundportal/login` fungerar så här:
+
+```typescript
+// 1. Autentisera mot Supabase Auth
+const { data, error } = await supabase.auth.signInWithPassword({
+  email: email,
+  password: password,
+});
+
+// 2. Verifiera att användaren har en owners-rad
+const { data: ownerData, error: ownerError } = await supabase
+  .from("owners")
+  .select("id, full_name, email")
+  .eq("id", data.user.id) // 👈 KRITISKT: Frågar med id, INTE email!
+  .maybeSingle();
+
+// 3. Om ingen owner-rad finns → logga ut och visa fel
+if (!ownerData) {
+  await supabase.auth.signOut();
+  throw new Error("Inget kundkonto hittades");
+}
+
+// 4. Redirect till kundportal dashboard
+router.push("/kundportal/dashboard");
+```
+
+**⚠️ KRITISKT: RLS-compatibility**
+
+Frågan `.eq("id", data.user.id)` fungerar eftersom:
+
+- RLS-policyn `owners_select_self_and_org` tillåter `id = auth.uid()`
+- Om vi frågade med `.eq("email", email)` skulle RLS blockera!
+
 ### **profiles** - Användarprofiler (public schema)
 
 Kopplas AUTOMATISKT via trigger när ny användare skapas.
@@ -413,13 +492,15 @@ const { data: org } = await supabase
 
 ### **owners** - Kunder/hundägare
 
-En ägare kan ha FLERA hundar. Kundnummer är UNIKT per organisation.
+En ägare kan ha FLERA hundar. Kundnummer är unikt per typ (per-org för dagis, globalt för pensionat).
+
+**⚠️ UPPDATERAT 7 Dec 2025:** Pattern 3 arkitektur - `org_id` kan vara NULL för pensionatkunder!
 
 ```sql
 CREATE TABLE owners (
     id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    org_id                  UUID REFERENCES orgs(id) ON DELETE CASCADE NOT NULL,
-    customer_number         INTEGER NOT NULL,
+    org_id                  UUID REFERENCES orgs(id) ON DELETE CASCADE,  -- ⚠️ NULLABLE för pensionat!
+    customer_number         TEXT,  -- ⚠️ TEXT inte INTEGER! Auto-genereras av trigger
     full_name               TEXT,
     email                   TEXT,
     phone                   TEXT,
@@ -448,58 +529,90 @@ CREATE TABLE owners (
 
 **Kolumner förklarat:**
 
-| Kolumn                 | Typ       | Beskrivning                                               | Viktigt                        |
-| ---------------------- | --------- | --------------------------------------------------------- | ------------------------------ |
-| `id`                   | UUID      | PRIMARY KEY                                               | Auto-genereras                 |
-| `org_id`               | UUID      | Vilken organisation kunden tillhör                        | **REQUIRED, kan EJ vara NULL** |
-| `customer_number`      | INTEGER   | Kundnummer (unikt per org)                                | **Auto-genereras av trigger**  |
-| `full_name`            | TEXT      | Kundens namn                                              | "Anna Andersson"               |
-| `email`                | TEXT      | Kundens email                                             | För fakturor och kommunikation |
-| `phone`                | TEXT      | Telefonnummer                                             | "070-123 45 67"                |
-| `address`              | TEXT      | Gatuadress                                                | "Storgatan 1"                  |
-| `personnummer`         | TEXT      | Personnummer eller samordningsnummer                      | **UNIQUE per org** (GDPR!)     |
-| `postal_code`          | TEXT      | Postnummer                                                | "123 45"                       |
-| `city`                 | TEXT      | Stad                                                      | "Stockholm"                    |
-| `contact_person_2`     | TEXT      | Extra kontaktperson                                       | Vid nödsituationer             |
-| `contact_phone_2`      | TEXT      | Extra telefon                                             | Backup-kontakt                 |
-| `gdpr_consent`         | BOOLEAN   | Samtycke för databehandling                               | Default: false                 |
-| `marketing_consent`    | BOOLEAN   | Samtycke för marknadsföring                               | Default: false                 |
-| `photo_consent`        | BOOLEAN   | Samtycke för foton på sociala medier                      | Default: false                 |
-| `consent_status`       | TEXT      | 'pending', 'verified', 'declined', 'expired', 'withdrawn' | Spårar samtyckesstatus         |
-| `consent_verified_at`  | TIMESTAMP | När samtycke verifierades                                 | Viktigt för GDPR               |
-| `is_anonymized`        | BOOLEAN   | Om ägare anonymiserats enligt GDPR                        | Default: false                 |
-| `anonymized_at`        | TIMESTAMP | När anonymisering skedde                                  | Audit trail                    |
-| `anonymization_reason` | TEXT      | Varför anonymisering skedde                               | Dokumentation                  |
-| `data_retention_until` | DATE      | När data kan raderas                                      | 7 år efter sista faktura       |
-| `is_active`            | BOOLEAN   | Om ägare är aktiv                                         | false = inaktiv kund           |
-| `notes`                | TEXT      | Interna anteckningar                                      | Synligt endast för personal    |
-| `created_at`           | TIMESTAMP | När ägaren skapades                                       | Auto-sätts                     |
+| Kolumn                 | Typ       | Beskrivning                                               | Viktigt                                         |
+| ---------------------- | --------- | --------------------------------------------------------- | ----------------------------------------------- |
+| `id`                   | UUID      | PRIMARY KEY                                               | **= auth.users.id vid kundportal-registrering** |
+| `org_id`               | UUID      | Vilken organisation kunden tillhör                        | **NULL för pensionatkunder (Pattern 3)**        |
+| `customer_number`      | TEXT      | Kundnummer                                                | **Auto-genereras av trigger (se nedan)**        |
+| `full_name`            | TEXT      | Kundens namn                                              | "Anna Andersson"                                |
+| `email`                | TEXT      | Kundens email                                             | För fakturor och inloggning                     |
+| `phone`                | TEXT      | Telefonnummer                                             | "070-123 45 67"                                 |
+| `address`              | TEXT      | Gatuadress                                                | "Storgatan 1"                                   |
+| `personnummer`         | TEXT      | Personnummer eller samordningsnummer                      | **UNIQUE per org** (GDPR!)                      |
+| `postal_code`          | TEXT      | Postnummer                                                | "123 45"                                        |
+| `city`                 | TEXT      | Stad                                                      | "Stockholm"                                     |
+| `contact_person_2`     | TEXT      | Extra kontaktperson                                       | Vid nödsituationer                              |
+| `contact_phone_2`      | TEXT      | Extra telefon                                             | Backup-kontakt                                  |
+| `gdpr_consent`         | BOOLEAN   | Samtycke för databehandling                               | Default: false                                  |
+| `marketing_consent`    | BOOLEAN   | Samtycke för marknadsföring                               | Default: false                                  |
+| `photo_consent`        | BOOLEAN   | Samtycke för foton på sociala medier                      | Default: false                                  |
+| `consent_status`       | TEXT      | 'pending', 'verified', 'declined', 'expired', 'withdrawn' | Spårar samtyckesstatus                          |
+| `consent_verified_at`  | TIMESTAMP | När samtycke verifierades                                 | Viktigt för GDPR                                |
+| `is_anonymized`        | BOOLEAN   | Om ägare anonymiserats enligt GDPR                        | Default: false                                  |
+| `anonymized_at`        | TIMESTAMP | När anonymisering skedde                                  | Audit trail                                     |
+| `anonymization_reason` | TEXT      | Varför anonymisering skedde                               | Dokumentation                                   |
+| `data_retention_until` | DATE      | När data kan raderas                                      | 7 år efter sista faktura                        |
+| `is_active`            | BOOLEAN   | Om ägare är aktiv                                         | false = inaktiv kund                            |
+| `notes`                | TEXT      | Interna anteckningar                                      | Synligt endast för personal                     |
+| `created_at`           | TIMESTAMP | När ägaren skapades                                       | Auto-sätts                                      |
 
-**⚠️ KRITISK UNIQUE CONSTRAINT (GDPR-compliance):**
+**⚠️ KRITISKT: owners.id och auth.users.id**
 
-```sql
-CONSTRAINT owners_org_personnummer_key
-UNIQUE (org_id, personnummer)
-WHERE personnummer IS NOT NULL
+Vid kundportal-registrering (`/kundportal/registrera`):
+
+- `owners.id` sätts till `auth.users.id` (samma UUID!)
+- Detta krävs för att RLS-policyn `id = auth.uid()` ska fungera
+- Kunden kan sedan logga in och se sina egna data
+
+```typescript
+// Vid registrering (app/kundportal/registrera/page.tsx):
+const ownerData_insert = {
+  id: authData.user.id, // 👈 KRITISKT: Samma som auth.users.id!
+  full_name: `${ownerData.firstName} ${ownerData.lastName}`.trim(),
+  email: ownerData.email,
+  // ...
+};
 ```
 
-**Vad betyder detta:**
+**⚠️ KRITISKT: Dualt kundnummer-system**
 
-- Samma personnummer kan INTE finnas två gånger inom samma organisation
-- Detta förhindrar dubbletter = GDPR-compliant!
-- Ett personnummer = EN kund = ETT kundnummer
-- Se dokumentation om kundnummer-systemet för mer info
+Trigger `auto_generate_customer_number` hanterar två typer:
 
-**Viktiga triggers:**
+| org_id   | Nummerserie            | Typ                | Genereras hur                                 |
+| -------- | ---------------------- | ------------------ | --------------------------------------------- |
+| NOT NULL | 101, 102, 103...       | Per-org (dagis)    | MAX(customer_number WHERE org_id = X) + 1     |
+| NULL     | 10001, 10002, 10003... | Global (pensionat) | MAX(customer_number WHERE org_id IS NULL) + 1 |
 
-1. **`ensure_unique_customer_number_before_insert()`**
-   - Genererar unikt kundnummer AUTOMATISKT per org
-   - Startar från 10001, räknar uppåt
-   - Förhindrar race conditions
+```sql
+-- Trigger-logik (förenklad)
+IF NEW.org_id IS NOT NULL THEN
+  -- Per-org nummer för dagis (101+)
+  SELECT COALESCE(MAX(customer_number::int), 100) + 1
+  FROM owners WHERE org_id = NEW.org_id;
+ELSE
+  -- Globalt nummer för pensionat (10001+)
+  SELECT COALESCE(MAX(customer_number::int), 10000) + 1
+  FROM owners WHERE org_id IS NULL;
+END IF;
+```
 
-2. **`set_owner_org_from_user()`**
-   - Sätter org_id från inloggad användare
-   - Om org_id saknas vid INSERT
+**RLS Policies för owners:**
+
+```sql
+-- INSERT: Tillåt registrering (anon + authenticated)
+CREATE POLICY "owners_insert_self_registration" ON owners FOR INSERT
+  TO authenticated, anon WITH CHECK (TRUE);
+
+-- SELECT: Ägare ser sig själv, personal ser org-medlemmar
+CREATE POLICY "owners_select_self_and_org" ON owners FOR SELECT
+  USING (
+    id = auth.uid()  -- Kund ser sig själv
+    OR org_id IN (SELECT org_id FROM profiles WHERE id = auth.uid())  -- Personal ser org
+  );
+
+-- UPDATE: Samma logik som SELECT
+-- DELETE: Endast ägaren själv
+```
 
 **Kopplingar:**
 
@@ -532,10 +645,12 @@ const { data: owner } = await supabase
 
 **KÄRNTABELLEN** för all hunddata (dagis, pensionat, frisör).
 
+**⚠️ UPPDATERAT 7 Dec 2025:** `org_id` kan vara NULL för pensionathundar (Pattern 3)!
+
 ```sql
 CREATE TABLE dogs (
     id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    org_id                  UUID REFERENCES orgs(id) ON DELETE CASCADE NOT NULL,
+    org_id                  UUID REFERENCES orgs(id) ON DELETE CASCADE,  -- ⚠️ NULLABLE för pensionat!
     owner_id                UUID REFERENCES owners(id) ON DELETE CASCADE NOT NULL,
     name                    TEXT NOT NULL,
     breed                   TEXT,
@@ -586,7 +701,7 @@ CREATE TABLE dogs (
 | Kolumn                   | Typ       | Beskrivning                   | Viktigt för                                  |
 | ------------------------ | --------- | ----------------------------- | -------------------------------------------- |
 | `id`                     | UUID      | PRIMARY KEY                   | -                                            |
-| `org_id`                 | UUID      | Organisation                  | **REQUIRED**                                 |
+| `org_id`                 | UUID      | Organisation                  | **NULL för pensionathundar (Pattern 3)**     |
 | `owner_id`               | UUID      | Ägare                         | **REQUIRED, koppling till owners**           |
 | `name`                   | TEXT      | Hundens namn                  | **REQUIRED** - "Bella"                       |
 | `breed`                  | TEXT      | Ras                           | "Golden Retriever"                           |
