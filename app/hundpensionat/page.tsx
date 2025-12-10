@@ -214,18 +214,12 @@ export default function HundpensionatPage() {
     if (effectiveOrgId) {
       loadBookings();
       loadLiveStats();
-    } else {
-      // ✅ FIX: Sätt loading state korrekt medan vi väntar på org_id
-      setIsLoading(true);
-      const timer = setTimeout(() => {
-        if (!effectiveOrgId) {
-          setError("Ingen organisation tilldelad");
-          setIsLoading(false);
-        }
-      }, 5000); // Vänta 5 sekunder innan error
-      return () => clearTimeout(timer);
+    } else if (!loading) {
+      // ✅ FIX: Om auth är klar men ingen org_id finns, visa fel direkt
+      setError("Ingen organisation tilldelad");
+      setIsLoading(false);
     }
-  }, [effectiveOrgId]);
+  }, [effectiveOrgId, loading]);
 
   // Filtrering och sökning
   const filtered = useMemo(() => {
