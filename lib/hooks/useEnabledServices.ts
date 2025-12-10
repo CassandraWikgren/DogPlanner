@@ -24,30 +24,34 @@ export function useEnabledServices(): EnabledServicesReturn {
   const { currentOrgId, loading: authLoading, isCustomer } = useAuth();
 
   const [services, setServices] = useState<ServiceType[]>([]);
+  // Start som true och håll loading tills vi faktiskt har data
   const [loading, setLoading] = useState(true);
+  const [hasFetched, setHasFetched] = useState(false);
 
   const loadServices = async () => {
-    // Wait for auth to finish loading before deciding
+    // Vänta på att auth ska bli klar
     if (authLoading) {
-      return; // Keep loading=true until auth is ready
+      return; // Håll loading=true tills auth är klar
+    }
+
+    // Om vi redan har hämtat, gör inget
+    if (hasFetched && services.length > 0) {
+      setLoading(false);
+      return;
     }
 
     // If user is a customer (no org_id), they don't need services
     if (isCustomer) {
       setServices([]);
       setLoading(false);
+      setHasFetched(true);
       return;
     }
 
     // For staff: wait for currentOrgId to be set
-    // AuthContext sets currentOrgId BEFORE setting authLoading=false
-    // So if authLoading=false and no currentOrgId, something is wrong
     if (!currentOrgId) {
-      // Keep loading for a short time in case of race condition
-      // This handles the edge case where useEffect runs before state updates
-      console.warn("useEnabledServices: authLoading=false but no currentOrgId");
-      setServices([]);
-      setLoading(false);
+      // Håll loading true medan vi väntar på org_id
+      // (AuthContext sätter currentOrgId innan authLoading=false)
       return;
     }
 
@@ -79,6 +83,7 @@ export function useEnabledServices(): EnabledServicesReturn {
       setServices(["daycare", "boarding", "grooming"]);
     } finally {
       setLoading(false);
+      setHasFetched(true);
     }
   };
 
