@@ -54,10 +54,13 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!data || !data.success) {
-      console.error("[GDPR] Radering misslyckades:", data);
+    // ✅ Type cast RPC response from Json to expected structure
+    const result = data as { success: boolean; error?: string } | null;
+
+    if (!result || !result.success) {
+      console.error("[GDPR] Radering misslyckades:", result);
       return NextResponse.json(
-        { error: data?.error || "Okänt fel vid radering" },
+        { error: result?.error || "Okänt fel vid radering" },
         { status: 500 }
       );
     }
@@ -70,7 +73,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: "Ditt konto och all din data har raderats.",
-      deleted: data.deleted,
+      deleted: (result as any)?.deleted || {}, // ✅ Safe access to deleted property
     });
   } catch (error: any) {
     console.error("[GDPR] Exception:", error);

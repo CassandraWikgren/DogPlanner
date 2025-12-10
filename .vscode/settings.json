@@ -21,5 +21,9 @@
   },
   "github.copilot.inlineSuggest.enable": true,
   "github.copilot.suggestions.showDescriptions": true,
-  "github.copilot.chat.showWelcome": false
+  "github.copilot.chat.showWelcome": false,
+
+  // 🚀 Ta bort diff timeout-spärr
+  "diffEditor.maxComputationTime": 0,
+  "diffEditor.renderSideBySide": true
 }

@@ -385,7 +385,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
 
-      if (data?.success) {
+      // ✅ Fixed: data är Json type, måste casta för att accessa .success
+      const result = data as { success?: boolean };
+      if (result?.success) {
         console.log("✅ Healing lyckades:", data);
         return true;
       }

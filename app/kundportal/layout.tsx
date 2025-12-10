@@ -19,7 +19,7 @@ import {
 
 interface Owner {
   id: string;
-  full_name: string;
+  full_name: string | null; // ✅ Fixed: kan vara null från DB
   customer_number: number | null;
 }
 

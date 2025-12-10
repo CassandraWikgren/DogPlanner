@@ -7,14 +7,15 @@ import { CheckCircle, Circle, User } from "lucide-react";
 
 interface ServiceCompletion {
   id: string;
-  dog_id: string;
+  dog_id: string | null;
   service_type: string; // 'kloklipp', 'tassklipp', 'bad', 'annat'
-  is_completed: boolean;
   completed_at: string | null;
   completed_by: string | null;
-  completed_by_name: string | null;
-  scheduled_month: string | null; // Format: "2025-10" för oktober 2025 (nullable)
+  scheduled_date: string;
   notes: string | null;
+  org_id: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 interface DogWithServices {
@@ -96,11 +97,18 @@ export default function TjansterView() {
       setDogs(dogsWithServices);
 
       // Hämta slutförda tjänster för denna månad
+      // Fetch service completions for this month using scheduled_date range
+      const startOfMonth = `${currentYear}-${currentMonthNumber.toString().padStart(2, "0")}-01`;
+      const endOfMonth = new Date(currentYear, currentMonthNumber, 0)
+        .toISOString()
+        .split("T")[0];
+
       const { data: completionsData, error: completionsError } = await supabase
         .from("daycare_service_completions")
         .select("*")
         .eq("org_id", user.org_id)
-        .eq("scheduled_month", scheduledMonth);
+        .gte("scheduled_date", startOfMonth)
+        .lte("scheduled_date", endOfMonth);
 
       if (completionsError) {
         console.log("Error fetching service completions:", completionsError);
@@ -120,7 +128,7 @@ export default function TjansterView() {
       (c) =>
         c.dog_id === dogId &&
         c.service_type === serviceName.toLowerCase() &&
-        c.is_completed
+        c.completed_at !== null
     );
   };
 
@@ -139,34 +147,36 @@ export default function TjansterView() {
       (c) => c.dog_id === dogId && c.service_type === serviceType
     );
 
+    // Derive is_completed from completed_at
+    const isCurrentlyCompleted = existing?.completed_at !== null;
+
     try {
       if (existing) {
-        // Uppdatera befintlig
+        // Uppdatera befintlig - toggle completion status
         const { error } = await supabase
           .from("daycare_service_completions")
           .update({
-            is_completed: !existing.is_completed,
-            completed_at: !existing.is_completed
-              ? new Date().toISOString()
-              : null,
-            completed_by_name: !existing.is_completed ? user.email : null,
-          } as any)
+            completed_at: isCurrentlyCompleted
+              ? null
+              : new Date().toISOString(),
+            completed_by: isCurrentlyCompleted ? null : user?.id,
+          })
           .eq("id", existing.id);
 
         if (error) throw error;
       } else {
-        // Skapa ny
+        // Skapa ny - use scheduled_date instead of scheduled_month
+        const today = new Date().toISOString().split("T")[0];
         const { error } = await supabase
           .from("daycare_service_completions")
           .insert({
             dog_id: dogId,
             service_type: serviceType,
-            is_completed: true,
             completed_at: new Date().toISOString(),
-            completed_by_name: user.email,
-            scheduled_month: scheduledMonth,
-            org_id: user.org_id,
-          } as any);
+            completed_by: user?.id,
+            scheduled_date: today,
+            org_id: user?.org_id,
+          });
 
         if (error) throw error;
       }
@@ -304,7 +314,7 @@ export default function TjansterView() {
                           {completed && info && (
                             <div className="text-xs text-gray-500 flex items-center gap-1">
                               <User className="w-3 h-3" />
-                              {info.completed_by_name?.split("@")[0] || "Okänd"}
+                              {info.completed_by?.slice(0, 8) || "Okänd"}
                               <span className="ml-2">
                                 {info.completed_at &&
                                   new Date(

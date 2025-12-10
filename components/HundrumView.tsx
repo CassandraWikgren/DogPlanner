@@ -34,8 +34,8 @@ interface Dog {
 
 interface Room {
   id: string;
-  name: string;
-  capacity_m2: number | null;
+  name: string | null;
+  capacity_m2: number;
   notes: string | null;
 }
 

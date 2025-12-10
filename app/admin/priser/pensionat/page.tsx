@@ -58,22 +58,22 @@ interface SpecialDate {
   org_id: string;
   date: string;
   name: string;
-  category: "red_day" | "holiday" | "event" | "custom";
+  category: "red_day" | "holiday" | "event" | "custom" | string | null; // ✅ Fixed: DB kan ha andra värden eller null
   price_surcharge: number;
-  is_active: boolean;
-  created_at?: string;
+  is_active: boolean | null; // ✅ Fixed: kan vara null från DB
+  created_at?: string | null;
 }
 
 interface BoardingSeason {
   id: string;
-  org_id: string;
-  name: string;
-  start_date: string;
-  end_date: string;
-  price_multiplier: number;
-  priority: number;
-  is_active: boolean;
-  created_at?: string;
+  org_id: string | null; // ✅ Fixed: kan vara null från DB
+  name: string | null; // ✅ Fixed: kan vara null från DB
+  start_date: string | null; // ✅ Fixed: kan vara null från DB
+  end_date: string | null; // ✅ Fixed: kan vara null från DB
+  price_multiplier: number | null; // ✅ Fixed: kan vara null från DB
+  priority?: number | null; // ✅ Fixed: optional och kan vara null från DB
+  is_active: boolean | null; // ✅ Fixed: kan vara null från DB
+  created_at?: string | null;
 }
 
 interface ExtraService {
@@ -862,10 +862,10 @@ export default function PensionatPriserPage() {
                             <td className="py-3 px-4">
                               <span
                                 className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryBadge(
-                                  sd.category
+                                  sd.category || "custom"
                                 )}`}
                               >
-                                {getCategoryLabel(sd.category)}
+                                {getCategoryLabel(sd.category || "custom")}
                               </span>
                             </td>
                             <td className="py-3 px-4 font-semibold text-green-700">

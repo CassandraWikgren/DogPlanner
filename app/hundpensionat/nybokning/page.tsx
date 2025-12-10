@@ -17,19 +17,19 @@ interface Dog {
   birth_date?: string | null;
   heightcm?: number | null;
   weightkg?: number | null;
-  owner_id: string;
+  owner_id: string | null; // ✅ Fixed: kan vara null från DB
   owners?: {
     id: string;
-    full_name: string;
+    full_name: string | null; // ✅ Fixed: kan vara null från DB
     phone?: string | null;
     email?: string | null;
     address?: string | null;
-  };
+  } | null;
 }
 
 interface Room {
   id: string;
-  name: string;
+  name: string | null; // ✅ Fixed: kan vara null från DB
   capacity_m2: number | null;
   max_height_cm?: number | null;
 }
@@ -329,7 +329,7 @@ export default function NewPensionatBooking() {
       if (error || !data || data.length === 0)
         throw error || new Error("Dog not created");
 
-      setDogs((prev) => [...prev, data[0]]);
+      setDogs((prev) => [...prev, data[0] as Dog]);
       setSelectedDog(data[0].id);
       setShowNewDogModal(false);
       setNewDogData({

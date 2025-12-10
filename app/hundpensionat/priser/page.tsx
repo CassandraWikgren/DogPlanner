@@ -23,10 +23,10 @@ interface BoardingPrice {
 
 interface BoardingSeason {
   id: string;
-  name: string;
-  start_date: string;
-  end_date: string;
-  price_multiplier: number;
+  name: string | null; // ✅ Fixed: kan vara null från DB
+  start_date: string | null; // ✅ Fixed: kan vara null från DB
+  end_date: string | null; // ✅ Fixed: kan vara null från DB
+  price_multiplier: number | null; // ✅ Fixed: kan vara null från DB
   is_active: boolean | null;
 }
 
@@ -34,7 +34,7 @@ interface SpecialDate {
   id: string;
   date: string;
   name: string;
-  category: string;
+  category: string | null; // ✅ Fixed: kan vara null från DB
   price_surcharge: number;
   is_active: boolean | null;
 }
@@ -249,22 +249,27 @@ export default function PriserVisningPage() {
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50"
                 >
                   <div>
-                    <p className="font-semibold text-gray-900">{season.name}</p>
+                    <p className="font-semibold text-gray-900">
+                      {season.name || "Namnlös säsong"}
+                    </p>
                     <p className="text-sm text-gray-500">
-                      {formatDateRange(season.start_date, season.end_date)}
+                      {formatDateRange(
+                        season.start_date || "",
+                        season.end_date || ""
+                      )}
                     </p>
                   </div>
                   <div className="text-right">
                     <span
                       className={
                         "inline-block px-3 py-1 rounded-full text-sm font-medium " +
-                        (season.price_multiplier > 1
+                        ((season.price_multiplier || 1) > 1
                           ? "bg-orange-100 text-orange-700"
                           : "bg-green-100 text-green-700")
                       }
                     >
-                      {season.price_multiplier > 1 ? "+" : ""}
-                      {Math.round((season.price_multiplier - 1) * 100)}%
+                      {(season.price_multiplier || 1) > 1 ? "+" : ""}
+                      {Math.round(((season.price_multiplier || 1) - 1) * 100)}%
                     </span>
                   </div>
                 </div>
@@ -301,7 +306,7 @@ export default function PriserVisningPage() {
                     </span>
                     <span className="font-medium text-gray-900">{sd.name}</span>
                     <span className="text-xs px-2 py-0.5 bg-gray-200 text-gray-600 rounded">
-                      {CATEGORY_LABELS[sd.category]}
+                      {sd.category ? CATEGORY_LABELS[sd.category] : "Övrigt"}
                     </span>
                   </div>
                   <span className="font-semibold text-orange-600">

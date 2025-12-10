@@ -96,14 +96,21 @@ export default function ForetagsInfoPage() {
     if (!currentOrgId || !settings) return;
 
     try {
-      setSaving(true);
+      setLoading(true);
       setError(null);
       setSuccess(null);
+
+      // ✅ Validera att obligatoriska fält finns
+      if (!settings.name || settings.name.trim() === "") {
+        setError("Organisationsnamn är obligatoriskt");
+        setLoading(false);
+        return;
+      }
 
       const { error } = await supabase
         .from("orgs")
         .update({
-          name: settings.name,
+          name: settings.name, // ✅ Nu vet TypeScript att detta inte är null
           org_number: settings.org_number,
           email: settings.email,
           phone: settings.phone,

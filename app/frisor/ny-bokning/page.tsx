@@ -60,7 +60,7 @@ interface GroomingHistory {
   external_customer_name: string | null;
   external_dog_name: string | null;
   external_dog_breed: string | null;
-  created_at: string;
+  created_at: string | null; // ✅ Fixed: kan vara null från DB
 }
 
 interface ServiceOption {

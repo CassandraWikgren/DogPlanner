@@ -42,13 +42,13 @@ export interface SpecialDate {
 }
 
 export interface BoardingSeason {
-  name: string;
-  start_date: string;
-  end_date: string;
-  price_multiplier: number;
-  priority: number;
-  is_active: boolean;
-  org_id: string;
+  name: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  price_multiplier: number | null;
+  type: string | null;
+  is_active: boolean | null;
+  org_id: string | null;
 }
 
 export interface PriceBreakdown {
@@ -166,7 +166,7 @@ export async function getSpecialDate(
 
   const { data, error } = await supabase
     .from("special_dates")
-    .select("date, name, category, price_surcharge, is_active")
+    .select("date, name, category, price_surcharge, is_active, org_id")
     .eq("org_id", orgId)
     .eq("date", dateStr)
     .eq("is_active", true)
@@ -177,7 +177,16 @@ export async function getSpecialDate(
     console.error("Fel vid hämtning av specialdatum:", error);
   }
 
-  return data || null;
+  if (!data) return null;
+
+  return {
+    date: data.date,
+    name: data.name,
+    category: (data.category as SpecialDateCategory) || "custom",
+    price_surcharge: data.price_surcharge,
+    is_active: data.is_active ?? true,
+    org_id: data.org_id || orgId,
+  };
 }
 
 /**
@@ -192,7 +201,9 @@ export async function getActiveSeason(
 
   const { data, error } = await supabase
     .from("boarding_seasons")
-    .select("name, start_date, end_date, price_multiplier, is_active")
+    .select(
+      "name, start_date, end_date, price_multiplier, is_active, type, org_id"
+    )
     .eq("org_id", orgId)
     .eq("is_active", true)
     .lte("start_date", dateStr)
@@ -245,12 +256,12 @@ export async function calculateNightPrice(
 
   // Steg 4: Applicera säsong (ALLTID, även på specialdatum)
   const season = await getActiveSeason(date, orgId);
-  if (season && season.is_active) {
+  if (season && season.is_active && season.price_multiplier) {
     const multiplier = season.price_multiplier;
     const beforeSeason = nightPrice;
     nightPrice = nightPrice * multiplier;
     breakdown.push(
-      `${season.name}: ×${multiplier} (${beforeSeason} kr → ${Math.round(
+      `${season.name || "Säsong"}: ×${multiplier} (${beforeSeason} kr → ${Math.round(
         nightPrice
       )} kr)`
     );

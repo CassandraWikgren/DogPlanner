@@ -52,9 +52,9 @@ type GroomingBooking = {
   appointment_time: string | null;
   service_type: string;
   estimated_price: number | null;
-  status: "confirmed" | "completed" | "cancelled" | "no_show";
+  status: "confirmed" | "completed" | "cancelled" | "no_show" | string; // ✅ DB kan ha andra värden
   notes: string | null;
-  created_at: string;
+  created_at: string | null; // ✅ Kan vara null från DB
   dog?: Dog | null;
   // För utomstående kunder
   external_customer_name: string | null;
@@ -78,7 +78,7 @@ type GroomingJournal = {
   before_photos: string[] | null;
   after_photos: string[] | null;
   next_appointment_recommended: string | null;
-  created_at: string;
+  created_at: string | null; // ✅ Kan vara null från DB
   dog?: Dog | null;
   // För utomstående kunder
   external_customer_name: string | null;

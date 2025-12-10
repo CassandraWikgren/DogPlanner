@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import type { Inserts } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
 import { Calculator, Save, Plus, User, Calendar, Home } from "lucide-react";
 import AssistedRegistrationModal from "@/components/AssistedRegistrationModal";
@@ -18,19 +17,19 @@ interface Dog {
   birth_date?: string | null;
   heightcm?: number | null;
   weightkg?: number | null;
-  owner_id: string;
+  owner_id: string | null; // ✅ Fixed: kan vara null från DB
   owners?: {
     id: string;
-    full_name: string;
+    full_name: string | null; // ✅ Fixed: kan vara null från DB
     phone?: string | null;
     email?: string | null;
     address?: string | null;
-  };
+  } | null;
 }
 
 interface Room {
   id: string;
-  name: string;
+  name: string | null; // ✅ Fixed: kan vara null från DB
   capacity_m2: number | null;
   max_height_cm?: number | null;
 }
@@ -248,7 +247,7 @@ export default function NewPensionatBooking() {
 
       if (error) throw error;
 
-      setDogs((prev) => [...prev, data]);
+      setDogs((prev) => [...prev, data as Dog]);
       setSelectedDog(data.id);
       setShowNewDogModal(false);
       setNewDogData({
@@ -293,13 +292,14 @@ export default function NewPensionatBooking() {
     try {
       setSaving(true);
 
-      const bookingData: Inserts<"bookings"> = {
+      // ✅ Fixed: Använd explicit object istället för Inserts<> type
+      const bookingData = {
         dog_id: selectedDog,
         owner_id: selectedDogData.owner_id,
         room_id: selectedRoom || null,
         start_date: startDate,
         end_date: endDate,
-        status: "confirmed",
+        status: "confirmed" as const,
         total_price: priceCalc.total,
         discount_amount: discountAmount,
         notes: bookingNotes.journalNotes || null,

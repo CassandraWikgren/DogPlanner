@@ -17,8 +17,8 @@ import { generateOCR } from "@/lib/ocrGenerator";
 interface InvoiceExportItem {
   invoice_id: string;
   invoice_number: string;
-  invoice_date: string;
-  due_date: string;
+  invoice_date: string | null; // ✅ Kan vara null från DB
+  due_date: string | null; // ✅ Kan vara null från DB
   customer_number: number | null;
   customer_name: string;
   customer_email: string;
@@ -29,7 +29,7 @@ interface InvoiceExportItem {
   vat_rate: number;
   vat_amount: number;
   total_amount: number;
-  status: string;
+  status: string | null; // ✅ Kan vara null från DB
   paid_at: string | null;
   ocr_number: string;
   reminder_1_date: string | null;
@@ -353,17 +353,20 @@ async function generateSIE(
     const firstItem = items[0];
     const totalAmount = items.reduce((sum, item) => sum + item.total_amount, 0);
 
-    lines.push(
-      `#VER A ${verNr} ${firstItem.invoice_date.replace(/-/g, "")} "${firstItem.invoice_number}"`
-    );
+    // ✅ Använd fakturadatum eller dagens datum som fallback
+    const invoiceDate =
+      firstItem.invoice_date || new Date().toISOString().split("T")[0];
+    const sieDate = invoiceDate.replace(/-/g, "");
+
+    lines.push(`#VER A ${verNr} ${sieDate} "${firstItem.invoice_number}"`);
     lines.push("{");
     lines.push(
-      `  #TRANS 1510 {} ${totalAmount.toFixed(2)} ${firstItem.invoice_date.replace(/-/g, "")} "${firstItem.customer_name}"`
+      `  #TRANS 1510 {} ${totalAmount.toFixed(2)} ${sieDate} "${firstItem.customer_name}"`
     );
 
     for (const item of items) {
       lines.push(
-        `  #TRANS 3000 {} -${item.total_amount.toFixed(2)} ${firstItem.invoice_date.replace(/-/g, "")} "${item.description || ""}"`
+        `  #TRANS 3000 {} -${item.total_amount.toFixed(2)} ${sieDate} "${item.description || ""}"`
       );
     }
 

@@ -39,38 +39,10 @@ import {
   createRejectionEmail,
   sendEmail,
 } from "@/lib/emailSender";
+import { Database } from "@/types/database";
 
-interface InterestApplication {
-  id: string;
-  org_id?: string | null;
-  parent_name: string;
-  parent_email: string;
-  parent_phone: string;
-  owner_city?: string | null;
-  owner_address?: string | null;
-  dog_name: string;
-  dog_breed?: string | null;
-  dog_birth?: string | null;
-  dog_age?: number | null;
-  dog_gender?: string | null;
-  dog_size?: "small" | "medium" | "large";
-  dog_height_cm?: number | null;
-  subscription_type?: string | null;
-  preferred_start_date?: string | null;
-  preferred_days?: string[] | null;
-  special_needs?: string | null;
-  special_care_needs?: string | null;
-  is_neutered?: boolean | null;
-  is_escape_artist?: boolean | null;
-  destroys_things?: boolean | null;
-  not_house_trained?: boolean | null;
-  previous_daycare_experience?: boolean | null;
-  gdpr_consent?: boolean | null;
-  status: string;
-  notes?: string | null;
-  created_at: string;
-  updated_at: string;
-}
+type InterestApplication =
+  Database["public"]["Tables"]["interest_applications"]["Row"];
 
 /**
  * Hunddagis Intresseanmälningar - Hantera ansökningar om hunddagisplats
@@ -112,7 +84,7 @@ export default function HunddagisIntresseanmalningarPage() {
     { value: "declined", label: "Avböjd", color: "bg-red-100 text-red-800" },
   ];
 
-  const dogSizes = {
+  const dogSizes: Record<string, string> = {
     small: "Liten (under 35cm mankhöjd)",
     medium: "Medium (35-54cm mankhöjd)",
     large: "Stor (över 55cm mankhöjd)",
@@ -534,9 +506,11 @@ export default function HunddagisIntresseanmalningarPage() {
                                 Hund: {application.dog_name}
                               </p>
                               <p className="text-xs text-gray-500">
-                                {new Date(
-                                  application.created_at
-                                ).toLocaleDateString("sv-SE")}
+                                {application.created_at
+                                  ? new Date(
+                                      application.created_at
+                                    ).toLocaleDateString("sv-SE")
+                                  : "Okänt datum"}
                               </p>
                             </div>
                             <span

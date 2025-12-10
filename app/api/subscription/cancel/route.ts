@@ -16,7 +16,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
  * - Årsabonnemang: Beräkna använd tid × månadspris, återbetala resten automatiskt via Stripe
  */
 export async function POST(req: Request) {
-  try {    const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
     // Autentisera användare
     const {
@@ -76,15 +77,23 @@ export async function POST(req: Request) {
         { p_org_id: orgId }
       );
 
+      // ✅ Type cast RPC response from Json to expected structure
+      const refundResult = refundCalc as {
+        eligible: boolean;
+        refund_amount: number;
+        months_used?: number;
+        months_remaining?: number;
+        calculation?: string;
+      } | null;
       if (refundError) {
         console.error("Refund calculation error:", refundError);
       } else if (
-        refundCalc &&
-        refundCalc.eligible &&
-        refundCalc.refund_amount > 0
+        refundResult &&
+        refundResult.eligible &&
+        refundResult.refund_amount > 0
       ) {
-        refundAmount = refundCalc.refund_amount;
-        refundDetails = refundCalc;
+        refundAmount = refundResult.refund_amount;
+        refundDetails = refundResult;
       }
     }
 
@@ -178,7 +187,8 @@ export async function GET(req: Request) {
         { error: "Använd POST för att faktiskt avbryta" },
         { status: 400 }
       );
-    }    const supabase = await createClient();
+    }
+    const supabase = await createClient();
 
     const {
       data: { user },

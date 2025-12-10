@@ -28,22 +28,22 @@ import {
 
 interface Application {
   id: string;
-  org_id: string;
+  org_id: string | null; // ✅ Fixed: kan vara null från DB
   parent_name: string;
   parent_email: string;
   parent_phone: string;
   dog_name: string;
   dog_breed?: string | null;
   dog_age?: number | null;
-  dog_size?: "small" | "medium" | "large";
+  dog_size?: "small" | "medium" | "large" | string | null; // ✅ Fixed: DB kan ha andra värden eller null
   preferred_start_date?: string | null;
   preferred_days?: string[] | null;
   special_needs?: string | null;
   previous_daycare_experience?: boolean | null;
   status: string;
   notes?: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null; // ✅ Fixed: kan vara null från DB
+  updated_at: string | null; // ✅ Fixed: kan vara null från DB
   // Nya fält från tracking
   first_contact_date?: string | null;
   first_contact_notes?: string | null;
@@ -51,7 +51,7 @@ interface Application {
   visit_status?: string | null;
   visit_completed_date?: string | null;
   visit_result?: string | null;
-  contact_history?: any[] | null;
+  contact_history?: any; // ✅ Fixed: Json type from Supabase (kan vara array, object, string, null)
   priority?: number | null;
   expected_start_month?: string | null;
 }

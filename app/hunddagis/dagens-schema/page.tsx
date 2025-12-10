@@ -1,5 +1,8 @@
 "use client";
 
+// ⚠️ VIKTIGT: Denna sida kräver migrationen 20251210_create_daily_schedule.sql
+// Se DAILY_SCHEDULE_MIGRATION_README.md för instruktioner
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,34 +25,16 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
+import { Database } from "@/types/database";
 
-interface DailyScheduleEntry {
-  id: string;
-  date: string;
-  time_slot: string;
-  activity_type:
-    | "walk"
-    | "play"
-    | "feeding"
-    | "rest"
-    | "grooming"
-    | "training"
-    | "other";
-  activity_name: string;
-  description?: string;
-  location?: string;
-  dogs: string[]; // Array of dog IDs
-  staff_member?: string;
-  completed: boolean;
-  notes?: string;
-  created_at: string;
-}
+// ✅ Use database types directly for type safety
+type DailyScheduleEntry = Database["public"]["Tables"]["daily_schedule"]["Row"];
 
 interface Dog {
   id: string;
   name: string;
-  breed?: string;
-  owner_name?: string;
+  breed?: string | null;
+  owner_name?: string | null;
 }
 
 /**
@@ -224,16 +209,35 @@ export default function HunddagisDagensSchemaPage() {
   };
 
   const addScheduleEntry = async () => {
-    if (!currentOrgId || !newEntry.time_slot || !newEntry.activity_name) {
-      setError("Tidpunkt och aktivitetsnamn måste fyllas i");
+    if (
+      !currentOrgId ||
+      !newEntry.time_slot ||
+      !newEntry.activity_name ||
+      !newEntry.activity_type ||
+      !newEntry.date
+    ) {
+      setError(
+        "Tidpunkt, aktivitetstyp, aktivitetsnamn och datum måste fyllas i"
+      );
       return;
     }
 
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
-        .from("daily_schedule")
-        .insert([{ ...newEntry, org_id: currentOrgId }]);
+      const { error } = await supabase.from("daily_schedule").insert([
+        {
+          org_id: currentOrgId,
+          date: newEntry.date,
+          time_slot: newEntry.time_slot,
+          activity_type: newEntry.activity_type,
+          activity_name: newEntry.activity_name,
+          description: newEntry.description || null,
+          location: newEntry.location || null,
+          dogs: newEntry.dogs || [],
+          staff_member: newEntry.staff_member || null,
+          notes: newEntry.notes || null,
+        },
+      ]);
 
       if (error) {
         throw new Error(`[ERR-4001] Uppdatering: ${error.message}`);
@@ -263,7 +267,7 @@ export default function HunddagisDagensSchemaPage() {
   const toggleCompleted = async (entryId: string, completed: boolean) => {
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from("daily_schedule")
         .update({ completed, updated_at: new Date().toISOString() })
         .eq("id", entryId);
@@ -286,7 +290,7 @@ export default function HunddagisDagensSchemaPage() {
 
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from("daily_schedule")
         .delete()
         .eq("id", entryId);
@@ -359,7 +363,7 @@ export default function HunddagisDagensSchemaPage() {
               <ArrowLeft className="h-6 w-6" />
             </Link>
             <div>
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
+              <h1 className="text-3xl font-bold text-gray-900">
                 📅 Dagens schema
               </h1>
               <p className="text-gray-600 mt-1">
@@ -472,7 +476,8 @@ export default function HunddagisDagensSchemaPage() {
                   onChange={(e) =>
                     setNewEntry({
                       ...newEntry,
-                      activity_type: e.target.value as any,
+                      activity_type: e.target
+                        .value as DailyScheduleEntry["activity_type"],
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"

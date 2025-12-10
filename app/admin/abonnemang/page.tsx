@@ -21,16 +21,10 @@ import {
   useEnabledServices,
   ServiceType,
 } from "@/lib/hooks/useEnabledServices";
+import type { Tables } from "@/types/database";
 
-interface SubscriptionData {
-  id: string;
-  org_id: string;
-  plan: string | null;
-  status: string;
-  trial_starts_at?: string | null;
-  trial_ends_at?: string | null;
-  created_at: string | null;
-}
+// Use database type directly - subscriptions table schema
+type SubscriptionData = Tables<"subscriptions">;
 
 const AVAILABLE_SERVICES = [
   {
@@ -700,7 +694,9 @@ export default function AdminAbonnemangPage() {
                       Plan
                     </label>
                     <p className="text-lg font-semibold capitalize">
-                      {subscription.plan}
+                      {subscription.plan_name ||
+                        subscription.abon_type ||
+                        "Ej angiven"}
                     </p>
                   </div>
                   <div>
@@ -709,10 +705,10 @@ export default function AdminAbonnemangPage() {
                     </label>
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                        subscription.status
+                        subscription.status || "unknown"
                       )}`}
                     >
-                      {getStatusText(subscription.status)}
+                      {getStatusText(subscription.status || "unknown")}
                     </span>
                   </div>
 

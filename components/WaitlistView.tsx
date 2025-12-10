@@ -251,7 +251,9 @@ export default function WaitlistView({
                   <div>
                     <span className="text-gray-500 font-medium">Ansökte:</span>
                     <p className="text-gray-900 mt-1">
-                      {new Date(app.created_at).toLocaleDateString("sv-SE")}
+                      {app.created_at
+                        ? new Date(app.created_at).toLocaleDateString("sv-SE")
+                        : "Okänt"}
                     </p>
                   </div>
                 </div>

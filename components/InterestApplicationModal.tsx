@@ -66,7 +66,13 @@ export default function InterestApplicationModal({
       setDogBreed(application.dog_breed || "");
       setDogAge(application.dog_age);
       setDogBirth(application.dog_birth || ""); // ✅ Ladda födelsedatum
-      setDogSize(application.dog_size);
+      // ✅ Fixed: Robust typkontroll för dog_size
+      const size = application.dog_size;
+      setDogSize(
+        size === "small" || size === "medium" || size === "large"
+          ? size
+          : "medium"
+      );
       setPreferredStartDate(application.preferred_start_date || "");
       setPreferredDays(application.preferred_days || []);
       setSpecialNeeds(application.special_needs || "");
@@ -280,7 +286,9 @@ export default function InterestApplicationModal({
               </h2>
               <p className="text-sm text-gray-500">
                 Ansökan från{" "}
-                {new Date(application.created_at).toLocaleDateString("sv-SE")}
+                {application.created_at
+                  ? new Date(application.created_at).toLocaleDateString("sv-SE")
+                  : "Okänt datum"}
               </p>
             </div>
             <button

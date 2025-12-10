@@ -23,11 +23,11 @@ type PriceItems = {
 
 type PriceListRecord = {
   id: string;
-  org_id: string;
-  effective_from: string;
+  org_id: string | null; // ✅ Fixed: kan vara null från DB
+  effective_from: string | null; // ✅ Fixed: kan vara null från DB
   items: PriceItems;
-  created_at: string;
-  updated_at?: string;
+  created_at?: string | null; // ✅ Fixed: optional och kan vara null från DB
+  updated_at?: string | null;
 };
 
 export default function MinaPriserPage() {
@@ -108,7 +108,14 @@ export default function MinaPriserPage() {
       .from("price_lists")
       .select("*")
       .order("effective_from", { ascending: false });
-    if (!error && data) setHistory(data);
+    // ✅ Fixed: Cast items från Json till PriceItems, med fallback
+    if (!error && data) {
+      const typedData = data.map((item) => ({
+        ...item,
+        items: (item.items as PriceItems) || {},
+      }));
+      setHistory(typedData as PriceListRecord[]);
+    }
   }
 
   return (
@@ -250,11 +257,13 @@ export default function MinaPriserPage() {
                       {i === 0 ? "Aktuell prislista" : "Tidigare prislista"}
                     </b>{" "}
                     från{" "}
-                    {new Date(h.effective_from).toLocaleDateString("sv-SE", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}
+                    {h.effective_from
+                      ? new Date(h.effective_from).toLocaleDateString("sv-SE", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })
+                      : "Okänt datum"}
                   </span>
                   <span className="text-gray-500 text-xs">
                     Uppdaterad:{" "}

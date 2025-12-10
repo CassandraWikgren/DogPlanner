@@ -87,89 +87,100 @@ export default function Dashboard() {
 
       {/* Modulkort - Kompakta och professionella */}
       <div className="max-w-7xl mx-auto px-6 pb-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Hunddagis */}
-          {hasDaycare && (
-            <Link href="/hunddagis" className="group">
-              <StandardCard
-                padding="sm"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
-              >
-                <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
-                  <div className="text-3xl mb-2">🐕</div>
-                  <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
-                    Hunddagis
-                  </h2>
-                  <p className="text-xs text-gray-600 leading-relaxed px-2">
-                    Dagishundar, schema och verksamhet
-                  </p>
-                </div>
-              </StandardCard>
-            </Link>
-          )}
-
-          {/* Hundpensionat */}
-          {hasBoarding && (
-            <Link href="/hundpensionat" className="group">
-              <StandardCard
-                padding="sm"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
-              >
-                <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
-                  <div className="text-3xl mb-2">🏨</div>
-                  <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
-                    Hundpensionat
-                  </h2>
-                  <p className="text-xs text-gray-600 leading-relaxed px-2">
-                    Bokningar och in-/utcheckning
-                  </p>
-                </div>
-              </StandardCard>
-            </Link>
-          )}
-
-          {/* Hundfrisör */}
-          {hasGrooming && (
-            <Link href="/frisor" className="group">
-              <StandardCard
-                padding="sm"
-                rounded="lg"
-                className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
-              >
-                <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
-                  <div className="text-3xl mb-2">✂️</div>
-                  <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
-                    Hundfrisör
-                  </h2>
-                  <p className="text-xs text-gray-600 leading-relaxed px-2">
-                    Bokningar och hundtrimning
-                  </p>
-                </div>
-              </StandardCard>
-            </Link>
-          )}
-
-          {/* Admin - alltid synlig */}
-          <Link href="/admin" className="group">
-            <StandardCard
-              padding="sm"
-              rounded="lg"
-              className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
-            >
-              <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
-                <div className="text-3xl mb-2">⚙️</div>
-                <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
-                  Admin
-                </h2>
-                <p className="text-xs text-gray-600 leading-relaxed px-2">
-                  Ekonomi, priser och hantering
-                </p>
+        {/* Show skeleton placeholders while loading */}
+        {servicesLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 rounded-lg h-[140px]"></div>
               </div>
-            </StandardCard>
-          </Link>
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Hunddagis */}
+            {hasDaycare && (
+              <Link href="/hunddagis" className="group">
+                <StandardCard
+                  padding="sm"
+                  rounded="lg"
+                  className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
+                >
+                  <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
+                    <div className="text-3xl mb-2">🐕</div>
+                    <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
+                      Hunddagis
+                    </h2>
+                    <p className="text-xs text-gray-600 leading-relaxed px-2">
+                      Dagishundar, schema och verksamhet
+                    </p>
+                  </div>
+                </StandardCard>
+              </Link>
+            )}
+
+            {/* Hundpensionat */}
+            {hasBoarding && (
+              <Link href="/hundpensionat" className="group">
+                <StandardCard
+                  padding="sm"
+                  rounded="lg"
+                  className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
+                >
+                  <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
+                    <div className="text-3xl mb-2">🏨</div>
+                    <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
+                      Hundpensionat
+                    </h2>
+                    <p className="text-xs text-gray-600 leading-relaxed px-2">
+                      Bokningar och in-/utcheckning
+                    </p>
+                  </div>
+                </StandardCard>
+              </Link>
+            )}
+
+            {/* Hundfrisör */}
+            {hasGrooming && (
+              <Link href="/frisor" className="group">
+                <StandardCard
+                  padding="sm"
+                  rounded="lg"
+                  className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
+                >
+                  <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
+                    <div className="text-3xl mb-2">✂️</div>
+                    <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
+                      Hundfrisör
+                    </h2>
+                    <p className="text-xs text-gray-600 leading-relaxed px-2">
+                      Bokningar och hundtrimning
+                    </p>
+                  </div>
+                </StandardCard>
+              </Link>
+            )}
+
+            {/* Admin - alltid synlig */}
+            <Link href="/admin" className="group">
+              <StandardCard
+                padding="sm"
+                rounded="lg"
+                className="h-full hover:border-[#2c7a4c] hover:shadow-md transition-all"
+              >
+                <div className="flex flex-col items-center justify-center text-center h-full min-h-[120px] py-3">
+                  <div className="text-3xl mb-2">⚙️</div>
+                  <h2 className="text-base font-semibold text-[#2c7a4c] mb-1">
+                    Admin
+                  </h2>
+                  <p className="text-xs text-gray-600 leading-relaxed px-2">
+                    Ekonomi, priser och hantering
+                  </p>
+                </div>
+              </StandardCard>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

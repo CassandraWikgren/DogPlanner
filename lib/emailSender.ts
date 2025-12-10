@@ -391,12 +391,12 @@ export async function sendWelcomeEmail(
   if (orgId) {
     try {
       const supabase = createClient();
-      const { data: org } = await supabase
-        .from("organisations")
+      const { data: org } = (await supabase
+        .from("orgs")
         .select("name")
         .eq("id", orgId)
-        .single() as { data: { name: string } | null };
-      
+        .single()) as { data: { name: string } | null };
+
       if (org?.name) {
         orgName = org.name;
       }

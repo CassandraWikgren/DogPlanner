@@ -26,21 +26,10 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
+import type { Tables } from "@/types/database";
 
-interface GroomingPrice {
-  id: string;
-  org_id: string;
-  service_name: string;
-  service_type: string;
-  description: string | null;
-  dog_size: string | null;
-  coat_type: string | null;
-  price: number;
-  duration_minutes: number;
-  active: boolean;
-  created_at: string | null;
-  updated_at: string | null;
-}
+// Use database type directly - grooming_prices table schema
+type GroomingPrice = Tables<"grooming_prices">;
 
 const SERVICE_TYPES = [
   { value: "bath", label: "Badning" },

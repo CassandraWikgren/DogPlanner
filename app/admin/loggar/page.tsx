@@ -3,16 +3,10 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import type { Tables } from "@/types/database";
 
-type Log = {
-  id: string;
-  function_name: string;
-  run_at: string;
-  status: string;
-  message?: string | null;
-  records_created?: number | null;
-  error?: string | null;
-};
+// Use database type directly - function_logs table schema
+type Log = Tables<"function_logs">;
 
 export default function LoggarPage() {
   const router = useRouter();
@@ -100,7 +94,9 @@ export default function LoggarPage() {
     }
 
     // Uppdatera listan
-    setLogs((prev) => prev.filter((log) => new Date(log.run_at) > cutoff));
+    setLogs((prev) =>
+      prev.filter((log) => log.run_at && new Date(log.run_at) > cutoff)
+    );
 
     alert("Äldre loggar rensade!");
   }
@@ -151,7 +147,9 @@ export default function LoggarPage() {
                   className="border-t hover:bg-gray-50 transition text-gray-700"
                 >
                   <td className="py-2 px-4 whitespace-nowrap">
-                    {new Date(log.run_at).toLocaleString("sv-SE")}
+                    {log.run_at
+                      ? new Date(log.run_at).toLocaleString("sv-SE")
+                      : "—"}
                   </td>
                   <td className="py-2 px-4">{log.function_name}</td>
                   <td className="py-2 px-4">

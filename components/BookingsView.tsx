@@ -18,27 +18,19 @@ import {
 
 interface Booking {
   id: string;
-  org_id: string;
-  owner_id: string;
-  dog_id: string;
+  org_id: string | null;
+  owner_id: string | null;
+  dog_id: string | null;
   start_date: string;
   end_date: string;
-  status:
-    | "pending"
-    | "confirmed"
-    | "checked_in"
-    | "checked_out"
-    | "cancelled"
-    | "completed"
-    | "no-show"
-    | null;
+  status: string | null;
   total_price: number | null;
   owners?: {
-    full_name: string;
-  };
+    full_name: string | null;
+  } | null;
   dogs?: {
-    name: string;
-  };
+    name: string | null;
+  } | null;
 }
 
 export default function BookingsView() {

@@ -21,6 +21,7 @@ import {
   CheckCircle,
   Plus,
 } from "lucide-react";
+import { Database } from "@/types/database";
 
 // Felkoder enligt systemet
 const ERROR_CODES = {
@@ -29,14 +30,11 @@ const ERROR_CODES = {
   VALIDATION: "[ERR-4001]",
 } as const;
 
-// TypeScript-typer enligt Supabase schema
-interface Dog {
-  id: string;
-  name: string;
-  breed: string | null;
-  heightcm: number | null; // Supabase använder heightcm
-  owner_id: string;
-}
+// Lokal typ som matchar vad queryn returnerar (subset av dogs-tabellen)
+type DogSummary = Pick<
+  Database["public"]["Tables"]["dogs"]["Row"],
+  "id" | "name" | "breed" | "heightcm" | "owner_id"
+>;
 
 interface Room {
   id: string;
@@ -78,7 +76,7 @@ function BookingPageContent() {
   const [priceCalculation, setPriceCalculation] =
     useState<PriceCalculation | null>(null);
   const [loading, setLoading] = useState(true);
-  const [dogs, setDogs] = useState<Dog[]>([]);
+  const [dogs, setDogs] = useState<DogSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   // Hämta hundar från Supabase
@@ -324,10 +322,10 @@ function BookingPageContent() {
         return;
       }
 
-      // Hämta pensionatets org_id
+      // Hämta pensionatets org_id (pensionat = orgs med service_types som inkluderar 'hundpensionat')
       const { data: pensionatData, error: pensionatError } = await supabase
-        .from("pensionat")
-        .select("org_id")
+        .from("orgs")
+        .select("id")
         .eq("id", selectedPensionat)
         .single();
 
@@ -337,8 +335,8 @@ function BookingPageContent() {
         return;
       }
 
-      // Type assertion for pensionatData
-      const pensionatSettings = pensionatData as { org_id: string };
+      // org_id ÄR selectedPensionat (orgs.id)
+      const pensionatOrgId = selectedPensionat;
 
       // Beräkna pris med calculateBookingPrice från boardingPriceCalculator
       const { calculateBookingPrice } =
@@ -347,7 +345,7 @@ function BookingPageContent() {
         checkinDate,
         checkoutDate,
         dogData.heightcm || 35,
-        pensionatSettings.org_id
+        pensionatOrgId
       );
 
       // Skapa bokningen med status "pending" för godkännande
@@ -357,10 +355,9 @@ function BookingPageContent() {
           {
             dog_id: selectedDog,
             owner_id: dogData.owner_id,
-            org_id: pensionatSettings.org_id,
+            org_id: pensionatOrgId,
             start_date: checkinDate.toISOString().split("T")[0],
             end_date: checkoutDate.toISOString().split("T")[0],
-            service_type: "hundpensionat",
             status: "pending" as const, // Väntar på godkännande från pensionat
             total_price: priceData.totalPrice,
             discount_amount: 0,

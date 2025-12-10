@@ -199,7 +199,7 @@ export default function NyBokningPage() {
         supabase: supabase as any,
         dog: {
           id: selectedDog.id,
-          owner_id: selectedDog.owner_id,
+          owner_id: selectedDog.owner_id || "", // ✅ Fixed: Fallback till tom sträng om null
           heightcm: selectedDog.heightcm,
         },
         booking: {

@@ -257,11 +257,11 @@ export default function EditDogModal({
           if (addonsData && addonsData.length > 0) {
             const loadedAddons: Addon[] = addonsData.map((es) => ({
               id: es.id || Date.now().toString(),
-              serviceId: es.service_id || "",
+              serviceId: es.id || "",
               name: es.service_type || "",
-              qty: es.frequency || "1",
+              qty: es.quantity?.toString() || "1",
               price: es.price || 0,
-              start: es.start_date || "",
+              start: es.performed_at || "",
               end: es.end_date || "",
             }));
             setAddons(loadedAddons);

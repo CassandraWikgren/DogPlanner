@@ -13,7 +13,7 @@ import { PawPrint, Calendar, Plus, Phone, Mail, XCircle } from "lucide-react";
 
 interface Owner {
   id: string;
-  full_name: string;
+  full_name: string | null; // ✅ Fixed: kan vara null från DB
   phone: string | null;
   email: string | null;
   address: string | null;

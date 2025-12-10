@@ -30,16 +30,16 @@ export default function StaffResponsibility() {
 
     setLoading(true);
 
-    // Hämta personal
-    const { data: staffData } = await supabase
+    // Hämta personal (using 'as any' because 'staff' table may not exist in schema)
+    const { data: staffData } = await (supabase as any)
       .from("staff")
       .select("id, name")
       .eq("on_duty", true);
 
     setStaffList(staffData || []);
 
-    // Hämta ansvar
-    const { data: tasksData } = await supabase
+    // Hämta ansvar (using 'as any' because 'responsibilities' table may not exist in schema)
+    const { data: tasksData } = await (supabase as any)
       .from("responsibilities")
       .select("*")
       .order("id");

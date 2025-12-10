@@ -97,15 +97,23 @@ export default function DogRoomCard({ booking, onClose }: DogRoomCardProps) {
   useEffect(() => {
     async function fetchServices() {
       try {
+        // ✅ Fixed: booking_services har id, quantity, price, service_id
+        // Hämta även service_name från services-tabellen via JOIN
         const { data, error } = await supabase
           .from("booking_services")
-          .select("id, service_name, price")
+          .select("id, quantity, price, service_id, services(name)")
           .eq("booking_id", booking.id);
 
         if (error) {
           console.warn("Could not fetch booking services:", error);
         } else {
-          setServices(data || []);
+          // Map services till rätt format
+          const mappedServices = (data || []).map((item: any) => ({
+            id: item.id,
+            service_name: item.services?.name || "Tilläggstjänst",
+            price: item.price || 0,
+          }));
+          setServices(mappedServices);
         }
       } catch (err) {
         console.warn("Error fetching services:", err);

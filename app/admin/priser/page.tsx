@@ -19,15 +19,20 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
+import type { Tables } from "@/types/database";
 
+// Use database type directly - services table schema
+type ServiceRow = Tables<"services">;
+
+// Extended interface for UI purposes (maps services table fields)
 interface PriceData {
   id: string;
-  service_type: string;
-  service_name: string;
+  service_type: string; // Not in DB, derived from name/description
+  service_name: string; // Maps to "name" in DB
   price: number;
   unit: string;
-  description?: string;
-  active: boolean;
+  description?: string | null;
+  active: boolean; // Maps to "is_active" in DB
 }
 
 /**
@@ -76,17 +81,27 @@ export default function AdminPriserPage() {
 
     try {
       const { data, error } = await supabase
-        .from("prices")
+        .from("services")
         .select("*")
         .eq("org_id", currentOrgId)
-        .order("service_type", { ascending: true })
-        .order("service_name", { ascending: true });
+        .order("name", { ascending: true });
 
       if (error) {
         throw new Error(`[ERR-1001] Databaskoppling: ${error.message}`);
       }
 
-      setPrices(data || []);
+      // Map services table to PriceData interface
+      const mapped: PriceData[] = (data || []).map((s: ServiceRow) => ({
+        id: s.id,
+        service_type: "tjänst", // Default since services table doesn't have this
+        service_name: s.name,
+        price: s.price,
+        unit: s.unit || "st",
+        description: s.description,
+        active: s.is_active ?? true,
+      }));
+
+      setPrices(mapped);
     } catch (err: any) {
       console.error("Error loading prices:", err);
       setError(err.message || "[ERR-5001] Okänt fel vid laddning av priser");
@@ -110,9 +125,15 @@ export default function AdminPriserPage() {
 
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
-        .from("prices")
-        .update(editForm)
+      const { error } = await supabase
+        .from("services")
+        .update({
+          name: editForm.service_name,
+          price: editForm.price,
+          unit: editForm.unit,
+          description: editForm.description,
+          is_active: editForm.active,
+        })
         .eq("id", editingId);
 
       if (error) {
@@ -135,10 +156,7 @@ export default function AdminPriserPage() {
 
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
-        .from("prices")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("services").delete().eq("id", id);
 
       if (error) {
         throw new Error(`[ERR-4001] Uppdatering: ${error.message}`);
@@ -161,9 +179,16 @@ export default function AdminPriserPage() {
 
     setSaving(true);
     try {
-      const { error } = await (supabase as any)
-        .from("prices")
-        .insert([{ ...newPrice, org_id: currentOrgId }]);
+      const { error } = await supabase.from("services").insert([
+        {
+          name: newPrice.service_name,
+          price: newPrice.price,
+          unit: newPrice.unit,
+          description: newPrice.description,
+          is_active: newPrice.active,
+          org_id: currentOrgId,
+        },
+      ]);
 
       if (error) {
         throw new Error(`[ERR-4001] Uppdatering: ${error.message}`);

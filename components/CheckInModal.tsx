@@ -601,16 +601,7 @@ export default function CheckInModal({
                 </div>
               )}
 
-              {booking.special_requests && (
-                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                  <h4 className="font-medium text-yellow-800 mb-2">
-                    ⭐ Önskemål från kunden
-                  </h4>
-                  <p className="text-sm text-yellow-700 whitespace-pre-wrap">
-                    {booking.special_requests}
-                  </p>
-                </div>
-              )}
+              {/* ✅ Removed special_requests - does not exist in bookings table */}
             </div>
           )}
         </div>

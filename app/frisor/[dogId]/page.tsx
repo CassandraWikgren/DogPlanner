@@ -62,7 +62,7 @@ type JournalEntry = {
   before_photos: string[] | null;
   after_photos: string[] | null;
   next_appointment_recommended: string | null;
-  created_at: string;
+  created_at: string | null; // ✅ Kan vara null från DB
 };
 
 const SERVICE_LABELS: Record<string, string> = {

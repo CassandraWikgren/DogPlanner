@@ -6,21 +6,13 @@ export const dynamic = "force-dynamic";
 import React, { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/app/context/AuthContext";
+import { Database } from "@/types/database";
 
 import Link from "next/link";
 import { ArrowLeft, Plus, Trash2, Save, AlertCircle } from "lucide-react";
 
-type SubscriptionType = {
-  id: string;
-  org_id: string;
-  subscription_type: "Heltid" | "Deltid 2" | "Deltid 3" | "Dagshund";
-  height_min: number;
-  height_max: number;
-  price: number;
-  description: string;
-  created_at: string | null;
-  updated_at: string | null;
-};
+type SubscriptionType =
+  Database["public"]["Tables"]["subscription_types"]["Row"];
 
 export default function HunddagisPriserPage() {
   const { currentOrgId } = useAuth();
@@ -34,11 +26,7 @@ export default function HunddagisPriserPage() {
   // Formulär för ny prissättning
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
-    subscription_type: "Heltid" as
-      | "Heltid"
-      | "Deltid 2"
-      | "Deltid 3"
-      | "Dagshund",
+    subscription_type: "Heltid",
     height_min: 0,
     height_max: 45,
     price: 0,
@@ -71,7 +59,7 @@ export default function HunddagisPriserPage() {
 
       if (fetchError) throw fetchError;
 
-      setPrices((data || []) as SubscriptionType[]);
+      setPrices(data || []);
     } catch (err: any) {
       console.error("Error loading prices:", err);
       setError(err.message || "Kunde inte ladda priser");
@@ -336,21 +324,21 @@ export default function HunddagisPriserPage() {
                   }
                 />
               </div>
+            </div>
 
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Beskrivning (valfritt)
-                </label>
-                <input
-                  type="text"
-                  className="w-full border rounded-lg px-3 py-2"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  placeholder="T.ex. 'Liten hund'"
-                />
-              </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Beskrivning (valfritt)
+              </label>
+              <input
+                type="text"
+                className="w-full border rounded-lg px-3 py-2"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="T.ex. 'Liten hund'"
+              />
             </div>
 
             <div className="flex gap-3 mt-4">

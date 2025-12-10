@@ -19,7 +19,7 @@ interface SimpleDog {
 
 interface SimpleRoom {
   id: string;
-  name: string;
+  name: string | null; // ✅ Fixed: kan vara null från DB
   capacity_m2: number | null;
 }
 

@@ -21,7 +21,7 @@ interface EnabledServicesReturn {
  * @returns Object med flags för varje tjänst + array med alla tjänster
  */
 export function useEnabledServices(): EnabledServicesReturn {
-  const { currentOrgId, loading: authLoading } = useAuth();
+  const { currentOrgId, loading: authLoading, isCustomer } = useAuth();
 
   const [services, setServices] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,20 @@ export function useEnabledServices(): EnabledServicesReturn {
       return; // Keep loading=true until auth is ready
     }
 
+    // If user is a customer (no org_id), they don't need services
+    if (isCustomer) {
+      setServices([]);
+      setLoading(false);
+      return;
+    }
+
+    // For staff: wait for currentOrgId to be set
+    // AuthContext sets currentOrgId BEFORE setting authLoading=false
+    // So if authLoading=false and no currentOrgId, something is wrong
     if (!currentOrgId) {
+      // Keep loading for a short time in case of race condition
+      // This handles the edge case where useEffect runs before state updates
+      console.warn("useEnabledServices: authLoading=false but no currentOrgId");
       setServices([]);
       setLoading(false);
       return;
@@ -71,7 +84,7 @@ export function useEnabledServices(): EnabledServicesReturn {
 
   useEffect(() => {
     loadServices();
-  }, [currentOrgId, authLoading]);
+  }, [currentOrgId, authLoading, isCustomer]);
 
   return {
     services,

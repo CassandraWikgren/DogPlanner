@@ -110,6 +110,14 @@ export async function POST(request: Request) {
       );
     }
 
+    // ✅ Validera att booking har org_id innan vi fortsätter
+    if (!booking.org_id) {
+      return NextResponse.json(
+        { error: "Bokningen saknar organisations-ID" },
+        { status: 400 }
+      );
+    }
+
     // Hämta organisationens avbokningspolicy
     const { data: organisation } = await supabase
       .from("orgs")
