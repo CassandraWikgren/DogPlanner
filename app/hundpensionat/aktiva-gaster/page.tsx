@@ -18,10 +18,13 @@ import {
   ArrowLeft,
   DollarSign,
   Plus,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
+import CheckInModal from "@/components/CheckInModal";
+import type { Database } from "@/types/database";
 
 interface ActiveGuest {
   id: string;
@@ -79,9 +82,17 @@ export default function AktivaGasterPage() {
   >([]);
   const [checkoutNotes, setCheckoutNotes] = useState("");
 
+  // Checkin modal
+  const [showCheckinModal, setShowCheckinModal] = useState(false);
+  const [selectedCheckinBooking, setSelectedCheckinBooking] = useState<
+    any | null
+  >(null);
+
   useEffect(() => {
     if (currentOrgId && !authLoading) {
       loadData();
+    } else if (!authLoading && !currentOrgId) {
+      setLoading(false);
     }
   }, [currentOrgId, authLoading]);
 
@@ -143,6 +154,7 @@ export default function AktivaGasterPage() {
         .select(
           `
           id,
+          org_id,
           start_date,
           end_date,
           checkin_time,
@@ -150,8 +162,15 @@ export default function AktivaGasterPage() {
           status,
           bed_location,
           belongings,
+          notes,
           total_price,
           base_price,
+          room_id,
+          rooms (
+            id,
+            name,
+            capacity_m2
+          ),
           dogs (
             id,
             name,
@@ -159,13 +178,26 @@ export default function AktivaGasterPage() {
             birth_date,
             heightcm,
             weightkg,
-            medical_conditions,
+            gender,
+            is_castrated,
+            photo_url,
             allergies,
+            medications,
+            special_needs,
+            behavior_notes,
+            food_type,
+            food_amount,
+            food_times,
+            food_brand,
+            vaccdhp,
+            vaccpi,
+            medical_conditions,
             owners (
               id,
               full_name,
               phone,
-              email
+              email,
+              address
             )
           )
         `
@@ -206,35 +238,17 @@ export default function AktivaGasterPage() {
     }
   };
 
-  const handleCheckIn = async (bookingId: string) => {
-    setProcessing(bookingId);
+  // Öppna incheckning modal
+  const handleOpenCheckinModal = (booking: any) => {
+    setSelectedCheckinBooking(booking);
+    setShowCheckinModal(true);
+  };
 
-    try {
-      const now = new Date();
-      const currentTime = now.toTimeString().split(" ")[0]; // HH:MM:SS
-
-      const { error } = await (supabase as any)
-        .from("bookings")
-        .update({
-          status: "checked_in" as const,
-          checkin_time: currentTime,
-        })
-        .eq("id", bookingId);
-
-      if (error) {
-        console.error("Fel vid incheckning:", error);
-        alert("Kunde inte checka in gästen");
-        return;
-      }
-
-      alert("Gästen är incheckad!");
-      loadData();
-    } catch (err) {
-      console.error("Oväntat fel:", err);
-      alert("Ett oväntat fel uppstod");
-    } finally {
-      setProcessing(null);
-    }
+  // Stäng incheckning modal och uppdatera data
+  const handleCheckinComplete = () => {
+    setShowCheckinModal(false);
+    setSelectedCheckinBooking(null);
+    loadData();
   };
 
   const handleCheckoutClick = (booking: ActiveGuest) => {
@@ -340,9 +354,9 @@ export default function AktivaGasterPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="page-wrapper flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2c7a4c] mx-auto"></div>
           <p className="mt-4 text-gray-600">Laddar aktiva gäster...</p>
         </div>
       </div>
@@ -350,71 +364,74 @@ export default function AktivaGasterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-wrapper">
       {/* Header */}
-      <div className="border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 py-4">
+      <div className="page-header">
+        <div className="page-header-content">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h1 className="text-[32px] font-bold text-[#2c7a4c] leading-tight">
-                Aktiva gäster
-              </h1>
-              <p className="mt-1 text-base text-gray-600">
+              <h1 className="page-title">Aktiva gäster</h1>
+              <p className="page-subtitle">
                 Incheckning och utcheckning av hundar
               </p>
             </div>
             <div className="flex items-center gap-4 ml-8">
-              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <p className="text-2xl font-bold text-[#2c7a4c]">
-                  {guests.length}
-                </p>
-                <p className="text-xs text-gray-600 mt-0.5">Aktiva</p>
+              <div className="stats-box">
+                <p className="stats-number">{guests.length}</p>
+                <p className="stats-label">Incheckade</p>
               </div>
-              <div className="text-center bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
-                <p className="text-2xl font-bold text-[#2c7a4c]">
-                  {confirmedBookings.length}
-                </p>
-                <p className="text-xs text-gray-600 mt-0.5">
-                  Väntar incheckning
-                </p>
+              <div className="stats-box">
+                <p className="stats-number">{confirmedBookings.length}</p>
+                <p className="stats-label">Väntar incheckning</p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <main className="max-w-6xl mx-auto px-6 py-6">
-        {/* Back button */}
-        <div className="mb-6">
-          <Link
-            href="/hundpensionat"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
+      <main className="page-main">
+        {/* Action bar */}
+        <div className="mb-6 flex items-center justify-between">
+          <Link href="/hundpensionat" className="btn-outline">
+            <ArrowLeft className="w-4 h-4 mr-2" />
             Tillbaka till pensionat
           </Link>
+          <button
+            onClick={loadData}
+            disabled={loading}
+            className="btn-secondary"
+          >
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
+            Uppdatera
+          </button>
         </div>
 
         {/* Väntar på incheckning */}
         {confirmedBookings.length > 0 && (
-          <div>
+          <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-              <Clock className="w-6 h-6 mr-2 text-green-600" />
+              <Clock className="w-6 h-6 mr-2 text-amber-500" />
               Väntar på incheckning ({confirmedBookings.length})
             </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Klicka på en bokning för att granska information och checka in
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {confirmedBookings.map((booking) => (
                 <div
                   key={booking.id}
-                  className="bg-white rounded-lg shadow-sm border-2 border-green-200 p-6 hover:shadow-md transition-shadow"
+                  onClick={() => handleOpenCheckinModal(booking)}
+                  className="bg-white rounded-lg shadow-sm border-2 border-amber-200 p-6 hover:shadow-lg hover:border-[#2c7a4c] transition-all cursor-pointer group"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                      <div className="bg-green-100 p-3 rounded-lg">
-                        <Dog className="w-6 h-6 text-green-600" />
+                      <div className="bg-amber-100 p-3 rounded-lg group-hover:bg-[#2c7a4c]/10 transition-colors">
+                        <Dog className="w-6 h-6 text-amber-600 group-hover:text-[#2c7a4c]" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">
+                        <h3 className="font-semibold text-gray-900 text-lg">
                           {booking.dogs?.name}
                         </h3>
                         <p className="text-sm text-gray-600">
@@ -422,12 +439,17 @@ export default function AktivaGasterPage() {
                         </p>
                       </div>
                     </div>
+                    <span className="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">
+                      Väntar
+                    </span>
                   </div>
 
-                  {booking.bed_location && (
+                  {(booking as any).rooms?.name && (
                     <div className="flex items-center space-x-2 text-sm text-gray-700 mb-3">
                       <MapPin className="w-4 h-4 text-gray-400" />
-                      <span>{booking.bed_location}</span>
+                      <span className="font-medium">
+                        {(booking as any).rooms.name}
+                      </span>
                     </div>
                   )}
 
@@ -435,7 +457,7 @@ export default function AktivaGasterPage() {
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Incheckning:</span>
                       <span className="font-medium">
-                        {format(new Date(booking.start_date), "dd MMM", {
+                        {format(new Date(booking.start_date), "EEEE d MMM", {
                           locale: sv,
                         })}
                       </span>
@@ -443,7 +465,7 @@ export default function AktivaGasterPage() {
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Utcheckning:</span>
                       <span className="font-medium">
-                        {format(new Date(booking.end_date), "dd MMM", {
+                        {format(new Date(booking.end_date), "d MMM", {
                           locale: sv,
                         })}
                       </span>
@@ -459,25 +481,16 @@ export default function AktivaGasterPage() {
                       {booking.dogs.owners.phone && (
                         <div className="flex items-center space-x-2 text-sm text-gray-700">
                           <Phone className="w-4 h-4 text-gray-400" />
-                          <a
-                            href={`tel:${booking.dogs.owners.phone}`}
-                            className="hover:text-blue-600"
-                          >
-                            {booking.dogs.owners.phone}
-                          </a>
+                          <span>{booking.dogs.owners.phone}</span>
                         </div>
                       )}
                     </div>
                   )}
 
-                  <button
-                    onClick={() => handleCheckIn(booking.id)}
-                    disabled={processing === booking.id}
-                    className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                  >
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    {processing === booking.id ? "Checkar in..." : "Checka in"}
-                  </button>
+                  <div className="flex items-center justify-center text-[#2c7a4c] font-medium text-sm pt-2 border-t">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Klicka för att granska & checka in
+                  </div>
                 </div>
               ))}
             </div>
@@ -821,6 +834,18 @@ export default function AktivaGasterPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Checkin Modal */}
+      {showCheckinModal && selectedCheckinBooking && (
+        <CheckInModal
+          booking={selectedCheckinBooking}
+          onClose={() => {
+            setShowCheckinModal(false);
+            setSelectedCheckinBooking(null);
+          }}
+          onCheckInComplete={handleCheckinComplete}
+        />
       )}
     </div>
   );
