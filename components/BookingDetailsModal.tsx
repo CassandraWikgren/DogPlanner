@@ -199,7 +199,7 @@ export default function BookingDetailsModal({
 
     return (
       <span
-        className={`px-3 py-1 rounded-full text-sm font-medium ${config.bg} ${config.text}`}
+        className={`px-2 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}
       >
         {config.label}
       </span>
@@ -208,37 +208,39 @@ export default function BookingDetailsModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#2c7a4c] to-[#3d9960] px-6 py-4 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-4 text-white">
+        <div className="bg-gradient-to-r from-[#2c7a4c] to-[#3d9960] px-4 py-3 flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center gap-3 text-white">
             {dog?.photo_url ? (
               <img
                 src={dog.photo_url}
                 alt={dog.name}
-                className="w-14 h-14 rounded-full object-cover border-2 border-white/30"
+                className="w-10 h-10 rounded-full object-cover border-2 border-white/30"
               />
             ) : (
-              <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center">
-                <Dog className="w-7 h-7 text-white" />
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <Dog className="w-5 h-5 text-white" />
               </div>
             )}
             <div>
-              <h2 className="text-xl font-bold">{dog?.name || "Okänd hund"}</h2>
-              <p className="text-sm text-white/80">
+              <h2 className="text-base font-semibold">
+                {dog?.name || "Okänd hund"}
+              </h2>
+              <p className="text-xs text-white/80">
                 {dog?.breed || "Okänd ras"} •{" "}
                 {calculateAge(dog?.birth_date || null)}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {getStatusBadge(booking.status)}
             {booking.status !== "checked_out" && (
               <button
                 onClick={() => setShowEditModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors"
+                className="flex items-center gap-1 px-2 py-1 bg-white/20 hover:bg-white/30 text-white rounded-md text-xs font-medium transition-colors"
               >
-                <Pencil className="w-4 h-4" />
+                <Pencil className="w-3.5 h-3.5" />
                 Redigera
               </button>
             )}
@@ -246,16 +248,16 @@ export default function BookingDetailsModal({
               onClick={onClose}
               className="text-white/80 hover:text-white transition-colors p-1"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Booking summary bar */}
-        <div className="bg-gray-50 px-6 py-3 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-6 text-sm">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-gray-500" />
+        <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-gray-500" />
               <span>
                 {format(new Date(booking.start_date), "d MMM", { locale: sv })}{" "}
                 –{" "}
@@ -265,13 +267,13 @@ export default function BookingDetailsModal({
               </span>
             </div>
             {booking.rooms?.name && (
-              <div className="flex items-center gap-2">
-                <Home className="w-4 h-4 text-gray-500" />
+              <div className="flex items-center gap-1.5">
+                <Home className="w-3.5 h-3.5 text-gray-500" />
                 <span>{booking.rooms.name}</span>
               </div>
             )}
             {booking.total_price && (
-              <div className="flex items-center gap-2 font-medium text-[#2c7a4c]">
+              <div className="font-medium text-[#2c7a4c]">
                 {Number(booking.total_price).toLocaleString()} kr
               </div>
             )}
@@ -282,38 +284,38 @@ export default function BookingDetailsModal({
         <div className="flex border-b border-gray-200 flex-shrink-0">
           <button
             onClick={() => setActiveTab("dog")}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+            className={`flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
               activeTab === "dog"
                 ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c] bg-[#f0fdf4]"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`}
           >
-            <Dog className="w-4 h-4" />
+            <Dog className="w-3.5 h-3.5" />
             Hundinfo
           </button>
           <button
             onClick={() => setActiveTab("owner")}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+            className={`flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
               activeTab === "owner"
                 ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c] bg-[#f0fdf4]"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`}
           >
-            <User className="w-4 h-4" />
+            <User className="w-3.5 h-3.5" />
             Ägare
           </button>
           <button
             onClick={() => setActiveTab("journal")}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+            className={`flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
               activeTab === "journal"
                 ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c] bg-[#f0fdf4]"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`}
           >
-            <FileText className="w-4 h-4" />
+            <FileText className="w-3.5 h-3.5" />
             Journal
             {journal.length > 0 && (
-              <span className="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-gray-200 text-gray-700 text-[10px] px-1.5 py-0.5 rounded-full">
                 {journal.length}
               </span>
             )}
@@ -321,31 +323,31 @@ export default function BookingDetailsModal({
         </div>
 
         {/* Tab content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4">
           {/* Dog info tab */}
           {activeTab === "dog" && (
-            <div className="space-y-6">
+            <div className="space-y-3">
               {/* Basic info */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-gray-50 rounded-md p-2.5">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">
                     Ras
                   </p>
-                  <p className="font-medium">{dog?.breed || "—"}</p>
+                  <p className="text-sm font-medium">{dog?.breed || "—"}</p>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                <div className="bg-gray-50 rounded-md p-2.5">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">
                     Ålder
                   </p>
-                  <p className="font-medium">
+                  <p className="text-sm font-medium">
                     {calculateAge(dog?.birth_date || null)}
                   </p>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                <div className="bg-gray-50 rounded-md p-2.5">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">
                     Kön
                   </p>
-                  <p className="font-medium">
+                  <p className="text-sm font-medium">
                     {dog?.gender === "male"
                       ? "Hane"
                       : dog?.gender === "female"
@@ -353,11 +355,11 @@ export default function BookingDetailsModal({
                         : dog?.gender || "—"}
                   </p>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                <div className="bg-gray-50 rounded-md p-2.5">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">
                     Storlek
                   </p>
-                  <p className="font-medium">
+                  <p className="text-sm font-medium">
                     {dog?.heightcm ? `${dog.heightcm} cm` : "—"}
                     {dog?.weightkg ? ` • ${dog.weightkg} kg` : ""}
                   </p>
@@ -366,20 +368,20 @@ export default function BookingDetailsModal({
 
               {/* Can share room */}
               <div
-                className={`rounded-lg p-4 flex items-center gap-3 ${
+                className={`rounded-md p-2.5 flex items-center gap-2 text-sm ${
                   dog?.can_share_room
                     ? "bg-green-50 border border-green-200"
                     : "bg-red-50 border border-red-200"
                 }`}
               >
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
                     dog?.can_share_room ? "bg-green-200" : "bg-red-200"
                   }`}
                 >
                   {dog?.can_share_room ? "✓" : "✗"}
                 </div>
-                <p className="font-medium">
+                <p className="font-medium text-sm">
                   {dog?.can_share_room
                     ? "Kan dela rum med andra hundar"
                     : "Kan EJ dela rum med andra hundar"}
@@ -387,47 +389,47 @@ export default function BookingDetailsModal({
               </div>
 
               {/* Health info */}
-              <div className="space-y-3">
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-red-500" />
+              <div className="space-y-2">
+                <h3 className="font-medium text-sm text-gray-900 flex items-center gap-1.5">
+                  <Heart className="w-4 h-4 text-red-500" />
                   Hälsa & Beteende
                 </h3>
 
                 {dog?.allergies && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 text-amber-700 mb-1">
-                      <AlertCircle className="w-4 h-4" />
-                      <p className="font-medium text-sm">Allergier</p>
+                  <div className="bg-amber-50 border border-amber-200 rounded-md p-2.5">
+                    <div className="flex items-center gap-1.5 text-amber-700 mb-0.5">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      <p className="font-medium text-xs">Allergier</p>
                     </div>
-                    <p className="text-sm">{dog.allergies}</p>
+                    <p className="text-xs">{dog.allergies}</p>
                   </div>
                 )}
 
                 {dog?.medications && (
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 text-purple-700 mb-1">
-                      <Pill className="w-4 h-4" />
-                      <p className="font-medium text-sm">Mediciner</p>
+                  <div className="bg-purple-50 border border-purple-200 rounded-md p-2.5">
+                    <div className="flex items-center gap-1.5 text-purple-700 mb-0.5">
+                      <Pill className="w-3.5 h-3.5" />
+                      <p className="font-medium text-xs">Mediciner</p>
                     </div>
-                    <p className="text-sm">{dog.medications}</p>
+                    <p className="text-xs">{dog.medications}</p>
                   </div>
                 )}
 
                 {dog?.special_needs && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p className="font-medium text-sm text-blue-700 mb-1">
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-2.5">
+                    <p className="font-medium text-xs text-blue-700 mb-0.5">
                       Särskilda behov
                     </p>
-                    <p className="text-sm">{dog.special_needs}</p>
+                    <p className="text-xs">{dog.special_needs}</p>
                   </div>
                 )}
 
                 {dog?.behavior_notes && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <p className="font-medium text-sm text-gray-700 mb-1">
+                  <div className="bg-gray-50 border border-gray-200 rounded-md p-2.5">
+                    <p className="font-medium text-xs text-gray-700 mb-0.5">
                       Beteende
                     </p>
-                    <p className="text-sm">{dog.behavior_notes}</p>
+                    <p className="text-xs">{dog.behavior_notes}</p>
                   </div>
                 )}
 
@@ -435,25 +437,25 @@ export default function BookingDetailsModal({
                   !dog?.medications &&
                   !dog?.special_needs &&
                   !dog?.behavior_notes && (
-                    <p className="text-sm text-gray-500 italic">
+                    <p className="text-xs text-gray-500 italic">
                       Ingen hälso- eller beteendeinformation registrerad.
                     </p>
                   )}
               </div>
 
               {/* Food info */}
-              <div className="space-y-3">
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <Utensils className="w-5 h-5 text-orange-500" />
+              <div className="space-y-2">
+                <h3 className="font-medium text-sm text-gray-900 flex items-center gap-1.5">
+                  <Utensils className="w-4 h-4 text-orange-500" />
                   Matinformation
                 </h3>
                 {dog?.food_type ||
                 dog?.food_brand ||
                 dog?.food_amount ||
                 dog?.food_times ? (
-                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 space-y-2">
+                  <div className="bg-orange-50 border border-orange-200 rounded-md p-2.5 space-y-1">
                     {dog.food_type && (
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs">
                         <span className="text-gray-600">Typ:</span>
                         <span className="font-medium">
                           {dog.food_type === "own"
@@ -465,19 +467,19 @@ export default function BookingDetailsModal({
                       </div>
                     )}
                     {dog.food_brand && (
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs">
                         <span className="text-gray-600">Märke:</span>
                         <span className="font-medium">{dog.food_brand}</span>
                       </div>
                     )}
                     {dog.food_amount && (
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs">
                         <span className="text-gray-600">Mängd:</span>
                         <span className="font-medium">{dog.food_amount}</span>
                       </div>
                     )}
                     {dog.food_times && (
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs">
                         <span className="text-gray-600">Antal mål:</span>
                         <span className="font-medium">
                           {dog.food_times} mål/dag
@@ -486,21 +488,23 @@ export default function BookingDetailsModal({
                     )}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500 italic">
+                  <p className="text-xs text-gray-500 italic">
                     Ingen matinformation registrerad.
                   </p>
                 )}
               </div>
 
               {/* Vaccinations */}
-              <div className="space-y-3">
-                <h3 className="font-semibold text-gray-900">Vaccinationer</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+              <div className="space-y-2">
+                <h3 className="font-medium text-sm text-gray-900">
+                  Vaccinationer
+                </h3>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-gray-50 rounded-md p-2.5">
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">
                       DHP-vaccination
                     </p>
-                    <p className="font-medium">
+                    <p className="text-sm font-medium">
                       {dog?.vaccdhp
                         ? format(new Date(dog.vaccdhp), "d MMM yyyy", {
                             locale: sv,
@@ -508,11 +512,11 @@ export default function BookingDetailsModal({
                         : "Ej registrerad"}
                     </p>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                  <div className="bg-gray-50 rounded-md p-2.5">
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wide mb-0.5">
                       Pi-vaccination
                     </p>
-                    <p className="font-medium">
+                    <p className="text-sm font-medium">
                       {dog?.vaccpi
                         ? format(new Date(dog.vaccpi), "d MMM yyyy", {
                             locale: sv,
@@ -527,34 +531,36 @@ export default function BookingDetailsModal({
 
           {/* Owner tab */}
           {activeTab === "owner" && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Owner name */}
-              <div className="text-center pb-4 border-b border-gray-200">
-                <div className="w-16 h-16 bg-[#2c7a4c] rounded-full flex items-center justify-center mx-auto mb-3">
-                  <User className="w-8 h-8 text-white" />
+              <div className="text-center pb-3 border-b border-gray-200">
+                <div className="w-12 h-12 bg-[#2c7a4c] rounded-full flex items-center justify-center mx-auto mb-2">
+                  <User className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">
+                <h3 className="text-base font-semibold text-gray-900">
                   {owner?.full_name || "Okänd ägare"}
                 </h3>
               </div>
 
               {/* Contact info */}
-              <div className="space-y-3">
-                <h4 className="font-semibold text-gray-900">
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm text-gray-900">
                   Kontaktuppgifter
                 </h4>
 
                 {owner?.phone && (
                   <a
                     href={`tel:${owner.phone}`}
-                    className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+                    className="flex items-center gap-2.5 p-2.5 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
                   >
-                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                      <Phone className="w-5 h-5 text-white" />
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <Phone className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">Telefon</p>
-                      <p className="font-medium text-blue-700">{owner.phone}</p>
+                      <p className="text-[10px] text-gray-500">Telefon</p>
+                      <p className="text-sm font-medium text-blue-700">
+                        {owner.phone}
+                      </p>
                     </div>
                   </a>
                 )}
@@ -562,14 +568,14 @@ export default function BookingDetailsModal({
                 {owner?.email && (
                   <a
                     href={`mailto:${owner.email}`}
-                    className="flex items-center gap-3 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+                    className="flex items-center gap-2.5 p-2.5 bg-green-50 rounded-md hover:bg-green-100 transition-colors"
                   >
-                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                      <Mail className="w-5 h-5 text-white" />
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                      <Mail className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500">E-post</p>
-                      <p className="font-medium text-green-700">
+                      <p className="text-[10px] text-gray-500">E-post</p>
+                      <p className="text-sm font-medium text-green-700">
                         {owner.email}
                       </p>
                     </div>
@@ -579,9 +585,9 @@ export default function BookingDetailsModal({
 
               {/* Address */}
               {(owner?.address || owner?.city) && (
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-gray-900">Adress</h4>
-                  <div className="bg-gray-50 rounded-lg p-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm text-gray-900">Adress</h4>
+                  <div className="bg-gray-50 rounded-md p-2.5 text-sm">
                     {owner?.address && <p>{owner.address}</p>}
                     {(owner?.postalcode || owner?.city) && (
                       <p>
@@ -594,18 +600,20 @@ export default function BookingDetailsModal({
 
               {/* Emergency contact */}
               {owner?.contact_person2_name && (
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-gray-900">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm text-gray-900">
                     Kontaktperson 2
                   </h4>
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                    <p className="font-medium">{owner.contact_person2_name}</p>
+                  <div className="bg-amber-50 border border-amber-200 rounded-md p-2.5">
+                    <p className="text-sm font-medium">
+                      {owner.contact_person2_name}
+                    </p>
                     {owner.contact_person2_phone && (
                       <a
                         href={`tel:${owner.contact_person2_phone}`}
-                        className="text-amber-700 hover:underline flex items-center gap-2 mt-1"
+                        className="text-xs text-amber-700 hover:underline flex items-center gap-1.5 mt-1"
                       >
-                        <Phone className="w-4 h-4" />
+                        <Phone className="w-3.5 h-3.5" />
                         {owner.contact_person2_phone}
                       </a>
                     )}
@@ -614,7 +622,7 @@ export default function BookingDetailsModal({
               )}
 
               {!owner && (
-                <p className="text-center text-gray-500 italic py-8">
+                <p className="text-center text-gray-500 italic text-sm py-6">
                   Ingen ägarinformation tillgänglig.
                 </p>
               )}
@@ -623,38 +631,38 @@ export default function BookingDetailsModal({
 
           {/* Journal tab */}
           {activeTab === "journal" && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {loadingJournal ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2c7a4c]"></div>
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#2c7a4c]"></div>
                 </div>
               ) : journal.length === 0 ? (
-                <div className="text-center py-12">
-                  <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">
+                <div className="text-center py-8">
+                  <FileText className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                  <p className="text-gray-500 text-sm">
                     Inga journalanteckningar för denna hund.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {journal.map((entry) => (
                     <div
                       key={entry.id}
-                      className="bg-gray-50 rounded-lg p-4 border-l-4 border-[#2c7a4c]"
+                      className="bg-gray-50 rounded-md p-3 border-l-3 border-[#2c7a4c]"
                     >
-                      <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                      <div className="flex items-center gap-1.5 text-[10px] text-gray-500 mb-1">
                         <Clock className="w-3 h-3" />
                         {entry.created_at
                           ? format(
                               new Date(entry.created_at),
-                              "d MMMM yyyy 'kl' HH:mm",
+                              "d MMM yyyy HH:mm",
                               {
                                 locale: sv,
                               }
                             )
                           : "Okänt datum"}
                       </div>
-                      <p className="text-sm whitespace-pre-wrap">
+                      <p className="text-xs whitespace-pre-wrap">
                         {entry.content}
                       </p>
                     </div>
@@ -667,11 +675,11 @@ export default function BookingDetailsModal({
 
         {/* Booking notes footer */}
         {(booking.notes || booking.belongings || booking.bed_location) && (
-          <div className="border-t border-gray-200 px-6 py-4 bg-gray-50 flex-shrink-0">
-            <h4 className="font-semibold text-sm text-gray-700 mb-2">
+          <div className="border-t border-gray-200 px-4 py-3 bg-gray-50 flex-shrink-0">
+            <h4 className="font-medium text-xs text-gray-700 mb-1.5">
               Bokningsanteckningar
             </h4>
-            <div className="text-sm text-gray-600 space-y-1">
+            <div className="text-xs text-gray-600 space-y-0.5">
               {booking.notes && <p>📝 {booking.notes}</p>}
               {booking.belongings && (
                 <p>🎒 Tillhörigheter: {booking.belongings}</p>

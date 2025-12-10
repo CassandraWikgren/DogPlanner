@@ -141,12 +141,12 @@ export default function EditBookingModal({
     setError(null);
 
     try {
-      // Load rooms
+      // Load rooms - include boarding AND both types
       const { data: roomsData } = await supabase
         .from("rooms")
         .select("id, name")
         .eq("org_id", booking.org_id)
-        .eq("room_type", "boarding")
+        .in("room_type", ["boarding", "both"])
         .order("name");
 
       setRooms(roomsData || []);
@@ -394,45 +394,44 @@ export default function EditBookingModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-[#2c7a4c] px-6 py-4 flex items-center justify-between flex-shrink-0">
+        <div className="bg-[#2c7a4c] px-4 py-3 flex items-center justify-between flex-shrink-0">
           <div className="text-white">
-            <h2 className="text-xl font-bold">Redigera bokning</h2>
-            <p className="text-sm text-white/80">
+            <h2 className="text-base font-semibold">
               {booking.dogs?.name || "Okänd hund"} • {booking.start_date} –{" "}
               {booking.end_date}
-            </p>
+            </h2>
           </div>
           <button
             onClick={onClose}
             className="text-white/80 hover:text-white transition-colors p-1"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Status bar */}
         {!canEdit && (
-          <div className="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-amber-600" />
-            <p className="text-sm text-amber-800">
-              Denna bokning kan inte längre redigeras (status: {booking.status})
+          <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center gap-2 text-sm">
+            <AlertCircle className="w-4 h-4 text-amber-600" />
+            <p className="text-amber-800">
+              Bokningen kan inte redigeras (status: {booking.status})
             </p>
           </div>
         )}
 
         {/* Success/Error messages */}
         {success && (
-          <div className="bg-green-50 border-b border-green-200 px-6 py-3 flex items-center gap-2">
-            <Check className="w-5 h-5 text-green-600" />
-            <p className="text-sm text-green-800">{success}</p>
+          <div className="bg-green-50 border-b border-green-200 px-4 py-2 flex items-center gap-2 text-sm">
+            <Check className="w-4 h-4 text-green-600" />
+            <p className="text-green-800">{success}</p>
           </div>
         )}
         {error && (
-          <div className="bg-red-50 border-b border-red-200 px-6 py-3 flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-red-600" />
-            <p className="text-sm text-red-800">{error}</p>
+          <div className="bg-red-50 border-b border-red-200 px-4 py-2 flex items-center gap-2 text-sm">
+            <AlertCircle className="w-4 h-4 text-red-600" />
+            <p className="text-red-800">{error}</p>
           </div>
         )}
 
@@ -440,43 +439,43 @@ export default function EditBookingModal({
         <div className="flex border-b border-gray-200 flex-shrink-0">
           <button
             onClick={() => setActiveTab("booking")}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+            className={`flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
               activeTab === "booking"
                 ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c] bg-[#f0fdf4]"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`}
           >
-            <Calendar className="w-4 h-4" />
+            <Calendar className="w-3.5 h-3.5" />
             Bokningsinfo
           </button>
           <button
             onClick={() => setActiveTab("services")}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+            className={`flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
               activeTab === "services"
                 ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c] bg-[#f0fdf4]"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`}
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             Tilläggstjänster
             {bookingServices.length > 0 && (
-              <span className="bg-[#2c7a4c] text-white text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-[#2c7a4c] text-white text-[10px] px-1.5 py-0.5 rounded-full">
                 {bookingServices.length}
               </span>
             )}
           </button>
           <button
             onClick={() => setActiveTab("journal")}
-            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+            className={`flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 ${
               activeTab === "journal"
                 ? "text-[#2c7a4c] border-b-2 border-[#2c7a4c] bg-[#f0fdf4]"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
             }`}
           >
-            <FileText className="w-4 h-4" />
+            <FileText className="w-3.5 h-3.5" />
             Journal
             {journal.length > 0 && (
-              <span className="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-gray-200 text-gray-700 text-[10px] px-1.5 py-0.5 rounded-full">
                 {journal.length}
               </span>
             )}
@@ -484,14 +483,14 @@ export default function EditBookingModal({
         </div>
 
         {/* Tab content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4">
           {/* Booking info tab */}
           {activeTab === "booking" && (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {/* Dates */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Startdatum
                   </label>
                   <input
@@ -501,11 +500,11 @@ export default function EditBookingModal({
                       setFormData({ ...formData, start_date: e.target.value })
                     }
                     disabled={!canEdit}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Slutdatum
                   </label>
                   <input
@@ -515,15 +514,14 @@ export default function EditBookingModal({
                       setFormData({ ...formData, end_date: e.target.value })
                     }
                     disabled={!canEdit}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Room */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <Home className="w-4 h-4 inline mr-1" />
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Rum
                 </label>
                 <select
@@ -532,12 +530,12 @@ export default function EditBookingModal({
                     setFormData({ ...formData, room_id: e.target.value })
                   }
                   disabled={!canEdit}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                 >
                   <option value="">Inget rum valt</option>
                   {rooms.map((room) => (
                     <option key={room.id} value={room.id}>
-                      {room.name}
+                      {room.name || `Rum ${room.id.slice(0, 6)}`}
                     </option>
                   ))}
                 </select>
@@ -545,7 +543,7 @@ export default function EditBookingModal({
 
               {/* Discount */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Rabatt (kr)
                 </label>
                 <input
@@ -559,13 +557,13 @@ export default function EditBookingModal({
                   }
                   disabled={!canEdit}
                   min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
               </div>
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Anteckningar
                 </label>
                 <textarea
@@ -574,15 +572,15 @@ export default function EditBookingModal({
                     setFormData({ ...formData, notes: e.target.value })
                   }
                   disabled={!canEdit}
-                  rows={3}
+                  rows={2}
                   placeholder="Allmänna anteckningar om bokningen..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
+                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
                 />
               </div>
 
               {/* Belongings */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Tillhörigheter
                 </label>
                 <textarea
@@ -593,13 +591,13 @@ export default function EditBookingModal({
                   disabled={!canEdit}
                   rows={2}
                   placeholder="Vad har hunden med sig?"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
+                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
                 />
               </div>
 
               {/* Bed location */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Sängplacering
                 </label>
                 <input
@@ -610,22 +608,22 @@ export default function EditBookingModal({
                   }
                   disabled={!canEdit}
                   placeholder="Var sover hunden?"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
               </div>
 
               {/* Save button */}
               {canEdit && (
-                <div className="pt-4">
+                <div className="pt-3">
                   <button
                     onClick={saveBooking}
                     disabled={saving}
-                    className="w-full flex items-center justify-center gap-2 bg-[#2c7a4c] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#236139] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 bg-[#2c7a4c] text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-[#236139] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {saving ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
-                      <Save className="w-5 h-5" />
+                      <Save className="w-4 h-4" />
                     )}
                     Spara ändringar
                   </button>
@@ -636,14 +634,14 @@ export default function EditBookingModal({
 
           {/* Services tab */}
           {activeTab === "services" && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Current services */}
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3">
+                <h3 className="font-medium text-sm text-gray-900 mb-2">
                   Tillagda tjänster
                 </h3>
                 {bookingServices.length === 0 ? (
-                  <p className="text-gray-500 text-sm italic py-4 text-center bg-gray-50 rounded-lg">
+                  <p className="text-gray-500 text-xs italic py-3 text-center bg-gray-50 rounded-md">
                     Inga tilläggstjänster tillagda
                   </p>
                 ) : (
@@ -651,18 +649,18 @@ export default function EditBookingModal({
                     {bookingServices.map((service) => (
                       <div
                         key={service.id}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+                        className="flex items-center justify-between p-2 bg-gray-50 rounded-md border border-gray-200"
                       >
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-sm text-gray-900">
                             {service.service_name}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-xs text-gray-500">
                             {service.quantity} st × {service.unit_price} kr ={" "}
                             {service.price} kr
                           </p>
                           {service.staff_notes && (
-                            <p className="text-sm text-gray-600 mt-1 italic">
+                            <p className="text-xs text-gray-600 mt-0.5 italic">
                               "{service.staff_notes}"
                             </p>
                           )}
@@ -671,9 +669,9 @@ export default function EditBookingModal({
                           <button
                             onClick={() => removeService(service.id)}
                             disabled={saving}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors"
                           >
-                            <Trash2 className="w-5 h-5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         )}
                       </div>
@@ -684,15 +682,15 @@ export default function EditBookingModal({
 
               {/* Add new service */}
               {canEdit && (
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="font-semibold text-gray-900 mb-3">
+                <div className="border-t border-gray-200 pt-4">
+                  <h3 className="font-medium text-sm text-gray-900 mb-2">
                     Lägg till tjänst
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <select
                       value={selectedServiceId}
                       onChange={(e) => setSelectedServiceId(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                     >
                       <option value="">Välj tjänst...</option>
                       {availableServices.map((service) => (
@@ -702,9 +700,9 @@ export default function EditBookingModal({
                       ))}
                     </select>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                           Antal
                         </label>
                         <input
@@ -714,14 +712,14 @@ export default function EditBookingModal({
                             setServiceQuantity(parseInt(e.target.value) || 1)
                           }
                           min="1"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                          className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-xs font-medium text-gray-700 mb-1">
                           Pris
                         </label>
-                        <div className="px-3 py-2 bg-gray-100 rounded-lg text-gray-700 font-medium">
+                        <div className="px-2 py-1.5 bg-gray-100 rounded-md text-sm text-gray-700 font-medium">
                           {selectedServiceId
                             ? `${(availableServices.find((s) => s.id === selectedServiceId)?.price || 0) * serviceQuantity} kr`
                             : "—"}
@@ -730,7 +728,7 @@ export default function EditBookingModal({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
                         Anteckning (valfritt)
                       </label>
                       <input
@@ -738,14 +736,14 @@ export default function EditBookingModal({
                         value={serviceNotes}
                         onChange={(e) => setServiceNotes(e.target.value)}
                         placeholder="T.ex. 'Extra bad efter lekstund'"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
+                        className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent"
                       />
                     </div>
 
                     <button
                       onClick={addService}
                       disabled={!selectedServiceId || saving}
-                      className="w-full flex items-center justify-center gap-2 bg-[#2c7a4c] text-white px-4 py-2.5 rounded-lg font-medium hover:bg-[#236139] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full flex items-center justify-center gap-2 bg-[#2c7a4c] text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-[#236139] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {saving ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -762,23 +760,23 @@ export default function EditBookingModal({
 
           {/* Journal tab */}
           {activeTab === "journal" && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Add new entry */}
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3">
+                <h3 className="font-medium text-sm text-gray-900 mb-2">
                   Ny journalanteckning
                 </h3>
                 <textarea
                   value={newJournalEntry}
                   onChange={(e) => setNewJournalEntry(e.target.value)}
-                  rows={4}
+                  rows={3}
                   placeholder="Skriv en ny journalanteckning för denna hund..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent resize-none"
+                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent resize-none"
                 />
                 <button
                   onClick={addJournalEntry}
                   disabled={!newJournalEntry.trim() || saving}
-                  className="mt-2 w-full flex items-center justify-center gap-2 bg-[#2c7a4c] text-white px-4 py-2.5 rounded-lg font-medium hover:bg-[#236139] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-2 w-full flex items-center justify-center gap-2 bg-[#2c7a4c] text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-[#236139] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -790,44 +788,44 @@ export default function EditBookingModal({
               </div>
 
               {/* Existing entries */}
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="font-semibold text-gray-900 mb-3">
+              <div className="border-t border-gray-200 pt-4">
+                <h3 className="font-medium text-sm text-gray-900 mb-2">
                   Tidigare anteckningar
                 </h3>
                 {journal.length === 0 ? (
-                  <p className="text-gray-500 text-sm italic py-4 text-center bg-gray-50 rounded-lg">
+                  <p className="text-gray-500 text-xs italic py-3 text-center bg-gray-50 rounded-md">
                     Inga journalanteckningar för denna hund
                   </p>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {journal.map((entry) => (
                       <div
                         key={entry.id}
-                        className="p-4 bg-gray-50 rounded-lg border-l-4 border-[#2c7a4c] group"
+                        className="p-3 bg-gray-50 rounded-md border-l-3 border-[#2c7a4c] group"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <p className="text-xs text-gray-500 mb-2">
+                            <p className="text-[10px] text-gray-500 mb-1">
                               {entry.created_at
                                 ? format(
                                     new Date(entry.created_at),
-                                    "d MMMM yyyy 'kl' HH:mm",
+                                    "d MMM yyyy HH:mm",
                                     {
                                       locale: sv,
                                     }
                                   )
                                 : "Okänt datum"}
                             </p>
-                            <p className="text-sm whitespace-pre-wrap">
+                            <p className="text-xs whitespace-pre-wrap">
                               {entry.content}
                             </p>
                           </div>
                           <button
                             onClick={() => deleteJournalEntry(entry.id)}
                             disabled={saving}
-                            className="ml-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-all"
+                            className="ml-2 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition-all"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
