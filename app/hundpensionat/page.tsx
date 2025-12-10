@@ -21,6 +21,7 @@ import {
   Users,
 } from "lucide-react";
 import type { Database } from "@/types/database";
+import BookingDetailsModal from "@/components/BookingDetailsModal";
 
 // Felkoder enligt systemet
 const ERROR_CODES = {
@@ -78,6 +79,9 @@ export default function HundpensionatPage() {
     utcheckImorgon: 0, // Ny för planering
     pendingBookings: 0,
   });
+
+  // Selected booking for details modal
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
@@ -801,15 +805,16 @@ export default function HundpensionatPage() {
                   sorted.map((booking, index) => (
                     <tr
                       key={booking.id}
-                      className={`cursor-pointer transition-colors ${index % 2 === 0 ? "bg-white hover:bg-gray-100" : "bg-gray-50 hover:bg-gray-100"}`}
+                      onClick={() => setSelectedBooking(booking)}
+                      className={`cursor-pointer transition-colors ${index % 2 === 0 ? "bg-white hover:bg-[#e6f4ea]" : "bg-gray-50 hover:bg-[#e6f4ea]"}`}
                     >
                       <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.rooms?.name ?? "—"}
                       </td>
-                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
+                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#2c7a4c] font-medium hover:underline">
                         {booking.dogs?.name ?? "—"}
                       </td>
-                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
+                      <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#2c7a4c] hover:underline">
                         {booking.dogs?.owners?.full_name ?? "—"}
                       </td>
                       <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
@@ -876,6 +881,18 @@ export default function HundpensionatPage() {
           </div>
         )}
       </main>
+
+      {/* Booking details modal */}
+      {selectedBooking && (
+        <BookingDetailsModal
+          booking={selectedBooking as any}
+          onClose={() => setSelectedBooking(null)}
+          onRefresh={() => {
+            loadBookings();
+            loadLiveStats();
+          }}
+        />
+      )}
     </div>
   );
 }
