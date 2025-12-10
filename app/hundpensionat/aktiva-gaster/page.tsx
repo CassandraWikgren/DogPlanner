@@ -23,7 +23,7 @@ import {
 import Link from "next/link";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
-import CheckInModal from "@/components/CheckInModal";
+import QuickCheckinModal from "@/components/QuickCheckinModal";
 import type { Database } from "@/types/database";
 
 interface ActiveGuest {
@@ -836,15 +836,15 @@ export default function AktivaGasterPage() {
         </div>
       )}
 
-      {/* Checkin Modal */}
+      {/* Quick Checkin Modal - enkel och snabb */}
       {showCheckinModal && selectedCheckinBooking && (
-        <CheckInModal
+        <QuickCheckinModal
           booking={selectedCheckinBooking}
           onClose={() => {
             setShowCheckinModal(false);
             setSelectedCheckinBooking(null);
           }}
-          onCheckInComplete={handleCheckinComplete}
+          onCheckedIn={handleCheckinComplete}
         />
       )}
     </div>
