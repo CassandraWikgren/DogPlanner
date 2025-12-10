@@ -399,24 +399,24 @@ export default function NyBokningPage() {
             <div className="mb-6 flex flex-col sm:flex-row gap-4">
               {/* Sökfält */}
               <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Sök pensionat..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 text-base text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent placeholder:text-gray-500 placeholder:font-medium"
+                  className="w-full pl-10 pr-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent placeholder:text-gray-400"
                 />
               </div>
 
               {/* Stadsfilter */}
               {cities.length > 0 && (
-                <div className="relative sm:min-w-[240px]">
-                  <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
+                <div className="relative sm:w-[200px]">
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                   <select
                     value={selectedCity}
                     onChange={(e) => setSelectedCity(e.target.value)}
-                    className="w-full pl-12 pr-12 py-3.5 text-base text-gray-900 font-medium border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent appearance-none bg-white cursor-pointer"
+                    className="w-full pl-10 pr-10 py-3 text-base text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2c7a4c] focus:border-transparent appearance-none bg-white cursor-pointer truncate"
                   >
                     <option value="">Alla orter</option>
                     {cities.map((city) => (
@@ -426,9 +426,9 @@ export default function NyBokningPage() {
                     ))}
                   </select>
                   {/* Dropdown-pil */}
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                     <svg
-                      className="h-5 w-5 text-gray-500"
+                      className="h-4 w-4 text-gray-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
