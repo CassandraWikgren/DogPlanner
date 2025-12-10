@@ -203,7 +203,7 @@ export default function AktivaGasterPage() {
         `
         )
         .eq("org_id", currentOrgId)
-        .eq("status", "confirmed")
+        .in("status", ["confirmed", "pending", "approved"])
         .lte("start_date", today)
         .order("start_date", { ascending: true });
 
