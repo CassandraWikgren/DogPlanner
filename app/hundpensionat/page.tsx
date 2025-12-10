@@ -236,6 +236,14 @@ export default function HundpensionatPage() {
     const nextWeekEnd = new Date(today);
     nextWeekEnd.setDate(nextWeekEnd.getDate() + 14);
 
+    // Beräkna nästa kalendervecka (måndag-söndag)
+    const dayOfWeek = today.getDay(); // 0 = söndag, 1 = måndag, etc.
+    const daysUntilNextMonday = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
+    const nextWeekStart = new Date(today);
+    nextWeekStart.setDate(today.getDate() + daysUntilNextMonday);
+    const nextWeekEndCalendar = new Date(nextWeekStart);
+    nextWeekEndCalendar.setDate(nextWeekStart.getDate() + 7);
+
     return bookings.filter((booking) => {
       const searchTerm = search.toLowerCase();
       const monthMatch = selectedMonthId
@@ -264,13 +272,13 @@ export default function HundpensionatPage() {
             quickFilterMatch = startDate <= today && endDate >= today;
             break;
           case "this-week":
-            // Bokningar som startar eller pågår denna vecka
-            quickFilterMatch =
-              startDate < weekEnd || (startDate <= weekEnd && endDate >= today);
+            // Bokningar som pågår denna vecka (är aktiva någon dag denna vecka)
+            quickFilterMatch = startDate < weekEnd && endDate >= today;
             break;
           case "next-week":
-            // Bokningar som startar nästa vecka
-            quickFilterMatch = startDate >= weekEnd && startDate < nextWeekEnd;
+            // Bokningar som pågår nästa kalendervecka (startar före slutet av nästa vecka OCH slutar efter starten av nästa vecka)
+            quickFilterMatch =
+              startDate < nextWeekEndCalendar && endDate >= nextWeekStart;
             break;
           default:
             quickFilterMatch = true;
@@ -640,13 +648,22 @@ export default function HundpensionatPage() {
                   bookings.filter((b) => {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
-                    const weekEnd = new Date(today);
-                    weekEnd.setDate(weekEnd.getDate() + 7);
-                    const nextWeekEnd = new Date(today);
-                    nextWeekEnd.setDate(nextWeekEnd.getDate() + 14);
+                    // Beräkna nästa kalendervecka
+                    const dayOfWeek = today.getDay();
+                    const daysUntilNextMonday =
+                      dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
+                    const nextWeekStart = new Date(today);
+                    nextWeekStart.setDate(
+                      today.getDate() + daysUntilNextMonday
+                    );
+                    const nextWeekEndCalendar = new Date(nextWeekStart);
+                    nextWeekEndCalendar.setDate(nextWeekStart.getDate() + 7);
                     const start = new Date(b.start_date || "");
+                    const end = new Date(b.end_date || "");
                     start.setHours(0, 0, 0, 0);
-                    return start >= weekEnd && start < nextWeekEnd;
+                    end.setHours(0, 0, 0, 0);
+                    // Bokning pågår om den startar före slutet av nästa vecka OCH slutar efter starten av nästa vecka
+                    return start < nextWeekEndCalendar && end >= nextWeekStart;
                   }).length
                 }
               </span>
