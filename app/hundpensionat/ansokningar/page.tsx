@@ -476,7 +476,7 @@ export default function PensionatAnsokningarPage() {
     if (!booking) return;
 
     const rejectionReason = prompt(
-      "Vill du ange en anledning till avslaget? (valfritt)\n\nDetta kommer att skickas till kunden."
+      "Vill du ange en anledning till avslaget? (valfritt)\n\nDetta kommer att skickas till kunden och visas i deras bokningar."
     );
 
     if (rejectionReason === null) {
@@ -487,9 +487,14 @@ export default function PensionatAnsokningarPage() {
     setProcessing(bookingId);
 
     try {
+      // Spara både status OCH anledning i databasen
       const { error } = await (supabase as any)
         .from("bookings")
-        .update({ status: "cancelled" as const })
+        .update({
+          status: "cancelled" as const,
+          cancellation_reason: rejectionReason || "Avslaget av pensionatet",
+          cancelled_at: new Date().toISOString(),
+        })
         .eq("id", bookingId);
 
       if (error) {

@@ -59,6 +59,7 @@ interface BookingData {
     food_times: string | null;
     food_brand: string | null;
     can_share_room: boolean | null;
+    can_be_with_other_dogs: boolean | null;
     vaccdhp: string | null;
     vaccpi: string | null;
     owners?: {
@@ -366,25 +367,25 @@ export default function BookingDetailsModal({
                 </div>
               </div>
 
-              {/* Can share room */}
+              {/* Can be with other dogs - using can_be_with_other_dogs (what customer sets) */}
               <div
                 className={`rounded-md p-2.5 flex items-center gap-2 text-sm ${
-                  dog?.can_share_room
+                  dog?.can_be_with_other_dogs
                     ? "bg-green-50 border border-green-200"
                     : "bg-red-50 border border-red-200"
                 }`}
               >
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                    dog?.can_share_room ? "bg-green-200" : "bg-red-200"
+                    dog?.can_be_with_other_dogs ? "bg-green-200" : "bg-red-200"
                   }`}
                 >
-                  {dog?.can_share_room ? "✓" : "✗"}
+                  {dog?.can_be_with_other_dogs ? "✓" : "✗"}
                 </div>
                 <p className="font-medium text-sm">
-                  {dog?.can_share_room
-                    ? "Kan dela rum med andra hundar"
-                    : "Kan EJ dela rum med andra hundar"}
+                  {dog?.can_be_with_other_dogs
+                    ? "Får leka med andra hundar"
+                    : "Får EJ leka med andra hundar"}
                 </p>
               </div>
 

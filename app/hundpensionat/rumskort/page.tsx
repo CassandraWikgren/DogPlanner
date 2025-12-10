@@ -122,6 +122,7 @@ function RumskortContent() {
             food_times,
             food_brand,
             can_share_room,
+            can_be_with_other_dogs,
             heightcm,
             gender,
             owners (

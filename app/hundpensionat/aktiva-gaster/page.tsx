@@ -192,6 +192,8 @@ export default function AktivaGasterPage() {
             vaccdhp,
             vaccpi,
             medical_conditions,
+            can_be_with_other_dogs,
+            can_share_room,
             owners (
               id,
               full_name,

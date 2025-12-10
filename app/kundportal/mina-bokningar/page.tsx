@@ -131,6 +131,8 @@ export default function MinaBokningarPage() {
           discount_amount,
           notes,
           created_at,
+          cancelled_at,
+          cancellation_reason,
           dogs (
             id,
             name,
@@ -517,23 +519,25 @@ export default function MinaBokningarPage() {
                   )}
 
                   {/* Cancellation info */}
-                  {booking.status === "cancelled" && booking.cancelled_at && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                      <p className="text-sm font-medium text-red-800 mb-1">
-                        Avbokad{" "}
-                        {format(
-                          new Date(booking.cancelled_at),
-                          "dd MMM yyyy HH:mm",
-                          { locale: sv }
-                        )}
-                      </p>
-                      {booking.cancellation_reason && (
-                        <p className="text-sm text-red-700">
-                          {booking.cancellation_reason}
+                  {booking.status === "cancelled" &&
+                    (booking.cancelled_at || booking.cancellation_reason) && (
+                      <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                        <p className="text-sm font-medium text-red-800 mb-1">
+                          Avbokad{" "}
+                          {booking.cancelled_at &&
+                            format(
+                              new Date(booking.cancelled_at),
+                              "dd MMM yyyy HH:mm",
+                              { locale: sv }
+                            )}
                         </p>
-                      )}
-                    </div>
-                  )}
+                        {booking.cancellation_reason && (
+                          <p className="text-sm text-red-700">
+                            Anledning: {booking.cancellation_reason}
+                          </p>
+                        )}
+                      </div>
+                    )}
 
                   {/* Actions */}
                   <div className="flex items-center justify-between pt-4 border-t">
