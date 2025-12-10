@@ -18,6 +18,7 @@ import {
   ClipboardList,
   Grid3x3,
   Printer,
+  Users,
 } from "lucide-react";
 import type { Database } from "@/types/database";
 
@@ -479,6 +480,18 @@ export default function HundpensionatPage() {
               {liveStats.pendingBookings > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   {liveStats.pendingBookings}
+                </span>
+              )}
+            </Link>
+            <Link
+              href="/hundpensionat/aktiva-gaster"
+              className="relative inline-flex items-center px-4 py-2.5 rounded-md text-[15px] font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Aktiva gäster
+              {liveStats.hundarIdag > 0 && (
+                <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {liveStats.hundarIdag}
                 </span>
               )}
             </Link>
