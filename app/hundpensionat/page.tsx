@@ -282,15 +282,22 @@ export default function HundpensionatPage() {
             break;
           case "cancelled":
             // Avbokade eller nekade bokningar
-            quickFilterMatch = booking.status === "cancelled" || booking.status === "rejected";
+            quickFilterMatch =
+              booking.status === "cancelled" || booking.status === "rejected";
             break;
           case "completed":
             // Avslutade bokningar
-            quickFilterMatch = booking.status === "completed" || booking.status === "checked_out";
+            quickFilterMatch =
+              booking.status === "completed" ||
+              booking.status === "checked_out";
             break;
           case "upcoming":
             // Kommande bokningar (start > idag och bekräftade/godkända/väntande)
-            quickFilterMatch = startDate > today && ["confirmed", "approved", "pending"].includes(booking.status || "");
+            quickFilterMatch =
+              startDate > today &&
+              ["confirmed", "approved", "pending"].includes(
+                booking.status || ""
+              );
             break;
           default:
             quickFilterMatch = true;
@@ -692,10 +699,10 @@ export default function HundpensionatPage() {
                 }
               </span>
             </button>
-            
+
             {/* Statusfilter-separator */}
             <span className="mx-2 text-gray-300">|</span>
-            
+
             {/* Statusfilter */}
             <button
               onClick={() => setQuickFilter("cancelled")}
@@ -707,7 +714,11 @@ export default function HundpensionatPage() {
             >
               ✕ Avbokade
               <span className="ml-1.5 text-xs opacity-80">
-                {bookings.filter((b) => b.status === "cancelled" || b.status === "rejected").length}
+                {
+                  bookings.filter(
+                    (b) => b.status === "cancelled" || b.status === "rejected"
+                  ).length
+                }
               </span>
             </button>
             <button
@@ -720,7 +731,12 @@ export default function HundpensionatPage() {
             >
               ✓✓ Avslutade
               <span className="ml-1.5 text-xs opacity-80">
-                {bookings.filter((b) => b.status === "completed" || b.status === "checked_out").length}
+                {
+                  bookings.filter(
+                    (b) =>
+                      b.status === "completed" || b.status === "checked_out"
+                  ).length
+                }
               </span>
             </button>
             <button
@@ -739,7 +755,12 @@ export default function HundpensionatPage() {
                     today.setHours(0, 0, 0, 0);
                     const start = new Date(b.start_date || "");
                     start.setHours(0, 0, 0, 0);
-                    return start > today && ["confirmed", "approved", "pending"].includes(b.status || "");
+                    return (
+                      start > today &&
+                      ["confirmed", "approved", "pending"].includes(
+                        b.status || ""
+                      )
+                    );
                   }).length
                 }
               </span>
@@ -920,14 +941,23 @@ export default function HundpensionatPage() {
                           {booking.status === "completed" && "Avslutad"}
                           {booking.status === "cancelled" && "Avbokad"}
                           {booking.status === "rejected" && "Nekad"}
-                          {!["confirmed", "approved", "pending", "checked_in", "checked_out", "completed", "cancelled", "rejected"].includes(booking.status || "") && (booking.status || "—")}
+                          {![
+                            "confirmed",
+                            "approved",
+                            "pending",
+                            "checked_in",
+                            "checked_out",
+                            "completed",
+                            "cancelled",
+                            "rejected",
+                          ].includes(booking.status || "") &&
+                            (booking.status || "—")}
                         </span>
                       </td>
                       <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.total_price
                           ? `${Number(booking.total_price).toLocaleString()} kr`
                           : "—"}
-                      </td>
                       </td>
                       <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.discount_amount
