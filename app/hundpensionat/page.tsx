@@ -257,7 +257,7 @@ export default function HundpensionatPage() {
         booking.rooms?.name?.toLowerCase().includes(searchTerm) ||
         booking.status?.toLowerCase().includes(searchTerm);
 
-      // Snabbfilter baserat på datum
+      // Snabbfilter baserat på datum eller status
       let quickFilterMatch = true;
       if (quickFilter !== "all") {
         const startDate = new Date(booking.start_date || "");
@@ -279,6 +279,18 @@ export default function HundpensionatPage() {
             // Bokningar som pågår nästa kalendervecka (startar före slutet av nästa vecka OCH slutar efter starten av nästa vecka)
             quickFilterMatch =
               startDate < nextWeekEndCalendar && endDate >= nextWeekStart;
+            break;
+          case "cancelled":
+            // Avbokade eller nekade bokningar
+            quickFilterMatch = booking.status === "cancelled" || booking.status === "rejected";
+            break;
+          case "completed":
+            // Avslutade bokningar
+            quickFilterMatch = booking.status === "completed" || booking.status === "checked_out";
+            break;
+          case "upcoming":
+            // Kommande bokningar (start > idag och bekräftade/godkända/väntande)
+            quickFilterMatch = startDate > today && ["confirmed", "approved", "pending"].includes(booking.status || "");
             break;
           default:
             quickFilterMatch = true;
@@ -680,6 +692,58 @@ export default function HundpensionatPage() {
                 }
               </span>
             </button>
+            
+            {/* Statusfilter-separator */}
+            <span className="mx-2 text-gray-300">|</span>
+            
+            {/* Statusfilter */}
+            <button
+              onClick={() => setQuickFilter("cancelled")}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "cancelled"
+                  ? "bg-red-500 text-white shadow-sm"
+                  : "bg-red-50 text-red-700 hover:bg-red-100"
+              }`}
+            >
+              ✕ Avbokade
+              <span className="ml-1.5 text-xs opacity-80">
+                {bookings.filter((b) => b.status === "cancelled" || b.status === "rejected").length}
+              </span>
+            </button>
+            <button
+              onClick={() => setQuickFilter("completed")}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "completed"
+                  ? "bg-slate-500 text-white shadow-sm"
+                  : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+              }`}
+            >
+              ✓✓ Avslutade
+              <span className="ml-1.5 text-xs opacity-80">
+                {bookings.filter((b) => b.status === "completed" || b.status === "checked_out").length}
+              </span>
+            </button>
+            <button
+              onClick={() => setQuickFilter("upcoming")}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                quickFilter === "upcoming"
+                  ? "bg-blue-500 text-white shadow-sm"
+                  : "bg-blue-50 text-blue-700 hover:bg-blue-100"
+              }`}
+            >
+              📅 Kommande
+              <span className="ml-1.5 text-xs opacity-80">
+                {
+                  bookings.filter((b) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const start = new Date(b.start_date || "");
+                    start.setHours(0, 0, 0, 0);
+                    return start > today && ["confirmed", "approved", "pending"].includes(b.status || "");
+                  }).length
+                }
+              </span>
+            </button>
           </div>
         </div>
 
@@ -823,23 +887,47 @@ export default function HundpensionatPage() {
                           className={`px-2 py-1 inline-flex items-center text-xs font-medium rounded-full ${
                             booking.status === "confirmed"
                               ? "bg-emerald-100 text-emerald-700"
-                              : booking.status === "pending"
-                                ? "bg-amber-100 text-amber-700"
-                                : booking.status === "checked_out"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-gray-100 text-gray-700"
+                              : booking.status === "approved"
+                                ? "bg-green-100 text-green-700"
+                                : booking.status === "pending"
+                                  ? "bg-amber-100 text-amber-700"
+                                  : booking.status === "checked_in"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : booking.status === "checked_out"
+                                      ? "bg-slate-100 text-slate-600"
+                                      : booking.status === "completed"
+                                        ? "bg-gray-100 text-gray-600"
+                                        : booking.status === "cancelled"
+                                          ? "bg-red-100 text-red-700"
+                                          : booking.status === "rejected"
+                                            ? "bg-red-100 text-red-600"
+                                            : "bg-gray-100 text-gray-700"
                           }`}
                         >
                           {booking.status === "confirmed" && "✓ "}
+                          {booking.status === "approved" && "✓ "}
                           {booking.status === "pending" && "⏳ "}
+                          {booking.status === "checked_in" && "🏠 "}
                           {booking.status === "checked_out" && "✓✓ "}
-                          {booking.status || "—"}
+                          {booking.status === "completed" && "✓✓ "}
+                          {booking.status === "cancelled" && "✕ "}
+                          {booking.status === "rejected" && "✕ "}
+                          {booking.status === "confirmed" && "Bekräftad"}
+                          {booking.status === "approved" && "Godkänd"}
+                          {booking.status === "pending" && "Väntar"}
+                          {booking.status === "checked_in" && "Incheckad"}
+                          {booking.status === "checked_out" && "Utcheckad"}
+                          {booking.status === "completed" && "Avslutad"}
+                          {booking.status === "cancelled" && "Avbokad"}
+                          {booking.status === "rejected" && "Nekad"}
+                          {!["confirmed", "approved", "pending", "checked_in", "checked_out", "completed", "cancelled", "rejected"].includes(booking.status || "") && (booking.status || "—")}
                         </span>
                       </td>
                       <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.total_price
                           ? `${Number(booking.total_price).toLocaleString()} kr`
                           : "—"}
+                      </td>
                       </td>
                       <td className="px-4 py-2.5 whitespace-nowrap text-sm text-[#333333]">
                         {booking.discount_amount
