@@ -564,6 +564,18 @@ export default function AktivaGasterPage() {
                     </div>
                   )}
 
+                  {/* Tillhörigheter */}
+                  {guest.belongings && (
+                    <div className="p-2.5 bg-gray-50 rounded-lg mb-3 text-sm">
+                      <p className="text-gray-600">
+                        <span className="font-medium text-gray-700">
+                          Tillhörigheter:
+                        </span>{" "}
+                        {guest.belongings}
+                      </p>
+                    </div>
+                  )}
+
                   {/* Ägare */}
                   {guest.dogs?.owners && (
                     <div className="flex items-center justify-between pt-3 border-t border-gray-100">
