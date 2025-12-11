@@ -209,6 +209,7 @@ export default function AktivaGasterPage() {
         .eq("org_id", currentOrgId)
         .in("status", ["confirmed", "pending", "approved"])
         .lte("start_date", today)
+        .gte("end_date", today) // ✅ FIX: Visa bara bokningar som pågår (inte avslutade)
         .order("start_date", { ascending: true });
 
       if (confirmedError) {
