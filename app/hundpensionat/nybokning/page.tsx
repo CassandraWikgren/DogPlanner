@@ -115,12 +115,16 @@ export default function NewPensionatBooking() {
     try {
       setLoading(true);
 
-      const [dogsRes, roomsRes, servicesRes] = await Promise.all([
+      // Hämta hundar som har/haft bokning hos detta pensionat
+      // Detta gör att samma hund kan vara kund hos flera pensionat
+      const [bookingsWithDogsRes, roomsRes, servicesRes] = await Promise.all([
         supabase
-          .from("dogs")
-          .select("*, owners(id, full_name, phone, email, address)")
+          .from("bookings")
+          .select(
+            "dog_id, dogs(*, owners(id, full_name, phone, email, address))"
+          )
           .eq("org_id", currentOrgId)
-          .order("name"),
+          .not("dog_id", "is", null),
         supabase
           .from("rooms")
           .select("*")
@@ -133,11 +137,26 @@ export default function NewPensionatBooking() {
           .order("label"),
       ]);
 
-      if (dogsRes.error) throw dogsRes.error;
+      if (bookingsWithDogsRes.error) throw bookingsWithDogsRes.error;
       if (roomsRes.error) throw roomsRes.error;
       if (servicesRes.error) throw servicesRes.error;
 
-      setDogs(dogsRes.data || []);
+      // Deduplicera hundar (samma hund kan ha flera bokningar)
+      const uniqueDogsMap = new Map<string, Dog>();
+      bookingsWithDogsRes.data?.forEach((booking: any) => {
+        if (
+          booking.dogs &&
+          booking.dog_id &&
+          !uniqueDogsMap.has(booking.dog_id)
+        ) {
+          uniqueDogsMap.set(booking.dog_id, booking.dogs);
+        }
+      });
+      const uniqueDogs = Array.from(uniqueDogsMap.values()).sort((a, b) =>
+        (a.name || "").localeCompare(b.name || "")
+      );
+
+      setDogs(uniqueDogs);
       setRooms(roomsRes.data || []);
       setExtraServices(servicesRes.data || []);
     } catch (error) {
