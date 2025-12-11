@@ -146,7 +146,9 @@ export default function AktivaGasterPage() {
       }
 
       // Ladda bekräftade bokningar som väntar på incheckning (status=confirmed + start_date = idag eller tidigare)
-      const today = new Date().toISOString().split("T")[0];
+      // ✅ FIX: Använd lokal tid istället för UTC
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       const { data: confirmedData, error: confirmedError } = await (
         supabase as any
       )

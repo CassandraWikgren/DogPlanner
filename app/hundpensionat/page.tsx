@@ -93,13 +93,13 @@ export default function HundpensionatPage() {
     try {
       console.log("🔍 Laddar statistik...");
 
+      // ✅ FIX: Använd lokal tid istället för UTC
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayStr = today.toISOString().split("T")[0];
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      const tomorrowStr = tomorrow.toISOString().split("T")[0];
+      const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
 
       // Hämta ALLA confirmed bookings för beräkningar
       const { data: allBookings } = await supabase
