@@ -9,15 +9,10 @@ import {
   Dog,
   User,
   MapPin,
-  CheckCircle,
   LogOut,
-  Package,
   Phone,
-  Mail,
   AlertCircle,
   ArrowLeft,
-  DollarSign,
-  Plus,
   RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
@@ -373,21 +368,19 @@ export default function AktivaGasterPage() {
       {/* Header */}
       <div className="page-header">
         <div className="page-header-content">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div>
               <h1 className="page-title">Aktiva gäster</h1>
-              <p className="page-subtitle">
-                Incheckning och utcheckning av hundar
-              </p>
+              <p className="page-subtitle">In- och utcheckning</p>
             </div>
-            <div className="flex items-center gap-4 ml-8">
+            <div className="flex items-center gap-3">
               <div className="stats-box">
                 <p className="stats-number">{guests.length}</p>
                 <p className="stats-label">Incheckade</p>
               </div>
               <div className="stats-box">
                 <p className="stats-number">{confirmedBookings.length}</p>
-                <p className="stats-label">Väntar incheckning</p>
+                <p className="stats-label">Väntar</p>
               </div>
             </div>
           </div>
@@ -399,7 +392,7 @@ export default function AktivaGasterPage() {
         <div className="mb-6 flex items-center justify-between">
           <Link href="/hundpensionat" className="btn-outline">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Tillbaka till pensionat
+            Tillbaka
           </Link>
           <button
             onClick={loadData}
@@ -416,86 +409,79 @@ export default function AktivaGasterPage() {
         {/* Väntar på incheckning */}
         {confirmedBookings.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-              <Clock className="w-6 h-6 mr-2 text-amber-500" />
-              Väntar på incheckning ({confirmedBookings.length})
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-amber-500" />
+              Väntar på incheckning
+              <span className="text-sm font-normal text-gray-500">
+                ({confirmedBookings.length})
+              </span>
             </h2>
-            <p className="text-sm text-gray-600 mb-4">
-              Klicka på en bokning för att granska information och checka in
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {confirmedBookings.map((booking) => (
                 <div
                   key={booking.id}
                   onClick={() => handleOpenCheckinModal(booking)}
-                  className="bg-white rounded-lg shadow-sm border-2 border-amber-200 p-6 hover:shadow-lg hover:border-[#2c7a4c] transition-all cursor-pointer group"
+                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer group"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-amber-100 p-3 rounded-lg group-hover:bg-[#2c7a4c]/10 transition-colors">
-                        <Dog className="w-6 h-6 text-amber-600 group-hover:text-[#2c7a4c]" />
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                        <Dog className="w-5 h-5 text-amber-600 group-hover:text-emerald-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 text-lg">
+                        <h3 className="font-semibold text-gray-900">
                           {booking.dogs?.name}
                         </h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-500">
                           {booking.dogs?.breed || "Okänd ras"}
                         </p>
                       </div>
                     </div>
-                    <span className="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">
+                    <span className="px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full">
                       Väntar
                     </span>
                   </div>
 
-                  {(booking as any).rooms?.name && (
-                    <div className="flex items-center space-x-2 text-sm text-gray-700 mb-3">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <span className="font-medium">
-                        {(booking as any).rooms.name}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Incheckning:</span>
-                      <span className="font-medium">
-                        {format(new Date(booking.start_date), "EEEE d MMM", {
+                  {/* Datum */}
+                  <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <span>
+                        {format(new Date(booking.start_date), "d MMM", {
                           locale: sv,
                         })}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Utcheckning:</span>
-                      <span className="font-medium">
-                        {format(new Date(booking.end_date), "d MMM", {
-                          locale: sv,
-                        })}
-                      </span>
-                    </div>
+                    <span className="text-gray-300">→</span>
+                    <span>
+                      {format(new Date(booking.end_date), "d MMM", {
+                        locale: sv,
+                      })}
+                    </span>
+                    {(booking as any).rooms?.name && (
+                      <>
+                        <span className="text-gray-300">•</span>
+                        <span className="font-medium">
+                          {(booking as any).rooms.name}
+                        </span>
+                      </>
+                    )}
                   </div>
 
+                  {/* Ägare */}
                   {booking.dogs?.owners && (
-                    <div className="border-t pt-3 mb-4 space-y-1">
-                      <div className="flex items-center space-x-2 text-sm text-gray-700">
-                        <User className="w-4 h-4 text-gray-400" />
-                        <span>{booking.dogs.owners.full_name}</span>
-                      </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 pt-3 border-t border-gray-100">
+                      <User className="w-4 h-4 text-gray-400" />
+                      <span>{booking.dogs.owners.full_name}</span>
                       {booking.dogs.owners.phone && (
-                        <div className="flex items-center space-x-2 text-sm text-gray-700">
-                          <Phone className="w-4 h-4 text-gray-400" />
+                        <>
+                          <span className="text-gray-300">•</span>
                           <span>{booking.dogs.owners.phone}</span>
-                        </div>
+                        </>
                       )}
                     </div>
                   )}
-
-                  <div className="flex items-center justify-center text-[#2c7a4c] font-medium text-sm pt-2 border-t">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Klicka för att granska & checka in
-                  </div>
                 </div>
               ))}
             </div>
@@ -504,132 +490,107 @@ export default function AktivaGasterPage() {
 
         {/* Aktiva gäster */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-            <Dog className="w-6 h-6 mr-2 text-blue-600" />
-            Incheckade gäster ({guests.length})
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Dog className="w-5 h-5 text-blue-600" />
+            Incheckade
+            <span className="text-sm font-normal text-gray-500">
+              ({guests.length})
+            </span>
           </h2>
 
           {guests.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-              <Dog className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Inga aktiva gäster
+            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+              <Dog className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <h3 className="text-lg font-medium text-gray-700 mb-1">
+                Inga incheckade gäster
               </h3>
-              <p className="text-gray-600">
-                Checka in gäster från listan ovan när de kommer
+              <p className="text-sm text-gray-500">
+                Checka in gäster från listan ovan
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {guests.map((guest) => (
                 <div
                   key={guest.id}
-                  className="bg-white rounded-lg shadow-sm border-2 border-blue-200 p-6 hover:shadow-md transition-shadow"
+                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-blue-100 p-3 rounded-lg">
-                        <Dog className="w-6 h-6 text-blue-600" />
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <Dog className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">
                           {guest.dogs?.name}
                         </h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-500">
                           {guest.dogs?.breed || "Okänd ras"}
                         </p>
                       </div>
                     </div>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                      Aktiv
+                    <span className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
+                      Incheckad
                     </span>
                   </div>
 
-                  {guest.bed_location && (
-                    <div className="flex items-center space-x-2 text-sm text-gray-700 mb-3">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <span>{guest.bed_location}</span>
-                    </div>
-                  )}
-
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Incheckad:</span>
-                      <span className="font-medium">
-                        {guest.checkin_time
-                          ? format(
-                              new Date(`2000-01-01T${guest.checkin_time}`),
-                              "HH:mm"
-                            )
-                          : format(new Date(guest.start_date), "dd MMM", {
-                              locale: sv,
-                            })}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Utcheckning:</span>
-                      <span className="font-medium">
-                        {format(new Date(guest.end_date), "dd MMM", {
-                          locale: sv,
-                        })}
-                      </span>
-                    </div>
+                  {/* Info */}
+                  <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                    {guest.bed_location && (
+                      <>
+                        <div className="flex items-center gap-1.5">
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                          <span>{guest.bed_location}</span>
+                        </div>
+                        <span className="text-gray-300">•</span>
+                      </>
+                    )}
+                    <span>
+                      Ut:{" "}
+                      {format(new Date(guest.end_date), "d MMM", {
+                        locale: sv,
+                      })}
+                    </span>
                   </div>
 
-                  {guest.belongings && (
-                    <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <Package className="w-4 h-4 text-gray-600" />
-                        <span className="text-sm font-medium text-gray-700">
-                          Tillhörigheter:
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600">
-                        {guest.belongings}
-                      </p>
-                    </div>
-                  )}
-
+                  {/* Medicinsk varning */}
                   {guest.dogs?.medical_conditions && (
-                    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <AlertCircle className="w-4 h-4 text-yellow-600" />
-                        <span className="text-sm font-medium text-yellow-800">
-                          Medicinsk info:
-                        </span>
-                      </div>
-                      <p className="text-sm text-yellow-700">
+                    <div className="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-lg mb-3 text-sm">
+                      <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <p className="text-amber-800">
                         {guest.dogs.medical_conditions}
                       </p>
                     </div>
                   )}
 
+                  {/* Ägare */}
                   {guest.dogs?.owners && (
-                    <div className="border-t pt-3 mb-4 space-y-1">
-                      <div className="flex items-center space-x-2 text-sm text-gray-700">
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
                         <User className="w-4 h-4 text-gray-400" />
                         <span>{guest.dogs.owners.full_name}</span>
                       </div>
                       {guest.dogs.owners.phone && (
-                        <div className="flex items-center space-x-2 text-sm text-gray-700">
-                          <Phone className="w-4 h-4 text-gray-400" />
-                          <a
-                            href={`tel:${guest.dogs.owners.phone}`}
-                            className="hover:text-blue-600"
-                          >
-                            {guest.dogs.owners.phone}
-                          </a>
-                        </div>
+                        <a
+                          href={`tel:${guest.dogs.owners.phone}`}
+                          className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Phone className="w-4 h-4" />
+                          Ring
+                        </a>
                       )}
                     </div>
                   )}
 
+                  {/* Checkout button */}
                   <button
                     onClick={() => handleCheckoutClick(guest)}
                     disabled={!!processing}
-                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="w-full mt-4 bg-blue-600 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
                   >
-                    <LogOut className="w-5 h-5 mr-2" />
+                    <LogOut className="w-4 h-4" />
                     Checka ut
                   </button>
                 </div>

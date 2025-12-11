@@ -349,11 +349,14 @@ export default function BookingDetailsModal({
                     Kön
                   </p>
                   <p className="text-sm font-medium">
-                    {dog?.gender === "male"
+                    {dog?.gender === "hane" || dog?.gender === "male"
                       ? "Hane"
-                      : dog?.gender === "female"
+                      : dog?.gender === "tik" || dog?.gender === "female"
                         ? "Tik"
-                        : dog?.gender || "—"}
+                        : dog?.gender
+                          ? dog.gender.charAt(0).toUpperCase() +
+                            dog.gender.slice(1)
+                          : "—"}
                   </p>
                 </div>
                 <div className="bg-gray-50 rounded-md p-2.5">
