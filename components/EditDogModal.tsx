@@ -749,39 +749,32 @@ export default function EditDogModal({
 
       // 3) Insert eller Update hund (dogs) — små bokstäver + rätt relationer
 
-      // ✅ AUTOMATISK WAITLIST-BERÄKNING baserat på datum
+      // ✅ WAITLIST-BERÄKNING:
+      // - Hund med abonnemang = ALLTID i "Våra hundar" (waitlist = false)
+      // - Hund utan abonnemang = väntelista (waitlist = true)
+      // - Hund med passerat slutdatum = väntelista (waitlist = true)
+      // OBS: Startdatum påverkar INTE waitlist, endast fakturering
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Normalisera till midnatt
 
-      let calculatedWaitlist = true; // Default: väntelista
+      let calculatedWaitlist = true; // Default: väntelista (om ingen prenumeration)
 
-      if (subStart) {
-        const startDate = new Date(subStart);
-        startDate.setHours(0, 0, 0, 0);
+      if (subscription) {
+        // Hunden har ett abonnemang - ska vara i "Våra hundar"
+        calculatedWaitlist = false;
 
-        if (today >= startDate) {
-          // Hunden har börjat
-          if (subEnd) {
-            const endDate = new Date(subEnd);
-            endDate.setHours(0, 0, 0, 0);
+        // MEN: Om slutdatum har passerat, flytta till väntelista
+        if (subEnd) {
+          const endDate = new Date(subEnd);
+          endDate.setHours(0, 0, 0, 0);
 
-            if (today > endDate) {
-              // Hunden är avslutad (slutdatum passerat)
-              calculatedWaitlist = true; // Flyttas tillbaka till väntelista
-            } else {
-              // Hunden är aktiv (startdatum passerat, slutdatum ej passerat)
-              calculatedWaitlist = false;
-            }
-          } else {
-            // Hunden är aktiv (startdatum passerat, inget slutdatum)
-            calculatedWaitlist = false;
+          if (today > endDate) {
+            // Abonnemanget är avslutat
+            calculatedWaitlist = true;
           }
-        } else {
-          // Hunden har inte börjat än (framtida startdatum)
-          calculatedWaitlist = true;
         }
       }
-      // Om inget startdatum: waitlist = true (default)
+      // Utan abonnemang: waitlist = true (default)
 
       const dogPayload: any = {
         name: name.trim(),

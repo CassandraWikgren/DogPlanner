@@ -10,7 +10,7 @@ import { useEnabledServices } from "@/lib/hooks/useEnabledServices";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
-  const { user, loading: authLoading, currentOrgId } = useAuth();
+  const { user, loading: authLoading, currentOrgId, isCustomer } = useAuth();
   const {
     hasDaycare,
     hasBoarding,
@@ -18,6 +18,16 @@ export default function Dashboard() {
     loading: servicesLoading,
   } = useEnabledServices();
   const router = useRouter();
+
+  // 🐕 KUND-REDIRECT: Om användaren är en hundägare, skicka till kundportalen
+  React.useEffect(() => {
+    if (authLoading) return;
+    
+    if (isCustomer) {
+      console.log("🐕 Kund upptäckt på /dashboard - redirectar till /kundportal");
+      router.replace("/kundportal");
+    }
+  }, [isCustomer, authLoading, router]);
 
   // Smart routing: Om endast EN tjänst är aktiverad, navigera dit direkt
   React.useEffect(() => {

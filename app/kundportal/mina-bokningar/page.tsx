@@ -164,6 +164,18 @@ export default function MinaBokningarPage() {
     }
   };
 
+  // Formatera pris till svenska kronor (t.ex. "16 370 kr")
+  const formatPrice = (price: number | null | undefined): string => {
+    if (price === null || price === undefined) return "0 kr";
+    return (
+      new Intl.NumberFormat("sv-SE", {
+        style: "decimal",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(Math.round(price)) + " kr"
+    );
+  };
+
   const handleCancelClick = (booking: Booking) => {
     setSelectedBooking(booking);
 
@@ -202,7 +214,7 @@ export default function MinaBokningarPage() {
       }
 
       alert(
-        `Bokningen har avbokats!\n\n${data.calculation.refundAmount > 0 ? `Återbetalning: ${data.calculation.refundAmount} kr` : "Ingen återbetalning"}`
+        `Bokningen har avbokats!\n\n${data.calculation.refundAmount > 0 ? `Återbetalning: ${formatPrice(data.calculation.refundAmount)}` : "Ingen återbetalning"}`
       );
 
       // Stäng modal och ladda om bokningar
@@ -494,11 +506,11 @@ export default function MinaBokningarPage() {
                       <div>
                         <p className="text-sm font-medium">Pris</p>
                         <p className="text-sm font-semibold">
-                          {booking.total_price || 0} kr
+                          {formatPrice(booking.total_price)}
                           {booking.discount_amount &&
                             booking.discount_amount > 0 && (
                               <span className="text-green-600 ml-2 text-xs">
-                                (-{booking.discount_amount} kr rabatt)
+                                (-{formatPrice(booking.discount_amount)} rabatt)
                               </span>
                             )}
                         </p>
@@ -616,11 +628,11 @@ export default function MinaBokningarPage() {
                 </p>
                 <p className="text-sm mb-1">
                   <strong>Avbokningsavgift:</strong>{" "}
-                  {cancellationCalc.cancellationFee} kr
+                  {formatPrice(cancellationCalc.cancellationFee)}
                 </p>
                 <p className="text-sm">
                   <strong>Återbetalning:</strong>{" "}
-                  {cancellationCalc.refundAmount} kr
+                  {formatPrice(cancellationCalc.refundAmount)}
                 </p>
                 <p className="text-xs text-gray-600 mt-2">
                   {cancellationCalc.policyApplied}

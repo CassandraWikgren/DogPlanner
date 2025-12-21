@@ -1,10 +1,10 @@
 # 🗄️ Supabase Databasstruktur - DogPlanner (KOMPLETT)
 
-**Uppdaterad:** 7 December 2025 (senast: Förtydligad kund/personal-separation med olika e-postadresser)  
+**Uppdaterad:** 21 December 2025 (senast: Waitlist-logik för hunddagis, Prisformatering i kundportalen)  
 **Version:** Next.js 15.5.7 + React 19.2.0 + Supabase (@supabase/ssr 0.8.0)  
 **Schema verifierat:** ✅ Alla funktioner och triggers verifierade i produktion  
 **RLS Status:** 🔒 Aktiverat på alla kritiska tabeller - Multi-tenant säkert  
-**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, **Duplicate prevention**, Race condition fixes, **Customer public read policies**, **Robust checkIfCustomer() med boolean return**
+**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, **Duplicate prevention**, Race condition fixes, **Customer public read policies**, **Robust checkIfCustomer() med boolean return**, **Waitlist-logik baserad på abonnemang**, **Svensk prisformatering**
 
 ---
 
@@ -291,6 +291,82 @@ await supabase.from("bookings").insert({
   ...
 });
 ```
+
+---
+
+## 🆕 UPPDATERINGAR (21 December 2025)
+
+### ✅ 1. Waitlist-logik för hunddagis (EditDogModal)
+
+**Problem:** Hundar som skapades via EditDogModal hamnade på väntelistan om de saknade startdatum eller hade framtida startdatum, trots att de hade ett aktivt abonnemang.
+
+**Lösning:** Ny waitlist-beräkning baserad på abonnemang istället för startdatum:
+
+| Scenario                                 | Tidigare       | Nu             |
+| ---------------------------------------- | -------------- | -------------- |
+| Hund med abonnemang, inget startdatum    | ❌ Väntelista  | ✅ Våra hundar |
+| Hund med abonnemang, framtida startdatum | ❌ Väntelista  | ✅ Våra hundar |
+| Hund med abonnemang, startdatum passerat | ✅ Våra hundar | ✅ Våra hundar |
+| Hund med abonnemang, slutdatum passerat  | ✅ Väntelista  | ✅ Väntelista  |
+| Hund utan abonnemang                     | ✅ Väntelista  | ✅ Väntelista  |
+
+**Kod (EditDogModal.tsx):**
+
+```typescript
+// ✅ WAITLIST-BERÄKNING:
+// - Hund med abonnemang = ALLTID i "Våra hundar" (waitlist = false)
+// - Hund utan abonnemang = väntelista (waitlist = true)
+// - Hund med passerat slutdatum = väntelista (waitlist = true)
+// OBS: Startdatum påverkar INTE waitlist, endast fakturering
+
+let calculatedWaitlist = true; // Default: väntelista
+
+if (subscription) {
+  // Hunden har ett abonnemang - ska vara i "Våra hundar"
+  calculatedWaitlist = false;
+
+  // MEN: Om slutdatum har passerat, flytta till väntelista
+  if (subEnd) {
+    const endDate = new Date(subEnd);
+    if (today > endDate) {
+      calculatedWaitlist = true;
+    }
+  }
+}
+```
+
+**Fakturering:** Startdatum används fortfarande för att filtrera vilka hundar som ska faktureras. Hundar faktureras endast om deras `startdate` har passerat. För proportionell beräkning (första månaden) kan personalen lägga in en manuell rabatt.
+
+---
+
+### ✅ 2. Prisformatering i kundportalen (mina-bokningar)
+
+**Problem:** Priser visades med decimaler och felaktig formatering: `16370.4 kr0`
+
+**Lösning:** Ny `formatPrice()`-funktion som formaterar priser på svenska sätt:
+
+```typescript
+// Formatera pris till svenska kronor (t.ex. "16 370 kr")
+const formatPrice = (price: number | null | undefined): string => {
+  if (price === null || price === undefined) return "0 kr";
+  return (
+    new Intl.NumberFormat("sv-SE", {
+      style: "decimal",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(Math.round(price)) + " kr"
+  );
+};
+```
+
+**Resultat:**
+| Före | Efter |
+|------|-------|
+| `16370.4 kr0` | `16 370 kr` |
+| `0 kr0` | `0 kr` |
+| `1234.56 kr` | `1 235 kr` |
+
+**Använd detta mönster** i alla komponenter som visar priser för kunder.
 
 ---
 
