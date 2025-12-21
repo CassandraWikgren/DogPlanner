@@ -507,12 +507,12 @@ export default function MinaBokningarPage() {
                         <p className="text-sm font-medium">Pris</p>
                         <p className="text-sm font-semibold">
                           {formatPrice(booking.total_price)}
-                          {booking.discount_amount &&
-                            booking.discount_amount > 0 && (
-                              <span className="text-green-600 ml-2 text-xs">
-                                (-{formatPrice(booking.discount_amount)} rabatt)
-                              </span>
-                            )}
+                          {booking.discount_amount != null &&
+                          booking.discount_amount > 0 ? (
+                            <span className="text-green-600 ml-2 text-xs">
+                              (-{formatPrice(booking.discount_amount)} rabatt)
+                            </span>
+                          ) : null}
                         </p>
                       </div>
                     </div>
