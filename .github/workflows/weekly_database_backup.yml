@@ -1,0 +1,147 @@
+name: Weekly Database Backup
+
+on:
+  schedule:
+    # Körs varje söndag kl 03:00 UTC (04:00 svensk tid vintertid, 05:00 sommartid)
+    - cron: "0 3 * * 0"
+  workflow_dispatch: # Möjliggör manuell körning
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set timestamp
+        id: timestamp
+        run: |
+          echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "DATETIME=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_ENV
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Verify database integrity
+        id: verify
+        env:
+          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          echo "🔍 Verifierar databasintegritet..."
+
+          # Kör integrity check via Supabase RPC
+          INTEGRITY=$(curl -s -X POST \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/rpc/verify_database_integrity" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json")
+
+          echo "Integrity check result: $INTEGRITY"
+
+          # Kontrollera kritiska tabeller
+          for table in orgs profiles dogs owners bookings invoices; do
+            COUNT=$(curl -s -X GET \
+              "${{ secrets.SUPABASE_URL }}/rest/v1/$table?select=id" \
+              -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+              -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+              -H "Prefer: count=exact" \
+              -I | grep -i "content-range" | grep -oP '\d+$' || echo "0")
+            echo "$table: $COUNT rows"
+          done
+
+          echo "✅ Integritetskontroll klar"
+
+      - name: Create database backup
+        env:
+          PGPASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          echo "📦 Skapar backup..."
+          mkdir -p backups
+
+          # Skapa SQL-dump (schema + data)
+          pg_dump \
+            -h ${{ secrets.SUPABASE_DB_HOST }} \
+            -U postgres \
+            -d postgres \
+            -p 5432 \
+            --no-owner \
+            --no-acl \
+            --clean \
+            --if-exists \
+            -F c \
+            -f backups/dogplanner_backup_${{ env.DATETIME }}.dump
+
+          # Skapa även en läsbar SQL-fil med endast schema
+          pg_dump \
+            -h ${{ secrets.SUPABASE_DB_HOST }} \
+            -U postgres \
+            -d postgres \
+            -p 5432 \
+            --schema-only \
+            --no-owner \
+            --no-acl \
+            -f backups/dogplanner_schema_${{ env.DATETIME }}.sql
+
+          echo "✅ Backup skapad"
+          ls -lh backups/
+
+      - name: Compress backup
+        run: |
+          cd backups
+          gzip dogplanner_backup_${{ env.DATETIME }}.dump
+          gzip dogplanner_schema_${{ env.DATETIME }}.sql
+          ls -lh
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-backup-${{ env.DATE }}
+          path: backups/
+          retention-days: 90 # Behåll i 90 dagar
+
+      - name: Log backup to database
+        if: always()
+        run: |
+          STATUS="success"
+          if [ "${{ job.status }}" != "success" ]; then STATUS="failed"; fi
+
+          curl -s -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/function_logs" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"function_name\": \"weekly_database_backup\",
+              \"status\": \"$STATUS\",
+              \"message\": \"Weekly backup completed for ${{ env.DATE }}\",
+              \"metadata\": {
+                \"timestamp\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",
+                \"backup_file\": \"dogplanner_backup_${{ env.DATETIME }}.dump.gz\"
+              }
+            }"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Backup misslyckades!"
+          echo "Kontrollera loggar och secrets."
+          # Här kan du lägga till Slack/email-notifiering om du vill
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 📊 Backup Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Date | ${{ env.DATE }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Retention | 90 days |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Backup completed successfully!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Backup failed - check logs" >> $GITHUB_STEP_SUMMARY
+          fi
