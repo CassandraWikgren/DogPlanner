@@ -224,6 +224,23 @@ export default function AdminPage() {
                 </div>
               </div>
             </Link>
+
+            {/* Om DogPlanner - Hjälpcenter */}
+            <Link href="/admin/om-dogplanner">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col items-center justify-between h-full hover:border-[#2c7a4c] transition group">
+                <div className="flex-1 w-full">
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-2xl">📖</span>
+                    <h3 className="text-sm font-semibold text-[#2c7a4c] group-hover:text-[#236139] text-center">
+                      Om DogPlanner
+                    </h3>
+                  </div>
+                  <p className="text-xs text-gray-600 text-center">
+                    Lär dig hur systemet fungerar och få tips.
+                  </p>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </div>
