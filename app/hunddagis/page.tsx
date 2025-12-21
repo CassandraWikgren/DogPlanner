@@ -323,9 +323,27 @@ export default function HunddagisPage() {
       const matchesMonth =
         filterMonth === "all" ||
         (() => {
+          // Hunden måste ha ett startdatum för att visas i månadsfilter
           if (!dog.startdate) return false;
-          const startMonth = new Date(dog.startdate).getMonth();
-          return startMonth.toString() === filterMonth;
+
+          const currentYear = new Date().getFullYear();
+          const monthIndex = parseInt(filterMonth);
+
+          // Första och sista dagen i vald månad
+          const monthStart = new Date(currentYear, monthIndex, 1);
+          const monthEnd = new Date(currentYear, monthIndex + 1, 0, 23, 59, 59);
+
+          const startDate = new Date(dog.startdate);
+          const endDate = dog.enddate ? new Date(dog.enddate) : null;
+
+          // Hunden var aktiv under månaden om:
+          // 1. Startdatum är före eller under månadens slut OCH
+          // 2. Slutdatum är null (fortfarande aktiv) ELLER slutdatum är efter eller på månadens första dag
+          const startedBeforeMonthEnd = startDate <= monthEnd;
+          const stillActiveOrEndedAfterMonthStart =
+            !endDate || endDate >= monthStart;
+
+          return startedBeforeMonthEnd && stillActiveOrEndedAfterMonthStart;
         })();
 
       return matchesSearch && matchesView && matchesMonth;
