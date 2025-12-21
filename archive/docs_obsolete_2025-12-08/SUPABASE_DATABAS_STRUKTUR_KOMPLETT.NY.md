@@ -1,10 +1,10 @@
 # 🗄️ Supabase Databasstruktur - DogPlanner (KOMPLETT)
 
-**Uppdaterad:** 21 December 2025 (senast: Waitlist-logik för hunddagis, Prisformatering i kundportalen)  
+**Uppdaterad:** 21 December 2025 (senast: Månadsfilter för hunddagis, Fix för "0" efter pris)  
 **Version:** Next.js 15.5.7 + React 19.2.0 + Supabase (@supabase/ssr 0.8.0)  
 **Schema verifierat:** ✅ Alla funktioner och triggers verifierade i produktion  
 **RLS Status:** 🔒 Aktiverat på alla kritiska tabeller - Multi-tenant säkert  
-**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, **Duplicate prevention**, Race condition fixes, **Customer public read policies**, **Robust checkIfCustomer() med boolean return**, **Waitlist-logik baserad på abonnemang**, **Svensk prisformatering**
+**Förbättringar:** ✅ Pattern 3 arkitektur, Komplett kundportal, isCustomer-separation, **Duplicate prevention**, Race condition fixes, **Customer public read policies**, **Robust checkIfCustomer() med boolean return**, **Waitlist-logik baserad på abonnemang**, **Svensk prisformatering**, **Månadsfilter visar aktiva hundar**, **React 0-bugg fix**
 
 ---
 
@@ -367,6 +367,77 @@ const formatPrice = (price: number | null | undefined): string => {
 | `1234.56 kr` | `1 235 kr` |
 
 **Använd detta mönster** i alla komponenter som visar priser för kunder.
+
+---
+
+### ✅ 3. Månadsfilter för hunddagis (hunddagis/page.tsx)
+
+**Problem:** Månadsfiltret visade bara hundar vars startdatum var i den valda månaden, istället för alla hundar som var aktiva under månaden.
+
+**Lösning:** Ny filterlogik som visar hundar som hade ett aktivt abonnemang under den valda månaden:
+
+```typescript
+const matchesMonth =
+  filterMonth === "all" ||
+  (() => {
+    // Hunden måste ha ett startdatum för att visas i månadsfilter
+    if (!dog.startdate) return false;
+
+    const currentYear = new Date().getFullYear();
+    const monthIndex = parseInt(filterMonth);
+
+    // Första och sista dagen i vald månad
+    const monthStart = new Date(currentYear, monthIndex, 1);
+    const monthEnd = new Date(currentYear, monthIndex + 1, 0, 23, 59, 59);
+
+    const startDate = new Date(dog.startdate);
+    const endDate = dog.enddate ? new Date(dog.enddate) : null;
+
+    // Hunden var aktiv under månaden om:
+    // 1. Startdatum är före eller under månadens slut OCH
+    // 2. Slutdatum är null (fortfarande aktiv) ELLER slutdatum är efter/på månadens första dag
+    const startedBeforeMonthEnd = startDate <= monthEnd;
+    const stillActiveOrEndedAfterMonthStart = !endDate || endDate >= monthStart;
+
+    return startedBeforeMonthEnd && stillActiveOrEndedAfterMonthStart;
+  })();
+```
+
+**Resultat:**
+
+| Hund   | Startdatum | Slutdatum  | December-filter                   |
+| ------ | ---------- | ---------- | --------------------------------- |
+| Bonnie | 2025-08-01 | _(ingen)_  | ✅ Visas - aktiv                  |
+| Dias   | 2025-11-15 | _(ingen)_  | ✅ Visas - aktiv                  |
+| Harry  | 2025-12-01 | _(ingen)_  | ✅ Visas - aktiv                  |
+| Joy    | 2025-10-01 | 2025-11-30 | ❌ Visas inte - avslutad före dec |
+| Klark  | 2025-09-01 | 2026-01-15 | ✅ Visas - aktiv under dec        |
+
+**Viktigt:** De flesta hundar har inget slutdatum eftersom de går på dagiset tillsvidare. Slutdatum sätts endast när kunden säger upp sitt abonnemang.
+
+---
+
+### ✅ 4. Fix för extra "0" efter pris (React-bugg)
+
+**Problem:** Priser visades som "16 370 kr0" med en extra 0:a på slutet.
+
+**Orsak:** React renderar `0` när man använder `{0 && <Component/>}` mönstret. När `discount_amount` var `0`, renderades det som text.
+
+**Lösning:** Ändrade från `&&` till ternary operator:
+
+```typescript
+// FEL - renderar "0" om discount_amount är 0
+{booking.discount_amount && booking.discount_amount > 0 && (
+  <span>rabatt</span>
+)}
+
+// RÄTT - renderar null istället för 0
+{booking.discount_amount != null && booking.discount_amount > 0 ? (
+  <span>rabatt</span>
+) : null}
+```
+
+**Tips:** Använd alltid ternary operator (`? :`) istället för `&&` när du hanterar numeriska värden i JSX för att undvika att `0` renderas som text.
 
 ---
 
