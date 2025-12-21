@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { createClient } from "@/lib/supabase/client";
 
@@ -27,6 +27,27 @@ export function useEnabledServices(): EnabledServicesReturn {
   // Start som true och håll loading tills vi faktiskt har data
   const [loading, setLoading] = useState(true);
   const [hasFetched, setHasFetched] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // ⏱️ Safety timeout - om loading tar mer än 3 sekunder, fallback till alla tjänster
+  useEffect(() => {
+    timeoutRef.current = setTimeout(() => {
+      if (loading && !hasFetched) {
+        console.warn(
+          "useEnabledServices: Timeout reached, using fallback services"
+        );
+        setServices(["daycare", "boarding", "grooming"]);
+        setLoading(false);
+        setHasFetched(true);
+      }
+    }, 3000);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [loading, hasFetched]);
 
   const loadServices = async () => {
     // Vänta på att auth ska bli klar
@@ -48,10 +69,17 @@ export function useEnabledServices(): EnabledServicesReturn {
       return;
     }
 
-    // For staff: wait for currentOrgId to be set
+    // For staff: if no currentOrgId after auth is done, use fallback
     if (!currentOrgId) {
-      // Håll loading true medan vi väntar på org_id
-      // (AuthContext sätter currentOrgId innan authLoading=false)
+      // Om authLoading är false men currentOrgId fortfarande saknas, använd fallback
+      if (!authLoading) {
+        console.warn(
+          "useEnabledServices: No currentOrgId after auth, using fallback"
+        );
+        setServices(["daycare", "boarding", "grooming"]);
+        setLoading(false);
+        setHasFetched(true);
+      }
       return;
     }
 
